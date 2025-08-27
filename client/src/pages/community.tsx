@@ -8,7 +8,7 @@ import { CreatePostModal } from "@/components/create-post-modal";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type Category, type Platform } from "@shared/schema";
-import { Plus, Image, BarChart3, ChevronLeft, ChevronRight, Lightbulb } from "lucide-react";
+import { Plus, Image, BarChart3, ChevronLeft, ChevronRight, Lightbulb, Star, Calendar, Newspaper, TrendingUp } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Community() {
@@ -17,6 +17,7 @@ export default function Community() {
   const [currentTab, setCurrentTab] = useState<'all' | 'saved'>('all');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [currentInsightIndex, setCurrentInsightIndex] = useState(0);
+  const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState(0);
 
   // Build query parameters
   const queryParams = new URLSearchParams();
@@ -71,6 +72,46 @@ export default function Community() {
     ? allFilteredPosts.filter((post: any) => post.type === 'regular')
     : [];
 
+  // Featured content data
+  const featuredContent = [
+    {
+      type: 'Creator Spotlight',
+      icon: Star,
+      title: 'Breaking Creative Blocks with AI Tools',
+      description: 'Alex Chen shares how he uses generative AI to speed up concept art workflows — without losing the human touch. Practical tips for creators.',
+      image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=600',
+      category: 'Interview',
+      link: '/article/breaking-creative-blocks-with-ai-tools'
+    },
+    {
+      type: 'Upcoming Event',
+      icon: Calendar,
+      title: 'Virtual Creator Conference 2025',
+      description: 'Join industry leaders for talks on the future of virtual world creation, monetization strategies, and emerging technologies.',
+      image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=600',
+      category: 'Event',
+      link: '#'
+    },
+    {
+      type: 'Industry News',
+      icon: Newspaper,
+      title: 'Virtual Real Estate Market Hits Record High',
+      description: 'Decentraland and Sandbox properties see 40% increase in value this quarter as brands invest heavily in virtual experiences.',
+      image: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=600',
+      category: 'Market Report',
+      link: '#'
+    },
+    {
+      type: 'Top Story',
+      icon: TrendingUp,
+      title: 'The Future of Virtual Fashion',
+      description: 'How digital clothing is revolutionizing avatar expression across platforms. Maya Rodriguez discusses her journey from traditional to virtual fashion design.',
+      image: 'https://images.unsplash.com/photo-1558618644-fcd25c85cd64?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=600',
+      category: 'Feature',
+      link: '/article/the-future-of-virtual-fashion'
+    }
+  ];
+
   // Navigation functions for insight carousel
   const nextInsight = () => {
     setCurrentInsightIndex((prev) => (prev + 1) % insightPosts.length);
@@ -78,6 +119,15 @@ export default function Community() {
 
   const prevInsight = () => {
     setCurrentInsightIndex((prev) => (prev - 1 + insightPosts.length) % insightPosts.length);
+  };
+
+  // Navigation functions for featured content
+  const nextFeatured = () => {
+    setCurrentFeaturedIndex((prev) => (prev + 1) % featuredContent.length);
+  };
+
+  const prevFeatured = () => {
+    setCurrentFeaturedIndex((prev) => (prev - 1 + featuredContent.length) % featuredContent.length);
   };
 
   // Add scroll animation observer
@@ -136,95 +186,92 @@ export default function Community() {
               </div>
             </div>
 
-            {/* Creator Insights Carousel */}
-            {currentTab === 'all' && insightPosts.length > 0 && (
-              <div className="mb-8" data-testid="insights-carousel">
+            {/* Featured Content Carousel */}
+            {currentTab === 'all' && (
+              <div className="mb-8" data-testid="featured-carousel">
                 <div className="flex items-center space-x-2 mb-4">
                   <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
                   <span className="text-sm font-medium text-accent bg-background px-4 py-2 rounded-full border border-accent/20 flex items-center">
-                    <Lightbulb className="w-4 h-4 mr-2" />
-                    Creator Insights
+                    {(() => {
+                      const Icon = featuredContent[currentFeaturedIndex].icon;
+                      return <Icon className="w-4 h-4 mr-2" />;
+                    })()}
+                    Featured Content
                   </span>
                   <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
-                </div>
-                
-                {/* Section Description */}
-                <div className="text-center mb-6">
-                  <p className="text-muted-foreground max-w-2xl mx-auto">
-                    Creator Insights is where we hear from the creators making an impact. We feature innovative minds and showcase their work, but more importantly, they share the real-world wisdom and practical tips that can help you level up.
-                  </p>
                 </div>
                 
                 <div className="relative glass-card rounded-xl overflow-hidden hover-lift">
                   {/* Large Header Image */}
                   <div className="relative h-80 overflow-hidden">
                     <img 
-                      src={insightPosts[currentInsightIndex]?.imageUrl || ''} 
-                      alt={insightPosts[currentInsightIndex]?.title}
+                      src={featuredContent[currentFeaturedIndex].image} 
+                      alt={featuredContent[currentFeaturedIndex].title}
                       className="w-full h-full object-cover transition-transform duration-500"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                     
                     {/* Navigation Arrows */}
-                    {insightPosts.length > 1 && (
-                      <>
-                        <button
-                          onClick={prevInsight}
-                          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all hover:scale-110"
-                          data-testid="insight-prev-button"
-                        >
-                          <ChevronLeft className="w-6 h-6" />
-                        </button>
-                        <button
-                          onClick={nextInsight}
-                          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all hover:scale-110"
-                          data-testid="insight-next-button"
-                        >
-                          <ChevronRight className="w-6 h-6" />
-                        </button>
-                      </>
-                    )}
+                    <button
+                      onClick={prevFeatured}
+                      className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all hover:scale-110"
+                      data-testid="featured-prev-button"
+                    >
+                      <ChevronLeft className="w-6 h-6" />
+                    </button>
+                    <button
+                      onClick={nextFeatured}
+                      className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all hover:scale-110"
+                      data-testid="featured-next-button"
+                    >
+                      <ChevronRight className="w-6 h-6" />
+                    </button>
+                    
+                    {/* Content Type Badge */}
+                    <div className="absolute top-4 left-4">
+                      <span className="bg-accent/90 text-white px-3 py-1 rounded-full text-sm font-medium">
+                        {featuredContent[currentFeaturedIndex].type}
+                      </span>
+                    </div>
                     
                     {/* Content Overlay */}
                     <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
                       <h2 className="text-2xl font-display font-bold mb-2">
-                        {insightPosts[currentInsightIndex]?.title}
+                        {featuredContent[currentFeaturedIndex].title}
                       </h2>
                       <p className="text-white/90 mb-4 line-clamp-2">
-                        {insightPosts[currentInsightIndex]?.content}
+                        {featuredContent[currentFeaturedIndex].description}
                       </p>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-white/70">{insightPosts[currentInsightIndex]?.type === 'insight' ? 'Interview' : 'Article'}</span>
-                        <Link href={`/article/${insightPosts[currentInsightIndex]?.id === 'post4' ? 'breaking-creative-blocks-with-ai-tools' : insightPosts[currentInsightIndex]?.id === 'post5' ? 'from-sims-modding-to-virtual-world-design' : 'the-future-of-virtual-fashion'}`}>
-                          <Button size="sm" variant="secondary" className="transition-all hover:scale-105">
-                            Read More →
+                        <span className="text-sm text-white/70">{featuredContent[currentFeaturedIndex].category}</span>
+                        {featuredContent[currentFeaturedIndex].link !== '#' ? (
+                          <Link href={featuredContent[currentFeaturedIndex].link}>
+                            <Button size="sm" variant="secondary" className="transition-all hover:scale-105">
+                              Read More →
+                            </Button>
+                          </Link>
+                        ) : (
+                          <Button size="sm" variant="secondary" className="transition-all hover:scale-105" disabled>
+                            Coming Soon
                           </Button>
-                        </Link>
+                        )}
                       </div>
                     </div>
                     
                     {/* Dots Indicator */}
-                    {insightPosts.length > 1 && (
-                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                        {insightPosts.map((_, index) => (
-                          <button
-                            key={index}
-                            onClick={() => setCurrentInsightIndex(index)}
-                            className={`w-2 h-2 rounded-full transition-all ${
-                              index === currentInsightIndex ? 'bg-white' : 'bg-white/50'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                    )}
+                    <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                      {featuredContent.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentFeaturedIndex(index)}
+                          className={`w-2 h-2 rounded-full transition-all ${
+                            index === currentFeaturedIndex ? 'bg-white' : 'bg-white/50'
+                          }`}
+                          data-testid={`featured-dot-${index}`}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
-                
-                {/* Footer Link */}
-                <div className="text-center mt-6">
-                  <Button variant="ghost" className="text-accent hover:text-accent/80 transition-colors">
-                    See all Creator Insights →
-                  </Button>
                 </div>
               </div>
             )}
