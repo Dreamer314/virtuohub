@@ -148,6 +148,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(PLATFORMS);
   });
 
+  // Vote on a poll
+  app.post("/api/posts/:postId/vote", async (req, res) => {
+    try {
+      const { postId } = req.params;
+      const { optionIndex } = req.body;
+      
+      if (typeof optionIndex !== 'number' || optionIndex < 0) {
+        return res.status(400).json({ message: "Invalid option index" });
+      }
+      
+      const updatedPost = await storage.voteOnPoll(postId, optionIndex);
+      
+      if (!updatedPost) {
+        return res.status(404).json({ message: "Poll not found or invalid" });
+      }
+      
+      res.json(updatedPost);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to vote on poll" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

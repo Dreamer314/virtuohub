@@ -15,6 +15,8 @@ interface PostCardProps {
 
 export function PostCard({ post, currentUserId = 'user1' }: PostCardProps) {
   const [isSaved, setIsSaved] = useState(post.isSaved || false);
+  const [hasVoted, setHasVoted] = useState(false);
+  const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -45,6 +47,19 @@ export function PostCard({ post, currentUserId = 'user1' }: PostCardProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
       toast({ title: "Post shared!" });
+    }
+  });
+
+  const voteMutation = useMutation({
+    mutationFn: (optionIndex: number) => 
+      apiRequest('POST', `/api/posts/${post.id}/vote`, { optionIndex }),
+    onSuccess: () => {
+      setHasVoted(true);
+      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      toast({ 
+        title: "Vote submitted!",
+        description: "Thank you for participating in the Creator Pulse!"
+      });
     }
   });
 
@@ -96,13 +111,32 @@ export function PostCard({ post, currentUserId = 'user1' }: PostCardProps) {
           
           <div className="space-y-3">
             {(post.pollData as any)?.options?.map((option: any, index: number) => (
-              <div key={index} className="flex items-center justify-between">
-                <span className="text-foreground">{option.text}</span>
-                <div className="flex items-center space-x-2">
-                  <Progress value={option.percentage} className="w-32 h-2" />
-                  <span className="text-sm text-muted-foreground">{option.percentage}%</span>
+              <button
+                key={index}
+                onClick={() => {
+                  if (!hasVoted) {
+                    setSelectedOption(index);
+                    voteMutation.mutate(index);
+                  }
+                }}
+                disabled={hasVoted || voteMutation.isPending}
+                className={`w-full p-3 rounded-lg border transition-all duration-200 ${
+                  selectedOption === index
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border hover:border-primary/50 bg-card hover:bg-primary/5'
+                } ${hasVoted || voteMutation.isPending ? 'cursor-not-allowed opacity-75' : 'cursor-pointer hover:scale-[1.02]'}`}
+                data-testid={`poll-option-${post.id}-${index}`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-left font-medium">{option.text}</span>
+                  <div className="flex items-center space-x-3">
+                    <Progress value={option.percentage} className="w-24 h-2" />
+                    <span className="text-sm text-muted-foreground min-w-[3rem] text-right">
+                      {option.percentage}%
+                    </span>
+                  </div>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
           
@@ -111,9 +145,11 @@ export function PostCard({ post, currentUserId = 'user1' }: PostCardProps) {
               <Clock className="w-4 h-4 mr-1" />
               {(post.pollData as any)?.totalVotes || 0} votes • Ends in 2 days
             </span>
-            <Button size="sm" className="transition-all hover:scale-105" data-testid={`vote-button-${post.id}`}>
-              Vote
-            </Button>
+            {hasVoted ? (
+              <span className="text-sm text-primary font-medium">✓ Vote submitted</span>
+            ) : (
+              <span className="text-sm">Click an option to vote</span>
+            )}
           </div>
         </div>
       );

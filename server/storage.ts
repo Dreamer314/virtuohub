@@ -326,6 +326,29 @@ export class MemStorage implements IStorage {
       this.posts.set(postId, post);
     }
   }
+
+  async voteOnPoll(postId: string, optionIndex: number): Promise<PostWithAuthor | null> {
+    const post = this.posts.get(postId);
+    if (!post || post.type !== 'pulse' || !post.pollData) {
+      return null;
+    }
+
+    // Update the vote count for the selected option
+    if (post.pollData.options && post.pollData.options[optionIndex]) {
+      post.pollData.options[optionIndex].votes += 1;
+      post.pollData.totalVotes += 1;
+
+      // Recalculate percentages for all options
+      post.pollData.options.forEach(option => {
+        option.percentage = Math.round((option.votes / post.pollData!.totalVotes) * 100);
+      });
+
+      this.posts.set(postId, post);
+      return await this.getPost(postId);
+    }
+
+    return null;
+  }
 }
 
 export const storage = new MemStorage();
