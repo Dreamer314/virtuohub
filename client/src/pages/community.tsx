@@ -185,50 +185,6 @@ export default function Community() {
               </div>
             </div>
 
-            {/* Post Creation */}
-            <div className="glass-card rounded-xl p-6 mb-8 hover-lift" data-testid="post-creation-section">
-              <div className="flex items-center space-x-4 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-full"></div>
-                <Button
-                  variant="outline"
-                  onClick={() => setIsCreateModalOpen(true)}
-                  className="flex-1 text-left px-4 py-3 bg-input rounded-lg text-muted-foreground hover:bg-muted transition-colors justify-start"
-                  data-testid="create-post-trigger"
-                >
-                  Share your latest creation...
-                </Button>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="px-3 py-2 text-sm bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
-                    data-testid="media-button"
-                  >
-                    <Image className="w-4 h-4 mr-2" />
-                    Media
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="px-3 py-2 text-sm bg-accent/10 text-accent hover:bg-accent/20 transition-colors"
-                    data-testid="poll-button"
-                  >
-                    <BarChart3 className="w-4 h-4 mr-2" />
-                    Poll
-                  </Button>
-                </div>
-                <Button
-                  onClick={() => setIsCreateModalOpen(true)}
-                  className="px-6 py-2 bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:scale-105"
-                  data-testid="post-button"
-                >
-                  Post
-                </Button>
-              </div>
-            </div>
-
             {/* Regular Posts Feed */}
             <div className="space-y-6" data-testid="posts-feed">
               {isLoading ? (
