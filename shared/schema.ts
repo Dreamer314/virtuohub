@@ -138,7 +138,9 @@ export const CATEGORIES = [
   'General',
   'Assets for Sale',
   'Jobs & Gigs',
-  'Collaboration & WIP'
+  'Freelance/Hiring',
+  'Collaborations',
+  'WIP'
 ] as const;
 
 export const PLATFORMS = [

@@ -297,6 +297,87 @@ export default function Community() {
               </div>
             )}
 
+            {/* Community Feed Header */}
+            <div className="mb-8" data-testid="community-feed-section">
+              <div className="flex items-center space-x-2 mb-6">
+                <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
+                <span className="text-lg font-bold text-accent bg-background px-4 py-2 rounded-full border border-accent/20 flex items-center">
+                  <Plus className="w-5 h-5 mr-2" />
+                  Community Feed
+                </span>
+                <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
+              </div>
+
+              {/* Category Filter Tabs */}
+              <div className="glass-card rounded-xl p-4 mb-6">
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant={selectedCategory === 'All' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedCategory('All')}
+                    className="rounded-full"
+                    data-testid="category-all"
+                  >
+                    Feed
+                  </Button>
+                  <Button
+                    variant={selectedCategory === 'General' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedCategory('General')}
+                    className="rounded-full"
+                    data-testid="category-general"
+                  >
+                    General
+                  </Button>
+                  <Button
+                    variant={selectedCategory === 'Assets for Sale' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedCategory('Assets for Sale')}
+                    className="rounded-full"
+                    data-testid="category-assets"
+                  >
+                    Assets for Sale
+                  </Button>
+                  <Button
+                    variant={selectedCategory === 'Jobs & Gigs' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedCategory('Jobs & Gigs')}
+                    className="rounded-full"
+                    data-testid="category-jobs"
+                  >
+                    Jobs & Gigs
+                  </Button>
+                  <Button
+                    variant={selectedCategory === 'Freelance/Hiring' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedCategory('Freelance/Hiring')}
+                    className="rounded-full"
+                    data-testid="category-freelance"
+                  >
+                    Freelance/Hiring
+                  </Button>
+                  <Button
+                    variant={selectedCategory === 'Collaborations' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedCategory('Collaborations')}
+                    className="rounded-full"
+                    data-testid="category-collaborations"
+                  >
+                    Collaborations
+                  </Button>
+                  <Button
+                    variant={selectedCategory === 'WIP' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setSelectedCategory('WIP')}
+                    className="rounded-full"
+                    data-testid="category-wip"
+                  >
+                    WIP
+                  </Button>
+                </div>
+              </div>
+            </div>
+
             {/* Post Creation */}
             <div className="glass-card rounded-xl p-6 mb-8 hover-lift" data-testid="post-creation-section">
               <div className="flex items-center space-x-4 mb-4">

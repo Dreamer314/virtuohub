@@ -7,13 +7,15 @@ import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { type PostWithAuthor } from "@shared/schema";
 import { ThumbsUp, MessageCircle, Share, Heart, Zap, Lightbulb, Clock } from "lucide-react";
+import { Link } from "wouter";
 
 interface PostCardProps {
   post: PostWithAuthor;
   currentUserId?: string;
+  isDetailView?: boolean;
 }
 
-export function PostCard({ post, currentUserId = 'user1' }: PostCardProps) {
+export function PostCard({ post, currentUserId = 'user1', isDetailView = false }: PostCardProps) {
   const [isSaved, setIsSaved] = useState(post.isSaved || false);
   const [hasVoted, setHasVoted] = useState(false);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -298,15 +300,24 @@ export function PostCard({ post, currentUserId = 'user1' }: PostCardProps) {
               <ThumbsUp size={16} />
               <span>{post.likes}</span>
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center space-x-2 hover:text-primary transition-colors"
-              data-testid={`comment-button-${post.id}`}
-            >
-              <MessageCircle size={16} />
-              <span>{post.comments}</span>
-            </Button>
+            {isDetailView ? (
+              <div className="flex items-center space-x-2 text-muted-foreground">
+                <MessageCircle size={16} />
+                <span>{post.comments}</span>
+              </div>
+            ) : (
+              <Link href={`/thread/${post.id}`}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center space-x-2 hover:text-primary transition-colors"
+                  data-testid={`comment-button-${post.id}`}
+                >
+                  <MessageCircle size={16} />
+                  <span>{post.comments} Join Discussion</span>
+                </Button>
+              </Link>
+            )}
             <Button
               variant="ghost"
               size="sm"

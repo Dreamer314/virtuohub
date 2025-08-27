@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Community from "@/pages/community";
 import ArticlePage from "@/pages/article";
 import InsightsPage from "@/pages/insights";
+import ThreadPage from "@/pages/thread";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -16,6 +17,7 @@ function Router() {
       <Route path="/community" component={Community} />
       <Route path="/article/:slug" component={ArticlePage} />
       <Route path="/insights" component={InsightsPage} />
+      <Route path="/thread/:postId" component={ThreadPage} />
       <Route component={NotFound} />
     </Switch>
   );
