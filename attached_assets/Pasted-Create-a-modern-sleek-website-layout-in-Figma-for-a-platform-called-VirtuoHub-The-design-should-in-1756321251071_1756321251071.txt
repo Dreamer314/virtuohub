@@ -1,0 +1,49 @@
+Create a modern, sleek website layout in Figma for a platform called VirtuoHub. The design should include both a light and a dark mode, capturing the aesthetic from the provided image.
+
+Design Philosophy: The layout should feel well-designed with subtle shading, clear font hierarchies, and detailed sectioning to make key areas pop, similar to the UI/UX found on platforms like Behance and the Figma Community. The overall structure should function as a news feed/blog with strong filtering capabilities, similar to Reddit's content-based UI.
+
+Global Elements:
+
+Header: A clean, modern header with the VirtuoHub logo, navigation links (Home, Learn, Earn, Connect, Community), Log In/Sign Up buttons, and a dark/light mode toggle.
+
+Community Page Layout:
+
+Model the page after a three-column structure, with the main feed in the center.
+
+Left Sidebar:
+
+Title: "Community Section."
+
+Navigation: Use stylized, selectable buttons for All, Trending, and Following, similar to Reddit's sorting tabs.
+
+Filter Sections: Create two distinct, expandable filter sections.
+
+"Filter by Category": Use a dropdown or clear, scrollable list for categories: All, General, Assets for Sale, Jobs & Gigs, Collaboration & WIP.
+
+"Filter by Platform": Use a similar dropdown or list for platforms: Second Life, Roblox, IMVU, VRChat, GTA RP, The Sims, Other.
+
+Central Main Feed:
+
+Hero Section: A prominent, wide banner at the top with the text "VirtuoHub Community" and a subtle, dark background image of a virtual world castle, as seen in the provided reference.
+
+Content Feed: A scrolling, card-based feed. Each post card should be distinct and pop from the background with subtle shading. Model the layout of these cards after a Behance project shot or a Dribbble shot, including a prominent image/video, a clear title, user profile picture, and engagement metrics.
+
+Post Types: The feed should display different card types for regular posts, as well as distinct layouts for the "Creator Pulse" and "Creator Insight" features.
+
+Right Sidebar:
+
+Section Design: Each of the four sections should be contained within its own distinct card or frame, creating a visual separation from the main feed. Use the same elegant, minimalistic design principles as Medium's article previews.
+
+1. The Pulse: A poll-style card with a question and clear, visual progress bars to display results.
+
+2. Creator Insights: A card previewing an interview. It should feature an image and a short description, similar to a blog post preview on Medium.
+
+3. Creator Spotlight: A card to highlight a featured creator, including their profile picture, name, and a link to their work.
+
+4. Meta Layer & Trending: A dual-purpose card. The top half should feature a "Meta Layer Report" with a news headline and a brief snippet. The bottom half should be a "Trending" list of topics or posts.
+
+Color Palette:
+
+Light Mode: White/light gray background, with the vibrant purple accent color from the reference image for buttons, highlights, and icons.
+
+Dark Mode: A deep, dark gray background, with the same vibrant purple for accents and a contrasting light gray or white for text.
