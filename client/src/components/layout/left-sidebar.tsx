@@ -14,7 +14,7 @@ export function LeftSidebar({ currentTab, onTabChange }: LeftSidebarProps) {
     { id: 'trending', label: 'Trending', icon: TrendingUp, active: false, onClick: () => {} },
     { id: 'industry', label: 'Industry News', icon: Newspaper, active: false, onClick: () => {} },
     { id: 'spotlights', label: 'Creator Spotlights', icon: Star, active: false, onClick: () => {} },
-    { id: 'insights', label: 'Creator Insights', icon: Lightbulb, active: false, onClick: () => {} },
+    { id: 'insights', label: 'Creator Insights', icon: Lightbulb, active: false, href: '/insights' },
   ];
 
   const platformFilters = [
@@ -45,6 +45,31 @@ export function LeftSidebar({ currentTab, onTabChange }: LeftSidebarProps) {
             <div className="space-y-1">
               {mainSections.map((section) => {
                 const Icon = section.icon;
+                
+                if (section.href) {
+                  return (
+                    <Link key={section.id} href={section.href}>
+                      <Button
+                        variant="ghost"
+                        className={`w-full justify-start h-10 px-3 transition-all ${
+                          section.active
+                            ? 'bg-accent/20 text-accent font-medium'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                        }`}
+                        data-testid={`nav-${section.id}`}
+                      >
+                        <Icon className="w-4 h-4 mr-3" />
+                        {section.label}
+                        {section.active && (
+                          <span className="ml-auto text-xs font-semibold">
+                            [ACTIVE]
+                          </span>
+                        )}
+                      </Button>
+                    </Link>
+                  );
+                }
+                
                 return (
                   <Button
                     key={section.id}

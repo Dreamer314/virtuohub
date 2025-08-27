@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { TrendingUp, Lightbulb, Star, Globe, Flame } from "lucide-react";
+import { TrendingUp, Calendar, Star, Globe, Flame, Clock } from "lucide-react";
 
 export function RightSidebar() {
   return (
@@ -43,26 +43,47 @@ export function RightSidebar() {
           </Button>
         </div>
 
-        {/* Creator Insights */}
-        <div className="glass-card rounded-xl p-6 hover-lift" data-testid="creator-insights">
+        {/* Upcoming Events */}
+        <div className="glass-card rounded-xl p-6 hover-lift" data-testid="upcoming-events">
           <h3 className="text-lg font-display font-semibold mb-4 flex items-center">
-            <Lightbulb className="text-accent mr-2" size={20} />
-            Creator Insights
+            <Calendar className="text-accent mr-2" size={20} />
+            Upcoming Events
           </h3>
-          <img 
-            src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=160" 
-            alt="Creator workspace setup" 
-            className="w-full h-32 object-cover rounded-lg mb-3"
-          />
-          <h4 className="font-semibold mb-2 text-foreground">
-            The Psychology of Virtual World Design
-          </h4>
-          <p className="text-sm text-muted-foreground mb-3">
-            How understanding player psychology can boost your world's engagement by 300%...
-          </p>
-          <Button variant="link" className="text-primary hover:text-primary/80 text-sm font-medium p-0" data-testid="read-article-button">
-            Read Article →
-          </Button>
+          <div className="space-y-4">
+            <div className="border border-border rounded-lg p-4 bg-muted/20">
+              <div className="flex items-center gap-2 mb-2">
+                <Clock className="w-4 h-4 text-accent" />
+                <span className="text-sm font-medium text-accent">Coming Soon</span>
+              </div>
+              <h4 className="font-semibold mb-2 text-foreground">
+                Virtual Creator Conference 2025
+              </h4>
+              <p className="text-sm text-muted-foreground mb-3">
+                Join industry leaders for talks on the future of virtual world creation, monetization strategies, and emerging technologies.
+              </p>
+              <div className="text-xs text-muted-foreground mb-3">
+                📅 March 15-17, 2025 • Virtual Event
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="w-full opacity-60 cursor-not-allowed" 
+                disabled
+                data-testid="early-access-button"
+              >
+                Early Access Soon
+              </Button>
+            </div>
+            
+            <div className="text-center py-4">
+              <p className="text-sm text-muted-foreground mb-2">
+                More events coming soon!
+              </p>
+              <Button variant="link" className="text-accent hover:text-accent/80 text-sm font-medium p-0">
+                Get Notified →
+              </Button>
+            </div>
+          </div>
         </div>
 
         {/* Creator Spotlight */}
