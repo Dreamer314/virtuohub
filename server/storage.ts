@@ -84,7 +84,7 @@ export class MemStorage implements IStorage {
         authorId: 'user1',
         title: 'Custom Avatar Commission - Fantasy Warrior',
         content: 'Just finished this epic fantasy warrior avatar for VRChat! Features custom animations, dynamic materials, and full-body tracking support. Available for commission work!',
-        imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2ac0?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        imageUrl: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         category: 'Assets for Sale',
         platforms: ['VRChat'],
         price: '$250',
