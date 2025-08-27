@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { type Category, type Platform } from "@shared/schema";
 import { Plus, Image, BarChart3, ChevronLeft, ChevronRight, Lightbulb, Star, Calendar, Newspaper, TrendingUp } from "lucide-react";
 import { Link } from "wouter";
+import communityHeaderImage from "@/assets/community-header.png";
 
 export default function Community() {
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
@@ -166,7 +167,7 @@ export default function Community() {
             <div className="glass-card rounded-xl mb-8 overflow-hidden hover-lift" data-testid="hero-section">
               <div className="relative h-48 flex items-center justify-center">
                 <img 
-                  src="/attached_assets/Community%20page%20header%20image.png" 
+                  src={communityHeaderImage} 
                   alt="VirtuoHub Community Header"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
