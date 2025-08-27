@@ -6,43 +6,6 @@ export function RightSidebar() {
   return (
     <aside className="lg:col-span-3">
       <div className="space-y-6">
-        {/* The Pulse */}
-        <div className="glass-card rounded-xl p-6 hover-lift" data-testid="the-pulse">
-          <h3 className="text-lg font-display font-semibold mb-4 flex items-center">
-            <TrendingUp className="text-primary mr-2" size={20} />
-            The Pulse
-          </h3>
-          <h4 className="font-semibold mb-3 text-foreground">
-            Which virtual world has the best creator economy?
-          </h4>
-          <div className="space-y-3 mb-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-foreground">Second Life</span>
-              <div className="flex items-center space-x-2">
-                <Progress value={40} className="w-20 h-2" />
-                <span className="text-xs text-muted-foreground">40%</span>
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-foreground">Roblox</span>
-              <div className="flex items-center space-x-2">
-                <Progress value={35} className="w-20 h-2" />
-                <span className="text-xs text-muted-foreground">35%</span>
-              </div>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-foreground">VRChat</span>
-              <div className="flex items-center space-x-2">
-                <Progress value={25} className="w-20 h-2" />
-                <span className="text-xs text-muted-foreground">25%</span>
-              </div>
-            </div>
-          </div>
-          <Button className="w-full py-2 text-sm transition-all hover:scale-105" data-testid="vote-now-button">
-            Vote Now
-          </Button>
-        </div>
-
         {/* Upcoming Events */}
         <div className="glass-card rounded-xl p-6 hover-lift" data-testid="upcoming-events">
           <h3 className="text-lg font-display font-semibold mb-4 flex items-center">

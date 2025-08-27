@@ -278,12 +278,22 @@ export default function Community() {
               </div>
             )}
 
-            {/* Creator Pulse Posts */}
+            {/* The Creator Pulse */}
             {currentTab === 'all' && pulsePosts.length > 0 && (
-              <div className="space-y-6 mb-8" data-testid="pulse-posts-feed">
-                {pulsePosts.map((post: any) => (
-                  <PostCard key={post.id} post={post} />
-                ))}
+              <div className="mb-8" data-testid="pulse-posts-feed">
+                <div className="flex items-center space-x-2 mb-6">
+                  <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
+                  <span className="text-sm font-medium text-primary bg-background px-4 py-2 rounded-full border border-primary/20 flex items-center">
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    The Creator Pulse
+                  </span>
+                  <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
+                </div>
+                <div className="space-y-6">
+                  {pulsePosts.map((post: any) => (
+                    <PostCard key={post.id} post={post} />
+                  ))}
+                </div>
               </div>
             )}
 
