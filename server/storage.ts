@@ -82,18 +82,18 @@ export class MemStorage implements IStorage {
       {
         id: 'post1',
         authorId: 'user1',
-        title: 'Custom Avatar Commission - Fantasy Warrior',
-        content: 'Just finished this epic fantasy warrior avatar for VRChat! Features custom animations, dynamic materials, and full-body tracking support. Available for commission work!',
-        imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        title: 'New VRChat Avatar Pack - Cyberpunk Collection',
+        content: 'Created a stunning cyberpunk-themed avatar collection for VRChat! Each avatar features neon accents, holographic details, and custom particle effects. Perfect for futuristic roleplay worlds!',
+        imageUrl: '',
         category: 'Assets for Sale',
         platforms: ['VRChat'],
-        price: '$250',
+        price: '$180',
         type: 'regular',
         pollData: null,
-        likes: 124,
-        comments: 18,
-        shares: 7,
-        createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+        likes: 156,
+        comments: 23,
+        shares: 9,
+        createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 hours ago
       },
       {
         id: 'post2',
