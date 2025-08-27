@@ -8,13 +8,14 @@ import { CreatePostModal } from "@/components/create-post-modal";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type Category, type Platform } from "@shared/schema";
-import { Plus, Image, BarChart3 } from "lucide-react";
+import { Plus, Image, BarChart3, ChevronLeft, ChevronRight, Lightbulb } from "lucide-react";
 
 export default function Community() {
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
   const [currentTab, setCurrentTab] = useState<'all' | 'saved'>('all');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [currentInsightIndex, setCurrentInsightIndex] = useState(0);
 
   // Build query parameters
   const queryParams = new URLSearchParams();
@@ -56,14 +57,27 @@ export default function Community() {
       })
     : savedPosts || [];
 
-  // Separate special posts (pulse and insights) from regular posts
-  const specialPosts = Array.isArray(allFilteredPosts) 
-    ? allFilteredPosts.filter((post: any) => post.type === 'pulse' || post.type === 'insight')
+  // Separate special posts by type
+  const pulsePosts = Array.isArray(allFilteredPosts) 
+    ? allFilteredPosts.filter((post: any) => post.type === 'pulse')
+    : [];
+    
+  const insightPosts = Array.isArray(allFilteredPosts) 
+    ? allFilteredPosts.filter((post: any) => post.type === 'insight')
     : [];
   
   const regularPosts = Array.isArray(allFilteredPosts) 
     ? allFilteredPosts.filter((post: any) => post.type === 'regular')
     : [];
+
+  // Navigation functions for insight carousel
+  const nextInsight = () => {
+    setCurrentInsightIndex((prev) => (prev + 1) % insightPosts.length);
+  };
+
+  const prevInsight = () => {
+    setCurrentInsightIndex((prev) => (prev - 1 + insightPosts.length) % insightPosts.length);
+  };
 
   // Add scroll animation observer
   useEffect(() => {
@@ -84,7 +98,7 @@ export default function Community() {
     cards.forEach(card => observer.observe(card));
 
     return () => observer.disconnect();
-  }, [specialPosts, regularPosts]);
+  }, [pulsePosts, insightPosts, regularPosts]);
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
@@ -125,17 +139,87 @@ export default function Community() {
               </div>
             </div>
 
-            {/* Special Posts (Pulse & Insights) */}
-            {currentTab === 'all' && specialPosts.length > 0 && (
-              <div className="space-y-6 mb-8" data-testid="special-posts-feed">
+            {/* Creator Insights Carousel */}
+            {currentTab === 'all' && insightPosts.length > 0 && (
+              <div className="mb-8" data-testid="insights-carousel">
                 <div className="flex items-center space-x-2 mb-4">
-                  <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
-                  <span className="text-sm font-medium text-primary bg-background px-4 py-2 rounded-full border border-primary/20">
-                    Featured Content
+                  <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
+                  <span className="text-sm font-medium text-accent bg-background px-4 py-2 rounded-full border border-accent/20 flex items-center">
+                    <Lightbulb className="w-4 h-4 mr-2" />
+                    Creator Insights
                   </span>
-                  <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
+                  <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
                 </div>
-                {specialPosts.map((post: any) => (
+                
+                <div className="relative glass-card rounded-xl overflow-hidden hover-lift">
+                  {/* Large Header Image */}
+                  <div className="relative h-80 overflow-hidden">
+                    <img 
+                      src={insightPosts[currentInsightIndex]?.imageUrl || ''} 
+                      alt={insightPosts[currentInsightIndex]?.title}
+                      className="w-full h-full object-cover transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                    
+                    {/* Navigation Arrows */}
+                    {insightPosts.length > 1 && (
+                      <>
+                        <button
+                          onClick={prevInsight}
+                          className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all hover:scale-110"
+                          data-testid="insight-prev-button"
+                        >
+                          <ChevronLeft className="w-6 h-6" />
+                        </button>
+                        <button
+                          onClick={nextInsight}
+                          className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white p-2 rounded-full transition-all hover:scale-110"
+                          data-testid="insight-next-button"
+                        >
+                          <ChevronRight className="w-6 h-6" />
+                        </button>
+                      </>
+                    )}
+                    
+                    {/* Content Overlay */}
+                    <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                      <h2 className="text-2xl font-display font-bold mb-2">
+                        {insightPosts[currentInsightIndex]?.title}
+                      </h2>
+                      <p className="text-white/90 mb-4 line-clamp-2">
+                        {insightPosts[currentInsightIndex]?.content}
+                      </p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm text-white/70">15 min read • Interview</span>
+                        <Button size="sm" variant="secondary" className="transition-all hover:scale-105">
+                          Read More
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* Dots Indicator */}
+                    {insightPosts.length > 1 && (
+                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                        {insightPosts.map((_, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setCurrentInsightIndex(index)}
+                            className={`w-2 h-2 rounded-full transition-all ${
+                              index === currentInsightIndex ? 'bg-white' : 'bg-white/50'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Creator Pulse Posts */}
+            {currentTab === 'all' && pulsePosts.length > 0 && (
+              <div className="space-y-6 mb-8" data-testid="pulse-posts-feed">
+                {pulsePosts.map((post: any) => (
                   <PostCard key={post.id} post={post} />
                 ))}
               </div>

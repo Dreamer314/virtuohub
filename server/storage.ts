@@ -141,7 +141,7 @@ export class MemStorage implements IStorage {
         authorId: 'user3',
         title: 'From Hobby to $100K: My VRChat Avatar Business Journey',
         content: 'Exclusive interview with top VRChat creator Alex Morgan on building a six-figure avatar business, managing clients, and scaling creative work in virtual worlds.',
-        imageUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800',
+        imageUrl: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&h=600&fit=crop',
         category: 'General',
         platforms: ['VRChat'],
         price: '',
@@ -151,6 +151,38 @@ export class MemStorage implements IStorage {
         comments: 42,
         shares: 28,
         createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
+      },
+      {
+        id: 'post5',
+        authorId: 'user2',
+        title: 'Building the Metaverse: Future of Virtual Worlds',
+        content: 'Industry leaders discuss the evolution of virtual reality platforms and what the future holds for creators and users in immersive digital experiences.',
+        imageUrl: 'https://images.unsplash.com/photo-1592478411213-6153e4ebc696?w=1200&h=600&fit=crop',
+        category: 'General',
+        platforms: ['VRChat', 'Roblox'],
+        price: '',
+        type: 'insight',
+        pollData: null,
+        likes: 203,
+        comments: 67,
+        shares: 45,
+        createdAt: new Date(Date.now() - 18 * 60 * 60 * 1000), // 18 hours ago
+      },
+      {
+        id: 'post6',
+        authorId: 'user1',
+        title: 'The Art of World Building: Creating Immersive Environments',
+        content: 'Master environment artist shares techniques for creating breathtaking virtual worlds that captivate players and enhance storytelling.',
+        imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2ac0?w=1200&h=600&fit=crop',
+        category: 'General',
+        platforms: ['Second Life', 'VRChat'],
+        price: '',
+        type: 'insight',
+        pollData: null,
+        likes: 178,
+        comments: 34,
+        shares: 29,
+        createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
       }
     ];
 
