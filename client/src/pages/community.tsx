@@ -164,8 +164,13 @@ export default function Community() {
           <main className="lg:col-span-6">
             {/* Hero Section */}
             <div className="glass-card rounded-xl mb-8 overflow-hidden hover-lift" data-testid="hero-section">
-              <div className="relative h-48 animated-background flex items-center justify-center">
-                <div className="text-center z-10">
+              <div className="relative h-48 flex items-center justify-center">
+                <img 
+                  src="/attached_assets/Community page header image.png" 
+                  alt="VirtuoHub Community Header"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+                <div className="text-center z-10 relative">
                   <h1 className="text-3xl font-display font-bold text-white mb-2">
                     VirtuoHub Community
                   </h1>
@@ -173,7 +178,7 @@ export default function Community() {
                     Connect, Create, and Collaborate in Virtual Worlds
                   </p>
                 </div>
-                <div className="absolute inset-0 bg-black/20"></div>
+                <div className="absolute inset-0 bg-black/30"></div>
               </div>
             </div>
 
