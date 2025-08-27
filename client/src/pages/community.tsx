@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type Category, type Platform } from "@shared/schema";
 import { Plus, Image, BarChart3, ChevronLeft, ChevronRight, Lightbulb } from "lucide-react";
+import { Link } from "wouter";
 
 export default function Community() {
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
@@ -197,10 +198,12 @@ export default function Community() {
                         {insightPosts[currentInsightIndex]?.content}
                       </p>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-white/70">15 min read • Interview</span>
-                        <Button size="sm" variant="secondary" className="transition-all hover:scale-105">
-                          Read More →
-                        </Button>
+                        <span className="text-sm text-white/70">{insightPosts[currentInsightIndex]?.type === 'insight' ? 'Interview' : 'Article'}</span>
+                        <Link href={`/article/${insightPosts[currentInsightIndex]?.id === 'post4' ? 'breaking-creative-blocks-with-ai-tools' : insightPosts[currentInsightIndex]?.id === 'post5' ? 'from-sims-modding-to-virtual-world-design' : 'the-future-of-virtual-fashion'}`}>
+                          <Button size="sm" variant="secondary" className="transition-all hover:scale-105">
+                            Read More →
+                          </Button>
+                        </Link>
                       </div>
                     </div>
                     

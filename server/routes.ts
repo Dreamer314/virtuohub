@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertPostSchema, insertSavedPostSchema, CATEGORIES, PLATFORMS } from "@shared/schema";
+import { insertPostSchema, insertSavedPostSchema, insertArticleSchema, insertCommentSchema, CATEGORIES, PLATFORMS } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -167,6 +167,62 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(updatedPost);
     } catch (error) {
       res.status(500).json({ message: "Failed to vote on poll" });
+    }
+  });
+
+  // Article routes
+  
+  // Get article by slug
+  app.get("/api/articles/:slug", async (req, res) => {
+    try {
+      const article = await storage.getArticleBySlug(req.params.slug);
+      if (!article) {
+        return res.status(404).json({ message: "Article not found" });
+      }
+      res.json(article);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch article" });
+    }
+  });
+
+  // Get comments for an article
+  app.get("/api/articles/:articleId/comments", async (req, res) => {
+    try {
+      const comments = await storage.getComments(req.params.articleId);
+      res.json(comments);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch comments" });
+    }
+  });
+
+  // Create a comment on an article
+  app.post("/api/articles/:articleId/comments", async (req, res) => {
+    try {
+      const { articleId } = req.params;
+      const { content, parentId } = req.body;
+      const authorId = req.body.authorId || 'user1'; // Default for demo
+      
+      const commentData = {
+        articleId,
+        authorId,
+        content,
+        parentId: parentId || null,
+      };
+      
+      const comment = await storage.createComment(commentData);
+      res.status(201).json(comment);
+    } catch (error) {
+      res.status(400).json({ message: "Failed to create comment", error });
+    }
+  });
+
+  // Like a comment
+  app.post("/api/comments/:commentId/like", async (req, res) => {
+    try {
+      await storage.likeComment(req.params.commentId);
+      res.status(200).json({ message: "Comment liked successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to like comment" });
     }
   });
 

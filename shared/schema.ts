@@ -38,6 +38,30 @@ export const savedPosts = pgTable("saved_posts", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const articles = pgTable("articles", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  postId: varchar("post_id").notNull(),
+  slug: text("slug").notNull().unique(),
+  fullContent: text("full_content").notNull(),
+  excerpt: text("excerpt").notNull(),
+  readTime: integer("read_time").notNull(), // in minutes
+  publishDate: timestamp("publish_date").defaultNow(),
+  seoTitle: text("seo_title"),
+  seoDescription: text("seo_description"),
+  tags: text("tags").array().default([]),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const comments = pgTable("comments", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  articleId: varchar("article_id").notNull(),
+  authorId: varchar("author_id").notNull(),
+  content: text("content").notNull(),
+  parentId: varchar("parent_id"), // for nested comments
+  likes: integer("likes").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -62,6 +86,24 @@ export const insertSavedPostSchema = createInsertSchema(savedPosts).pick({
   postId: true,
 });
 
+export const insertArticleSchema = createInsertSchema(articles).pick({
+  postId: true,
+  slug: true,
+  fullContent: true,
+  excerpt: true,
+  readTime: true,
+  seoTitle: true,
+  seoDescription: true,
+  tags: true,
+});
+
+export const insertCommentSchema = createInsertSchema(comments).pick({
+  articleId: true,
+  authorId: true,
+  content: true,
+  parentId: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 
@@ -71,9 +113,24 @@ export type Post = typeof posts.$inferSelect;
 export type InsertSavedPost = z.infer<typeof insertSavedPostSchema>;
 export type SavedPost = typeof savedPosts.$inferSelect;
 
+export type InsertArticle = z.infer<typeof insertArticleSchema>;
+export type Article = typeof articles.$inferSelect;
+
+export type InsertComment = z.infer<typeof insertCommentSchema>;
+export type Comment = typeof comments.$inferSelect;
+
 export interface PostWithAuthor extends Post {
   author: User;
   isSaved?: boolean;
+}
+
+export interface ArticleWithPost extends Article {
+  post: PostWithAuthor;
+}
+
+export interface CommentWithAuthor extends Comment {
+  author: User;
+  replies?: CommentWithAuthor[];
 }
 
 export const CATEGORIES = [

@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Post, type InsertPost, type SavedPost, type InsertSavedPost, type PostWithAuthor, type Category, type Platform } from "@shared/schema";
+import { type User, type InsertUser, type Post, type InsertPost, type SavedPost, type InsertSavedPost, type PostWithAuthor, type Category, type Platform, type Article, type InsertArticle, type ArticleWithPost, type Comment, type InsertComment, type CommentWithAuthor } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -24,17 +24,32 @@ export interface IStorage {
   likePost(postId: string): Promise<void>;
   addComment(postId: string): Promise<void>;
   sharePost(postId: string): Promise<void>;
+
+  // Article methods
+  createArticle(article: InsertArticle): Promise<Article>;
+  getArticle(id: string): Promise<ArticleWithPost | undefined>;
+  getArticleBySlug(slug: string): Promise<ArticleWithPost | undefined>;
+  updateArticle(id: string, updates: Partial<Article>): Promise<Article | undefined>;
+
+  // Comment methods
+  createComment(comment: InsertComment): Promise<Comment>;
+  getComments(articleId: string): Promise<CommentWithAuthor[]>;
+  likeComment(commentId: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
   private posts: Map<string, Post>;
   private savedPosts: Map<string, SavedPost>;
+  private articles: Map<string, Article>;
+  private comments: Map<string, Comment>;
 
   constructor() {
     this.users = new Map();
     this.posts = new Map();
     this.savedPosts = new Map();
+    this.articles = new Map();
+    this.comments = new Map();
     this.seedData();
   }
 
@@ -188,6 +203,275 @@ export class MemStorage implements IStorage {
 
     samplePosts.forEach(post => {
       this.posts.set(post.id, post);
+    });
+
+    // Create sample articles
+    const sampleArticles = [
+      {
+        id: 'article1',
+        postId: 'post4',
+        slug: 'breaking-creative-blocks-with-ai-tools',
+        fullContent: `# Breaking Creative Blocks with AI Tools
+
+As a digital artist working primarily in virtual worlds, I've always prided myself on the human touch in my work. But when creative blocks started hitting harder and deadlines grew tighter, I realized I needed to evolve my approach without compromising my artistic integrity.
+
+## The Challenge of Modern Digital Art
+
+Working in platforms like VRChat and Roblox means constantly pushing boundaries. The demand for fresh, innovative content is relentless. Traditional methods, while effective, sometimes feel too slow in today's fast-paced virtual economy.
+
+## My AI-Assisted Workflow
+
+Here's how I've integrated AI tools into my creative process:
+
+### 1. Concept Generation
+I use AI to generate initial concepts and mood boards. Instead of staring at a blank canvas, I can quickly iterate through dozens of ideas.
+
+### 2. Base Modeling Assistance
+AI helps me create basic geometric forms and structures that I then sculpt and refine by hand. This saves hours on initial blocking.
+
+### 3. Texture Inspiration
+While I still hand-paint most textures, AI generates interesting patterns and color combinations I might not have considered.
+
+## Maintaining the Human Touch
+
+The key is using AI as a tool, not a replacement:
+
+- **Always iterate manually**: Every AI-generated element gets significant human refinement
+- **Trust your artistic instincts**: If something feels off, change it
+- **Learn from the process**: Each AI suggestion teaches you something new about composition or color
+
+## Practical Tips for Creators
+
+1. **Start small**: Begin with simple tasks like color palette generation
+2. **Set boundaries**: Decide which parts of your process should remain purely human
+3. **Document your workflow**: Keep track of what works and what doesn't
+4. **Share knowledge**: The community benefits when we're open about our processes
+
+## The Future of AI in Creative Work
+
+We're just scratching the surface. The tools will get better, but our role as creative directors and artistic visionaries becomes more important, not less.
+
+The goal isn't to replace human creativity—it's to amplify it.`,
+        excerpt: 'Alex Chen shares how he uses generative AI to speed up concept art workflows — without losing the human touch. Practical tips for creators balancing efficiency with originality.',
+        readTime: 8,
+        publishDate: new Date(Date.now() - 12 * 60 * 60 * 1000),
+        seoTitle: 'Breaking Creative Blocks with AI Tools | Creator Insights',
+        seoDescription: 'Learn how digital artist Alex Chen uses AI to enhance his creative workflow while maintaining artistic integrity. Practical tips for virtual world creators.',
+        tags: ['AI', 'Digital Art', 'Workflow', 'VRChat', 'Creative Process'],
+        createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000),
+      },
+      {
+        id: 'article2',
+        postId: 'post5',
+        slug: 'from-sims-modding-to-virtual-world-design',
+        fullContent: `# From Sims Modding to Virtual World Design
+
+The path from bedroom modder to professional game developer isn't always straightforward, but for many in our community, it's becoming increasingly common. Today, we explore how hobbyist creators are transforming their passion projects into sustainable careers.
+
+## The Modding Renaissance
+
+Modding has always been the training ground for future developers. But something has changed in recent years—the barrier between "hobbyist" and "professional" has never been lower.
+
+### Why Modding Matters More Than Ever
+
+- **Real-world experience**: Modders work with actual game engines and player feedback
+- **Portfolio development**: Every mod is a potential portfolio piece
+- **Community building**: Successful modders already have audiences
+- **Technical skills**: Modern modding requires genuine programming and design skills
+
+## Case Studies: From Mod to Career
+
+### Sarah's Journey: Sims 4 to Indie Developer
+
+Sarah started creating custom content for The Sims 4 in 2019. Her furniture packs gained a following of over 50,000 creators. Last year, she launched her own indie studio focusing on cozy simulation games.
+
+"The skills transfer directly," Sarah explains. "3D modeling, texture work, understanding player psychology—it's all there in modding."
+
+### Marcus: Roblox Scripts to AAA Studios
+
+Marcus began scripting experiences in Roblox at age 14. His zombie survival game reached over 1 million plays. Today, at 22, he's a gameplay programmer at a major studio.
+
+## What Game Studios Are Learning
+
+Forward-thinking studios are paying attention to modding communities:
+
+1. **Talent scouting**: Many studios now actively recruit from modding communities
+2. **Innovation insights**: Mods often predict future gaming trends
+3. **Community engagement**: Understanding what players want to create
+4. **Rapid prototyping**: Mod tools teach efficient development practices
+
+## Making the Transition
+
+### For Modders Ready to Go Pro:
+
+- **Document everything**: Keep detailed records of your work
+- **Learn industry tools**: Transition from mod tools to professional software
+- **Network actively**: Attend game jams, join developer communities
+- **Study the business**: Understand project management and team dynamics
+
+### For Studios Looking to Tap This Talent:
+
+- **Recognize transferable skills**: Modding experience is real development experience
+- **Offer mentorship**: Help bridge the gap between hobbyist and professional workflows
+- **Support mod communities**: Sponsor events, provide resources
+- **Create intern programs**: Structured pathways for promising modders
+
+## The Future of Creator-to-Professional Pipelines
+
+We're seeing the emergence of new career paths that didn't exist five years ago. The line between user-generated content and professional game development continues to blur.
+
+This isn't just about individual success stories—it's about the evolution of how we think about creative careers in digital spaces.
+
+The message is clear: if you're creating, you're already on a professional path. The question isn't whether you're "good enough"—it's whether you're ready to take the next step.`,
+        excerpt: 'How community modders are transforming hobbies into careers — and what game studios can learn from them.',
+        readTime: 12,
+        publishDate: new Date(Date.now() - 18 * 60 * 60 * 1000),
+        seoTitle: 'From Sims Modding to Virtual World Design | Career Transition Guide',
+        seoDescription: 'Discover how hobbyist modders are building successful careers in game development and what studios can learn from creator communities.',
+        tags: ['Career', 'Modding', 'Game Development', 'The Sims', 'Roblox'],
+        createdAt: new Date(Date.now() - 18 * 60 * 60 * 1000),
+      },
+      {
+        id: 'article3',
+        postId: 'post6',
+        slug: 'the-future-of-virtual-fashion',
+        fullContent: `# The Future of Virtual Fashion
+
+Digital clothing was once confined to avatar dress-up games. Today, it's a multi-billion dollar industry crossing into augmented reality, social media, and even physical production. Maria Lopez, one of the pioneers in virtual fashion, shares her insights on where the industry is heading.
+
+## Beyond Avatar Dress-Up
+
+"When I started designing for virtual worlds, people thought it was just playing dress-up," Maria recalls. "Now fashion weeks feature digital-only collections, and luxury brands are hiring virtual fashion designers."
+
+The transformation has been remarkable:
+
+### Current Market Reality
+
+- **NFT fashion**: Digital wearables selling for thousands of dollars
+- **AR try-ons**: Virtual clothing for social media and video calls
+- **Gaming integration**: Fashion brands collaborating with games like Fortnite and Roblox
+- **Physical crossover**: Virtual designs being produced as real garments
+
+## The Technology Behind the Revolution
+
+### 3D Design Evolution
+
+Modern virtual fashion requires sophisticated technical skills:
+
+- **Physics simulation**: Realistic fabric behavior in virtual environments
+- **Cross-platform compatibility**: Designs that work across different virtual worlds
+- **AR optimization**: Lightweight models for mobile AR applications
+- **Material accuracy**: Digital fabrics that represent real-world textiles
+
+### New Tools, New Possibilities
+
+"The tools available today would have seemed like magic five years ago," Maria notes. "We can simulate how a fabric drapes, how it moves in wind, even how it ages over time."
+
+## Breaking Down Barriers
+
+### Accessibility Revolution
+
+Virtual fashion is democratizing design:
+
+- **No material costs**: Experiment freely without fabric expenses
+- **Global reach**: Sell designs worldwide instantly
+- **Size inclusivity**: Every design can fit every body type
+- **Sustainability**: Zero waste in the design process
+
+### The Creator Economy
+
+Independent designers are building substantial businesses:
+
+1. **Direct sales**: Selling designs directly to consumers
+2. **Brand partnerships**: Collaborating with established fashion houses
+3. **Custom work**: Bespoke designs for influencers and celebrities
+4. **Educational content**: Teaching virtual fashion design skills
+
+## Real-World Impact
+
+### Fashion Week Goes Digital
+
+Major fashion weeks now feature digital-only shows. Designers are creating impossible garments—clothes that defy physics, change color dynamically, or exist only in augmented reality.
+
+### Sustainability Focus
+
+"Virtual fashion addresses one of the industry's biggest problems," Maria explains. "Fast fashion creates enormous waste. Virtual fashion creates zero waste."
+
+### Cultural Significance
+
+Digital clothing is becoming a form of self-expression as valid as physical fashion:
+
+- **Identity exploration**: Try different styles without commitment
+- **Cultural preservation**: Traditional designs preserved in digital form
+- **Artistic expression**: Pushing boundaries impossible in physical fashion
+
+## The Business Model Evolution
+
+### New Revenue Streams
+
+Virtual fashion creators are pioneering novel business models:
+
+- **Subscription services**: Monthly digital wardrobe updates
+- **Licensing deals**: Virtual versions of physical designs
+- **Educational platforms**: Teaching virtual fashion design
+- **Consultation services**: Helping brands enter virtual spaces
+
+### Platform Partnerships
+
+Successful virtual fashion businesses often depend on platform relationships:
+
+- **VRChat**: Custom avatar accessories and clothing
+- **IMVU**: Virtual goods marketplace
+- **Roblox**: UGC catalog participation
+- **Instagram/Snapchat**: AR filter development
+
+## Looking Ahead
+
+### Emerging Trends
+
+- **AI-assisted design**: Machine learning helping with pattern generation
+- **Haptic feedback**: Feeling virtual textures through advanced controllers
+- **Cross-reality fashion**: Designs that exist simultaneously in multiple realities
+- **Blockchain authentication**: Verified ownership of digital designs
+
+### Challenges to Address
+
+The industry still faces hurdles:
+
+- **Platform fragmentation**: Designs often don't work across different platforms
+- **Technical barriers**: High skill requirements for quality work
+- **Market education**: Helping consumers understand virtual goods value
+- **Intellectual property**: Protecting digital designs from copying
+
+## Advice for Aspiring Virtual Fashion Designers
+
+Maria's recommendations for newcomers:
+
+1. **Start with what you know**: Use existing design skills as a foundation
+2. **Learn the technical side**: Understanding 3D modeling is essential
+3. **Study the platforms**: Each virtual world has its own requirements
+4. **Build a community**: Success in virtual fashion is largely about relationships
+5. **Experiment boldly**: Virtual fashion allows for impossible designs—use that freedom
+
+## The Broader Implications
+
+Virtual fashion represents more than just a new market—it's a fundamental shift in how we think about clothing, identity, and self-expression in an increasingly digital world.
+
+"We're not just designing clothes," Maria concludes. "We're designing the future of human expression."
+
+As the lines between physical and digital continue to blur, virtual fashion stands at the forefront of a cultural revolution that extends far beyond pixels and polygons.`,
+        excerpt: 'Digital clothing is no longer just for avatars. Creator Maria Lopez explains how her designs are crossing into AR, social media, and even real-world production.',
+        readTime: 15,
+        publishDate: new Date(Date.now() - 24 * 60 * 60 * 1000),
+        seoTitle: 'The Future of Virtual Fashion | Digital Clothing Revolution',
+        seoDescription: 'Explore how virtual fashion is transforming from avatar dress-up to a multi-billion dollar industry spanning AR, social media, and physical production.',
+        tags: ['Virtual Fashion', 'Digital Clothing', 'AR', 'VRChat', 'IMVU', 'Fashion Technology'],
+        createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+      }
+    ];
+
+    sampleArticles.forEach(article => {
+      this.articles.set(article.id, article);
     });
   }
 
@@ -380,6 +664,112 @@ export class MemStorage implements IStorage {
     }
 
     return null;
+  }
+
+  // Article methods
+  async createArticle(articleData: InsertArticle): Promise<Article> {
+    const id = randomUUID();
+    const article: Article = {
+      ...articleData,
+      id,
+      publishDate: new Date(),
+      createdAt: new Date(),
+    };
+    this.articles.set(id, article);
+    return article;
+  }
+
+  async getArticle(id: string): Promise<ArticleWithPost | undefined> {
+    const article = this.articles.get(id);
+    if (!article) return undefined;
+    
+    const post = await this.getPost(article.postId);
+    if (!post) return undefined;
+    
+    return {
+      ...article,
+      post,
+    };
+  }
+
+  async getArticleBySlug(slug: string): Promise<ArticleWithPost | undefined> {
+    const article = Array.from(this.articles.values()).find(a => a.slug === slug);
+    if (!article) return undefined;
+    
+    const post = await this.getPost(article.postId);
+    if (!post) return undefined;
+    
+    return {
+      ...article,
+      post,
+    };
+  }
+
+  async updateArticle(id: string, updates: Partial<Article>): Promise<Article | undefined> {
+    const existingArticle = this.articles.get(id);
+    if (!existingArticle) return undefined;
+    
+    const updatedArticle = { ...existingArticle, ...updates };
+    this.articles.set(id, updatedArticle);
+    return updatedArticle;
+  }
+
+  // Comment methods
+  async createComment(commentData: InsertComment): Promise<Comment> {
+    const id = randomUUID();
+    const comment: Comment = {
+      ...commentData,
+      id,
+      likes: 0,
+      createdAt: new Date(),
+    };
+    this.comments.set(id, comment);
+    return comment;
+  }
+
+  async getComments(articleId: string): Promise<CommentWithAuthor[]> {
+    const comments = Array.from(this.comments.values())
+      .filter(comment => comment.articleId === articleId && !comment.parentId)
+      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+    
+    const commentsWithAuthor = await Promise.all(
+      comments.map(async (comment) => {
+        const author = await this.getUser(comment.authorId);
+        if (!author) return null;
+        
+        // Get replies
+        const replies = Array.from(this.comments.values())
+          .filter(reply => reply.parentId === comment.id)
+          .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+        
+        const repliesWithAuthor = await Promise.all(
+          replies.map(async (reply) => {
+            const replyAuthor = await this.getUser(reply.authorId);
+            if (!replyAuthor) return null;
+            return {
+              ...reply,
+              author: replyAuthor,
+            };
+          })
+        );
+        
+        return {
+          ...comment,
+          author,
+          replies: repliesWithAuthor.filter(Boolean) as CommentWithAuthor[],
+        };
+      })
+    );
+    
+    return commentsWithAuthor.filter(Boolean) as CommentWithAuthor[];
+  }
+
+  async likeComment(commentId: string): Promise<void> {
+    const comment = this.comments.get(commentId);
+    if (comment) {
+      comment.likes = (comment.likes || 0) + 1;
+      this.comments.set(commentId, comment);
+    }
   }
 }
 
