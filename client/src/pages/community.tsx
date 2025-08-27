@@ -151,6 +151,13 @@ export default function Community() {
                   <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
                 </div>
                 
+                {/* Section Description */}
+                <div className="text-center mb-6">
+                  <p className="text-muted-foreground max-w-2xl mx-auto">
+                    Creator Insights is where we hear from the creators making an impact. We feature innovative minds and showcase their work, but more importantly, they share the real-world wisdom and practical tips that can help you level up.
+                  </p>
+                </div>
+                
                 <div className="relative glass-card rounded-xl overflow-hidden hover-lift">
                   {/* Large Header Image */}
                   <div className="relative h-80 overflow-hidden">
@@ -192,7 +199,7 @@ export default function Community() {
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-white/70">15 min read • Interview</span>
                         <Button size="sm" variant="secondary" className="transition-all hover:scale-105">
-                          Read More
+                          Read More →
                         </Button>
                       </div>
                     </div>
@@ -212,6 +219,13 @@ export default function Community() {
                       </div>
                     )}
                   </div>
+                </div>
+                
+                {/* Footer Link */}
+                <div className="text-center mt-6">
+                  <Button variant="ghost" className="text-accent hover:text-accent/80 transition-colors">
+                    See all Creator Insights →
+                  </Button>
                 </div>
               </div>
             )}
