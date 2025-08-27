@@ -166,7 +166,7 @@ export default function Community() {
             <div className="glass-card rounded-xl mb-8 overflow-hidden hover-lift" data-testid="hero-section">
               <div className="relative h-48 flex items-center justify-center">
                 <img 
-                  src="/attached_assets/Community page header image.png" 
+                  src="/attached_assets/Community%20page%20header%20image.png" 
                   alt="VirtuoHub Community Header"
                   className="absolute inset-0 w-full h-full object-cover"
                 />
