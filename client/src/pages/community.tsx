@@ -204,12 +204,14 @@ export default function Community() {
               <div className="mb-8" data-testid="featured-carousel">
                 <div className="flex items-center space-x-2 mb-4">
                   <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
-                  <div className="bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 text-white px-8 py-4 rounded-2xl border border-accent/20 flex items-center shadow-lg">
+                  <div className="flex items-center space-x-4">
                     {(() => {
                       const Icon = featuredContent[currentFeaturedIndex].icon;
-                      return <Icon className="w-7 h-7 mr-3" />;
+                      return <Icon className="w-8 h-8 text-purple-600" />;
                     })()}
-                    <span className="text-2xl font-bold tracking-wide">✨ Featured Content</span>
+                    <h2 className="text-3xl font-bold text-foreground tracking-tight">
+                      Featured Content
+                    </h2>
                   </div>
                   <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
                 </div>
@@ -299,9 +301,11 @@ export default function Community() {
               <div className="mb-8" data-testid="pulse-posts-feed">
                 <div className="flex items-center space-x-2 mb-6">
                   <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
-                  <div className="bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white px-8 py-4 rounded-2xl border border-primary/20 flex items-center shadow-lg">
-                    <TrendingUp className="w-7 h-7 mr-3" />
-                    <span className="text-2xl font-bold tracking-wide">📊 The Creator Pulse</span>
+                  <div className="flex items-center space-x-4">
+                    <TrendingUp className="w-8 h-8 text-primary" />
+                    <h2 className="text-3xl font-bold text-foreground tracking-tight">
+                      The Creator Pulse
+                    </h2>
                   </div>
                   <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                 </div>
@@ -317,9 +321,13 @@ export default function Community() {
             <div className="mb-8" data-testid="community-feed-section">
               <div className="flex items-center space-x-2 mb-6">
                 <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
-                <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white px-8 py-4 rounded-2xl border border-accent/20 flex items-center shadow-lg">
-                  <Plus className="w-7 h-7 mr-3" />
-                  <span className="text-2xl font-bold tracking-wide">🏠 Community Feed</span>
+                <div className="flex items-center space-x-4">
+                  <div className="w-10 h-10 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center">
+                    <Plus className="w-6 h-6 text-accent" />
+                  </div>
+                  <h2 className="text-4xl font-bold text-foreground tracking-tight">
+                    Community Feed
+                  </h2>
                 </div>
                 <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
               </div>
