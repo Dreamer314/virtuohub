@@ -154,9 +154,23 @@ export default function Community() {
 
       <Header />
       
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div className="lg:col-span-3">
+      <div className="flex">
+        {/* Fixed Left Sidebar */}
+        <div className="hidden lg:block w-64 fixed left-0 top-0 h-screen bg-background/95 backdrop-blur-sm border-r border-border z-10">
+          <div className="pt-20 px-4">
+            <LeftSidebar
+              currentTab={currentTab}
+              onTabChange={setCurrentTab}
+            />
+          </div>
+        </div>
+        
+        {/* Main Content Area */}
+        <div className="flex-1 lg:ml-64">
+          <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12 py-8">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          {/* Mobile Left Sidebar */}
+          <div className="lg:hidden">
             <LeftSidebar
               currentTab={currentTab}
               onTabChange={setCurrentTab}
@@ -164,7 +178,7 @@ export default function Community() {
           </div>
 
           {/* Main Content */}
-          <main className="lg:col-span-6">
+          <main className="lg:col-span-3">
             {/* Hero Section */}
             <div className="glass-card rounded-xl mb-8 overflow-hidden hover-lift" data-testid="hero-section">
               <div className="relative h-48 flex items-center justify-center">
@@ -190,13 +204,13 @@ export default function Community() {
               <div className="mb-8" data-testid="featured-carousel">
                 <div className="flex items-center space-x-2 mb-4">
                   <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
-                  <span className="text-sm font-medium text-accent bg-background px-4 py-2 rounded-full border border-accent/20 flex items-center">
+                  <div className="bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 text-white px-8 py-4 rounded-2xl border border-accent/20 flex items-center shadow-lg">
                     {(() => {
                       const Icon = featuredContent[currentFeaturedIndex].icon;
-                      return <Icon className="w-4 h-4 mr-2" />;
+                      return <Icon className="w-7 h-7 mr-3" />;
                     })()}
-                    Featured Content
-                  </span>
+                    <span className="text-2xl font-bold tracking-wide">✨ Featured Content</span>
+                  </div>
                   <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
                 </div>
                 
@@ -285,10 +299,10 @@ export default function Community() {
               <div className="mb-8" data-testid="pulse-posts-feed">
                 <div className="flex items-center space-x-2 mb-6">
                   <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
-                  <span className="text-sm font-medium text-primary bg-background px-4 py-2 rounded-full border border-primary/20 flex items-center">
-                    <TrendingUp className="w-4 h-4 mr-2" />
-                    The Creator Pulse
-                  </span>
+                  <div className="bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white px-8 py-4 rounded-2xl border border-primary/20 flex items-center shadow-lg">
+                    <TrendingUp className="w-7 h-7 mr-3" />
+                    <span className="text-2xl font-bold tracking-wide">📊 The Creator Pulse</span>
+                  </div>
                   <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                 </div>
                 <div className="space-y-6">
@@ -303,10 +317,10 @@ export default function Community() {
             <div className="mb-8" data-testid="community-feed-section">
               <div className="flex items-center space-x-2 mb-6">
                 <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
-                <span className="text-lg font-bold text-accent bg-background px-4 py-2 rounded-full border border-accent/20 flex items-center">
-                  <Plus className="w-5 h-5 mr-2" />
-                  Community Feed
-                </span>
+                <div className="bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-white px-8 py-4 rounded-2xl border border-accent/20 flex items-center shadow-lg">
+                  <Plus className="w-7 h-7 mr-3" />
+                  <span className="text-2xl font-bold tracking-wide">🏠 Community Feed</span>
+                </div>
                 <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
               </div>
 
@@ -484,8 +498,10 @@ export default function Community() {
             </div>
           </main>
 
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-1">
             <RightSidebar />
+          </div>
+            </div>
           </div>
         </div>
       </div>
