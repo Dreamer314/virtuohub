@@ -21,26 +21,27 @@ export default function Community() {
   const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState(0);
   const [isAutoplayPaused, setIsAutoplayPaused] = useState(false);
 
-  // Build query parameters
-  const queryParams = new URLSearchParams();
-  if (selectedCategory && selectedCategory !== 'All') {
-    queryParams.append('category', selectedCategory);
-  }
-  selectedPlatforms.forEach(platform => {
-    queryParams.append('platforms', platform);
-  });
+  // Build query parameters for API requests
+  const buildQueryString = () => {
+    const params = new URLSearchParams();
+    if (selectedCategory && selectedCategory !== 'All') {
+      params.append('category', selectedCategory);
+    }
+    selectedPlatforms.forEach(platform => {
+      params.append('platforms', platform);
+    });
+    return params.toString();
+  };
 
-  // Fetch posts based on current tab
+  const queryString = buildQueryString();
+  const postsUrl = queryString ? `/api/posts?${queryString}` : '/api/posts';
+
+  // Fetch posts based on current tab with proper server-side filtering
   const { data: posts, isLoading } = useQuery({
     queryKey: currentTab === 'all' 
-      ? ['/api/posts', selectedCategory, ...selectedPlatforms]
+      ? [postsUrl] // Use the complete URL with query params
       : ['/api/users/user1/saved-posts'],
     enabled: true,
-  });
-
-  const { data: allPosts } = useQuery({
-    queryKey: ['/api/posts'],
-    enabled: currentTab === 'all',
   });
 
   const { data: savedPosts } = useQuery({
@@ -48,18 +49,10 @@ export default function Community() {
     enabled: currentTab === 'saved',
   });
 
-  // Filter posts client-side for better UX
+  // Use server-filtered posts directly
   const allFilteredPosts = currentTab === 'all' 
-    ? (Array.isArray(allPosts) ? allPosts : []).filter((post: any) => {
-        if (selectedCategory !== 'All' && post.category !== selectedCategory) {
-          return false;
-        }
-        if (selectedPlatforms.length > 0 && !post.platforms.some((p: string) => selectedPlatforms.includes(p as Platform))) {
-          return false;
-        }
-        return true;
-      })
-    : savedPosts || [];
+    ? (Array.isArray(posts) ? posts : [])
+    : (Array.isArray(savedPosts) ? savedPosts : []);
 
   // Separate special posts by type
   const pulsePosts = Array.isArray(allFilteredPosts) 
