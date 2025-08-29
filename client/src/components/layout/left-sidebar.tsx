@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Home, TrendingUp, Newspaper, Star, Lightbulb, Monitor, BookOpen, Gamepad2, Hammer, Zap, Mountain, Sword, Target, Palette, Users } from "lucide-react";
-import { SiRoblox, SiUnity, SiUnrealengine, SiMinecraft, SiCounterstrike, SiMeta } from "react-icons/si";
+import { Home, TrendingUp, Newspaper, Star, Lightbulb, Monitor, BookOpen, Gamepad2, Hammer, Zap, Mountain, Sword, Target, Palette, Users, Blocks, Globe } from "lucide-react";
+import { SiRoblox, SiUnity, SiUnrealengine } from "react-icons/si";
 import { Link } from "wouter";
 
 interface LeftSidebarProps {
@@ -23,15 +23,15 @@ export function LeftSidebar({ currentTab, onTabChange }: LeftSidebarProps) {
     { id: 'imvu', label: 'IMVU', icon: Users },
     { id: 'secondlife', label: 'Second Life', icon: Monitor },
     { id: 'fortnite', label: 'Fortnite', icon: Target },
-    { id: 'minecraft', label: 'Minecraft', icon: SiMinecraft },
+    { id: 'minecraft', label: 'Minecraft', icon: Blocks },
     { id: 'gtafivem', label: 'GTA FiveM', icon: Gamepad2 },
-    { id: 'metahorizon', label: 'Meta Horizon Worlds', icon: SiMeta },
+    { id: 'metahorizon', label: 'Meta Horizon Worlds', icon: Globe },
     { id: 'vrchat', label: 'VRChat', icon: Monitor },
     { id: 'unity', label: 'Unity', icon: SiUnity },
     { id: 'unreal', label: 'Unreal Engine', icon: SiUnrealengine },
     { id: 'elderscrolls', label: 'Elder Scrolls', icon: Sword },
     { id: 'fallout', label: 'Fallout', icon: Zap },
-    { id: 'counterstrike', label: 'Counter-Strike', icon: SiCounterstrike },
+    { id: 'counterstrike', label: 'Counter-Strike', icon: Target },
     { id: 'teamfortress', label: 'Team Fortress 2', icon: Hammer },
     { id: 'dreams', label: 'Dreams', icon: Palette },
     { id: 'core', label: 'Core', icon: Mountain },
