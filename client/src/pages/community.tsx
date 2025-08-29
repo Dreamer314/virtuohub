@@ -21,6 +21,18 @@ export default function Community() {
   const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState(0);
   const [isAutoplayPaused, setIsAutoplayPaused] = useState(false);
 
+  // Function to handle category changes while preserving scroll position
+  const handleCategoryChange = (category: Category) => {
+    // Prevent scroll jumping by maintaining current scroll position
+    const currentScrollY = window.scrollY;
+    setSelectedCategory(category);
+    
+    // Restore scroll position after React re-renders
+    requestAnimationFrame(() => {
+      window.scrollTo(0, currentScrollY);
+    });
+  };
+
   // Build query parameters for API requests
   const buildQueryString = () => {
     const params = new URLSearchParams();
@@ -380,7 +392,7 @@ export default function Community() {
                   <Button
                     variant={selectedCategory === 'All' ? 'default' : 'outline'}
                     size="sm"
-onClick={() => setSelectedCategory('All')}
+onClick={() => handleCategoryChange('All')}
                     className="rounded-full"
                     data-testid="category-all"
                   >
@@ -389,7 +401,7 @@ onClick={() => setSelectedCategory('All')}
                   <Button
                     variant={selectedCategory === 'General' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setSelectedCategory('General')}
+                    onClick={() => handleCategoryChange('General')}
                     className="rounded-full"
                     data-testid="category-general"
                   >
@@ -398,7 +410,7 @@ onClick={() => setSelectedCategory('All')}
                   <Button
                     variant={selectedCategory === 'Assets for Sale' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setSelectedCategory('Assets for Sale')}
+                    onClick={() => handleCategoryChange('Assets for Sale')}
                     className="rounded-full"
                     data-testid="category-assets"
                   >
@@ -407,7 +419,7 @@ onClick={() => setSelectedCategory('All')}
                   <Button
                     variant={selectedCategory === 'Jobs & Gigs' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setSelectedCategory('Jobs & Gigs')}
+                    onClick={() => handleCategoryChange('Jobs & Gigs')}
                     className="rounded-full"
                     data-testid="category-jobs"
                   >
@@ -416,7 +428,7 @@ onClick={() => setSelectedCategory('All')}
                   <Button
                     variant={selectedCategory === 'Freelance/Hiring' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setSelectedCategory('Freelance/Hiring')}
+                    onClick={() => handleCategoryChange('Freelance/Hiring')}
                     className="rounded-full"
                     data-testid="category-freelance"
                   >
@@ -425,7 +437,7 @@ onClick={() => setSelectedCategory('All')}
                   <Button
                     variant={selectedCategory === 'Collaborations' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setSelectedCategory('Collaborations')}
+                    onClick={() => handleCategoryChange('Collaborations')}
                     className="rounded-full"
                     data-testid="category-collaborations"
                   >
@@ -434,7 +446,7 @@ onClick={() => setSelectedCategory('All')}
                   <Button
                     variant={selectedCategory === 'WIP' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setSelectedCategory('WIP')}
+                    onClick={() => handleCategoryChange('WIP')}
                     className="rounded-full"
                     data-testid="category-wip"
                   >
