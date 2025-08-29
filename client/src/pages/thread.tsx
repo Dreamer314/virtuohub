@@ -7,16 +7,20 @@ import { PostCard } from "@/components/post-card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, MessageCircle, Heart, Share2, Send } from "lucide-react";
+import { ArrowLeft, MessageCircle, Heart, Share2, Send, ImageIcon, Smile, Paperclip } from "lucide-react";
 import { Link } from "wouter";
 import { formatDistanceToNow } from "date-fns";
 import type { PostWithAuthor } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
+import { ObjectUploader } from "@/components/ObjectUploader";
+import EmojiPicker from "emoji-picker-react";
 
 export default function ThreadPage() {
   const { postId } = useParams<{ postId: string }>();
   const [commentText, setCommentText] = useState("");
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const queryClient = useQueryClient();
 
   // Fetch the specific post
@@ -33,21 +37,27 @@ export default function ThreadPage() {
 
   // Comment submission mutation
   const commentMutation = useMutation({
-    mutationFn: async (content: string) => {
+    mutationFn: async (data: { content: string; images: string[] }) => {
       return apiRequest(`/api/posts/${postId}/comments`, 'POST', {
-        content, 
+        content: data.content, 
+        images: data.images,
         authorId: 'user1'
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/posts', postId, 'comments'] });
       setCommentText("");
+      setUploadedImages([]);
+      setShowEmojiPicker(false);
     },
   });
 
   const handleSubmitComment = () => {
-    if (commentText.trim()) {
-      commentMutation.mutate(commentText);
+    if (commentText.trim() || uploadedImages.length > 0) {
+      commentMutation.mutate({ 
+        content: commentText, 
+        images: uploadedImages 
+      });
     }
   };
 
@@ -140,10 +150,81 @@ export default function ThreadPage() {
                       className="min-h-[100px] resize-none"
                       data-testid="comment-textarea"
                     />
-                    <div className="flex justify-end">
+                    
+                    {/* Display uploaded images */}
+                    {uploadedImages.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {uploadedImages.map((imageUrl, index) => (
+                          <div key={index} className="relative">
+                            <img 
+                              src={imageUrl} 
+                              alt={`Upload ${index + 1}`} 
+                              className="w-20 h-20 object-cover rounded-lg border"
+                            />
+                            <button
+                              onClick={() => setUploadedImages(prev => prev.filter((_, i) => i !== index))}
+                              className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600"
+                              data-testid={`remove-image-${index}`}
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {/* Image Upload Button */}
+                        <ObjectUploader
+                          maxNumberOfFiles={5}
+                          maxFileSize={10485760}
+                          onGetUploadParameters={async () => {
+                            const response = await apiRequest('/api/objects/upload', 'POST');
+                            return {
+                              method: 'PUT' as const,
+                              url: response.uploadURL,
+                            };
+                          }}
+                          onComplete={async (files: File[]) => {
+                            // For demo purposes, create object URLs for the uploaded files
+                            const imageUrls = files.map(file => URL.createObjectURL(file));
+                            setUploadedImages(prev => [...prev, ...imageUrls]);
+                          }}
+                          buttonClassName="p-2 h-10 w-10"
+                        >
+                          <Paperclip className="w-4 h-4" />
+                        </ObjectUploader>
+
+                        {/* Emoji Picker Button */}
+                        <div className="relative">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                            className="p-2 h-10 w-10"
+                            data-testid="emoji-button"
+                          >
+                            <Smile className="w-4 h-4" />
+                          </Button>
+                          {showEmojiPicker && (
+                            <div className="absolute bottom-12 left-0 z-50">
+                              <EmojiPicker
+                                onEmojiClick={(emojiData) => {
+                                  setCommentText(prev => prev + emojiData.emoji);
+                                  setShowEmojiPicker(false);
+                                }}
+                                width={300}
+                                height={400}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      
                       <Button
                         onClick={handleSubmitComment}
-                        disabled={!commentText.trim() || commentMutation.isPending}
+                        disabled={(!commentText.trim() && uploadedImages.length === 0) || commentMutation.isPending}
                         data-testid="submit-comment-button"
                       >
                         <Send className="w-4 h-4 mr-2" />
