@@ -161,6 +161,8 @@ export default function Community() {
             <LeftSidebar
               currentTab={currentTab}
               onTabChange={setCurrentTab}
+              selectedPlatforms={selectedPlatforms.map(p => p)}
+              onPlatformChange={(platforms) => setSelectedPlatforms(platforms as Platform[])}
             />
           </div>
         </div>
@@ -174,6 +176,8 @@ export default function Community() {
             <LeftSidebar
               currentTab={currentTab}
               onTabChange={setCurrentTab}
+              selectedPlatforms={selectedPlatforms.map(p => p)}
+              onPlatformChange={(platforms) => setSelectedPlatforms(platforms as Platform[])}
             />
           </div>
 
