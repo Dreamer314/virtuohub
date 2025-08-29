@@ -380,7 +380,16 @@ export default function Community() {
                   <Button
                     variant={selectedCategory === 'All' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setSelectedCategory('All')}
+                    onClick={() => {
+                      setSelectedCategory('All');
+                      // Scroll to community feed section when clicking Feed
+                      setTimeout(() => {
+                        const feedSection = document.querySelector('[data-testid="community-feed-section"]');
+                        if (feedSection) {
+                          feedSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                      }, 100);
+                    }}
                     className="rounded-full"
                     data-testid="category-all"
                   >
