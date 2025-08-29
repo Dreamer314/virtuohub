@@ -49,6 +49,7 @@ interface CreatePostModalProps {
 export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
   const [links, setLinks] = useState<string[]>([]);
   const [newLink, setNewLink] = useState('');
   const { toast } = useToast();
@@ -61,6 +62,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
       content: "",
       imageUrl: "",
       images: [],
+      files: [],
       links: [],
       category: "General",
       platforms: [],
@@ -105,16 +107,28 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
     };
   };
 
-  const handleUploadComplete = (uploadedUrls: string[]) => {
+  const handleImageUploadComplete = (uploadedUrls: string[]) => {
     const updatedImages = [...uploadedImages, ...uploadedUrls];
     setUploadedImages(updatedImages);
     form.setValue('images', updatedImages);
+  };
+
+  const handleFileUploadComplete = (uploadedUrls: string[]) => {
+    const updatedFiles = [...uploadedFiles, ...uploadedUrls];
+    setUploadedFiles(updatedFiles);
+    form.setValue('files', updatedFiles);
   };
 
   const handleRemoveImage = (index: number) => {
     const updatedImages = uploadedImages.filter((_, i) => i !== index);
     setUploadedImages(updatedImages);
     form.setValue('images', updatedImages);
+  };
+
+  const handleRemoveFile = (index: number) => {
+    const updatedFiles = uploadedFiles.filter((_, i) => i !== index);
+    setUploadedFiles(updatedFiles);
+    form.setValue('files', updatedFiles);
   };
 
   const handleAddLink = () => {
@@ -137,6 +151,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
       ...data,
       platforms: selectedPlatforms,
       images: uploadedImages,
+      files: uploadedFiles,
       links: links,
     });
   };
@@ -145,6 +160,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
     form.reset();
     setSelectedPlatforms([]);
     setUploadedImages([]);
+    setUploadedFiles([]);
     setLinks([]);
     setNewLink('');
     onClose();
@@ -200,25 +216,6 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
               )}
             />
 
-            {/* Image URL */}
-            <FormField
-              control={form.control}
-              name="imageUrl"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Image URL (optional)</FormLabel>
-                  <FormControl>
-                    <Input 
-                      placeholder="https://example.com/image.jpg" 
-                      {...field}
-                      value={field.value || ''}
-                      data-testid="post-image-input"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
 
             {/* Upload Images */}
             <div className="space-y-3">
@@ -231,7 +228,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                   maxNumberOfFiles={5}
                   maxFileSize={10485760} // 10MB
                   onGetUploadParameters={handleGetUploadParameters}
-                  onComplete={handleUploadComplete}
+                  onComplete={handleImageUploadComplete}
                   buttonClassName="w-full"
                 >
                   <div className="flex items-center gap-2">
@@ -261,6 +258,55 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                         </Button>
                       </div>
                     ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* File Upload */}
+            <div className="space-y-3">
+              <FormLabel className="flex items-center gap-2">
+                <Paperclip className="w-4 h-4" />
+                Upload Files (optional)
+              </FormLabel>
+              <div className="flex flex-col gap-3">
+                <ObjectUploader
+                  maxNumberOfFiles={10}
+                  maxFileSize={50485760} // 50MB
+                  onGetUploadParameters={handleGetUploadParameters}
+                  onComplete={handleFileUploadComplete}
+                  buttonClassName="w-full"
+                  accept="*/*"
+                >
+                  <div className="flex items-center gap-2">
+                    <Plus className="w-4 h-4" />
+                    Upload Files (Max 10, 50MB each)
+                  </div>
+                </ObjectUploader>
+                
+                {uploadedFiles.length > 0 && (
+                  <div className="space-y-2">
+                    {uploadedFiles.map((fileUrl, index) => {
+                      const fileName = fileUrl.split('/').pop() || `File ${index + 1}`;
+                      return (
+                        <div key={index} className="flex items-center gap-2 p-2 bg-muted rounded-md">
+                          <Paperclip className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                          <span className="text-sm flex-1 truncate" title={fileName}>
+                            {fileName}
+                          </span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="h-6 w-6 p-0"
+                            onClick={() => handleRemoveFile(index)}
+                            data-testid={`remove-file-${index}`}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      );
+                    })}
                   </div>
                 )}
               </div>

@@ -14,6 +14,7 @@ interface ObjectUploaderProps {
   onComplete?: (uploadedUrls: string[]) => void;
   buttonClassName?: string;
   children: ReactNode;
+  accept?: string;
 }
 
 /**
@@ -26,6 +27,7 @@ export function ObjectUploader({
   onComplete,
   buttonClassName,
   children,
+  accept = "image/*",
 }: ObjectUploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
@@ -95,7 +97,7 @@ export function ObjectUploader({
     <div>
       <input
         type="file"
-        accept="image/*"
+        accept={accept}
         multiple={maxNumberOfFiles > 1}
         onChange={handleFileSelect}
         style={{ display: 'none' }}
