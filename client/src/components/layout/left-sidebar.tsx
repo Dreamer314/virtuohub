@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { Home, TrendingUp, Newspaper, Star, Lightbulb, Monitor, BookOpen } from "lucide-react";
-import { SiRoblox } from "react-icons/si";
+import { Home, TrendingUp, Newspaper, Star, Lightbulb, Monitor, BookOpen, Gamepad2, Hammer, Zap, Mountain, Sword, Target, Palette, Users } from "lucide-react";
+import { SiRoblox, SiUnity, SiUnrealengine, SiMinecraft, SiCounterstrike, SiMeta } from "react-icons/si";
 import { Link } from "wouter";
 
 interface LeftSidebarProps {
@@ -20,8 +20,23 @@ export function LeftSidebar({ currentTab, onTabChange }: LeftSidebarProps) {
 
   const platformFilters = [
     { id: 'roblox', label: 'Roblox', icon: SiRoblox },
+    { id: 'imvu', label: 'IMVU', icon: Users },
     { id: 'secondlife', label: 'Second Life', icon: Monitor },
+    { id: 'fortnite', label: 'Fortnite', icon: Target },
+    { id: 'minecraft', label: 'Minecraft', icon: SiMinecraft },
+    { id: 'gtafivem', label: 'GTA FiveM', icon: Gamepad2 },
+    { id: 'metahorizon', label: 'Meta Horizon Worlds', icon: SiMeta },
     { id: 'vrchat', label: 'VRChat', icon: Monitor },
+    { id: 'unity', label: 'Unity', icon: SiUnity },
+    { id: 'unreal', label: 'Unreal Engine', icon: SiUnrealengine },
+    { id: 'elderscrolls', label: 'Elder Scrolls', icon: Sword },
+    { id: 'fallout', label: 'Fallout', icon: Zap },
+    { id: 'counterstrike', label: 'Counter-Strike', icon: SiCounterstrike },
+    { id: 'teamfortress', label: 'Team Fortress 2', icon: Hammer },
+    { id: 'dreams', label: 'Dreams', icon: Palette },
+    { id: 'core', label: 'Core', icon: Mountain },
+    { id: 'simscc', label: 'The Sims CC', icon: Home },
+    { id: 'inzoi', label: 'inZOI', icon: Users },
   ];
 
   return (
