@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Home, TrendingUp, Newspaper, Star, Lightbulb, Monitor, BookOpen, Gamepad2, Hammer, Zap, Mountain, Sword, Target, Palette, Users, Blocks, Globe, ChevronLeft, ChevronRight } from "lucide-react";
+import { Home, TrendingUp, Newspaper, Star, Lightbulb, Monitor, BookOpen, Gamepad2, Hammer, Zap, Mountain, Sword, Target, Palette, Users, Blocks, Globe, ChevronDown, ChevronUp } from "lucide-react";
 import { SiRoblox, SiUnity, SiUnrealengine } from "react-icons/si";
 import { Link } from "wouter";
 import { useState } from "react";
@@ -12,7 +12,7 @@ interface LeftSidebarProps {
 }
 
 export function LeftSidebar({ currentTab, onTabChange, selectedPlatforms = [], onPlatformChange }: LeftSidebarProps) {
-  const [isMinimized, setIsMinimized] = useState(false);
+  const [isPlatformFiltersCollapsed, setIsPlatformFiltersCollapsed] = useState(false);
   const mainSections = [
     { id: 'feed', label: 'Feed', icon: Home, active: currentTab === 'all', onClick: () => onTabChange('all') },
     { id: 'trending', label: 'Trending', icon: TrendingUp, active: false, onClick: () => {} },
@@ -52,36 +52,24 @@ export function LeftSidebar({ currentTab, onTabChange, selectedPlatforms = [], o
   };
 
   return (
-    <aside className={`transition-all duration-300 ${isMinimized ? 'w-16' : 'w-full'}`}>
+    <aside className="w-full">
       <div className="sticky top-4">
-        <div className="glass-card rounded-xl p-6 relative" data-testid="community-navigation">
-          {/* Minimize/Expand Button */}
-          <button
-            onClick={() => setIsMinimized(!isMinimized)}
-            className="absolute -right-3 top-4 w-6 h-6 bg-accent text-white rounded-full flex items-center justify-center hover:bg-accent/80 transition-colors z-10"
-            data-testid="sidebar-toggle"
-          >
-            {isMinimized ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-          </button>
+        <div className="glass-card rounded-xl p-6" data-testid="community-navigation">
           {/* Header */}
-          {!isMinimized && (
-            <div className="mb-6">
-              <h2 className="text-lg font-semibold text-foreground mb-1">
-                Community Section
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                Navigation Hub
-              </p>
-            </div>
-          )}
+          <div className="mb-6">
+            <h2 className="text-lg font-semibold text-foreground mb-1">
+              Community Section
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Navigation Hub
+            </p>
+          </div>
 
           {/* Main Sections */}
           <div className="mb-8">
-            {!isMinimized && (
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
-                MAIN SECTIONS
-              </h3>
-            )}
+            <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
+              MAIN SECTIONS
+            </h3>
             <div className="space-y-1">
               {mainSections.map((section) => {
                 const Icon = section.icon;
@@ -91,24 +79,19 @@ export function LeftSidebar({ currentTab, onTabChange, selectedPlatforms = [], o
                     <Link key={section.id} href={section.href}>
                       <Button
                         variant="ghost"
-                        className={`w-full ${isMinimized ? 'justify-center px-2' : 'justify-start px-3'} h-10 transition-all ${
+                        className={`w-full justify-start px-3 h-10 transition-all ${
                           section.active
                             ? 'bg-accent/20 text-accent font-medium'
                             : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                         }`}
                         data-testid={`nav-${section.id}`}
-                        title={isMinimized ? section.label : undefined}
                       >
-                        <Icon className={`w-4 h-4 ${isMinimized ? '' : 'mr-3'}`} />
-                        {!isMinimized && (
-                          <>
-                            {section.label}
-                            {section.active && (
-                              <span className="ml-auto text-xs font-semibold">
-                                [ACTIVE]
-                              </span>
-                            )}
-                          </>
+                        <Icon className="w-4 h-4 mr-3" />
+                        {section.label}
+                        {section.active && (
+                          <span className="ml-auto text-xs font-semibold">
+                            [ACTIVE]
+                          </span>
                         )}
                       </Button>
                     </Link>
@@ -119,25 +102,20 @@ export function LeftSidebar({ currentTab, onTabChange, selectedPlatforms = [], o
                   <Button
                     key={section.id}
                     variant="ghost"
-                    className={`w-full ${isMinimized ? 'justify-center px-2' : 'justify-start px-3'} h-10 transition-all ${
+                    className={`w-full justify-start px-3 h-10 transition-all ${
                       section.active
                         ? 'bg-accent/20 text-accent font-medium'
                         : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                     }`}
                     onClick={section.onClick}
                     data-testid={`nav-${section.id}`}
-                    title={isMinimized ? section.label : undefined}
                   >
-                    <Icon className={`w-4 h-4 ${isMinimized ? '' : 'mr-3'}`} />
-                    {!isMinimized && (
-                      <>
-                        {section.label}
-                        {section.active && (
-                          <span className="ml-auto text-xs font-semibold">
-                            [ACTIVE]
-                          </span>
-                        )}
-                      </>
+                    <Icon className="w-4 h-4 mr-3" />
+                    {section.label}
+                    {section.active && (
+                      <span className="ml-auto text-xs font-semibold">
+                        [ACTIVE]
+                      </span>
                     )}
                   </Button>
                 );
@@ -148,34 +126,46 @@ export function LeftSidebar({ currentTab, onTabChange, selectedPlatforms = [], o
           {/* Platform Filters */}
           {onPlatformChange && (
             <div>
-              {!isMinimized && (
-                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
                   PLATFORM FILTERS
                 </h3>
-              )}
-              <div className="space-y-1">
-                {platformFilters.map((platform) => {
-                  const Icon = platform.icon;
-                  const isSelected = selectedPlatforms.includes(platform.id);
-                  return (
-                    <Button
-                      key={platform.id}
-                      variant="ghost"
-                      className={`w-full ${isMinimized ? 'justify-center px-2' : 'justify-start px-3'} h-10 transition-all ${
-                        isSelected
-                          ? 'bg-primary/20 text-primary font-medium'
-                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                      }`}
-                      onClick={() => togglePlatform(platform.id)}
-                      data-testid={`platform-filter-${platform.id}`}
-                      title={isMinimized ? platform.label : undefined}
-                    >
-                      <Icon className={`w-4 h-4 ${isMinimized ? '' : 'mr-3'}`} />
-                      {!isMinimized && platform.label}
-                    </Button>
-                  );
-                })}
+                <button
+                  onClick={() => setIsPlatformFiltersCollapsed(!isPlatformFiltersCollapsed)}
+                  className="p-1 hover:bg-muted/50 rounded transition-colors"
+                  data-testid="platform-filters-toggle"
+                >
+                  {isPlatformFiltersCollapsed ? (
+                    <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                  ) : (
+                    <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                  )}
+                </button>
               </div>
+              {!isPlatformFiltersCollapsed && (
+                <div className="space-y-1">
+                  {platformFilters.map((platform) => {
+                    const Icon = platform.icon;
+                    const isSelected = selectedPlatforms.includes(platform.id);
+                    return (
+                      <Button
+                        key={platform.id}
+                        variant="ghost"
+                        className={`w-full justify-start px-3 h-10 transition-all ${
+                          isSelected
+                            ? 'bg-primary/20 text-primary font-medium'
+                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                        }`}
+                        onClick={() => togglePlatform(platform.id)}
+                        data-testid={`platform-filter-${platform.id}`}
+                      >
+                        <Icon className="w-4 h-4 mr-3" />
+                        {platform.label}
+                      </Button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           )}
         </div>
