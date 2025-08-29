@@ -365,7 +365,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
               )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Category */}
               <FormField
                 control={form.control}
@@ -413,47 +413,68 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
               />
             </div>
 
-            {/* Platforms */}
-            <div className="space-y-3">
-              <FormLabel>Platforms</FormLabel>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {PLATFORMS.map((platform) => (
-                  <div key={platform} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={platform}
-                      checked={selectedPlatforms.includes(platform)}
-                      onCheckedChange={() => handlePlatformToggle(platform)}
-                      data-testid={`platform-checkbox-${platform}`}
-                    />
-                    <label
-                      htmlFor={platform}
-                      className="text-sm font-medium cursor-pointer"
+              {/* Platforms */}
+              <FormField
+                control={form.control}
+                name="platforms"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Platforms</FormLabel>
+                    <Select
+                      onValueChange={(value) => {
+                        const updatedPlatforms = selectedPlatforms.includes(value as Platform)
+                          ? selectedPlatforms.filter(p => p !== value)
+                          : [...selectedPlatforms, value as Platform];
+                        setSelectedPlatforms(updatedPlatforms);
+                        form.setValue('platforms', updatedPlatforms);
+                      }}
                     >
-                      {platform}
-                    </label>
-                  </div>
-                ))}
-              </div>
-              {selectedPlatforms.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {selectedPlatforms.map((platform) => (
-                    <Badge key={platform} variant="secondary" className="flex items-center space-x-1">
-                      <span>{platform}</span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-4 w-4 p-0 hover:bg-transparent"
-                        onClick={() => handlePlatformToggle(platform)}
-                        data-testid={`remove-platform-${platform}`}
-                      >
-                        <X size={12} />
-                      </Button>
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
+                      <FormControl>
+                        <SelectTrigger data-testid="platform-select">
+                          <SelectValue placeholder="Select platforms" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="max-h-60">
+                        {PLATFORMS.map((platform) => (
+                          <SelectItem 
+                            key={platform} 
+                            value={platform} 
+                            data-testid={`platform-option-${platform}`}
+                            className={selectedPlatforms.includes(platform) ? 'bg-accent' : ''}
+                          >
+                            <div className="flex items-center justify-between w-full">
+                              <span>{platform}</span>
+                              {selectedPlatforms.includes(platform) && (
+                                <span className="ml-2 text-accent-foreground">✓</span>
+                              )}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                    {selectedPlatforms.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {selectedPlatforms.map((platform) => (
+                          <Badge key={platform} variant="secondary" className="flex items-center space-x-1">
+                            <span>{platform}</span>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="h-4 w-4 p-0 hover:bg-transparent"
+                              onClick={() => handlePlatformToggle(platform)}
+                              data-testid={`remove-platform-${platform}`}
+                            >
+                              <X size={12} />
+                            </Button>
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                  </FormItem>
+                )}
+              />
 
             {/* Actions */}
             <div className="flex justify-end space-x-3 pt-4">
