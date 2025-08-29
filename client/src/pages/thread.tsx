@@ -7,7 +7,7 @@ import { PostCard } from "@/components/post-card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { ArrowLeft, MessageCircle, Heart, Share2, Send, ImageIcon, Smile, Paperclip } from "lucide-react";
+import { ArrowLeft, MessageCircle, Heart, Share2, Send, ImageIcon, Smile, Paperclip, Copy, Check } from "lucide-react";
 import { Link } from "wouter";
 import { formatDistanceToNow } from "date-fns";
 import type { PostWithAuthor } from "@shared/schema";
@@ -21,6 +21,7 @@ export default function ThreadPage() {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [shareSuccess, setShareSuccess] = useState(false);
   const queryClient = useQueryClient();
 
   // Fetch the specific post
@@ -128,6 +129,48 @@ export default function ThreadPage() {
             {/* Main Post */}
             <div className="mb-8">
               <PostCard post={post} isDetailView={true} />
+              
+              {/* Share Button */}
+              <div className="mt-4 flex justify-end">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={async () => {
+                    try {
+                      const url = `${window.location.origin}/thread/${postId}`;
+                      await navigator.clipboard.writeText(url);
+                      setShareSuccess(true);
+                      setTimeout(() => setShareSuccess(false), 2000);
+                    } catch (error) {
+                      console.error('Failed to copy link:', error);
+                      // Fallback for browsers that don't support clipboard API
+                      const url = `${window.location.origin}/thread/${postId}`;
+                      const textArea = document.createElement('textarea');
+                      textArea.value = url;
+                      document.body.appendChild(textArea);
+                      textArea.select();
+                      document.execCommand('copy');
+                      document.body.removeChild(textArea);
+                      setShareSuccess(true);
+                      setTimeout(() => setShareSuccess(false), 2000);
+                    }
+                  }}
+                  className="flex items-center gap-2"
+                  data-testid="share-thread-button"
+                >
+                  {shareSuccess ? (
+                    <>
+                      <Check className="w-4 h-4" />
+                      Link Copied!
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" />
+                      Share Thread
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
 
             {/* Comments Section */}
