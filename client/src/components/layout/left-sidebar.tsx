@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Home, TrendingUp, Newspaper, Star, Lightbulb, Monitor } from "lucide-react";
+import { Home, TrendingUp, Newspaper, Star, Lightbulb, Monitor, BookOpen } from "lucide-react";
 import { SiRoblox } from "react-icons/si";
 import { Link } from "wouter";
 
@@ -15,6 +15,7 @@ export function LeftSidebar({ currentTab, onTabChange }: LeftSidebarProps) {
     { id: 'industry', label: 'Industry News', icon: Newspaper, active: false, onClick: () => {} },
     { id: 'spotlights', label: 'Creator Spotlights', icon: Star, active: false, onClick: () => {} },
     { id: 'insights', label: 'Creator Insights', icon: Lightbulb, active: false, href: '/insights' },
+    { id: 'tips', label: 'Tips and Guides', icon: BookOpen, active: false, onClick: () => {} },
   ];
 
   const platformFilters = [
