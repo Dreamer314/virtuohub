@@ -214,8 +214,8 @@ export default function Community() {
               </div>
             </div>
 
-            {/* Featured Content Carousel */}
-            {currentTab === 'all' && (
+            {/* Featured Content Carousel - only show when viewing general feed */}
+            {currentTab === 'all' && selectedCategory === 'All' && (
               <div className="mb-8" data-testid="featured-carousel">
                 <div className="flex items-center space-x-2 mb-4">
                   <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
@@ -338,8 +338,8 @@ export default function Community() {
               </div>
             )}
 
-            {/* The Creator Pulse */}
-            {currentTab === 'all' && pulsePosts.length > 0 && (
+            {/* The Creator Pulse - only show when viewing general feed */}
+            {currentTab === 'all' && selectedCategory === 'All' && pulsePosts.length > 0 && (
               <div className="mb-8" data-testid="pulse-posts-feed">
                 <div className="flex items-center space-x-2 mb-6">
                   <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
