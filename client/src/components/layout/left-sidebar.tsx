@@ -24,7 +24,7 @@ export function LeftSidebar({ currentTab, onTabChange }: LeftSidebarProps) {
   ];
 
   return (
-    <aside className="lg:col-span-3">
+    <aside className="w-full">
       <div className="sticky top-4">
         <div className="glass-card rounded-xl p-6" data-testid="community-navigation">
           {/* Header */}

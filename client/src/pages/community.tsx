@@ -154,15 +154,17 @@ export default function Community() {
 
       <Header />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <LeftSidebar
-            currentTab={currentTab}
-            onTabChange={setCurrentTab}
-          />
+      <div className="w-full px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-none">
+          <div className="lg:col-span-2">
+            <LeftSidebar
+              currentTab={currentTab}
+              onTabChange={setCurrentTab}
+            />
+          </div>
 
           {/* Main Content */}
-          <main className="lg:col-span-6">
+          <main className="lg:col-span-8">
             {/* Hero Section */}
             <div className="glass-card rounded-xl mb-8 overflow-hidden hover-lift" data-testid="hero-section">
               <div className="relative h-48 flex items-center justify-center">
@@ -482,7 +484,9 @@ export default function Community() {
             </div>
           </main>
 
-          <RightSidebar />
+          <div className="lg:col-span-2">
+            <RightSidebar />
+          </div>
         </div>
       </div>
 

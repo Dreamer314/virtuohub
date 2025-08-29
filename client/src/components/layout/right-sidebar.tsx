@@ -4,7 +4,7 @@ import { TrendingUp, Calendar, Star, Globe, Flame, Clock } from "lucide-react";
 
 export function RightSidebar() {
   return (
-    <aside className="lg:col-span-3">
+    <aside className="w-full">
       <div className="space-y-6">
         {/* Upcoming Events */}
         <div className="glass-card rounded-xl p-6 hover-lift" data-testid="upcoming-events">
