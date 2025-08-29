@@ -8,7 +8,7 @@ import { CreatePostModal } from "@/components/create-post-modal";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type Category, type Platform } from "@shared/schema";
-import { Plus, Image, BarChart3, ChevronLeft, ChevronRight, Lightbulb, Star, Calendar, Newspaper, TrendingUp } from "lucide-react";
+import { Plus, Image, BarChart3, ChevronLeft, ChevronRight, Lightbulb, Star, Calendar, Newspaper, TrendingUp, Play, Pause } from "lucide-react";
 import { Link } from "wouter";
 import communityHeaderImage from "@/assets/community-header.png";
 
@@ -19,6 +19,7 @@ export default function Community() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [currentInsightIndex, setCurrentInsightIndex] = useState(0);
   const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState(0);
+  const [isAutoplayPaused, setIsAutoplayPaused] = useState(false);
 
   // Build query parameters
   const queryParams = new URLSearchParams();
@@ -116,11 +117,28 @@ export default function Community() {
   // Navigation functions for featured content
   const nextFeatured = () => {
     setCurrentFeaturedIndex((prev) => (prev + 1) % featuredContent.length);
+    setIsAutoplayPaused(true);
+    // Resume autoplay after 10 seconds of manual control
+    setTimeout(() => setIsAutoplayPaused(false), 10000);
   };
 
   const prevFeatured = () => {
     setCurrentFeaturedIndex((prev) => (prev - 1 + featuredContent.length) % featuredContent.length);
+    setIsAutoplayPaused(true);
+    // Resume autoplay after 10 seconds of manual control
+    setTimeout(() => setIsAutoplayPaused(false), 10000);
   };
+
+  // Auto-advance featured content every 5 seconds
+  useEffect(() => {
+    if (isAutoplayPaused || featuredContent.length <= 1) return;
+    
+    const interval = setInterval(() => {
+      setCurrentFeaturedIndex((prev) => (prev + 1) % featuredContent.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [featuredContent.length, isAutoplayPaused]);
 
   // Add scroll animation observer
   useEffect(() => {
@@ -221,6 +239,15 @@ export default function Community() {
                 </div>
                 
                 <div className="flex items-center gap-4">
+                  {/* Autoplay Control */}
+                  <button
+                    onClick={() => setIsAutoplayPaused(!isAutoplayPaused)}
+                    className="bg-accent/20 hover:bg-accent/30 text-accent p-2 rounded-full transition-all hover:scale-110 backdrop-blur-sm border border-accent/20"
+                    data-testid="autoplay-toggle-button"
+                    title={isAutoplayPaused ? "Start slideshow" : "Pause slideshow"}
+                  >
+                    {isAutoplayPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+                  </button>
                   {/* Left Navigation Arrow */}
                   <button
                     onClick={prevFeatured}
@@ -289,13 +316,31 @@ export default function Community() {
                   {featuredContent.map((_, index) => (
                     <button
                       key={index}
-                      onClick={() => setCurrentFeaturedIndex(index)}
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        index === currentFeaturedIndex ? 'bg-accent' : 'bg-accent/30'
+                      onClick={() => {
+                        setCurrentFeaturedIndex(index);
+                        setIsAutoplayPaused(true);
+                        setTimeout(() => setIsAutoplayPaused(false), 10000);
+                      }}
+                      className={`relative w-3 h-3 rounded-full transition-all ${
+                        index === currentFeaturedIndex
+                          ? 'bg-accent scale-125'
+                          : 'bg-accent/30 hover:bg-accent/50'
                       }`}
                       data-testid={`featured-dot-${index}`}
-                    />
+                    >
+                      {index === currentFeaturedIndex && !isAutoplayPaused && (
+                        <div className="absolute inset-0 rounded-full border-2 border-accent animate-ping"></div>
+                      )}
+                    </button>
                   ))}
+                </div>
+                
+                {/* Autoplay Status */}
+                <div className="flex items-center justify-center gap-2 mt-3 text-xs text-muted-foreground">
+                  <div className={`w-2 h-2 rounded-full ${
+                    isAutoplayPaused ? 'bg-orange-500' : 'bg-green-500 animate-pulse'
+                  }`}></div>
+                  <span>{isAutoplayPaused ? 'Slideshow paused' : 'Auto-rotating every 5s'}</span>
                 </div>
               </div>
             )}
