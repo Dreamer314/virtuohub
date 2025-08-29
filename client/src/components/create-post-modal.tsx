@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { insertPostSchema, CATEGORIES, PLATFORMS, type Category, type Platform } from "@shared/schema";
+import { ObjectUploader } from "@/components/ObjectUploader";
 import {
   Dialog,
   DialogContent,
@@ -31,7 +32,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { X } from "lucide-react";
+import { X, Paperclip, Link2, Plus } from "lucide-react";
 import { z } from "zod";
 
 const createPostSchema = insertPostSchema.extend({
@@ -47,6 +48,9 @@ interface CreatePostModalProps {
 
 export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [links, setLinks] = useState<string[]>([]);
+  const [newLink, setNewLink] = useState('');
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -56,6 +60,8 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
       title: "",
       content: "",
       imageUrl: "",
+      images: [],
+      links: [],
       category: "General",
       platforms: [],
       price: "",
@@ -91,15 +97,61 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
     form.setValue('platforms', updatedPlatforms);
   };
 
+  const handleGetUploadParameters = async () => {
+    const response = await apiRequest('POST', '/api/objects/upload');
+    return {
+      method: 'PUT' as const,
+      url: response.uploadURL,
+    };
+  };
+
+  const handleUploadComplete = (uploadedUrls: string[]) => {
+    const updatedImages = [...uploadedImages, ...uploadedUrls];
+    setUploadedImages(updatedImages);
+    form.setValue('images', updatedImages);
+  };
+
+  const handleRemoveImage = (index: number) => {
+    const updatedImages = uploadedImages.filter((_, i) => i !== index);
+    setUploadedImages(updatedImages);
+    form.setValue('images', updatedImages);
+  };
+
+  const handleAddLink = () => {
+    if (newLink.trim() && !links.includes(newLink.trim())) {
+      const updatedLinks = [...links, newLink.trim()];
+      setLinks(updatedLinks);
+      form.setValue('links', updatedLinks);
+      setNewLink('');
+    }
+  };
+
+  const handleRemoveLink = (index: number) => {
+    const updatedLinks = links.filter((_, i) => i !== index);
+    setLinks(updatedLinks);
+    form.setValue('links', updatedLinks);
+  };
+
   const onSubmit = (data: CreatePostFormData) => {
     createPostMutation.mutate({
       ...data,
       platforms: selectedPlatforms,
+      images: uploadedImages,
+      links: links,
     });
   };
 
+  const handleModalClose = () => {
+    form.reset();
+    setSelectedPlatforms([]);
+    setUploadedImages([]);
+    setLinks([]);
+    setNewLink('');
+    onClose();
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleModalClose}>
       <DialogContent className="glass-card max-w-2xl max-h-[90vh] overflow-y-auto" data-testid="create-post-modal">
         <DialogHeader>
           <DialogTitle className="text-xl font-display font-semibold gradient-text">
@@ -167,6 +219,105 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                 </FormItem>
               )}
             />
+
+            {/* Upload Images */}
+            <div className="space-y-3">
+              <FormLabel className="flex items-center gap-2">
+                <Paperclip className="w-4 h-4" />
+                Upload Images (optional)
+              </FormLabel>
+              <div className="flex flex-col gap-3">
+                <ObjectUploader
+                  maxNumberOfFiles={5}
+                  maxFileSize={10485760} // 10MB
+                  onGetUploadParameters={handleGetUploadParameters}
+                  onComplete={handleUploadComplete}
+                  buttonClassName="w-full"
+                >
+                  <div className="flex items-center gap-2">
+                    <Plus className="w-4 h-4" />
+                    Upload Images (Max 5, 10MB each)
+                  </div>
+                </ObjectUploader>
+                
+                {uploadedImages.length > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {uploadedImages.map((imageUrl, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={imageUrl}
+                          alt={`Upload ${index + 1}`}
+                          className="w-full h-20 object-cover rounded-md border"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="sm"
+                          className="absolute -top-2 -right-2 h-6 w-6 rounded-full p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => handleRemoveImage(index)}
+                          data-testid={`remove-image-${index}`}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Links Section */}
+            <div className="space-y-3">
+              <FormLabel className="flex items-center gap-2">
+                <Link2 className="w-4 h-4" />
+                Links (optional)
+              </FormLabel>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="https://your-portfolio.com"
+                  value={newLink}
+                  onChange={(e) => setNewLink(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleAddLink();
+                    }
+                  }}
+                  data-testid="add-link-input"
+                />
+                <Button
+                  type="button"
+                  onClick={handleAddLink}
+                  disabled={!newLink.trim()}
+                  data-testid="add-link-button"
+                >
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </div>
+              
+              {links.length > 0 && (
+                <div className="space-y-2">
+                  {links.map((link, index) => (
+                    <div key={index} className="flex items-center gap-2 p-2 bg-muted rounded-md">
+                      <Link2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                      <span className="text-sm flex-1 truncate" title={link}>
+                        {link}
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0"
+                        onClick={() => handleRemoveLink(index)}
+                        data-testid={`remove-link-${index}`}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Category */}
@@ -263,7 +414,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
               <Button 
                 type="button" 
                 variant="outline" 
-                onClick={onClose}
+                onClick={handleModalClose}
                 data-testid="cancel-post-button"
               >
                 Cancel

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 interface ObjectUploaderProps {
   maxNumberOfFiles?: number;
@@ -9,7 +11,7 @@ interface ObjectUploaderProps {
     method: "PUT";
     url: string;
   }>;
-  onComplete?: (files: File[]) => void;
+  onComplete?: (uploadedUrls: string[]) => void;
   buttonClassName?: string;
   children: ReactNode;
 }
@@ -26,6 +28,7 @@ export function ObjectUploader({
   children,
 }: ObjectUploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
+  const { toast } = useToast();
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -63,15 +66,24 @@ export function ObjectUploader({
           throw new Error(`Upload failed: ${response.statusText}`);
         }
         
-        return file;
+        // Return the uploaded URL
+        return uploadParams.url.split('?')[0]; // Remove query params to get clean URL
       });
       
-      const uploadedFiles = await Promise.all(uploadPromises);
-      onComplete?.(uploadedFiles);
+      const uploadedUrls = await Promise.all(uploadPromises);
+      onComplete?.(uploadedUrls);
+      
+      toast({
+        title: `Successfully uploaded ${uploadedUrls.length} file(s)!`
+      });
       
     } catch (error) {
       console.error('Upload error:', error);
-      alert('Upload failed. Please try again.');
+      toast({
+        title: 'Upload failed',
+        description: 'Please try again.',
+        variant: 'destructive'
+      });
     } finally {
       setIsUploading(false);
       // Reset the input
