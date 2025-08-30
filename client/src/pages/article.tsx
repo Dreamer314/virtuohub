@@ -189,10 +189,10 @@ export default function ArticlePage() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
         <div className="absolute top-6 left-6">
-          <Link href="/">
+          <Link href="/insights">
             <Button variant="secondary" size="sm" className="backdrop-blur-sm bg-white/10 border-white/20">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Community
+              Back to Creator Insights
             </Button>
           </Link>
         </div>

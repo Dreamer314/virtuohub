@@ -178,6 +178,30 @@ export default function InsightsPage() {
                       </div>
                       
                       <CardContent className="p-6">
+                        {/* Engagement Actions */}
+                        <div className="flex items-center justify-between mb-4 text-sm">
+                          <div className="flex items-center gap-4">
+                            <button className="flex items-center gap-1 text-muted-foreground hover:text-red-500 transition-colors">
+                              <Heart className="w-4 h-4" />
+                              <span>24</span>
+                            </button>
+                            <button className="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors">
+                              <MessageCircle className="w-4 h-4" />
+                              <span>8</span>
+                            </button>
+                            <button 
+                              onClick={() => {
+                                navigator.clipboard.writeText(`${window.location.origin}/article/${getArticleSlug(interview.postId)}`);
+                                // You could add a toast notification here
+                              }}
+                              className="flex items-center gap-1 text-muted-foreground hover:text-blue-500 transition-colors"
+                            >
+                              <Share2 className="w-4 h-4" />
+                              <span>Share</span>
+                            </button>
+                          </div>
+                        </div>
+                        
                         <Link href={`/article/${getArticleSlug(interview.postId)}`}>
                           <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-medium">
                             Read Full Interview →
@@ -226,7 +250,7 @@ export default function InsightsPage() {
                           {article.excerpt}
                         </p>
                         
-                        <div className="flex items-center justify-between text-sm text-muted-foreground mb-6">
+                        <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
                           <div className="flex items-center gap-4">
                             <div className="flex items-center gap-1">
                               <User className="w-4 h-4" />
@@ -236,6 +260,30 @@ export default function InsightsPage() {
                               <Clock className="w-4 h-4" />
                               <span>{article.readTime} min read</span>
                             </div>
+                          </div>
+                        </div>
+
+                        {/* Engagement Actions */}
+                        <div className="flex items-center justify-between mb-4 text-sm">
+                          <div className="flex items-center gap-4">
+                            <button className="flex items-center gap-1 text-muted-foreground hover:text-red-500 transition-colors">
+                              <Heart className="w-4 h-4" />
+                              <span>42</span>
+                            </button>
+                            <button className="flex items-center gap-1 text-muted-foreground hover:text-primary transition-colors">
+                              <MessageCircle className="w-4 h-4" />
+                              <span>15</span>
+                            </button>
+                            <button 
+                              onClick={() => {
+                                navigator.clipboard.writeText(`${window.location.origin}/article/${getArticleSlug(article.postId)}`);
+                                // You could add a toast notification here
+                              }}
+                              className="flex items-center gap-1 text-muted-foreground hover:text-blue-500 transition-colors"
+                            >
+                              <Share2 className="w-4 h-4" />
+                              <span>Share</span>
+                            </button>
                           </div>
                         </div>
 
