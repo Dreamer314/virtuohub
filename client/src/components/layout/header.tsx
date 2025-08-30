@@ -18,26 +18,28 @@ export function Header({ onCreatePost }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 glass-card border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-3 items-center h-16 w-full">
-          {/* Logo - Left Side */}
-          <div className="flex items-center space-x-2 justify-start" data-testid="logo">
-            <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
-              <Box className="text-white text-sm" size={16} />
+        <div className="flex items-center h-16 w-full">
+          {/* Logo + Navigation - Left Side */}
+          <div className="flex items-center space-x-8" data-testid="logo">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
+                <Box className="text-white text-sm" size={16} />
+              </div>
+              <span className="text-xl font-display font-bold gradient-text">VirtuoHub</span>
             </div>
-            <span className="text-xl font-display font-bold gradient-text">VirtuoHub</span>
+            
+            {/* Navigation - Close to Logo */}
+            <nav className="flex items-center space-x-6 text-sm">
+              <a href="#" className="text-foreground hover:text-primary transition-colors font-medium" data-testid="nav-home">Home</a>
+              <a href="#" className="text-foreground hover:text-primary transition-colors font-medium" data-testid="nav-learn">Learn</a>
+              <a href="#" className="text-foreground hover:text-primary transition-colors font-medium" data-testid="nav-earn">Earn</a>
+              <a href="#" className="text-foreground hover:text-primary transition-colors font-medium" data-testid="nav-connect">Connect</a>
+              <a href="#" className="text-primary font-semibold" data-testid="nav-community">Community</a>
+            </nav>
           </div>
 
-          {/* Navigation - Center */}
-          <nav className="flex items-center space-x-4 md:space-x-8 justify-center text-sm md:text-base">
-            <a href="#" className="text-foreground hover:text-primary transition-colors font-medium" data-testid="nav-home">Home</a>
-            <a href="#" className="text-foreground hover:text-primary transition-colors font-medium" data-testid="nav-learn">Learn</a>
-            <a href="#" className="text-foreground hover:text-primary transition-colors font-medium" data-testid="nav-earn">Earn</a>
-            <a href="#" className="text-foreground hover:text-primary transition-colors font-medium" data-testid="nav-connect">Connect</a>
-            <a href="#" className="text-primary font-semibold" data-testid="nav-community">Community</a>
-          </nav>
-
           {/* Actions - Right Side */}
-          <div className="flex items-center space-x-3 justify-end">
+          <div className="flex items-center space-x-3 ml-auto">
             {/* Community Page Actions */}
             {location === '/' && (
               <>
