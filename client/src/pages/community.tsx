@@ -239,8 +239,16 @@ export default function Community() {
 
             {/* Featured Content */}
             {currentTab === 'all' && (
-              <div className="mb-12" data-testid="featured-carousel">
-                <div className="flex items-center gap-4">
+              <div className="mb-16" data-testid="featured-carousel">
+                {/* Section Header */}
+                <div className="text-center mb-8">
+                  <h2 className="text-4xl font-bold text-foreground mb-4">Featured Content</h2>
+                  <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+                    Discover the latest insights, creator spotlights, and industry news from the virtual world community
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-6">
                   {/* Autoplay Control */}
                   <button
                     onClick={() => setIsAutoplayPaused(!isAutoplayPaused)}
@@ -260,54 +268,54 @@ export default function Community() {
                     <ChevronLeft className="w-6 h-6" />
                   </button>
 
-                  {/* Featured Content Card */}
+                  {/* Featured Content Card - Much Larger */}
                   <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-[1.01] flex-1">
                     {/* Background Image */}
                     <div className="absolute inset-0">
                       <img 
                         src={featuredContent[currentFeaturedIndex].image} 
                         alt={featuredContent[currentFeaturedIndex].title}
-                        className="w-full h-full object-cover opacity-70"
+                        className="w-full h-full object-cover"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent"></div>
+                      <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/60 to-transparent"></div>
                     </div>
                     
-                    {/* Content */}
-                    <div className="relative z-10 p-8 h-72 flex flex-col justify-between">
+                    {/* Content - Left Side Overlay */}
+                    <div className="relative z-10 p-16 h-96 flex flex-col justify-between max-w-3xl">
                       {/* Top Section - Logo/Brand */}
-                      <div className="flex items-center space-x-3">
+                      <div className="flex items-center space-x-4">
                         {(() => {
                           const Icon = featuredContent[currentFeaturedIndex].icon;
-                          return <Icon className="w-6 h-6 text-white" />;
+                          return <Icon className="w-10 h-10 text-white" />;
                         })()}
-                        <span className="text-white font-bold text-sm tracking-wider uppercase">
+                        <span className="text-white font-bold text-xl tracking-wider uppercase">
                           {featuredContent[currentFeaturedIndex].type}
                         </span>
                       </div>
 
                       {/* Main Content */}
-                      <div className="flex-1 flex flex-col justify-center max-w-2xl">
-                        <h1 className="text-4xl font-bold text-white mb-3 leading-tight">
+                      <div className="flex-1 flex flex-col justify-center">
+                        <h1 className="text-6xl font-bold text-white mb-6 leading-tight max-w-4xl">
                           {featuredContent[currentFeaturedIndex].title}
                         </h1>
-                        <p className="text-white/90 text-base mb-6 leading-relaxed max-w-xl">
+                        <p className="text-white/90 text-xl mb-8 leading-relaxed max-w-2xl">
                           {featuredContent[currentFeaturedIndex].description}
                         </p>
                         
                         {/* Action Buttons */}
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-4">
                           {featuredContent[currentFeaturedIndex].link !== '#' ? (
                             <Link href={featuredContent[currentFeaturedIndex].link}>
-                              <Button className="bg-accent hover:bg-accent/90 text-white px-5 py-2 rounded-lg font-semibold text-sm">
+                              <Button className="bg-accent hover:bg-accent/90 text-white px-8 py-4 rounded-lg font-semibold text-lg">
                                 Read Article
                               </Button>
                             </Link>
                           ) : (
-                            <Button className="bg-accent hover:bg-accent/90 text-white px-5 py-2 rounded-lg font-semibold text-sm" disabled>
+                            <Button className="bg-accent hover:bg-accent/90 text-white px-8 py-4 rounded-lg font-semibold text-lg" disabled>
                               Coming Soon
                             </Button>
                           )}
-                          <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 px-5 py-2 rounded-lg font-semibold text-sm">
+                          <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 px-8 py-4 rounded-lg font-semibold text-lg">
                             Learn More
                           </Button>
                         </div>
@@ -315,7 +323,7 @@ export default function Community() {
 
                       {/* Bottom Section - Category */}
                       <div className="flex items-center justify-between">
-                        <span className="text-white/70 text-sm">
+                        <span className="text-white/70 text-lg">
                           {featuredContent[currentFeaturedIndex].category}
                         </span>
                       </div>
@@ -333,7 +341,7 @@ export default function Community() {
                 </div>
                 
                 {/* Dots Indicator */}
-                <div className="flex justify-center mt-4 space-x-2">
+                <div className="flex justify-center mt-6 space-x-3">
                   {featuredContent.map((_, index) => (
                     <button
                       key={index}
@@ -342,7 +350,7 @@ export default function Community() {
                         setIsAutoplayPaused(true);
                         setTimeout(() => setIsAutoplayPaused(false), 10000);
                       }}
-                      className={`relative w-3 h-3 rounded-full transition-all ${
+                      className={`relative w-4 h-4 rounded-full transition-all ${
                         index === currentFeaturedIndex
                           ? 'bg-accent scale-125'
                           : 'bg-accent/30 hover:bg-accent/50'
@@ -357,7 +365,7 @@ export default function Community() {
                 </div>
                 
                 {/* Autoplay Status */}
-                <div className="flex items-center justify-center gap-2 mt-3 text-xs text-muted-foreground">
+                <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
                   <div className={`w-2 h-2 rounded-full ${
                     isAutoplayPaused ? 'bg-orange-500' : 'bg-green-500 animate-pulse'
                   }`}></div>
