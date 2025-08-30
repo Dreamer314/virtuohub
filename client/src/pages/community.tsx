@@ -101,7 +101,7 @@ export default function Community() {
       description: 'Creator of award-winning VRChat worlds with over 2M visits. Specializes in atmospheric environments and interactive experiences.',
       image: '/images/vrchat-world.png',
       category: 'Profile',
-      link: '#'
+      link: '/profile/emma-thompson'
     },
     {
       type: 'Industry News',
@@ -110,7 +110,7 @@ export default function Community() {
       description: 'Decentraland and Sandbox properties see 40% increase in value this quarter as brands invest heavily in virtual experiences.',
       image: '/images/roblox-dev.png',
       category: 'Market Report',
-      link: '#'
+      link: '/news/virtual-real-estate-market-record-high'
     }
   ];
 

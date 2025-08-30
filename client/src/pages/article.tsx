@@ -183,7 +183,7 @@ export default function ArticlePage() {
       {/* Hero Section */}
       <div className="relative h-96 overflow-hidden">
         <img
-          src={article.post.imageUrl}
+          src={article.post.imageUrl || '/placeholder-image.jpg'}
           alt={article.post.title}
           className="w-full h-full object-cover"
         />
@@ -214,7 +214,7 @@ export default function ArticlePage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" />
-                  <span>{formatDistanceToNow(new Date(article.publishDate))} ago</span>
+                  <span>{article.publishDate ? formatDistanceToNow(new Date(article.publishDate)) + ' ago' : 'Recently'}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4" />
@@ -349,7 +349,7 @@ export default function ArticlePage() {
                         <div className="flex items-center gap-2 mb-2">
                           <span className="font-medium">{comment.author.displayName}</span>
                           <span className="text-sm text-muted-foreground">
-                            {formatDistanceToNow(new Date(comment.createdAt))} ago
+                            {comment.createdAt ? formatDistanceToNow(new Date(comment.createdAt)) + ' ago' : 'Recently'}
                           </span>
                         </div>
                         <p className="text-muted-foreground mb-3">{comment.content}</p>
@@ -381,7 +381,7 @@ export default function ArticlePage() {
                                   <div className="flex items-center gap-2 mb-1">
                                     <span className="font-medium text-sm">{reply.author.displayName}</span>
                                     <span className="text-xs text-muted-foreground">
-                                      {formatDistanceToNow(new Date(reply.createdAt))} ago
+                                      {reply.createdAt ? formatDistanceToNow(new Date(reply.createdAt)) + ' ago' : 'Recently'}
                                     </span>
                                   </div>
                                   <p className="text-sm text-muted-foreground mb-2">{reply.content}</p>

@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { type PostWithAuthor } from "@shared/schema";
 import { ThumbsUp, MessageCircle, Share, Heart, Zap, Lightbulb, Clock } from "lucide-react";
 import { Link } from "wouter";
+import { cn, getPlatformColor, getCategoryColor, formatTimeAgo } from "@/lib/utils";
 
 interface PostCardProps {
   post: PostWithAuthor;
@@ -95,43 +96,6 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
     }
   });
 
-  const getPlatformColor = (platform: string) => {
-    const colors: Record<string, string> = {
-      'VRChat': 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200',
-      'Roblox': 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200',
-      'Second Life': 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200',
-      'IMVU': 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-200',
-      'GTA RP': 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200',
-      'The Sims': 'bg-pink-100 dark:bg-pink-900/30 text-pink-800 dark:text-pink-200',
-      'Other': 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-200',
-    };
-    return colors[platform] || colors['Other'];
-  };
-
-  const getCategoryColor = (category: string) => {
-    const colors: Record<string, string> = {
-      'Assets for Sale': 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200',
-      'Jobs & Gigs': 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-200',
-      'Collaboration & WIP': 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200',
-      'General': 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-200',
-    };
-    return colors[category] || colors['General'];
-  };
-
-  const getTimeAgo = (date: Date) => {
-    const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - new Date(date).getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 1) return 'Just now';
-    if (diffInHours === 1) return '1 hour ago';
-    if (diffInHours < 24) return `${diffInHours} hours ago`;
-    
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays === 1) return '1 day ago';
-    if (diffInDays < 7) return `${diffInDays} days ago`;
-    
-    return new Date(date).toLocaleDateString();
-  };
 
   const renderPostContent = () => {
     if (post.type === 'pulse' && post.pollData) {
@@ -295,7 +259,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
                   {post.author.displayName}
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  {post.author.role} • {getTimeAgo(post.createdAt || new Date())}
+                  {post.author.role} • {formatTimeAgo(post.createdAt || new Date())}
                 </p>
               </div>
             </div>

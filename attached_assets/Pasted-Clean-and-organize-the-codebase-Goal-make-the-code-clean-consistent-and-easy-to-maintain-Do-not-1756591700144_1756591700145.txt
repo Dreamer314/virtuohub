@@ -1,0 +1,67 @@
+Clean and organize the codebase
+
+Goal: make the code clean, consistent, and easy to maintain. Do not add features. Do not change visual design or behavior.
+
+Output format:
+
+Diff of files changed
+
+Short summary of what you fixed
+
+List of any items you could not fix and why
+
+Do these steps in order:
+
+Format all files with Prettier defaults.
+
+Fix ESLint warnings and errors. Remove unused imports, variables, and dead code.
+
+Standardize naming. Functions and files use clear verbs and nouns. No abbreviations that hide meaning.
+
+Split oversized files. Any file over 200 lines or any function over 40 lines gets extracted into helpers.
+
+Centralize constants, types, and shared helpers in a small lib or utils folder.
+
+Check imports. Use one import style and collapse duplicates. Use relative paths only where needed.
+
+Stabilize public APIs. Keep component props and exported function signatures the same unless they are clearly broken.
+
+Tighten state and props. Remove unused state. Avoid prop drilling by extracting small context or helper where obvious.
+
+Accessibility pass. Interactive elements use semantic tags, focus states, labels or aria labels, and proper roles.
+
+CSS pass. Remove unused classes. Avoid deep selectors. Keep spacing and color tokens consistent. No layout changes.
+
+Error handling. Replace silent failures with clear user-safe messages. No raw console.log in production paths.
+
+Security skim. No eval. Sanitize or escape user content. Never log secrets.
+
+Performance skim. Memoize obvious heavy computations. Avoid re-creating handlers in render if not needed.
+
+Remove leftover debug code, TODOs that are obsolete, and commented-out blocks.
+
+Add one tiny test or example per public helper, or inline usage docs if tests do not exist.
+
+Verify build runs without warnings. If warnings remain, list them with reasons.
+
+Acceptance checks:
+
+npm run lint and npm run build succeed.
+
+No unused imports. No unreachable code.
+
+No console errors in the browser.
+
+UI looks the same on desktop and mobile.
+
+All interactive elements work with keyboard.
+
+README contains a short “How to run” section if missing.
+
+Rules:
+
+No new dependencies unless required to fix a clear error.
+
+No large renames that break imports.
+
+Keep comments brief and useful at the top of files and complex functions.
