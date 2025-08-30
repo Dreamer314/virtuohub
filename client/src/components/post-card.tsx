@@ -121,9 +121,11 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
             </div>
             
             {/* Question */}
-            <h3 className="text-lg font-semibold mb-4 text-foreground" data-testid={`pulse-question-${post.id}`}>
-              {(pollData as any).question || 'Poll question'}
-            </h3>
+            <Link href={`/thread/${post.id}`} className="block group mb-4">
+              <h3 className="text-lg font-semibold text-foreground group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors" data-testid={`pulse-question-${post.id}`}>
+                {(pollData as any).question || 'Poll question'}
+              </h3>
+            </Link>
             
             {/* Poll Options */}
             <div className="space-y-3 mb-4">
@@ -176,17 +178,15 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 <ThumbsUp size={16} />
                 <span>{post.likes}</span>
               </Button>
-              <Link href={`/thread/${post.id}`}>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
-                  data-testid={`comment-button-${post.id}`}
-                >
-                  <MessageCircle size={16} />
-                  <span>{post.comments} comments</span>
-                </Button>
-              </Link>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                data-testid={`comment-button-${post.id}`}
+              >
+                <MessageCircle size={16} />
+                <span>{post.comments} comments</span>
+              </Button>
               <Button
                 variant="ghost"
                 size="sm"
@@ -226,7 +226,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
             </div>
             
             {/* Content */}
-            <Link href={`/article/${post.id}`} className="block group">
+            <Link href={`/thread/${post.id}`} className="block group">
               <h3 className="text-lg font-semibold mb-2 text-foreground group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors" data-testid={`insight-title-${post.id}`}>
                 {post.title}
               </h3>
@@ -331,37 +331,49 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
           </div>
           
           {/* Content */}
-          <div className="mb-3">
-            {!isDetailView ? (
-              <Link href={`/thread/${post.id}`} className="block group">
+          {!isDetailView ? (
+            <Link href={`/thread/${post.id}`} className="block group mb-3">
+              <div className="mb-3">
                 <h3 className="text-base font-semibold mb-1 text-foreground group-hover:text-primary transition-colors" data-testid={`title-${post.id}`}>
                   {post.title}
                 </h3>
                 <p className="text-sm text-muted-foreground line-clamp-3" data-testid={`content-${post.id}`}>
                   {post.content}
                 </p>
-              </Link>
-            ) : (
-              <>
-                <h1 className="text-xl font-bold mb-2 text-foreground" data-testid={`title-${post.id}`}>
-                  {post.title}
-                </h1>
-                <div className="text-sm text-foreground whitespace-pre-wrap" data-testid={`content-${post.id}`}>
-                  {post.content}
+              </div>
+              
+              {/* Image */}
+              {post.imageUrl && (
+                <div className="mb-3 rounded-lg overflow-hidden">
+                  <img 
+                    src={post.imageUrl} 
+                    alt={post.title}
+                    className="w-full h-auto max-h-96 object-cover"
+                    data-testid={`image-${post.id}`}
+                  />
                 </div>
-              </>
-            )}
-          </div>
-          
-          {/* Image */}
-          {post.imageUrl && (
-            <div className="mb-3 rounded-lg overflow-hidden">
-              <img 
-                src={post.imageUrl} 
-                alt={post.title}
-                className="w-full h-auto max-h-96 object-cover"
-                data-testid={`image-${post.id}`}
-              />
+              )}
+            </Link>
+          ) : (
+            <div className="mb-3">
+              <h1 className="text-xl font-bold mb-2 text-foreground" data-testid={`title-${post.id}`}>
+                {post.title}
+              </h1>
+              <div className="text-sm text-foreground whitespace-pre-wrap" data-testid={`content-${post.id}`}>
+                {post.content}
+              </div>
+              
+              {/* Image */}
+              {post.imageUrl && (
+                <div className="mb-3 rounded-lg overflow-hidden">
+                  <img 
+                    src={post.imageUrl} 
+                    alt={post.title}
+                    className="w-full h-auto max-h-96 object-cover"
+                    data-testid={`image-${post.id}`}
+                  />
+                </div>
+              )}
             </div>
           )}
           
