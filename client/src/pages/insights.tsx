@@ -23,14 +23,14 @@ export default function InsightsPage() {
     }
   };
 
-  // Mock data for interviews and articles following the reference design
+  // Interview and article data for Creator Insights
   const interviewData = [
     {
       id: 'interview1',
       name: 'Emma Thompson',
       title: 'Environment Artist',
       subtitle: 'Crafting Immersive Realms in VRChat',
-      image: '/images/vr-creator.png',
+      image: '/images/vrchat-world.png',
       type: 'Interview',
       postId: 'post4'
     },
@@ -39,7 +39,7 @@ export default function InsightsPage() {
       name: 'Alex Martinez',
       title: '3D Artist',
       subtitle: 'Building Engaging Games on Roblox',
-      image: '/images/unity-developer.png',
+      image: '/images/roblox-dev.png',
       type: 'Interview',
       postId: 'post5'
     },
@@ -48,7 +48,7 @@ export default function InsightsPage() {
       name: 'Sarah Chen',
       title: 'Avatar Creator', 
       subtitle: 'Cyberpunk Aesthetic in VRChat',
-      image: '/images/vrchat-creator.png',
+      image: '/images/vr-creator.png',
       type: 'Interview',
       postId: 'post6'
     },
@@ -57,7 +57,7 @@ export default function InsightsPage() {
       name: 'Doux',
       title: 'Designer',
       subtitle: 'Building a Brand in Second Life',
-      image: '/images/second-life-creator.png',
+      image: '/images/3d-artist.png',
       type: 'Interview',
       postId: 'post4'
     },
@@ -66,7 +66,7 @@ export default function InsightsPage() {
       name: 'Tom Wheeler',
       title: 'World Builder',
       subtitle: 'Creating Interactive Environments',
-      image: '/images/game-developer.png',
+      image: '/images/unity-metaverse.png',
       type: 'Interview',
       postId: 'post5'
     },
@@ -75,7 +75,7 @@ export default function InsightsPage() {
       name: 'Mike Rodriguez',
       title: 'Game Developer', 
       subtitle: 'Developing Adventures for Roblox',
-      image: '/images/roblox-creator.png',
+      image: '/images/game-dev.png',
       type: 'Interview',
       postId: 'post6'
     }
@@ -85,22 +85,22 @@ export default function InsightsPage() {
     {
       id: 'article1',
       title: 'Breaking Creative Blocks with AI Tools',
-      excerpt: 'Discover how AI is revolutionizing the creative process for virtual world designers and artists.',
+      excerpt: 'Alex Chen shares how he uses generative AI to speed up concept art workflows — without losing the human touch.',
       image: '/images/unity-metaverse.png',
-      author: 'VirtuoHub Editorial',
+      author: 'Alex Chen',
       readTime: 8,
       type: 'Article',
       postId: 'post4'
     },
     {
       id: 'article2',
-      title: 'The Economics of Virtual Fashion',
-      excerpt: 'A deep dive into the business models driving the multi-billion dollar virtual fashion industry.',
+      title: 'The Future of Virtual Fashion',
+      excerpt: 'Digital clothing designer Maria Lopez explains how her designs are crossing into AR and real-world production.',
       image: '/images/vrchat-world.png', 
-      author: 'Industry Analysis Team',
+      author: 'Maria Lopez',
       readTime: 12,
       type: 'Article',
-      postId: 'post5'
+      postId: 'post6'
     }
   ];
 
