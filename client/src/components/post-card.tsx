@@ -111,6 +111,8 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
             {post.title}
           </h2>
           
+          <p className="text-sm text-muted-foreground">Tap an option to vote.</p>
+          
           <div className="space-y-3">
             {(post.pollData as any)?.options?.map((option: any, index: number) => (
               <button
@@ -145,12 +147,10 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
           <div className="flex items-center justify-between text-muted-foreground">
             <span className="text-sm flex items-center">
               <Clock className="w-4 h-4 mr-1" />
-              {(post.pollData as any)?.totalVotes || 0} votes • Ends in 2 days
+              Ends in 2 days • Results show after a few votes
             </span>
-            {hasVoted ? (
+            {hasVoted && (
               <span className="text-sm text-primary font-medium">✓ Vote submitted</span>
-            ) : (
-              <span className="text-sm">Click an option to vote</span>
             )}
           </div>
         </div>
@@ -213,17 +213,24 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
       {/* Post Type Badge */}
       {post.type !== 'regular' && (
         <div className="px-6 pt-4">
-          <div className="flex items-center space-x-2 mb-4">
-            {post.type === 'pulse' ? (
-              <>
-                <Zap className="text-primary" size={16} />
-                <span className="text-sm font-semibold text-primary">VHub Pulse</span>
-              </>
-            ) : (
-              <>
-                <Lightbulb className="text-accent" size={16} />
-                <span className="text-sm font-semibold text-accent">Creator Insight</span>
-              </>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-2">
+              {post.type === 'pulse' ? (
+                <>
+                  <Zap className="text-primary" size={16} />
+                  <span className="text-sm font-semibold text-primary">VHub Pulse</span>
+                </>
+              ) : (
+                <>
+                  <Lightbulb className="text-accent" size={16} />
+                  <span className="text-sm font-semibold text-accent">Creator Insight</span>
+                </>
+              )}
+            </div>
+            {post.type === 'pulse' && (
+              <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full border border-primary/20">
+                Official VHub Poll
+              </span>
             )}
           </div>
         </div>
