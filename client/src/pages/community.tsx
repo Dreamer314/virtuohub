@@ -410,7 +410,7 @@ export default function Community() {
               </div>
 
               {/* Filter Controls */}
-              <div className="glass-card rounded-xl p-6 mb-8 border-2 border-accent/20 shadow-2xl bg-gradient-to-br from-background/90 via-background/95 to-accent/5">
+              <div className="bg-sidebar rounded-xl p-6 mb-8 border border-sidebar-border hover:border-primary/30 transition-all duration-300 hover:shadow-md">
                 <div className="flex items-center gap-4 mb-4">
                   <Filter className="w-5 h-5 text-accent" />
                   <h3 className="text-lg font-semibold text-foreground">Filter & Search</h3>
