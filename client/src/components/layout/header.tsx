@@ -12,7 +12,10 @@ export function Header({ onCreatePost }: HeaderProps) {
   const [location] = useLocation();
 
   const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
+    const themeOrder: Array<"light" | "dark" | "charcoal"> = ["light", "dark", "charcoal"];
+    const currentIndex = themeOrder.indexOf(theme as "light" | "dark" | "charcoal");
+    const nextIndex = (currentIndex + 1) % themeOrder.length;
+    setTheme(themeOrder[nextIndex]);
   };
 
   return (
@@ -81,9 +84,17 @@ export function Header({ onCreatePost }: HeaderProps) {
               onClick={toggleTheme}
               className="w-9 h-9 rounded-full hover:bg-muted/50 transition-colors"
               data-testid="theme-toggle"
-              aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+              aria-label={
+                theme === "light" ? "Switch to dark mode" : 
+                theme === "dark" ? "Switch to charcoal mode" : 
+                "Switch to light mode"
+              }
             >
-              {theme === "dark" ? (
+              {theme === "light" ? (
+                <Moon className="h-4 w-4 text-muted-foreground" />
+              ) : theme === "dark" ? (
+                <div className="h-4 w-4 bg-gradient-to-br from-gray-600 to-gray-800 rounded-sm border border-gray-500" />
+              ) : theme === "charcoal" ? (
                 <Sun className="h-4 w-4 text-yellow-500" />
               ) : (
                 <Moon className="h-4 w-4 text-muted-foreground" />
