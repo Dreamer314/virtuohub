@@ -281,7 +281,7 @@ export default function Community() {
                     </div>
                     
                     {/* Content - Left Side Overlay */}
-                    <div className="relative z-10 p-16 h-96 flex flex-col justify-between max-w-3xl">
+                    <div className="relative z-10 p-16 h-96 flex flex-col justify-between w-full">
                       {/* Top Section - Logo/Brand */}
                       <div className="flex items-center space-x-4">
                         {(() => {
@@ -294,11 +294,11 @@ export default function Community() {
                       </div>
 
                       {/* Main Content */}
-                      <div className="flex-1 flex flex-col justify-center">
-                        <h1 className="text-6xl font-bold text-white mb-6 leading-tight max-w-4xl">
+                      <div className="flex-1 flex flex-col justify-center w-3/5">
+                        <h1 className="text-6xl font-bold text-white mb-6 leading-tight">
                           {featuredContent[currentFeaturedIndex].title}
                         </h1>
-                        <p className="text-white/90 text-xl mb-8 leading-relaxed max-w-2xl">
+                        <p className="text-white/90 text-xl mb-8 leading-relaxed">
                           {featuredContent[currentFeaturedIndex].description}
                         </p>
                         
