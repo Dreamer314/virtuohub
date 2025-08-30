@@ -280,7 +280,7 @@ export default function ArticlePage() {
                   <div key={comment.id} className="border-l-2 border-accent/20 pl-4" data-testid={`comment-${comment.id}`}>
                     <div className="flex items-start gap-4">
                       <img
-                        src={comment.author.avatar || '/src/attached_assets/generated_images/VR_creator_avatar_portrait_f2a1cea7.png'}
+                        src={comment.author.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face'}
                         alt={comment.author.displayName}
                         className="w-10 h-10 rounded-full object-cover"
                       />

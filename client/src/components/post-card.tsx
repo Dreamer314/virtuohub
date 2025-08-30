@@ -235,7 +235,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
               <img 
-                src={post.author.avatar || `/src/attached_assets/generated_images/VR_creator_avatar_portrait_f2a1cea7.png`} 
+                src={post.author.avatar || `https://images.unsplash.com/photo-1494790108755-2616b612b047?w=150`} 
                 alt={post.author.displayName}
                 className="w-10 h-10 rounded-full object-cover"
               />
