@@ -79,7 +79,7 @@ export default function Community() {
       icon: Lightbulb,
       title: 'Breaking Creative Blocks with AI Tools',
       description: 'Alex Chen shares how he uses generative AI to speed up concept art workflows — without losing the human touch. Practical tips for creators.',
-      image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=600',
+      image: '/src/attached_assets/generated_images/Unity_metaverse_development_scene_2aad981b.png',
       category: 'Interview',
       link: '/article/breaking-creative-blocks-with-ai-tools'
     },
@@ -88,7 +88,7 @@ export default function Community() {
       icon: Star,
       title: 'Emma Thompson: VR Environment Artist',
       description: 'Creator of award-winning VRChat worlds with over 2M visits. Specializes in atmospheric environments and interactive experiences.',
-      image: 'https://images.unsplash.com/photo-1551739440-5dd934d3a94a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=600',
+      image: '/src/attached_assets/generated_images/VRChat_cyberpunk_world_scene_3aea95c5.png',
       category: 'Profile',
       link: '#'
     },
@@ -97,7 +97,7 @@ export default function Community() {
       icon: Newspaper,
       title: 'Virtual Real Estate Market Hits Record High',
       description: 'Decentraland and Sandbox properties see 40% increase in value this quarter as brands invest heavily in virtual experiences.',
-      image: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&h=600',
+      image: '/src/attached_assets/generated_images/Roblox_Studio_development_workspace_b4b038dc.png',
       category: 'Market Report',
       link: '#'
     }
