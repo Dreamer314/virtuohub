@@ -21,39 +21,11 @@ export default function Community() {
   const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState(0);
   const [isAutoplayPaused, setIsAutoplayPaused] = useState(false);
 
-  // Function to handle category changes while preserving scroll position
-  const handleCategoryChange = (category: Category) => {
-    // Prevent scroll jumping by maintaining current scroll position
-    const currentScrollY = window.scrollY;
-    setSelectedCategory(category);
-    
-    // Restore scroll position after React re-renders
-    requestAnimationFrame(() => {
-      window.scrollTo(0, currentScrollY);
-    });
-  };
 
-  // Build query parameters for API requests
-  const buildQueryString = () => {
-    const params = new URLSearchParams();
-    if (selectedCategory && selectedCategory !== 'All') {
-      params.append('category', selectedCategory);
-    }
-    selectedPlatforms.forEach(platform => {
-      params.append('platforms', platform);
-    });
-    return params.toString();
-  };
-
-  const queryString = buildQueryString();
-  const postsUrl = queryString ? `/api/posts?${queryString}` : '/api/posts';
-
-  // Fetch posts based on current tab with proper server-side filtering
-  const { data: posts, isLoading } = useQuery({
-    queryKey: currentTab === 'all' 
-      ? [postsUrl] // Use the complete URL with query params
-      : ['/api/users/user1/saved-posts'],
-    enabled: true,
+  // Fetch all posts
+  const { data: allPosts, isLoading } = useQuery({
+    queryKey: ['/api/posts'],
+    enabled: currentTab === 'all',
   });
 
   const { data: savedPosts } = useQuery({
@@ -61,9 +33,19 @@ export default function Community() {
     enabled: currentTab === 'saved',
   });
 
-  // Use server-filtered posts directly
+  // Filter posts client-side (simple and reliable)
   const allFilteredPosts = currentTab === 'all' 
-    ? (Array.isArray(posts) ? posts : [])
+    ? (Array.isArray(allPosts) ? allPosts : []).filter((post: any) => {
+        // Category filter
+        if (selectedCategory !== 'All' && post.category !== selectedCategory) {
+          return false;
+        }
+        // Platform filter
+        if (selectedPlatforms.length > 0 && !post.platforms.some((p: string) => selectedPlatforms.includes(p as Platform))) {
+          return false;
+        }
+        return true;
+      })
     : (Array.isArray(savedPosts) ? savedPosts : []);
 
   // Separate special posts by type
@@ -392,7 +374,7 @@ export default function Community() {
                   <Button
                     variant={selectedCategory === 'All' ? 'default' : 'outline'}
                     size="sm"
-onClick={() => handleCategoryChange('All')}
+onClick={() => setSelectedCategory('All')}
                     className="rounded-full"
                     data-testid="category-all"
                   >
@@ -401,7 +383,7 @@ onClick={() => handleCategoryChange('All')}
                   <Button
                     variant={selectedCategory === 'General' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => handleCategoryChange('General')}
+                    onClick={() => setSelectedCategory('General')}
                     className="rounded-full"
                     data-testid="category-general"
                   >
@@ -410,7 +392,7 @@ onClick={() => handleCategoryChange('All')}
                   <Button
                     variant={selectedCategory === 'Assets for Sale' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => handleCategoryChange('Assets for Sale')}
+                    onClick={() => setSelectedCategory('Assets for Sale')}
                     className="rounded-full"
                     data-testid="category-assets"
                   >
@@ -419,7 +401,7 @@ onClick={() => handleCategoryChange('All')}
                   <Button
                     variant={selectedCategory === 'Jobs & Gigs' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => handleCategoryChange('Jobs & Gigs')}
+                    onClick={() => setSelectedCategory('Jobs & Gigs')}
                     className="rounded-full"
                     data-testid="category-jobs"
                   >
@@ -428,7 +410,7 @@ onClick={() => handleCategoryChange('All')}
                   <Button
                     variant={selectedCategory === 'Freelance/Hiring' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => handleCategoryChange('Freelance/Hiring')}
+                    onClick={() => setSelectedCategory('Freelance/Hiring')}
                     className="rounded-full"
                     data-testid="category-freelance"
                   >
@@ -437,7 +419,7 @@ onClick={() => handleCategoryChange('All')}
                   <Button
                     variant={selectedCategory === 'Collaborations' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => handleCategoryChange('Collaborations')}
+                    onClick={() => setSelectedCategory('Collaborations')}
                     className="rounded-full"
                     data-testid="category-collaborations"
                   >
@@ -446,7 +428,7 @@ onClick={() => handleCategoryChange('All')}
                   <Button
                     variant={selectedCategory === 'WIP' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => handleCategoryChange('WIP')}
+                    onClick={() => setSelectedCategory('WIP')}
                     className="rounded-full"
                     data-testid="category-wip"
                   >
