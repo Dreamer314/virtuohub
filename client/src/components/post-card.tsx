@@ -70,7 +70,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
       'VRChat': 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200',
       'Roblox': 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200',
       'Second Life': 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200',
-      'IMVU': 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200',
+      'IMVU': 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-200',
       'GTA RP': 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200',
       'The Sims': 'bg-pink-100 dark:bg-pink-900/30 text-pink-800 dark:text-pink-200',
       'Other': 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-200',
@@ -81,7 +81,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
       'Assets for Sale': 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200',
-      'Jobs & Gigs': 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200',
+      'Jobs & Gigs': 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-200',
       'Collaboration & WIP': 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200',
       'General': 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-200',
     };
@@ -125,8 +125,8 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
                 className={`w-full p-3 rounded-lg border transition-all duration-200 ${
                   selectedOption === index
                     ? 'border-primary bg-primary/10 text-primary'
-                    : 'border-border hover:border-primary/50 bg-card hover:bg-primary/5'
-                } ${hasVoted || voteMutation.isPending ? 'cursor-not-allowed opacity-75' : 'cursor-pointer hover:scale-[1.02]'}`}
+                    : 'border-border hover:border-primary/50 bg-card hover:border-2'
+                } ${hasVoted || voteMutation.isPending ? 'cursor-not-allowed opacity-75' : 'cursor-pointer'}`}
                 data-testid={`poll-option-${post.id}-${index}`}
               >
                 <div className="flex items-center justify-between">
@@ -172,7 +172,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
             <p className="text-muted-foreground mb-4">{post.content}</p>
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">15 min read • Interview</span>
-              <Button size="sm" variant="secondary" className="transition-all hover:scale-105" data-testid={`read-more-${post.id}`}>
+              <Button size="sm" variant="secondary" className="transition-all" data-testid={`read-more-${post.id}`}>
                 Read More
               </Button>
             </div>
