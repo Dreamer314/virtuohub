@@ -241,64 +241,73 @@ export default function Community() {
             {currentTab === 'all' && (
               <div className="mb-16" data-testid="featured-carousel">
                 {/* Section Header */}
-                <div className="text-center mb-8">
+                <div className="text-center mb-12">
                   <h2 className="text-4xl font-bold text-foreground mb-4">Featured Content</h2>
                   <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                     Discover the latest insights, creator spotlights, and industry news from the virtual world community
                   </p>
                 </div>
 
-                <div className="flex items-center gap-6">
-                  {/* Autoplay Control */}
+                {/* Featured Content Layout */}
+                <div className="relative">
+                  {/* Navigation Controls */}
+                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 flex items-center gap-2">
+                    <button
+                      onClick={() => setIsAutoplayPaused(!isAutoplayPaused)}
+                      className="bg-black/50 backdrop-blur-sm text-white p-3 rounded-full transition-all hover:bg-black/70"
+                      data-testid="autoplay-toggle-button"
+                      title={isAutoplayPaused ? "Start slideshow" : "Pause slideshow"}
+                    >
+                      {isAutoplayPaused ? <Play className="w-5 h-5" /> : <Pause className="w-5 h-5" />}
+                    </button>
+                    <button
+                      onClick={prevFeatured}
+                      className="bg-black/50 backdrop-blur-sm text-white p-3 rounded-full transition-all hover:bg-black/70"
+                      data-testid="featured-prev-button"
+                    >
+                      <ChevronLeft className="w-6 h-6" />
+                    </button>
+                  </div>
+
                   <button
-                    onClick={() => setIsAutoplayPaused(!isAutoplayPaused)}
-                    className="bg-white/10 backdrop-blur-sm text-white p-3 rounded-full transition-all hover:bg-white/20 border border-white/20"
-                    data-testid="autoplay-toggle-button"
-                    title={isAutoplayPaused ? "Start slideshow" : "Pause slideshow"}
+                    onClick={nextFeatured}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/50 backdrop-blur-sm text-white p-3 rounded-full transition-all hover:bg-black/70"
+                    data-testid="featured-next-button"
                   >
-                    {isAutoplayPaused ? <Play className="w-5 h-5" /> : <Pause className="w-5 h-5" />}
-                  </button>
-                  
-                  {/* Left Navigation Arrow */}
-                  <button
-                    onClick={prevFeatured}
-                    className="bg-white/10 backdrop-blur-sm text-white p-3 rounded-full transition-all hover:bg-white/20 border border-white/20"
-                    data-testid="featured-prev-button"
-                  >
-                    <ChevronLeft className="w-6 h-6" />
+                    <ChevronRight className="w-6 h-6" />
                   </button>
 
-                  {/* Featured Content Card - Much Larger */}
-                  <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 via-gray-800 to-black shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-[1.01] flex-1">
+                  {/* Main Featured Card */}
+                  <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 to-black shadow-2xl h-96">
                     {/* Background Image */}
-                    <div className="absolute inset-0">
-                      <img 
-                        src={featuredContent[currentFeaturedIndex].image} 
-                        alt={featuredContent[currentFeaturedIndex].title}
-                        className="w-full h-full object-cover"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-r from-black/95 via-black/60 to-transparent"></div>
-                    </div>
+                    <img 
+                      src={featuredContent[currentFeaturedIndex].image} 
+                      alt={featuredContent[currentFeaturedIndex].title}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
                     
-                    {/* Content - Left Side Overlay */}
-                    <div className="relative z-10 p-16 h-96 flex flex-col justify-between w-full">
-                      {/* Top Section - Logo/Brand */}
-                      <div className="flex items-center space-x-4">
+                    {/* Overlay Gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
+                    
+                    {/* Content Overlay */}
+                    <div className="relative z-10 h-full flex flex-col justify-between p-12">
+                      {/* Top Brand Section */}
+                      <div className="flex items-center space-x-3">
                         {(() => {
                           const Icon = featuredContent[currentFeaturedIndex].icon;
-                          return <Icon className="w-10 h-10 text-white" />;
+                          return <Icon className="w-8 h-8 text-white" />;
                         })()}
-                        <span className="text-white font-bold text-xl tracking-wider uppercase">
+                        <span className="text-white font-bold text-lg tracking-wider uppercase">
                           {featuredContent[currentFeaturedIndex].type}
                         </span>
                       </div>
 
-                      {/* Main Content */}
-                      <div className="flex-1 flex flex-col justify-center w-3/5">
-                        <h1 className="text-6xl font-bold text-white mb-6 leading-tight">
+                      {/* Main Content - Left Side */}
+                      <div className="max-w-2xl">
+                        <h1 className="text-5xl font-bold text-white mb-6 leading-tight">
                           {featuredContent[currentFeaturedIndex].title}
                         </h1>
-                        <p className="text-white/90 text-xl mb-8 leading-relaxed">
+                        <p className="text-white/90 text-lg mb-8 leading-relaxed">
                           {featuredContent[currentFeaturedIndex].description}
                         </p>
                         
@@ -306,70 +315,58 @@ export default function Community() {
                         <div className="flex items-center space-x-4">
                           {featuredContent[currentFeaturedIndex].link !== '#' ? (
                             <Link href={featuredContent[currentFeaturedIndex].link}>
-                              <Button className="bg-accent hover:bg-accent/90 text-white px-8 py-4 rounded-lg font-semibold text-lg">
+                              <Button className="bg-accent hover:bg-accent/90 text-white px-6 py-3 rounded-lg font-semibold">
                                 Read Article
                               </Button>
                             </Link>
                           ) : (
-                            <Button className="bg-accent hover:bg-accent/90 text-white px-8 py-4 rounded-lg font-semibold text-lg" disabled>
+                            <Button className="bg-accent hover:bg-accent/90 text-white px-6 py-3 rounded-lg font-semibold" disabled>
                               Coming Soon
                             </Button>
                           )}
-                          <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 px-8 py-4 rounded-lg font-semibold text-lg">
+                          <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 px-6 py-3 rounded-lg font-semibold">
                             Learn More
                           </Button>
                         </div>
                       </div>
 
-                      {/* Bottom Section - Category */}
+                      {/* Bottom Section */}
                       <div className="flex items-center justify-between">
-                        <span className="text-white/70 text-lg">
+                        <span className="text-white/70">
                           {featuredContent[currentFeaturedIndex].category}
                         </span>
                       </div>
                     </div>
                   </div>
-
-                  {/* Right Navigation Arrow */}
-                  <button
-                    onClick={nextFeatured}
-                    className="bg-white/10 backdrop-blur-sm text-white p-3 rounded-full transition-all hover:bg-white/20 border border-white/20"
-                    data-testid="featured-next-button"
-                  >
-                    <ChevronRight className="w-6 h-6" />
-                  </button>
                 </div>
                 
-                {/* Dots Indicator */}
-                <div className="flex justify-center mt-6 space-x-3">
-                  {featuredContent.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        setCurrentFeaturedIndex(index);
-                        setIsAutoplayPaused(true);
-                        setTimeout(() => setIsAutoplayPaused(false), 10000);
-                      }}
-                      className={`relative w-4 h-4 rounded-full transition-all ${
-                        index === currentFeaturedIndex
-                          ? 'bg-accent scale-125'
-                          : 'bg-accent/30 hover:bg-accent/50'
-                      }`}
-                      data-testid={`featured-dot-${index}`}
-                    >
-                      {index === currentFeaturedIndex && !isAutoplayPaused && (
-                        <div className="absolute inset-0 rounded-full border-2 border-accent animate-ping"></div>
-                      )}
-                    </button>
-                  ))}
-                </div>
-                
-                {/* Autoplay Status */}
-                <div className="flex items-center justify-center gap-2 mt-4 text-sm text-muted-foreground">
-                  <div className={`w-2 h-2 rounded-full ${
-                    isAutoplayPaused ? 'bg-orange-500' : 'bg-green-500 animate-pulse'
-                  }`}></div>
-                  <span>{isAutoplayPaused ? 'Slideshow paused' : 'Auto-rotating every 5s'}</span>
+                {/* Dots Indicator and Status */}
+                <div className="flex flex-col items-center mt-6 space-y-3">
+                  <div className="flex space-x-2">
+                    {featuredContent.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          setCurrentFeaturedIndex(index);
+                          setIsAutoplayPaused(true);
+                          setTimeout(() => setIsAutoplayPaused(false), 10000);
+                        }}
+                        className={`w-3 h-3 rounded-full transition-all ${
+                          index === currentFeaturedIndex
+                            ? 'bg-accent'
+                            : 'bg-accent/30 hover:bg-accent/50'
+                        }`}
+                        data-testid={`featured-dot-${index}`}
+                      />
+                    ))}
+                  </div>
+                  
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <div className={`w-2 h-2 rounded-full ${
+                      isAutoplayPaused ? 'bg-orange-500' : 'bg-green-500 animate-pulse'
+                    }`}></div>
+                    <span>{isAutoplayPaused ? 'Slideshow paused' : 'Auto-rotating every 5s'}</span>
+                  </div>
                 </div>
               </div>
             )}
