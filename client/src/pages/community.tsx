@@ -8,13 +8,16 @@ import { CreatePostModal } from "@/components/create-post-modal";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type Category, type Platform } from "@shared/schema";
-import { Plus, Image, BarChart3, ChevronLeft, ChevronRight, Lightbulb, Star, Calendar, Newspaper, TrendingUp, Play, Pause } from "lucide-react";
+import { Plus, Image, BarChart3, ChevronLeft, ChevronRight, Lightbulb, Star, Calendar, Newspaper, TrendingUp, Play, Pause, Search, Filter } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import communityHeaderImage from "@/assets/community-header.png";
 
 export default function Community() {
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [currentTab, setCurrentTab] = useState<'all' | 'saved'>('all');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [currentInsightIndex, setCurrentInsightIndex] = useState(0);
@@ -36,6 +39,11 @@ export default function Community() {
   // Filter posts client-side (simple and reliable)
   const allFilteredPosts = currentTab === 'all' 
     ? (Array.isArray(allPosts) ? allPosts : []).filter((post: any) => {
+        // Search filter
+        if (searchQuery && !post.title.toLowerCase().includes(searchQuery.toLowerCase()) && 
+            !post.content.toLowerCase().includes(searchQuery.toLowerCase())) {
+          return false;
+        }
         // Category filter
         if (selectedCategory !== 'All' && post.category !== selectedCategory) {
           return false;
@@ -368,100 +376,75 @@ export default function Community() {
                 <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
               </div>
 
-              {/* Category Filter Tabs */}
-              <div className="glass-card rounded-xl p-4 mb-6">
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant={selectedCategory === 'All' ? 'default' : 'outline'}
-                    size="sm"
-onClick={(e) => {
-                      e.preventDefault();
-                      // Preserve scroll position when going back to Feed
-                      const currentScrollY = window.scrollY;
-                      setSelectedCategory('All');
-                      // Use a longer delay to allow all content to render
-                      setTimeout(() => {
-                        window.scrollTo({ top: currentScrollY, behavior: 'auto' });
-                      }, 100);
-                    }}
-                    className="rounded-full"
-                    data-testid="category-all"
-                  >
-                    Feed
-                  </Button>
-                  <Button
-                    variant={selectedCategory === 'General' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setSelectedCategory('General');
-                    }}
-                    className="rounded-full"
-                    data-testid="category-general"
-                  >
-                    General
-                  </Button>
-                  <Button
-                    variant={selectedCategory === 'Assets for Sale' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setSelectedCategory('Assets for Sale');
-                    }}
-                    className="rounded-full"
-                    data-testid="category-assets"
-                  >
-                    Assets for Sale
-                  </Button>
-                  <Button
-                    variant={selectedCategory === 'Jobs & Gigs' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setSelectedCategory('Jobs & Gigs');
-                    }}
-                    className="rounded-full"
-                    data-testid="category-jobs"
-                  >
-                    Jobs & Gigs
-                  </Button>
-                  <Button
-                    variant={selectedCategory === 'Freelance/Hiring' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setSelectedCategory('Freelance/Hiring');
-                    }}
-                    className="rounded-full"
-                    data-testid="category-freelance"
-                  >
-                    Freelance/Hiring
-                  </Button>
-                  <Button
-                    variant={selectedCategory === 'Collaborations' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setSelectedCategory('Collaborations');
-                    }}
-                    className="rounded-full"
-                    data-testid="category-collaborations"
-                  >
-                    Collaborations
-                  </Button>
-                  <Button
-                    variant={selectedCategory === 'WIP' ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setSelectedCategory('WIP');
-                    }}
-                    className="rounded-full"
-                    data-testid="category-wip"
-                  >
-                    WIP
-                  </Button>
+              {/* Filter Controls */}
+              <div className="glass-card rounded-xl p-6 mb-6">
+                <div className="flex items-center gap-4 mb-4">
+                  <Filter className="w-5 h-5 text-accent" />
+                  <h3 className="text-lg font-semibold text-foreground">Filter & Search</h3>
                 </div>
+                
+                <div className="flex flex-col sm:flex-row gap-4">
+                  {/* Search Bar */}
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search posts..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 bg-background/50 border-border/50 focus:border-accent focus:ring-1 focus:ring-accent/20"
+                      data-testid="search-input"
+                    />
+                  </div>
+                  
+                  {/* Category Filter Dropdown */}
+                  <div className="min-w-[200px]">
+                    <Select value={selectedCategory} onValueChange={(value: Category) => setSelectedCategory(value)}>
+                      <SelectTrigger className="bg-background/50 border-border/50 focus:border-accent focus:ring-1 focus:ring-accent/20" data-testid="category-select">
+                        <SelectValue placeholder="Filter Categories" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="All">All Categories</SelectItem>
+                        <SelectItem value="General">General</SelectItem>
+                        <SelectItem value="Assets for Sale">Assets for Sale</SelectItem>
+                        <SelectItem value="Jobs & Gigs">Jobs & Gigs</SelectItem>
+                        <SelectItem value="Freelance/Hiring">Freelance/Hiring</SelectItem>
+                        <SelectItem value="Collaborations">Collaborations</SelectItem>
+                        <SelectItem value="WIP">Work in Progress</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                {/* Active Filters Display */}
+                {(selectedCategory !== 'All' || searchQuery) && (
+                  <div className="mt-4 pt-4 border-t border-border/50">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <span>Active filters:</span>
+                      {selectedCategory !== 'All' && (
+                        <span className="px-2 py-1 bg-accent/20 text-accent rounded-full">
+                          {selectedCategory}
+                        </span>
+                      )}
+                      {searchQuery && (
+                        <span className="px-2 py-1 bg-primary/20 text-primary rounded-full">
+                          Search: "{searchQuery}"
+                        </span>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedCategory('All');
+                          setSearchQuery('');
+                        }}
+                        className="ml-auto h-6 px-2 text-xs hover:bg-destructive/20 hover:text-destructive"
+                        data-testid="clear-filters"
+                      >
+                        Clear All
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
