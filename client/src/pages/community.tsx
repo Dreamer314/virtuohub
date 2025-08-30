@@ -203,7 +203,7 @@ export default function Community() {
 
         {/* Main Content Area */}
         <div className="flex-1 lg:ml-64 lg:mr-80">
-          <div className="w-full px-6 sm:px-8 lg:px-12 py-8">
+          <div className="max-w-[900px] mx-auto px-6 sm:px-8 lg:px-12 py-8">
             <div className="grid grid-cols-1 gap-8">
           {/* Mobile Left Sidebar */}
           <div className="lg:hidden">
@@ -239,9 +239,9 @@ export default function Community() {
 
             {/* Featured Content */}
             {currentTab === 'all' && (
-              <div className="mb-16 -mx-6 sm:-mx-8 lg:-mx-12" data-testid="featured-carousel">
+              <div className="mb-16" data-testid="featured-carousel">
                 {/* Section Header */}
-                <div className="text-center mb-12 px-6 sm:px-8 lg:px-12">
+                <div className="text-center mb-12">
                   <h2 className="text-4xl font-bold text-foreground mb-4">Featured Content</h2>
                   <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                     Discover the latest insights, creator spotlights, and industry news from the virtual world community
@@ -249,7 +249,7 @@ export default function Community() {
                 </div>
 
                 {/* Featured Content Layout */}
-                <div className="flex items-center gap-6 px-6 sm:px-8 lg:px-12">
+                <div className="flex items-center gap-6">
                   {/* Left Navigation Controls */}
                   <div className="flex flex-col items-center gap-3">
                     <button
@@ -270,7 +270,7 @@ export default function Community() {
                   </div>
 
                   {/* Main Featured Card - Larger */}
-                  <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 to-black shadow-2xl h-[600px] flex-1">
+                  <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 to-black shadow-2xl h-[400px] flex-1">
                     {/* Background Image */}
                     <img 
                       src={featuredContent[currentFeaturedIndex].image} 
