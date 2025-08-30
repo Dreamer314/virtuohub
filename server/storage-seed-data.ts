@@ -68,7 +68,7 @@ export function getSamplePosts(): Post[] {
       links: ['https://gumroad.com/sarah-avatars'],
       category: 'Assets for Sale',
       platforms: ['VRChat'],
-      pricing: '$25 - $45 per avatar',
+      price: '$25 - $45 per avatar',
       type: 'regular',
       likes: 156,
       comments: 23,
@@ -87,7 +87,7 @@ export function getSamplePosts(): Post[] {
       links: [],
       category: 'General',
       platforms: ['Other'],
-      pricing: null,
+      price: null,
       type: 'pulse',
       pollData: {
         question: 'Which platform offers the best creator monetization?',
@@ -117,7 +117,7 @@ export function getSamplePosts(): Post[] {
       links: ['https://alexvr.studio'],
       category: 'General',
       platforms: ['VRChat', 'Other'],
-      pricing: null,
+      price: null,
       type: 'insight',
       likes: 445,
       comments: 78,
@@ -134,7 +134,7 @@ export function getSampleArticles(): Article[] {
       postId: 'insight1',
       slug: 'from-hobby-to-fulltime-building-vr-experiences',
       excerpt: 'Alex Kim shares the journey from weekend VR hobbyist to running a 12-person studio, including key lessons about scaling creative work in virtual spaces.',
-      content: `# From Hobby to Full-Time: Building VR Experiences
+      fullContent: `# From Hobby to Full-Time: Building VR Experiences
 
 ## The Beginning
 
@@ -185,7 +185,7 @@ export function getSampleComments(): Comment[] {
       articleId: 'article1',
       authorId: 'user1',
       content: 'This really resonates with my experience! The community-first approach is so important. Started with VRChat avatars and the feedback loop with users was everything.',
-      parentCommentId: null,
+      parentId: null,
       likes: 12,
       createdAt: new Date('2024-01-11'),
     },
@@ -194,7 +194,7 @@ export function getSampleComments(): Comment[] {
       articleId: 'article1',
       authorId: 'user2',
       content: 'Great insights on team scaling. Curious about your revenue model - how do you balance creative freedom with commercial viability?',
-      parentCommentId: null,
+      parentId: null,
       likes: 8,
       createdAt: new Date('2024-01-12'),
     },
@@ -203,7 +203,7 @@ export function getSampleComments(): Comment[] {
       articleId: 'article1',
       authorId: 'user3',
       content: 'Thanks for the question! We use a mixed model - some client work to fund experimental projects. Key is setting clear boundaries about which projects are pure R&D.',
-      parentCommentId: 'comment2',
+      parentId: 'comment2',
       likes: 15,
       createdAt: new Date('2024-01-12'),
     }

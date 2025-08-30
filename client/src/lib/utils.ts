@@ -24,7 +24,11 @@ export const CATEGORY_COLORS: Record<string, string> = {
   'General': 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-200',
 };
 
-// Time formatting utility
+/**
+ * Formats a date into a human-readable time ago string
+ * @param date - The date to format
+ * @returns A string like "Just now", "2 hours ago", "3 days ago", etc.
+ */
 export function formatTimeAgo(date: Date): string {
   const now = new Date();
   const diffInHours = Math.floor((now.getTime() - new Date(date).getTime()) / (1000 * 60 * 60));
@@ -40,11 +44,20 @@ export function formatTimeAgo(date: Date): string {
   return new Date(date).toLocaleDateString();
 }
 
-// Platform and category helper functions
+/**
+ * Gets the CSS classes for styling platform badges
+ * @param platform - The platform name
+ * @returns CSS class string for styling the platform badge
+ */
 export function getPlatformColor(platform: string): string {
   return PLATFORM_COLORS[platform] || PLATFORM_COLORS['Other'];
 }
 
+/**
+ * Gets the CSS classes for styling category badges
+ * @param category - The category name
+ * @returns CSS class string for styling the category badge
+ */
 export function getCategoryColor(category: string): string {
   return CATEGORY_COLORS[category] || CATEGORY_COLORS['General'];
 }

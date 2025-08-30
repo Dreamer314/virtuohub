@@ -55,6 +55,7 @@ export function Header({ onCreatePost }: HeaderProps) {
                   size="icon"
                   className="w-9 h-9 rounded-full hover:bg-muted/50 transition-colors relative"
                   data-testid="notification-button"
+                  aria-label="Notifications (1 unread)"
                 >
                   <Bell className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
                   <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-medium">
@@ -80,6 +81,7 @@ export function Header({ onCreatePost }: HeaderProps) {
               onClick={toggleTheme}
               className="w-9 h-9 rounded-full hover:bg-muted/50 transition-colors"
               data-testid="theme-toggle"
+              aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
             >
               {theme === "dark" ? (
                 <Sun className="h-4 w-4 text-yellow-500" />

@@ -39,13 +39,21 @@ export function ObjectUploader({
     
     // Validate file count and size
     if (files.length > maxNumberOfFiles) {
-      alert(`Maximum ${maxNumberOfFiles} files allowed`);
+      toast({
+        title: 'Too many files',
+        description: `Maximum ${maxNumberOfFiles} files allowed`,
+        variant: 'destructive'
+      });
       return;
     }
     
     for (const file of files) {
       if (file.size > maxFileSize) {
-        alert(`File ${file.name} is too large. Maximum size: ${maxFileSize / 1024 / 1024}MB`);
+        toast({
+          title: 'File too large',
+          description: `${file.name} exceeds the maximum size of ${maxFileSize / 1024 / 1024}MB`,
+          variant: 'destructive'
+        });
         return;
       }
     }

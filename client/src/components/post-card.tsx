@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -16,7 +16,7 @@ interface PostCardProps {
   isDetailView?: boolean;
 }
 
-export function PostCard({ post, currentUserId = 'user1', isDetailView = false }: PostCardProps) {
+export const PostCard = React.memo(function PostCard({ post, currentUserId = 'user1', isDetailView = false }: PostCardProps) {
   const [isSaved, setIsSaved] = useState(post.isSaved || false);
   const [hasVoted, setHasVoted] = useState(false);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -87,243 +87,95 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
     mutationFn: (optionIndex: number) => 
       apiRequest('POST', `/api/posts/${post.id}/vote`, { optionIndex }),
     onSuccess: () => {
-      setHasVoted(true);
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
-      toast({ 
-        title: "Vote submitted!",
-        description: "Thank you for participating in VHub Pulse!"
-      });
+      setHasVoted(true);
+      toast({ title: "Vote submitted!" });
     }
   });
 
-
-  const renderPostContent = () => {
-    if (post.type === 'pulse' && post.pollData) {
-      const totalVotes = (post.pollData as any)?.options?.reduce((sum: number, option: any) => sum + (option.votes || 0), 0) || 0;
-      const showResults = totalVotes >= 5;
-      
-      return (
-        <div className="space-y-4" data-testid={`poll-${post.id}`}>
-          <h2 className="text-xl font-display font-semibold text-foreground">
-            {post.title}
-          </h2>
-          
-          <p className="text-sm text-muted-foreground">Tap to vote.</p>
-          
-          {!showResults && (
-            <p className="text-sm text-muted-foreground/80">Results visible after 5 votes.</p>
-          )}
-          
-          <div className="space-y-3">
-            {(post.pollData as any)?.options?.map((option: any, index: number) => (
-              <label
-                key={index}
-                className={`w-full p-3 rounded-lg border transition-all duration-200 block ${
-                  selectedOption === index
-                    ? 'border-primary bg-primary/10 text-primary'
-                    : 'border-border hover:border-primary/50 bg-card hover:border-2'
-                } ${hasVoted || voteMutation.isPending ? 'cursor-not-allowed opacity-75' : 'cursor-pointer'} focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2`}
-              >
-                <input
-                  type="radio"
-                  name={`poll-${post.id}`}
-                  value={index}
-                  checked={selectedOption === index}
-                  onChange={() => {
-                    if (!hasVoted) {
-                      setSelectedOption(index);
-                      voteMutation.mutate(index);
-                    }
-                  }}
-                  disabled={hasVoted || voteMutation.isPending}
-                  className="sr-only"
-                  aria-label={`Select ${option.text} to vote`}
-                  data-testid={`poll-option-${post.id}-${index}`}
-                />
-                <div className="flex items-center justify-between">
-                  <span className="text-left font-medium">{option.text}</span>
-                  {showResults && (
-                    <div className="flex items-center space-x-3">
-                      <Progress value={option.percentage} className="w-24 h-2" />
-                      <span className="text-sm text-muted-foreground min-w-[3rem] text-right">
-                        {option.percentage}%
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </label>
-            ))}
-          </div>
-          
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-sm flex items-center">
-              <Clock className="w-4 h-4 mr-1" />
-              Ends in 2 days • One vote per account
-            </span>
-            {hasVoted && (
-              <span className="text-sm text-primary font-medium">✓ Vote submitted</span>
-            )}
-          </div>
-        </div>
-      );
-    }
-
-    if (post.type === 'insight') {
-      return (
-        <div className="flex items-start space-x-4" data-testid={`insight-${post.id}`}>
-          <img 
-            src={post.imageUrl || post.author.avatar || ''} 
-            alt="Featured creator portrait" 
-            className="w-24 h-24 rounded-xl object-cover" 
-          />
-          <div className="flex-1">
-            <h2 className="text-xl font-display font-semibold mb-2 text-foreground">
-              {post.title}
-            </h2>
-            <p className="text-muted-foreground mb-4">{post.content}</p>
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">15 min read • Interview</span>
-              <Button size="sm" variant="secondary" className="transition-all" data-testid={`read-more-${post.id}`}>
-                Read More
-              </Button>
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    return (
-      <>
-        {post.imageUrl && (
-          <img 
-            src={post.imageUrl} 
-            alt={post.title} 
-            className="post-media w-full aspect-video object-cover max-h-[clamp(220px,34vh,420px)]" 
-            data-testid={`post-image-${post.id}`}
-          />
-        )}
-        
-        <div className="post-body p-4 max-w-[65ch]">
-          <h2 className="text-xl font-display font-semibold mb-3 text-foreground">
-            {post.title}
-          </h2>
-          <p className="text-muted-foreground mb-4">{post.content}</p>
-        </div>
-      </>
-    );
+  const handleVote = (optionIndex: number) => {
+    if (hasVoted) return;
+    setSelectedOption(optionIndex);
+    voteMutation.mutate(optionIndex);
   };
 
-  return (
-    <article 
-      className={`glass-card rounded-xl overflow-hidden hover-lift bg-gradient-to-br from-card/95 to-card/90 backdrop-blur-sm border-2 border-border/30 shadow-lg hover:shadow-xl transition-all duration-300 mb-8 ${
-        post.type === 'pulse' ? 'border-l-4 border-primary' : 
-        post.type === 'insight' ? 'border-l-4 border-accent' : ''
-      }`}
-      data-testid={`post-card-${post.id}`}
-    >
-      {/* Post Type Badge */}
-      {post.type !== 'regular' && (
-        <div className="px-4 pt-4">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-2">
-              {post.type === 'pulse' ? (
-                <div></div>
-              ) : (
-                <>
-                  <Lightbulb className="text-accent" size={16} />
-                  <span className="text-sm font-semibold text-accent">Creator Insight</span>
-                </>
-              )}
-            </div>
-            {post.type === 'pulse' && (
-              <span className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full border border-primary/20">
-                Official VHub Poll
+  // Handle VHub Pulse Posts (Polls)
+  if (post.type === 'pulse') {
+    const pollData = post.pollData || { question: '', options: [], totalVotes: 0 };
+    
+    return (
+      <article className="bg-card p-4 rounded-lg border border-border hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg" data-testid={`pulse-post-${post.id}`}>
+        <div className="flex items-start space-x-3">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+            <Zap className="w-4 h-4 text-white" />
+          </div>
+          
+          <div className="flex-1 min-w-0">
+            {/* Header */}
+            <div className="flex items-center space-x-2 mb-2">
+              <span className="text-xs font-medium text-purple-600 dark:text-purple-400">VHub Data Pulse</span>
+              <span className="text-xs text-muted-foreground">•</span>
+              <span className="text-xs text-muted-foreground" data-testid={`pulse-time-${post.id}`}>
+                {formatTimeAgo(new Date(post.createdAt))}
               </span>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Author Header */}
-      {post.type === 'regular' && (
-        <div className="p-4 pb-0">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-3">
-              <img 
-                src={post.author.avatar || `/images/vr-creator.png`} 
-                alt={post.author.displayName}
-                className="w-10 h-10 rounded-full object-cover"
-              />
-              <div>
-                <h3 className="font-semibold text-foreground" data-testid={`author-name-${post.id}`}>
-                  {post.author.displayName}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {post.author.role} • {formatTimeAgo(post.createdAt || new Date())}
-                </p>
-              </div>
             </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => saveMutation.mutate()}
-              className={`save-button transition-all ${isSaved ? 'saved text-red-500' : 'text-muted-foreground hover:text-red-500'}`}
-              data-testid={`save-button-${post.id}`}
-            >
-              <Heart className={`text-lg ${isSaved ? 'fill-current' : ''}`} size={20} />
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {/* Post Content */}
-      <div className={post.type !== 'regular' ? 'px-4 pb-4' : ''}>
-        {renderPostContent()}
-      </div>
-
-      {/* Tags and Engagement */}
-      <div className={`px-4 ${post.type === 'regular' ? 'pt-0 ' : ''}pb-4`}>
-        {/* Platform and Category Tags */}
-        <div className="flex flex-wrap gap-2 mb-4">
-          {/* Only show platform chips if platforms exist and are not cross-industry */}
-          {post.platforms && post.platforms.length > 0 && !post.platforms.includes('Cross-Industry') && 
-            post.platforms.map((platform) => (
-              <Badge 
-                key={platform} 
-                className={`platform-tag px-3 py-1 rounded-full text-sm font-medium ${getPlatformColor(platform)}`}
-                data-testid={`platform-tag-${platform}-${post.id}`}
+            
+            {/* Question */}
+            <h3 className="text-lg font-semibold mb-4 text-foreground" data-testid={`pulse-question-${post.id}`}>
+              {pollData.question}
+            </h3>
+            
+            {/* Poll Options */}
+            <div className="space-y-3 mb-4">
+              {pollData.options.map((option: any, index: number) => (
+                <button
+                  key={index}
+                  onClick={() => handleVote(index)}
+                  disabled={hasVoted}
+                  className={cn(
+                    "w-full text-left p-3 rounded-lg border transition-all duration-200",
+                    hasVoted 
+                      ? "cursor-not-allowed bg-muted" 
+                      : "cursor-pointer hover:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/20",
+                    selectedOption === index && "border-purple-500 bg-purple-50 dark:bg-purple-950/30"
+                  )}
+                  data-testid={`pulse-option-${post.id}-${index}`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">{option.text}</span>
+                    {hasVoted && (
+                      <span className="text-xs text-muted-foreground">
+                        {Math.round((option.votes / pollData.totalVotes) * 100)}%
+                      </span>
+                    )}
+                  </div>
+                  {hasVoted && (
+                    <div className="mt-2">
+                      <Progress value={(option.votes / pollData.totalVotes) * 100} className="h-2" />
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+            
+            {/* Poll Stats */}
+            <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
+              <span data-testid={`pulse-votes-${post.id}`}>{pollData.totalVotes} votes</span>
+              <span>Poll ends in 2 days</span>
+            </div>
+            
+            {/* Actions */}
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => likeMutation.mutate()}
+                className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                data-testid={`like-button-${post.id}`}
               >
-                {platform}
-              </Badge>
-            ))
-          }
-          <Badge 
-            className={`px-3 py-1 rounded-full text-sm font-medium ${getCategoryColor(post.category)}`}
-            data-testid={`category-tag-${post.id}`}
-          >
-            {post.category}
-          </Badge>
-        </div>
-
-        {/* Engagement Actions */}
-        <div className="flex items-center justify-between text-muted-foreground">
-          <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => likeMutation.mutate()}
-              className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
-              data-testid={`like-button-${post.id}`}
-            >
-              <ThumbsUp size={16} />
-              <span>{post.likes}</span>
-            </Button>
-            {isDetailView ? (
-              <div className="flex items-center space-x-2 text-muted-foreground">
-                <MessageCircle size={16} />
-                <span>{post.comments}</span>
-              </div>
-            ) : (
+                <ThumbsUp size={16} />
+                <span>{post.likes}</span>
+              </Button>
               <Link href={`/thread/${post.id}`}>
                 <Button
                   variant="ghost"
@@ -335,27 +187,275 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
                   <span>{post.comments} comments</span>
                 </Button>
               </Link>
-            )}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleShare}
-              className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
-              data-testid={`share-button-${post.id}`}
-            >
-              <Share size={16} />
-              <span>
-                {post.type === 'pulse' && shareSuccess ? 'Link Copied!' : post.shares}
-              </span>
-            </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleShare}
+                className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                data-testid={`share-button-${post.id}`}
+              >
+                <Share size={16} />
+                <span>
+                  {shareSuccess ? 'Link Copied!' : 'Share'}
+                </span>
+              </Button>
+            </div>
           </div>
-          {post.price && (
-            <span className="text-sm font-medium text-green-600 dark:text-green-400" data-testid={`price-${post.id}`}>
-              {post.price}
+        </div>
+      </article>
+    );
+  }
+
+  // Handle Creator Insights Posts
+  if (post.type === 'insight') {
+    return (
+      <article className="bg-card p-4 rounded-lg border border-border hover:border-amber-500/50 transition-all duration-300 hover:shadow-lg" data-testid={`insight-post-${post.id}`}>
+        <div className="flex items-start space-x-3">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0">
+            <Lightbulb className="w-4 h-4 text-white" />
+          </div>
+          
+          <div className="flex-1 min-w-0">
+            {/* Header */}
+            <div className="flex items-center space-x-2 mb-2">
+              <span className="text-xs font-medium text-amber-600 dark:text-amber-400">Creator Insights</span>
+              <span className="text-xs text-muted-foreground">•</span>
+              <span className="text-xs text-muted-foreground" data-testid={`insight-time-${post.id}`}>
+                {formatTimeAgo(new Date(post.createdAt))}
+              </span>
+            </div>
+            
+            {/* Content */}
+            <Link href={`/article/${post.id}`} className="block group">
+              <h3 className="text-lg font-semibold mb-2 text-foreground group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors" data-testid={`insight-title-${post.id}`}>
+                {post.title}
+              </h3>
+              <p className="text-sm text-muted-foreground mb-3 line-clamp-2" data-testid={`insight-content-${post.id}`}>
+                {post.content}
+              </p>
+            </Link>
+            
+            {/* Author Badge */}
+            <div className="flex items-center space-x-2 mb-3">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
+                <span className="text-xs font-bold text-white">
+                  {post.author.displayName.charAt(0)}
+                </span>
+              </div>
+              <span className="text-sm font-medium text-foreground" data-testid={`insight-author-${post.id}`}>
+                {post.author.displayName}
+              </span>
+              <Badge variant="secondary" className="text-xs">
+                {post.author.role}
+              </Badge>
+            </div>
+            
+            {/* Platforms */}
+            <div className="flex flex-wrap gap-1 mb-3">
+              {post.platforms.map((platform: string) => (
+                <Badge 
+                  key={platform} 
+                  variant="outline" 
+                  className={cn("text-xs", getPlatformColor(platform))}
+                  data-testid={`insight-platform-${post.id}-${platform}`}
+                >
+                  {platform}
+                </Badge>
+              ))}
+            </div>
+            
+            {/* Actions */}
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => likeMutation.mutate()}
+                className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                data-testid={`like-button-${post.id}`}
+              >
+                <ThumbsUp size={16} />
+                <span>{post.likes}</span>
+              </Button>
+              <Link href={`/article/${post.id}`}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                  data-testid={`comment-button-${post.id}`}
+                >
+                  <MessageCircle size={16} />
+                  <span>{post.comments} comments</span>
+                </Button>
+              </Link>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleShare}
+                className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                data-testid={`share-button-${post.id}`}
+              >
+                <Share size={16} />
+                <span>{post.shares}</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
+  // Handle Regular Posts (Community Feed)
+  return (
+    <article className="bg-card p-4 rounded-lg border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-md" data-testid={`regular-post-${post.id}`}>
+      <div className="flex items-start space-x-3">
+        {/* Author Avatar */}
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+          <span className="text-sm font-bold text-white">
+            {post.author.displayName.charAt(0)}
+          </span>
+        </div>
+        
+        <div className="flex-1 min-w-0">
+          {/* Header */}
+          <div className="flex items-center space-x-2 mb-1">
+            <span className="font-medium text-foreground" data-testid={`author-${post.id}`}>
+              {post.author.displayName}
             </span>
+            <Badge variant="secondary" className="text-xs">
+              {post.author.role}
+            </Badge>
+            <span className="text-xs text-muted-foreground">•</span>
+            <span className="text-xs text-muted-foreground" data-testid={`time-${post.id}`}>
+              {formatTimeAgo(new Date(post.createdAt))}
+            </span>
+          </div>
+          
+          {/* Content */}
+          <div className="mb-3">
+            {!isDetailView ? (
+              <Link href={`/thread/${post.id}`} className="block group">
+                <h3 className="text-base font-semibold mb-1 text-foreground group-hover:text-primary transition-colors" data-testid={`title-${post.id}`}>
+                  {post.title}
+                </h3>
+                <p className="text-sm text-muted-foreground line-clamp-3" data-testid={`content-${post.id}`}>
+                  {post.content}
+                </p>
+              </Link>
+            ) : (
+              <>
+                <h1 className="text-xl font-bold mb-2 text-foreground" data-testid={`title-${post.id}`}>
+                  {post.title}
+                </h1>
+                <div className="text-sm text-foreground whitespace-pre-wrap" data-testid={`content-${post.id}`}>
+                  {post.content}
+                </div>
+              </>
+            )}
+          </div>
+          
+          {/* Image */}
+          {post.imageUrl && (
+            <div className="mb-3 rounded-lg overflow-hidden">
+              <img 
+                src={post.imageUrl} 
+                alt={post.title}
+                className="w-full h-auto max-h-96 object-cover"
+                data-testid={`image-${post.id}`}
+              />
+            </div>
           )}
+          
+          {/* Category and Platforms */}
+          <div className="flex flex-wrap gap-2 mb-3">
+            <Badge 
+              variant="secondary" 
+              className={cn("text-xs", getCategoryColor(post.category))}
+              data-testid={`category-${post.id}`}
+            >
+              {post.category}
+            </Badge>
+            {post.platforms.map((platform: string) => (
+              <Badge 
+                key={platform} 
+                variant="outline" 
+                className={cn("text-xs", getPlatformColor(platform))}
+                data-testid={`platform-${post.id}-${platform}`}
+              >
+                {platform}
+              </Badge>
+            ))}
+          </div>
+          
+          {/* Actions and Metadata */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => likeMutation.mutate()}
+                className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                data-testid={`like-button-${post.id}`}
+              >
+                <ThumbsUp size={16} />
+                <span>{post.likes}</span>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => saveMutation.mutate()}
+                className={cn(
+                  "flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all",
+                  isSaved && "text-red-500"
+                )}
+                data-testid={`save-button-${post.id}`}
+              >
+                <Heart size={16} className={isSaved ? "fill-current" : ""} />
+                <span>{isSaved ? "Saved" : "Save"}</span>
+              </Button>
+              {!isDetailView ? (
+                <Link href={`/thread/${post.id}`}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                    data-testid={`comment-button-${post.id}`}
+                  >
+                    <MessageCircle size={16} />
+                    <span>{post.comments} comments</span>
+                  </Button>
+                </Link>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                  data-testid={`comment-button-${post.id}`}
+                >
+                  <MessageCircle size={16} />
+                  <span>{post.comments} comments</span>
+                </Button>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleShare}
+                className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                data-testid={`share-button-${post.id}`}
+              >
+                <Share size={16} />
+                <span>
+                  {post.type === 'pulse' && shareSuccess ? 'Link Copied!' : post.shares}
+                </span>
+              </Button>
+            </div>
+            {post.price && (
+              <span className="text-sm font-medium text-green-600 dark:text-green-400" data-testid={`price-${post.id}`}>
+                {post.price}
+              </span>
+            )}
+          </div>
         </div>
       </div>
     </article>
   );
-}
+});
