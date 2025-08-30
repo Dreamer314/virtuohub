@@ -179,7 +179,7 @@ export default function Community() {
         <div className="floating-element absolute bottom-20 left-1/4 w-20 h-20 bg-primary/15 rounded-full blur-xl" style={{ animationDelay: '-4s' }}></div>
       </div>
 
-      <Header />
+      <Header onCreatePost={() => setIsCreateModalOpen(true)} />
       
       <div className="flex">
         {/* Fixed Left Sidebar */}
@@ -197,7 +197,7 @@ export default function Community() {
         {/* Fixed Right Sidebar */}
         <div className="hidden lg:block w-80 fixed right-0 top-0 h-screen bg-background/95 backdrop-blur-sm border-l border-border z-10">
           <div className="pt-20 px-4 overflow-y-auto">
-            <RightSidebar onCreatePost={() => setIsCreateModalOpen(true)} />
+            <RightSidebar />
           </div>
         </div>
 

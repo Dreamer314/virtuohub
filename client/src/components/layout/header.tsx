@@ -1,9 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
-import { Moon, Sun, Box } from "lucide-react";
+import { Moon, Sun, Box, MessageCircle, Bell, Plus } from "lucide-react";
+import { useLocation } from "wouter";
 
-export function Header() {
+interface HeaderProps {
+  onCreatePost?: () => void;
+}
+
+export function Header({ onCreatePost }: HeaderProps) {
   const { theme, setTheme } = useTheme();
+  const [location] = useLocation();
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -32,6 +38,42 @@ export function Header() {
 
           {/* Actions */}
           <div className="flex items-center space-x-4">
+            {/* Community Page Actions */}
+            {location === '/' && (
+              <div className="flex items-center gap-2 mr-4">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="w-10 h-10 rounded-full hover:bg-accent/20"
+                  data-testid="messaging-button"
+                >
+                  <MessageCircle className="w-5 h-5 text-muted-foreground" />
+                </Button>
+                
+                <Button
+                  onClick={onCreatePost}
+                  variant="default"
+                  className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full font-medium flex items-center gap-2"
+                  data-testid="create-post-button"
+                >
+                  <Plus className="w-4 h-4" />
+                  Create
+                </Button>
+                
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="w-10 h-10 rounded-full hover:bg-accent/20 relative"
+                  data-testid="notification-button"
+                >
+                  <Bell className="w-5 h-5 text-muted-foreground" />
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                    1
+                  </span>
+                </Button>
+              </div>
+            )}
+            
             {/* Theme Toggle */}
             <Button
               variant="ghost"
