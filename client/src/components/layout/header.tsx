@@ -18,28 +18,26 @@ export function Header({ onCreatePost }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 glass-card border-b border-border">
       <div className="w-full px-6">
-        <div className="flex items-center h-16">
+        <div className="grid grid-cols-3 items-center h-16 w-full">
           {/* Logo - Far Left */}
-          <div className="flex items-center space-x-2 min-w-[200px]" data-testid="logo">
+          <div className="flex items-center space-x-2 justify-start" data-testid="logo">
             <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
               <Box className="text-white text-sm" size={16} />
             </div>
             <span className="text-xl font-display font-bold gradient-text">VirtuoHub</span>
           </div>
 
-          {/* Navigation - Centered */}
-          <div className="flex-1 flex justify-center">
-            <nav className="flex items-center space-x-8">
-              <a href="#" className="text-foreground hover:text-primary transition-colors font-medium text-base" data-testid="nav-home">Home</a>
-              <a href="#" className="text-foreground hover:text-primary transition-colors font-medium text-base" data-testid="nav-learn">Learn</a>
-              <a href="#" className="text-foreground hover:text-primary transition-colors font-medium text-base" data-testid="nav-earn">Earn</a>
-              <a href="#" className="text-foreground hover:text-primary transition-colors font-medium text-base" data-testid="nav-connect">Connect</a>
-              <a href="#" className="text-primary font-semibold text-base" data-testid="nav-community">Community</a>
-            </nav>
-          </div>
+          {/* Navigation - Perfect Center */}
+          <nav className="flex items-center justify-center space-x-8">
+            <a href="#" className="text-foreground hover:text-primary transition-colors font-medium text-base" data-testid="nav-home">Home</a>
+            <a href="#" className="text-foreground hover:text-primary transition-colors font-medium text-base" data-testid="nav-learn">Learn</a>
+            <a href="#" className="text-foreground hover:text-primary transition-colors font-medium text-base" data-testid="nav-earn">Earn</a>
+            <a href="#" className="text-foreground hover:text-primary transition-colors font-medium text-base" data-testid="nav-connect">Connect</a>
+            <a href="#" className="text-primary font-semibold text-base" data-testid="nav-community">Community</a>
+          </nav>
 
           {/* Actions - Far Right */}
-          <div className="flex items-center space-x-3 min-w-[280px] justify-end">
+          <div className="flex items-center space-x-3 justify-end">
             {/* Community Page Actions */}
             {location === '/' && (
               <>
