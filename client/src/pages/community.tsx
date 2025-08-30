@@ -361,18 +361,24 @@ export default function Community() {
               </div>
             )}
 
-            {/* VHub Data Pulse */}
+            {/* VHub Pulse */}
             {currentTab === 'all' && pulsePosts.length > 0 && (
               <div className="mb-8" data-testid="pulse-posts-feed">
-                <div className="flex items-center space-x-2 mb-6">
-                  <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
-                  <div className="flex items-center space-x-4">
-                    <TrendingUp className="w-8 h-8 text-primary" />
-                    <h2 className="text-3xl font-bold text-foreground tracking-tight">
-                      VHub Data Pulse
-                    </h2>
+                <div className="flex flex-col items-center space-y-3 mb-6">
+                  <div className="flex items-center space-x-2 w-full">
+                    <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
+                    <div className="flex items-center space-x-4">
+                      <TrendingUp className="w-8 h-8 text-primary" />
+                      <h2 className="text-3xl font-bold text-foreground tracking-tight">
+                        VHub Pulse
+                      </h2>
+                    </div>
+                    <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                   </div>
-                  <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
+                  <div className="text-center space-y-1">
+                    <p className="text-lg font-semibold text-accent">Cast your vote. See results.</p>
+                    <p className="text-sm text-muted-foreground">Official VHub polls for the Immersive Economy.</p>
+                  </div>
                 </div>
                 <div className="space-y-6">
                   {pulsePosts.map((post: any) => (
