@@ -54,7 +54,7 @@ export function LeftSidebar({ currentTab, onTabChange, selectedPlatforms = [], o
   return (
     <aside className="w-full">
       <div className="sticky top-4">
-        <div className="glass-card rounded-xl p-6" data-testid="community-navigation">
+        <div className="bg-sidebar rounded-xl p-6 border border-sidebar-border" data-testid="community-navigation">
           {/* Header */}
           <div className="mb-6">
             <h2 className="text-lg font-semibold text-foreground mb-1">

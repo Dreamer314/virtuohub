@@ -7,7 +7,7 @@ export function RightSidebar() {
     <aside className="w-full">
       <div className="space-y-6">
         {/* Upcoming Events */}
-        <div className="glass-card rounded-xl p-6 hover-lift" data-testid="upcoming-events">
+        <div className="bg-sidebar rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all duration-300 hover:shadow-md" data-testid="upcoming-events">
           <h3 className="text-lg font-display font-semibold mb-4 flex items-center">
             <Calendar className="text-accent mr-2" size={20} />
             Upcoming Events
@@ -50,7 +50,7 @@ export function RightSidebar() {
         </div>
 
         {/* Creator Spotlight */}
-        <div className="glass-card rounded-xl p-6 hover-lift" data-testid="creator-spotlight">
+        <div className="bg-sidebar rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all duration-300 hover:shadow-md" data-testid="creator-spotlight">
           <h3 className="text-lg font-display font-semibold mb-4 flex items-center">
             <Star className="text-yellow-500 mr-2" size={20} />
             Creator Spotlight
@@ -71,7 +71,7 @@ export function RightSidebar() {
         </div>
 
         {/* Meta Layer & Trending */}
-        <div className="glass-card rounded-xl overflow-hidden hover-lift" data-testid="meta-trending">
+        <div className="bg-sidebar rounded-xl overflow-hidden border border-sidebar-border hover:border-primary/30 transition-all duration-300 hover:shadow-md" data-testid="meta-trending">
           {/* Top Half: Meta Layer Report */}
           <div className="p-6 border-b border-border">
             <h3 className="text-lg font-display font-semibold mb-3 flex items-center">
