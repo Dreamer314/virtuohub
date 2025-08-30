@@ -553,7 +553,7 @@ export default function Community() {
             </div>
 
             {/* Post Creation */}
-            <div className="glass-card rounded-xl p-6 mb-8 hover-lift" data-testid="post-creation-section">
+            <div className="bg-sidebar rounded-xl p-6 mb-8 border border-sidebar-border hover:border-primary/30 transition-all duration-300 hover:shadow-md" data-testid="post-creation-section">
               <div className="flex items-center space-x-4 mb-4">
                 <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-full"></div>
                 <Button

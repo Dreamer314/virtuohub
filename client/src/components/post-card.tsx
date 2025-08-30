@@ -104,7 +104,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
     const pollData = post.pollData || { question: '', options: [], totalVotes: 0 };
     
     return (
-      <article className="bg-card p-4 rounded-lg border border-border hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg" data-testid={`pulse-post-${post.id}`}>
+      <article className="bg-sidebar p-4 rounded-lg border border-sidebar-border hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg" data-testid={`pulse-post-${post.id}`}>
         <div className="flex items-start space-x-3">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
             <Zap className="w-4 h-4 text-white" />
@@ -116,18 +116,18 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
               <span className="text-xs font-medium text-purple-600 dark:text-purple-400">VHub Data Pulse</span>
               <span className="text-xs text-muted-foreground">•</span>
               <span className="text-xs text-muted-foreground" data-testid={`pulse-time-${post.id}`}>
-                {formatTimeAgo(new Date(post.createdAt))}
+                {formatTimeAgo(post.createdAt ? new Date(post.createdAt) : new Date())}
               </span>
             </div>
             
             {/* Question */}
             <h3 className="text-lg font-semibold mb-4 text-foreground" data-testid={`pulse-question-${post.id}`}>
-              {pollData.question}
+              {(pollData as any).question || 'Poll question'}
             </h3>
             
             {/* Poll Options */}
             <div className="space-y-3 mb-4">
-              {pollData.options.map((option: any, index: number) => (
+              {((pollData as any).options || []).map((option: any, index: number) => (
                 <button
                   key={index}
                   onClick={() => handleVote(index)}
@@ -145,13 +145,13 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                     <span className="text-sm font-medium">{option.text}</span>
                     {hasVoted && (
                       <span className="text-xs text-muted-foreground">
-                        {Math.round((option.votes / pollData.totalVotes) * 100)}%
+                        {Math.round((option.votes / ((pollData as any).totalVotes || 1)) * 100)}%
                       </span>
                     )}
                   </div>
                   {hasVoted && (
                     <div className="mt-2">
-                      <Progress value={(option.votes / pollData.totalVotes) * 100} className="h-2" />
+                      <Progress value={(option.votes / ((pollData as any).totalVotes || 1)) * 100} className="h-2" />
                     </div>
                   )}
                 </button>
@@ -160,7 +160,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
             
             {/* Poll Stats */}
             <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
-              <span data-testid={`pulse-votes-${post.id}`}>{pollData.totalVotes} votes</span>
+              <span data-testid={`pulse-votes-${post.id}`}>{(pollData as any).totalVotes || 0} votes</span>
               <span>Poll ends in 2 days</span>
             </div>
             
@@ -209,7 +209,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
   // Handle Creator Insights Posts
   if (post.type === 'insight') {
     return (
-      <article className="bg-card p-4 rounded-lg border border-border hover:border-amber-500/50 transition-all duration-300 hover:shadow-lg" data-testid={`insight-post-${post.id}`}>
+      <article className="bg-sidebar p-4 rounded-lg border border-sidebar-border hover:border-amber-500/50 transition-all duration-300 hover:shadow-lg" data-testid={`insight-post-${post.id}`}>
         <div className="flex items-start space-x-3">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0">
             <Lightbulb className="w-4 h-4 text-white" />
@@ -221,7 +221,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
               <span className="text-xs font-medium text-amber-600 dark:text-amber-400">Creator Insights</span>
               <span className="text-xs text-muted-foreground">•</span>
               <span className="text-xs text-muted-foreground" data-testid={`insight-time-${post.id}`}>
-                {formatTimeAgo(new Date(post.createdAt))}
+                {formatTimeAgo(post.createdAt ? new Date(post.createdAt) : new Date())}
               </span>
             </div>
             
@@ -306,7 +306,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
 
   // Handle Regular Posts (Community Feed)
   return (
-    <article className="bg-card p-4 rounded-lg border border-border hover:border-primary/30 transition-all duration-300 hover:shadow-md" data-testid={`regular-post-${post.id}`}>
+    <article className="bg-sidebar p-4 rounded-lg border border-sidebar-border hover:border-primary/30 transition-all duration-300 hover:shadow-md" data-testid={`regular-post-${post.id}`}>
       <div className="flex items-start space-x-3">
         {/* Author Avatar */}
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center flex-shrink-0">
@@ -326,7 +326,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
             </Badge>
             <span className="text-xs text-muted-foreground">•</span>
             <span className="text-xs text-muted-foreground" data-testid={`time-${post.id}`}>
-              {formatTimeAgo(new Date(post.createdAt))}
+              {formatTimeAgo(post.createdAt ? new Date(post.createdAt) : new Date())}
             </span>
           </div>
           
