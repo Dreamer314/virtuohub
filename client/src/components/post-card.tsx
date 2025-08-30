@@ -235,12 +235,12 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
           <img 
             src={post.imageUrl} 
             alt={post.title} 
-            className="w-full aspect-[4/3] object-cover" 
+            className="post-media w-full aspect-video object-cover max-h-[clamp(220px,34vh,420px)]" 
             data-testid={`post-image-${post.id}`}
           />
         )}
         
-        <div className="p-6">
+        <div className="post-body p-4 max-w-[65ch]">
           <h2 className="text-xl font-display font-semibold mb-3 text-foreground">
             {post.title}
           </h2>
@@ -260,7 +260,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
     >
       {/* Post Type Badge */}
       {post.type !== 'regular' && (
-        <div className="px-6 pt-4">
+        <div className="px-4 pt-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
               {post.type === 'pulse' ? (
@@ -283,7 +283,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
 
       {/* Author Header */}
       {post.type === 'regular' && (
-        <div className="p-6 pb-0">
+        <div className="p-4 pb-0">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-3">
               <img 
@@ -314,12 +314,12 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
       )}
 
       {/* Post Content */}
-      <div className={post.type !== 'regular' ? 'px-6 pb-4' : ''}>
+      <div className={post.type !== 'regular' ? 'px-4 pb-4' : ''}>
         {renderPostContent()}
       </div>
 
       {/* Tags and Engagement */}
-      <div className={`px-6 ${post.type === 'regular' ? 'pt-0 ' : ''}pb-6`}>
+      <div className={`px-4 ${post.type === 'regular' ? 'pt-0 ' : ''}pb-4`}>
         {/* Platform and Category Tags */}
         <div className="flex flex-wrap gap-2 mb-4">
           {/* Only show platform chips if platforms exist and are not cross-industry */}
@@ -344,7 +344,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
 
         {/* Engagement Actions */}
         <div className="flex items-center justify-between text-muted-foreground">
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-4">
             <Button
               variant="ghost"
               size="sm"

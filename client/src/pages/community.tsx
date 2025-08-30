@@ -204,7 +204,7 @@ export default function Community() {
         {/* Main Content Area */}
         <div className="flex-1 lg:ml-64 lg:mr-80">
           <div className="px-6 sm:px-8 lg:px-12 py-8">
-            <div className="grid grid-cols-1 gap-8">
+            <div className="max-w-[720px] min-w-[580px] mx-auto grid grid-cols-1 gap-8">
           {/* Mobile Left Sidebar */}
           <div className="lg:hidden">
             <LeftSidebar
