@@ -211,7 +211,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
           <img 
             src={post.imageUrl || post.author.avatar || ''} 
             alt="Featured creator portrait" 
-            className="w-16 h-16 rounded-xl object-cover" 
+            className="w-24 h-24 rounded-xl object-cover" 
           />
           <div className="flex-1">
             <h2 className="text-xl font-display font-semibold mb-2 text-foreground">
@@ -235,7 +235,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
           <img 
             src={post.imageUrl} 
             alt={post.title} 
-            className="w-full h-48 object-cover" 
+            className="w-full aspect-video object-cover" 
             data-testid={`post-image-${post.id}`}
           />
         )}
