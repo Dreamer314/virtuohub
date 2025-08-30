@@ -105,49 +105,66 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
 
   const renderPostContent = () => {
     if (post.type === 'pulse' && post.pollData) {
+      const totalVotes = (post.pollData as any)?.options?.reduce((sum: number, option: any) => sum + (option.votes || 0), 0) || 0;
+      const showResults = totalVotes >= 5;
+      
       return (
         <div className="space-y-4" data-testid={`poll-${post.id}`}>
           <h2 className="text-xl font-display font-semibold text-foreground">
             {post.title}
           </h2>
           
-          <p className="text-sm text-muted-foreground">Tap an option to vote.</p>
+          <p className="text-sm text-muted-foreground">Choose an option to vote.</p>
+          
+          {!showResults && (
+            <p className="text-sm text-muted-foreground/80">Results visible after 5 votes.</p>
+          )}
           
           <div className="space-y-3">
             {(post.pollData as any)?.options?.map((option: any, index: number) => (
-              <button
+              <label
                 key={index}
-                onClick={() => {
-                  if (!hasVoted) {
-                    setSelectedOption(index);
-                    voteMutation.mutate(index);
-                  }
-                }}
-                disabled={hasVoted || voteMutation.isPending}
-                className={`w-full p-3 rounded-lg border transition-all duration-200 ${
+                className={`w-full p-3 rounded-lg border transition-all duration-200 block ${
                   selectedOption === index
                     ? 'border-primary bg-primary/10 text-primary'
                     : 'border-border hover:border-primary/50 bg-card hover:border-2'
-                } ${hasVoted || voteMutation.isPending ? 'cursor-not-allowed opacity-75' : 'cursor-pointer'}`}
-                data-testid={`poll-option-${post.id}-${index}`}
+                } ${hasVoted || voteMutation.isPending ? 'cursor-not-allowed opacity-75' : 'cursor-pointer'} focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2`}
               >
+                <input
+                  type="radio"
+                  name={`poll-${post.id}`}
+                  value={index}
+                  checked={selectedOption === index}
+                  onChange={() => {
+                    if (!hasVoted) {
+                      setSelectedOption(index);
+                      voteMutation.mutate(index);
+                    }
+                  }}
+                  disabled={hasVoted || voteMutation.isPending}
+                  className="sr-only"
+                  aria-label={`Select ${option.text} to vote`}
+                  data-testid={`poll-option-${post.id}-${index}`}
+                />
                 <div className="flex items-center justify-between">
                   <span className="text-left font-medium">{option.text}</span>
-                  <div className="flex items-center space-x-3">
-                    <Progress value={option.percentage} className="w-24 h-2" />
-                    <span className="text-sm text-muted-foreground min-w-[3rem] text-right">
-                      {option.percentage}%
-                    </span>
-                  </div>
+                  {showResults && (
+                    <div className="flex items-center space-x-3">
+                      <Progress value={option.percentage} className="w-24 h-2" />
+                      <span className="text-sm text-muted-foreground min-w-[3rem] text-right">
+                        {option.percentage}%
+                      </span>
+                    </div>
+                  )}
                 </div>
-              </button>
+              </label>
             ))}
           </div>
           
           <div className="flex items-center justify-between text-muted-foreground">
             <span className="text-sm flex items-center">
               <Clock className="w-4 h-4 mr-1" />
-              Ends in 2 days • Results show after a few votes
+              Ends in 2 days • One vote per account
             </span>
             {hasVoted && (
               <span className="text-sm text-primary font-medium">✓ Vote submitted</span>
@@ -216,10 +233,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-2">
               {post.type === 'pulse' ? (
-                <>
-                  <Zap className="text-primary" size={16} />
-                  <span className="text-sm font-semibold text-primary">VHub Pulse</span>
-                </>
+                <div></div>
               ) : (
                 <>
                   <Lightbulb className="text-accent" size={16} />
@@ -277,15 +291,18 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
       <div className={`px-6 ${post.type === 'regular' ? 'pt-0 ' : ''}pb-6`}>
         {/* Platform and Category Tags */}
         <div className="flex flex-wrap gap-2 mb-4">
-          {post.platforms.map((platform) => (
-            <Badge 
-              key={platform} 
-              className={`platform-tag px-3 py-1 rounded-full text-sm font-medium ${getPlatformColor(platform)}`}
-              data-testid={`platform-tag-${platform}-${post.id}`}
-            >
-              {platform}
-            </Badge>
-          ))}
+          {/* Only show platform chips if platforms exist and are not cross-industry */}
+          {post.platforms && post.platforms.length > 0 && !post.platforms.includes('Cross-Industry') && 
+            post.platforms.map((platform) => (
+              <Badge 
+                key={platform} 
+                className={`platform-tag px-3 py-1 rounded-full text-sm font-medium ${getPlatformColor(platform)}`}
+                data-testid={`platform-tag-${platform}-${post.id}`}
+              >
+                {platform}
+              </Badge>
+            ))
+          }
           <Badge 
             className={`px-3 py-1 rounded-full text-sm font-medium ${getCategoryColor(post.category)}`}
             data-testid={`category-tag-${post.id}`}
@@ -321,7 +338,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
                   data-testid={`comment-button-${post.id}`}
                 >
                   <MessageCircle size={16} />
-                  <span>{post.comments} Join Discussion</span>
+                  <span>{post.comments} comments</span>
                 </Button>
               </Link>
             )}

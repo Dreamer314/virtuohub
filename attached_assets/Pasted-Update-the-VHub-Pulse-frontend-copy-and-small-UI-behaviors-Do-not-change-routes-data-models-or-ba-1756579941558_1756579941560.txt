@@ -1,0 +1,81 @@
+Update the VHub Pulse frontend copy and small UI behaviors. Do not change routes, data models, or backend logic. Keep existing classes and layout.
+
+1) Header copy (Pulse section/page)
+
+Replace the header block with these exact lines, in this order:
+
+Title: VHub Pulse
+
+Tagline: Cast your vote. See results.
+
+Subhead: Quick polls on Immersive Economy topics.
+
+Helper line (single line only): Have your say.
+
+Remove any extra helper sentences under the header.
+
+2) Poll card text and badges
+
+Remove the left-side label text VHub Pulse on the card header.
+
+Keep (or add) a pill on the right that reads: Official VHub Poll.
+
+Above the options, set the hint to: Choose an option to vote.
+
+3) Results visibility rule (resolve current conflict)
+
+Implement a threshold so results do not show too early:
+
+Hide the result bars and percentages until totalVotes >= 5.
+
+While hidden, show a small line: Results visible after 5 votes.
+
+When totalVotes >= 5, show the bars and percentages, and hide that line.
+
+4) Footer line on the card
+
+Replace any current footer copy with:
+
+Ends in {time} • One vote per account.
+Use the existing time variable (e.g., endsIn).
+
+5) Comments label
+
+Change any “Join Discussion” label to a simpler count:
+
+{{commentCount}} comments
+If there is a separate link, label it Discuss.
+
+6) Platform chips row
+
+If the poll has no platform tags or is marked cross-industry, hide the platform chips row entirely. Only render chips when tags exist.
+
+7) Accessibility touch-ups (frontend only)
+
+Ensure each option is a real <input type="radio"> with a visible focus state.
+
+Each option should include visible percent text when results are shown (do not rely on color alone).
+
+Add aria-label like: aria-label="Select {{optionText}} to vote".
+
+8) Search-and-replace scope
+
+Update copies in the relevant components (for example PulseHeader, PulseCard, PulseSection, etc.). Do not change spacing, colors, or icons.
+
+Acceptance criteria
+
+Header shows exactly four lines ending with “Have your say.”
+
+Each poll card shows only the Official VHub Poll pill (no duplicate “VHub Pulse” label).
+
+Hint reads “Choose an option to vote.”
+
+Bars and percentages are hidden until 5 votes, with the small line “Results visible after 5 votes.” visible before that.
+
+Footer reads “Ends in {time} • One vote per account.”
+
+Comments show as “N comments.”
+
+Platform chips render only when tags exist.
+
+No layout shifts on mobile.
