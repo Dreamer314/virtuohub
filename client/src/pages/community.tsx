@@ -361,7 +361,7 @@ export default function Community() {
               </div>
             )}
 
-            {/* The Creator Pulse */}
+            {/* VHub Data Pulse */}
             {currentTab === 'all' && pulsePosts.length > 0 && (
               <div className="mb-8" data-testid="pulse-posts-feed">
                 <div className="flex items-center space-x-2 mb-6">
@@ -369,7 +369,7 @@ export default function Community() {
                   <div className="flex items-center space-x-4">
                     <TrendingUp className="w-8 h-8 text-primary" />
                     <h2 className="text-3xl font-bold text-foreground tracking-tight">
-                      The Creator Pulse
+                      VHub Data Pulse
                     </h2>
                   </div>
                   <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>

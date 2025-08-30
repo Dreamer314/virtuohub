@@ -2,7 +2,7 @@
 
 ## Overview
 
-VirtuoHub is a modern community platform designed for virtual world creators, featuring a three-column layout similar to Reddit/Twitter. The platform enables users to share content, engage with posts, and connect within various virtual world ecosystems including Second Life, Roblox, VRChat, and others. The application includes specialized content types like "Creator Pulse" polls and "Creator Insights" interviews, along with comprehensive filtering and categorization systems.
+VirtuoHub is a modern community platform designed for virtual world creators, featuring a three-column layout similar to Reddit/Twitter. The platform enables users to share content, engage with posts, and connect within various virtual world ecosystems including Second Life, Roblox, VRChat, and others. The application includes specialized content types like "VHub Data Pulse" polls and "Creator Insights" interviews, along with comprehensive filtering and categorization systems.
 
 ## User Preferences
 

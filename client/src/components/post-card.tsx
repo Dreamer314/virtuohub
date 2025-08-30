@@ -60,7 +60,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
       toast({ 
         title: "Vote submitted!",
-        description: "Thank you for participating in the Creator Pulse!"
+        description: "Thank you for participating in VHub Data Pulse!"
       });
     }
   });
@@ -217,7 +217,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
             {post.type === 'pulse' ? (
               <>
                 <Zap className="text-primary" size={16} />
-                <span className="text-sm font-semibold text-primary">Creator Pulse</span>
+                <span className="text-sm font-semibold text-primary">VHub Data Pulse</span>
               </>
             ) : (
               <>
