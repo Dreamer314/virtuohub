@@ -37,63 +37,67 @@ export function Header({ onCreatePost }: HeaderProps) {
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center space-x-4">
-            {/* Community Page Actions */}
+          <div className="flex items-center space-x-3">
+            {/* Community Page Actions - Clean & Minimal */}
             {location === '/' && (
-              <div className="flex items-center gap-2 mr-4">
+              <>
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="w-10 h-10 rounded-full hover:bg-accent/20"
+                  className="w-9 h-9 rounded-full hover:bg-muted/50 transition-colors"
                   data-testid="messaging-button"
                 >
-                  <MessageCircle className="w-5 h-5 text-muted-foreground" />
-                </Button>
-                
-                <Button
-                  onClick={onCreatePost}
-                  variant="default"
-                  className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full font-medium flex items-center gap-2"
-                  data-testid="create-post-button"
-                >
-                  <Plus className="w-4 h-4" />
-                  Create
+                  <MessageCircle className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
                 </Button>
                 
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="w-10 h-10 rounded-full hover:bg-accent/20 relative"
+                  className="w-9 h-9 rounded-full hover:bg-muted/50 transition-colors relative"
                   data-testid="notification-button"
                 >
-                  <Bell className="w-5 h-5 text-muted-foreground" />
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                  <Bell className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
+                  <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-medium">
                     1
                   </span>
                 </Button>
-              </div>
+                
+                <div className="w-px h-6 bg-border mx-2"></div>
+                
+                <Button
+                  onClick={onCreatePost}
+                  className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full font-medium text-sm transition-all flex items-center gap-1.5"
+                  data-testid="create-post-button"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  Create
+                </Button>
+              </>
             )}
+            
+            {/* Divider */}
+            {location === '/' && <div className="w-px h-6 bg-border"></div>}
             
             {/* Theme Toggle */}
             <Button
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
-              className="transition-all duration-300 hover:border-2 hover:border-primary border border-transparent"
+              className="w-9 h-9 rounded-full hover:bg-muted/50 transition-colors"
               data-testid="theme-toggle"
             >
               {theme === "dark" ? (
-                <Sun className="h-5 w-5 text-yellow-400" />
+                <Sun className="h-4 w-4 text-yellow-500" />
               ) : (
-                <Moon className="h-5 w-5 text-muted-foreground" />
+                <Moon className="h-4 w-4 text-muted-foreground" />
               )}
             </Button>
             
             {/* Auth Buttons */}
-            <Button variant="ghost" className="text-sm font-medium" data-testid="login-button">
+            <Button variant="ghost" className="text-sm font-medium px-3" data-testid="login-button">
               Log In
             </Button>
-            <Button className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all" data-testid="signup-button">
+            <Button className="px-3 py-1.5 text-sm font-medium bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-all" data-testid="signup-button">
               Sign Up
             </Button>
           </div>
