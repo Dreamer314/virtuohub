@@ -23,6 +23,7 @@ export default function Community() {
   const [currentInsightIndex, setCurrentInsightIndex] = useState(0);
   const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState(0);
   const [isAutoplayPaused, setIsAutoplayPaused] = useState(false);
+  const [sortBy, setSortBy] = useState<'latest' | 'top'>('latest');
 
 
   // Fetch all posts
@@ -69,6 +70,16 @@ export default function Community() {
             return false;
           }
           return true;
+        })
+        .sort((a: any, b: any) => {
+          if (sortBy === 'latest') {
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          } else {
+            // Sort by top (likes + comments + shares)
+            const aScore = (a.likes || 0) + (a.comments || 0) + (a.shares || 0);
+            const bScore = (b.likes || 0) + (b.comments || 0) + (b.shares || 0);
+            return bScore - aScore;
+          }
         })
     : [];
 
@@ -430,6 +441,34 @@ export default function Community() {
                   </div>
                 </div>
                 
+                {/* Sort Toggle */}
+                <div className="mt-4 pt-4 border-t border-border/30">
+                  <div className="flex items-center gap-4">
+                    <BarChart3 className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm font-medium text-foreground">Sort by:</span>
+                    <div className="flex bg-background/50 rounded-lg p-1 border border-border/50">
+                      <Button
+                        variant={sortBy === 'latest' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setSortBy('latest')}
+                        className="text-xs h-7 px-3"
+                        data-testid="sort-latest"
+                      >
+                        Latest
+                      </Button>
+                      <Button
+                        variant={sortBy === 'top' ? 'default' : 'ghost'}
+                        size="sm"
+                        onClick={() => setSortBy('top')}
+                        className="text-xs h-7 px-3"
+                        data-testid="sort-top"
+                      >
+                        Top
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+                
                 {/* Active Filters Display */}
                 {(selectedCategory !== 'All' || searchQuery) && (
                   <div className="mt-4 pt-4 border-t border-border/50">
@@ -473,7 +512,7 @@ export default function Community() {
                   className="flex-1 text-left px-4 py-3 bg-input rounded-lg text-muted-foreground hover:border-2 hover:border-muted-foreground/30 border border-transparent transition-all justify-start"
                   data-testid="create-post-trigger"
                 >
-                  Share your latest creation...
+                  Share your latest creation, question, or gig...
                 </Button>
               </div>
               <div className="flex items-center justify-between">

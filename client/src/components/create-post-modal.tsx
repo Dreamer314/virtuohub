@@ -205,7 +205,7 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                   <FormLabel>Content</FormLabel>
                   <FormControl>
                     <Textarea 
-                      placeholder="Share your thoughts, showcase your work, or start a discussion..."
+                      placeholder="Share your latest creation, question, or gig... Tell us about your project, ask for help, or post a job opportunity!"
                       className="min-h-32"
                       {...field}
                       data-testid="post-content-input"
