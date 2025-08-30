@@ -30,7 +30,7 @@ export default function InsightsPage() {
       name: 'Emma Thompson',
       title: 'Environment Artist',
       subtitle: 'Crafting Immersive Realms in VRChat',
-      image: '/images/emma-thompson.png',
+      image: '/images/emma-vrchat.png',
       type: 'Interview',
       postId: 'post4'
     },
@@ -39,7 +39,7 @@ export default function InsightsPage() {
       name: 'Alex Martinez',
       title: '3D Artist',
       subtitle: 'Building Engaging Games on Roblox',
-      image: '/images/alex-martinez.png',
+      image: '/images/alex-roblox.png',
       type: 'Interview',
       postId: 'post5'
     },
@@ -48,7 +48,7 @@ export default function InsightsPage() {
       name: 'Sarah Chen',
       title: 'Avatar Creator', 
       subtitle: 'Cyberpunk Aesthetic in VRChat',
-      image: '/images/sarah-chen.png',
+      image: '/images/sarah-vrchat.png',
       type: 'Interview',
       postId: 'post6'
     },
@@ -66,7 +66,7 @@ export default function InsightsPage() {
       name: 'Tom Wheeler',
       title: 'World Builder',
       subtitle: 'Creating Interactive Environments',
-      image: '/images/tom-wheeler.png',
+      image: '/images/tom-secondlife.png',
       type: 'Interview',
       postId: 'post5'
     },
@@ -75,7 +75,7 @@ export default function InsightsPage() {
       name: 'Mike Rodriguez',
       title: 'Game Developer', 
       subtitle: 'Developing Adventures for Roblox',
-      image: '/images/mike-rodriguez.png',
+      image: '/images/mike-roblox.png',
       type: 'Interview',
       postId: 'post6'
     }
