@@ -263,8 +263,54 @@ export default function ArticlePage() {
             </CardContent>
           </Card>
 
+          {/* Engagement Actions */}
+          <Card className="glass-card mb-8">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-6">
+                  <button 
+                    className="flex items-center gap-2 text-muted-foreground hover:text-red-500 transition-colors py-2 px-4 rounded-lg hover:bg-red-50 dark:hover:bg-red-950"
+                    onClick={() => {
+                      // Handle like functionality
+                    }}
+                  >
+                    <Heart className="w-5 h-5" />
+                    <span className="font-medium">{article.post.likes}</span>
+                    <span className="text-sm">Likes</span>
+                  </button>
+                  
+                  <button 
+                    className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors py-2 px-4 rounded-lg hover:bg-primary/10"
+                    onClick={() => {
+                      document.getElementById('comment-section')?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                  >
+                    <MessageCircle className="w-5 h-5" />
+                    <span className="font-medium">{comments.length}</span>
+                    <span className="text-sm">Comments</span>
+                  </button>
+                  
+                  <button 
+                    className="flex items-center gap-2 text-muted-foreground hover:text-blue-500 transition-colors py-2 px-4 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950"
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.href);
+                      // You could add a toast notification here
+                    }}
+                  >
+                    <Share2 className="w-5 h-5" />
+                    <span className="text-sm">Share Link</span>
+                  </button>
+                </div>
+                
+                <div className="text-sm text-muted-foreground">
+                  {article.post.shares} shares
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Comments Section */}
-          <Card className="glass-card">
+          <Card className="glass-card" id="comment-section">
             <CardContent className="p-8">
               <h2 className="text-2xl font-semibold mb-6">
                 Comments ({comments.length})
