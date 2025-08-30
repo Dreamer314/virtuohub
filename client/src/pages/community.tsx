@@ -389,8 +389,27 @@ export default function Community() {
               </div>
             )}
 
+            {/* Community Feed Section with Brackets */}
+            <div className="relative" data-testid="community-feed-section">
+              {/* Left Bracket */}
+              <div className="absolute left-0 top-0 bottom-0 w-2 flex flex-col items-center">
+                <div className="w-2 h-8 border-l-2 border-t-2 border-accent/60 rounded-tl-lg"></div>
+                <div className="flex-1 w-0.5 bg-gradient-to-b from-accent/60 via-accent/30 to-accent/60"></div>
+                <div className="w-2 h-8 border-l-2 border-b-2 border-accent/60 rounded-bl-lg"></div>
+              </div>
+              
+              {/* Right Bracket */}
+              <div className="absolute right-0 top-0 bottom-0 w-2 flex flex-col items-center">
+                <div className="w-2 h-8 border-r-2 border-t-2 border-accent/60 rounded-tr-lg"></div>
+                <div className="flex-1 w-0.5 bg-gradient-to-b from-accent/60 via-accent/30 to-accent/60"></div>
+                <div className="w-2 h-8 border-r-2 border-b-2 border-accent/60 rounded-br-lg"></div>
+              </div>
+              
+              {/* Content with padding for brackets */}
+              <div className="px-6">
+            
             {/* Community Feed Header */}
-            <div className="mb-8 relative" data-testid="community-feed-section">
+            <div className="mb-8 relative">
               {/* Background emphasis */}
               <div className="absolute inset-0 -mx-4 -my-2 bg-gradient-to-r from-accent/5 via-accent/10 to-accent/5 rounded-2xl blur-3xl"></div>
               <div className="relative">
@@ -653,6 +672,9 @@ export default function Community() {
                   </Button>
                 </div>
               )}
+            </div>
+            
+            </div>
             </div>
           </main>
 
