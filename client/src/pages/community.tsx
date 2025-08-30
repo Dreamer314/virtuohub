@@ -378,7 +378,7 @@ export default function Community() {
                   <div className="text-center space-y-1">
                     <p className="text-lg font-semibold text-accent">Cast your vote. See results.</p>
                     <p className="text-sm text-muted-foreground">Quick polls on Immersive Economy topics.</p>
-                    <p className="text-sm text-muted-foreground">Have your say.</p>
+                    <p className="text-sm text-muted-foreground">Tell us what you think.</p>
                   </div>
                 </div>
                 <div className="space-y-6">

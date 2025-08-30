@@ -114,7 +114,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
             {post.title}
           </h2>
           
-          <p className="text-sm text-muted-foreground">Choose an option to vote.</p>
+          <p className="text-sm text-muted-foreground">Tap to vote.</p>
           
           {!showResults && (
             <p className="text-sm text-muted-foreground/80">Results visible after 5 votes.</p>
