@@ -249,12 +249,12 @@ export default function Community() {
                 </div>
 
                 {/* Featured Content Layout */}
-                <div className="relative">
-                  {/* Navigation Controls */}
-                  <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20 flex items-center gap-2">
+                <div className="flex items-center gap-6">
+                  {/* Left Navigation Controls */}
+                  <div className="flex flex-col items-center gap-3">
                     <button
                       onClick={() => setIsAutoplayPaused(!isAutoplayPaused)}
-                      className="bg-black/50 backdrop-blur-sm text-white p-3 rounded-full transition-all hover:bg-black/70"
+                      className="bg-white/10 backdrop-blur-sm text-white p-3 rounded-full transition-all hover:bg-white/20 border border-white/20"
                       data-testid="autoplay-toggle-button"
                       title={isAutoplayPaused ? "Start slideshow" : "Pause slideshow"}
                     >
@@ -262,23 +262,15 @@ export default function Community() {
                     </button>
                     <button
                       onClick={prevFeatured}
-                      className="bg-black/50 backdrop-blur-sm text-white p-3 rounded-full transition-all hover:bg-black/70"
+                      className="bg-white/10 backdrop-blur-sm text-white p-3 rounded-full transition-all hover:bg-white/20 border border-white/20"
                       data-testid="featured-prev-button"
                     >
                       <ChevronLeft className="w-6 h-6" />
                     </button>
                   </div>
 
-                  <button
-                    onClick={nextFeatured}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20 bg-black/50 backdrop-blur-sm text-white p-3 rounded-full transition-all hover:bg-black/70"
-                    data-testid="featured-next-button"
-                  >
-                    <ChevronRight className="w-6 h-6" />
-                  </button>
-
-                  {/* Main Featured Card */}
-                  <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 to-black shadow-2xl h-96">
+                  {/* Main Featured Card - Larger */}
+                  <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 to-black shadow-2xl h-[500px] flex-1">
                     {/* Background Image */}
                     <img 
                       src={featuredContent[currentFeaturedIndex].image} 
@@ -287,44 +279,44 @@ export default function Community() {
                     />
                     
                     {/* Overlay Gradient */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent"></div>
                     
                     {/* Content Overlay */}
-                    <div className="relative z-10 h-full flex flex-col justify-between p-12">
+                    <div className="relative z-10 h-full flex flex-col justify-between p-16">
                       {/* Top Brand Section */}
                       <div className="flex items-center space-x-3">
                         {(() => {
                           const Icon = featuredContent[currentFeaturedIndex].icon;
-                          return <Icon className="w-8 h-8 text-white" />;
+                          return <Icon className="w-10 h-10 text-white" />;
                         })()}
-                        <span className="text-white font-bold text-lg tracking-wider uppercase">
+                        <span className="text-white font-bold text-xl tracking-wider uppercase">
                           {featuredContent[currentFeaturedIndex].type}
                         </span>
                       </div>
 
                       {/* Main Content - Left Side */}
                       <div className="max-w-2xl">
-                        <h1 className="text-5xl font-bold text-white mb-6 leading-tight">
+                        <h1 className="text-6xl font-bold text-white mb-6 leading-tight">
                           {featuredContent[currentFeaturedIndex].title}
                         </h1>
-                        <p className="text-white/90 text-lg mb-8 leading-relaxed">
+                        <p className="text-white/90 text-xl mb-8 leading-relaxed">
                           {featuredContent[currentFeaturedIndex].description}
                         </p>
                         
-                        {/* Action Buttons */}
+                        {/* Action Buttons - More Prominent */}
                         <div className="flex items-center space-x-4">
                           {featuredContent[currentFeaturedIndex].link !== '#' ? (
                             <Link href={featuredContent[currentFeaturedIndex].link}>
-                              <Button className="bg-accent hover:bg-accent/90 text-white px-6 py-3 rounded-lg font-semibold">
+                              <Button className="bg-accent hover:bg-accent/90 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg">
                                 Read Article
                               </Button>
                             </Link>
                           ) : (
-                            <Button className="bg-accent hover:bg-accent/90 text-white px-6 py-3 rounded-lg font-semibold" disabled>
+                            <Button className="bg-accent hover:bg-accent/90 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg" disabled>
                               Coming Soon
                             </Button>
                           )}
-                          <Button variant="outline" className="border-white/30 text-white hover:bg-white/10 px-6 py-3 rounded-lg font-semibold">
+                          <Button variant="outline" className="border-white/40 text-white hover:bg-white/15 px-8 py-4 rounded-lg font-semibold text-lg shadow-lg backdrop-blur-sm">
                             Learn More
                           </Button>
                         </div>
@@ -332,12 +324,21 @@ export default function Community() {
 
                       {/* Bottom Section */}
                       <div className="flex items-center justify-between">
-                        <span className="text-white/70">
+                        <span className="text-white/70 text-lg">
                           {featuredContent[currentFeaturedIndex].category}
                         </span>
                       </div>
                     </div>
                   </div>
+
+                  {/* Right Navigation */}
+                  <button
+                    onClick={nextFeatured}
+                    className="bg-white/10 backdrop-blur-sm text-white p-3 rounded-full transition-all hover:bg-white/20 border border-white/20"
+                    data-testid="featured-next-button"
+                  >
+                    <ChevronRight className="w-6 h-6" />
+                  </button>
                 </div>
                 
                 {/* Dots Indicator and Status */}
