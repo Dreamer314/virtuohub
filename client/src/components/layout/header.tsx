@@ -28,7 +28,7 @@ export function Header({ onCreatePost }: HeaderProps) {
           </div>
 
           {/* Navigation - Center */}
-          <nav className="hidden md:flex items-center space-x-8 justify-center">
+          <nav className="flex items-center space-x-4 md:space-x-8 justify-center text-sm md:text-base">
             <a href="#" className="text-foreground hover:text-primary transition-colors font-medium" data-testid="nav-home">Home</a>
             <a href="#" className="text-foreground hover:text-primary transition-colors font-medium" data-testid="nav-learn">Learn</a>
             <a href="#" className="text-foreground hover:text-primary transition-colors font-medium" data-testid="nav-earn">Earn</a>
