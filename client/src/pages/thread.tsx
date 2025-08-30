@@ -222,7 +222,7 @@ export default function ThreadPage() {
                           maxNumberOfFiles={5}
                           maxFileSize={10485760}
                           onGetUploadParameters={async () => {
-                            const response = await apiRequest('/api/objects/upload', 'POST') as { uploadURL: string };
+                            const response = await apiRequest('/api/objects/upload', 'POST') as unknown as { uploadURL: string };
                             return {
                               method: 'PUT' as const,
                               url: response.uploadURL,
