@@ -65,7 +65,7 @@ export function RightSidebar() {
           <p className="text-sm text-muted-foreground mb-3">
             Creator of award-winning VRChat worlds with over 2M visits. Specializes in atmospheric environments and interactive experiences.
           </p>
-          <Button className="w-full py-2 bg-yellow-500 text-black rounded-lg hover:bg-yellow-400 transition-all hover:scale-105 text-sm font-medium" data-testid="view-portfolio-button">
+          <Button className="w-full py-2 bg-yellow-500 text-black rounded-lg hover:bg-yellow-400 hover:border-2 hover:border-yellow-300 border border-transparent transition-all text-sm font-medium" data-testid="view-portfolio-button">
             View Portfolio
           </Button>
         </div>

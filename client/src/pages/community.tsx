@@ -551,7 +551,7 @@ export default function Community() {
                   </p>
                   <Button
                     onClick={() => setIsCreateModalOpen(true)}
-                    className="transition-all hover:scale-105"
+                    className="transition-all hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent"
                     data-testid="create-first-post-button"
                   >
                     <Plus className="w-4 h-4 mr-2" />
@@ -562,7 +562,7 @@ export default function Community() {
             </div>
           </main>
 
-          {/* Mobile Right Sidebar - only show on smaller screens */}
+          {/* Mobile Right Sidebar */}
           <div className="lg:hidden mt-8">
             <RightSidebar />
           </div>

@@ -37,7 +37,7 @@ export function Header() {
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
-              className="transition-all duration-300 hover:scale-105"
+              className="transition-all duration-300 hover:border-2 hover:border-primary border border-transparent"
               data-testid="theme-toggle"
             >
               {theme === "dark" ? (
@@ -51,7 +51,7 @@ export function Header() {
             <Button variant="ghost" className="text-sm font-medium" data-testid="login-button">
               Log In
             </Button>
-            <Button className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all hover:scale-105" data-testid="signup-button">
+            <Button className="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all" data-testid="signup-button">
               Sign Up
             </Button>
           </div>
