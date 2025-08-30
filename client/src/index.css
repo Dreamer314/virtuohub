@@ -193,6 +193,152 @@
     background-clip: text;
   }
 
+  /* Section dividers with ambient lighting */
+  .section-divider {
+    position: relative;
+    height: 1px;
+    margin: 4rem 0;
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      rgba(124, 58, 237, 0.3) 25%, 
+      rgba(168, 85, 247, 0.5) 50%, 
+      rgba(124, 58, 237, 0.3) 75%, 
+      transparent 100%);
+  }
+
+  .section-divider::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      rgba(124, 58, 237, 0.1) 25%, 
+      rgba(168, 85, 247, 0.2) 50%, 
+      rgba(124, 58, 237, 0.1) 75%, 
+      transparent 100%);
+    filter: blur(10px);
+  }
+
+  .section-divider::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+      transparent 0%, 
+      rgba(255, 255, 255, 0.1) 25%, 
+      rgba(255, 255, 255, 0.3) 50%, 
+      rgba(255, 255, 255, 0.1) 75%, 
+      transparent 100%);
+    filter: blur(2px);
+  }
+
+  /* Iridescent section backgrounds */
+  .section-featured {
+    position: relative;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, 
+      rgba(139, 69, 19, 0.03) 0%,
+      rgba(255, 140, 0, 0.05) 25%,
+      rgba(255, 215, 0, 0.03) 50%,
+      rgba(255, 140, 0, 0.05) 75%,
+      rgba(139, 69, 19, 0.03) 100%);
+    border-radius: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .section-pulse {
+    position: relative;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, 
+      rgba(124, 58, 237, 0.03) 0%,
+      rgba(168, 85, 247, 0.05) 25%,
+      rgba(147, 51, 234, 0.04) 50%,
+      rgba(168, 85, 247, 0.05) 75%,
+      rgba(124, 58, 237, 0.03) 100%);
+    border-radius: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .section-community {
+    position: relative;
+    padding: 2rem 0;
+    background: linear-gradient(135deg, 
+      rgba(16, 185, 129, 0.03) 0%,
+      rgba(34, 197, 94, 0.05) 25%,
+      rgba(59, 130, 246, 0.04) 50%,
+      rgba(34, 197, 94, 0.05) 75%,
+      rgba(16, 185, 129, 0.03) 100%);
+    border-radius: 1.5rem;
+  }
+
+  /* Dark mode ambient enhancements */
+  .dark .section-featured {
+    background: linear-gradient(135deg, 
+      rgba(139, 69, 19, 0.08) 0%,
+      rgba(255, 140, 0, 0.12) 25%,
+      rgba(255, 215, 0, 0.08) 50%,
+      rgba(255, 140, 0, 0.12) 75%,
+      rgba(139, 69, 19, 0.08) 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 140, 0, 0.1);
+  }
+
+  .dark .section-pulse {
+    background: linear-gradient(135deg, 
+      rgba(124, 58, 237, 0.08) 0%,
+      rgba(168, 85, 247, 0.12) 25%,
+      rgba(147, 51, 234, 0.10) 50%,
+      rgba(168, 85, 247, 0.12) 75%,
+      rgba(124, 58, 237, 0.08) 100%);
+    box-shadow: inset 0 1px 0 rgba(168, 85, 247, 0.1);
+  }
+
+  .dark .section-community {
+    background: linear-gradient(135deg, 
+      rgba(16, 185, 129, 0.08) 0%,
+      rgba(34, 197, 94, 0.12) 25%,
+      rgba(59, 130, 246, 0.10) 50%,
+      rgba(34, 197, 94, 0.12) 75%,
+      rgba(16, 185, 129, 0.08) 100%);
+    box-shadow: inset 0 1px 0 rgba(34, 197, 94, 0.1);
+  }
+
+  /* Charcoal mode subtle enhancements */
+  .charcoal .section-featured {
+    background: linear-gradient(135deg, 
+      rgba(139, 69, 19, 0.06) 0%,
+      rgba(255, 140, 0, 0.08) 25%,
+      rgba(255, 215, 0, 0.06) 50%,
+      rgba(255, 140, 0, 0.08) 75%,
+      rgba(139, 69, 19, 0.06) 100%);
+    box-shadow: inset 0 1px 0 rgba(255, 140, 0, 0.06);
+  }
+
+  .charcoal .section-pulse {
+    background: linear-gradient(135deg, 
+      rgba(124, 58, 237, 0.06) 0%,
+      rgba(168, 85, 247, 0.08) 25%,
+      rgba(147, 51, 234, 0.07) 50%,
+      rgba(168, 85, 247, 0.08) 75%,
+      rgba(124, 58, 237, 0.06) 100%);
+    box-shadow: inset 0 1px 0 rgba(168, 85, 247, 0.06);
+  }
+
+  .charcoal .section-community {
+    background: linear-gradient(135deg, 
+      rgba(16, 185, 129, 0.06) 0%,
+      rgba(34, 197, 94, 0.08) 25%,
+      rgba(59, 130, 246, 0.07) 50%,
+      rgba(34, 197, 94, 0.08) 75%,
+      rgba(16, 185, 129, 0.06) 100%);
+    box-shadow: inset 0 1px 0 rgba(34, 197, 94, 0.06);
+  }
+
   .hover-lift {
     @apply transition-all duration-300 ease-out border border-transparent;
   }

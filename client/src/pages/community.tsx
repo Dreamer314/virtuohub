@@ -239,7 +239,7 @@ export default function Community() {
 
             {/* Featured Content Carousel */}
             {currentTab === 'all' && (
-              <div className="mb-8" data-testid="featured-carousel">
+              <div className="section-featured" data-testid="featured-carousel">
                 <div className="flex items-center space-x-2 mb-4">
                   <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
                   <div className="flex items-center space-x-4">
@@ -363,7 +363,9 @@ export default function Community() {
 
             {/* VHub Pulse */}
             {currentTab === 'all' && pulsePosts.length > 0 && (
-              <div className="mb-16 pb-8 border-b border-border/30" data-testid="pulse-posts-feed">
+              <>
+                <div className="section-divider"></div>
+                <div className="section-pulse" data-testid="pulse-posts-feed">
                 <div className="flex flex-col items-center space-y-3 mb-6">
                   <div className="flex items-center space-x-2 w-full">
                     <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
@@ -387,10 +389,13 @@ export default function Community() {
                   ))}
                 </div>
               </div>
+              </>
             )}
 
+            <div className="section-divider"></div>
+            
             {/* Community Feed Header */}
-            <div className="mb-8 relative" data-testid="community-feed-section">
+            <div className="section-community" data-testid="community-feed-section">
               {/* Background emphasis */}
               <div className="absolute inset-0 -mx-4 -my-2 bg-gradient-to-r from-accent/5 via-accent/10 to-accent/5 rounded-2xl blur-3xl"></div>
               <div className="relative">
