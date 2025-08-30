@@ -18,8 +18,8 @@ export function Header({ onCreatePost }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 glass-card border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
+        <div className="flex items-center h-16">
+          {/* Logo - Left Side */}
           <div className="flex items-center space-x-2" data-testid="logo">
             <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
               <Box className="text-white text-sm" size={16} />
@@ -27,18 +27,18 @@ export function Header({ onCreatePost }: HeaderProps) {
             <span className="text-xl font-display font-bold gradient-text">VirtuoHub</span>
           </div>
 
-          {/* Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          {/* Navigation - Center */}
+          <nav className="hidden md:flex items-center space-x-8 flex-1 justify-center">
             <a href="#" className="text-foreground hover:text-primary transition-colors font-medium" data-testid="nav-home">Home</a>
             <a href="#" className="text-foreground hover:text-primary transition-colors font-medium" data-testid="nav-learn">Learn</a>
             <a href="#" className="text-foreground hover:text-primary transition-colors font-medium" data-testid="nav-earn">Earn</a>
             <a href="#" className="text-foreground hover:text-primary transition-colors font-medium" data-testid="nav-connect">Connect</a>
-            <a href="#" className="text-primary font-semibold border-b-2 border-primary" data-testid="nav-community">Community</a>
+            <a href="#" className="text-primary font-semibold" data-testid="nav-community">Community</a>
           </nav>
 
-          {/* Actions */}
+          {/* Actions - Right Side */}
           <div className="flex items-center space-x-3">
-            {/* Community Page Actions - Clean & Minimal */}
+            {/* Community Page Actions */}
             {location === '/' && (
               <>
                 <Button
@@ -62,21 +62,16 @@ export function Header({ onCreatePost }: HeaderProps) {
                   </span>
                 </Button>
                 
-                <div className="w-px h-6 bg-border mx-2"></div>
-                
                 <Button
                   onClick={onCreatePost}
-                  className="px-3 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full font-medium text-sm transition-all flex items-center gap-1.5"
+                  className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium text-sm transition-all flex items-center gap-2"
                   data-testid="create-post-button"
                 >
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-4 h-4" />
                   Create
                 </Button>
               </>
             )}
-            
-            {/* Divider */}
-            {location === '/' && <div className="w-px h-6 bg-border"></div>}
             
             {/* Theme Toggle */}
             <Button
@@ -97,7 +92,7 @@ export function Header({ onCreatePost }: HeaderProps) {
             <Button variant="ghost" className="text-sm font-medium px-3" data-testid="login-button">
               Log In
             </Button>
-            <Button className="px-3 py-1.5 text-sm font-medium bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-all" data-testid="signup-button">
+            <Button className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full hover:from-purple-700 hover:to-blue-700 transition-all" data-testid="signup-button">
               Sign Up
             </Button>
           </div>
