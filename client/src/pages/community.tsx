@@ -390,19 +390,23 @@ export default function Community() {
             )}
 
             {/* Community Feed Header */}
-            <div className="mb-8 p-8 bg-gradient-to-br from-green-500/5 via-green-500/10 to-green-500/5 rounded-2xl border border-green-500/20 shadow-lg" data-testid="community-feed-section">
-              <div className="flex items-center space-x-2 mb-8">
-                <div className="h-0.5 bg-gradient-to-r from-transparent via-green-500 to-transparent flex-1"></div>
-                <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-green-500/10 via-green-500/20 to-green-500/10 rounded-full border border-green-500/30">
-                  <div className="w-12 h-12 rounded-xl bg-green-500/20 border-2 border-green-500/40 flex items-center justify-center shadow-lg">
-                    <Plus className="w-7 h-7 text-green-500 animate-pulse" />
+            <div className="mb-8 relative" data-testid="community-feed-section">
+              {/* Background emphasis */}
+              <div className="absolute inset-0 -mx-4 -my-2 bg-gradient-to-r from-orange-500/5 via-orange-500/10 to-orange-500/5 rounded-2xl blur-3xl"></div>
+              <div className="relative">
+                <div className="flex items-center space-x-2 mb-8">
+                  <div className="h-0.5 bg-gradient-to-r from-transparent via-orange-500 to-transparent flex-1"></div>
+                  <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-orange-500/10 via-orange-500/20 to-orange-500/10 rounded-full border border-orange-500/30">
+                    <div className="w-12 h-12 rounded-xl bg-orange-500/20 border-2 border-orange-500/40 flex items-center justify-center shadow-lg">
+                      <Plus className="w-7 h-7 text-orange-500 animate-pulse" />
+                    </div>
+                    <h2 className="text-5xl font-bold text-foreground tracking-tight bg-gradient-to-r from-foreground to-orange-500 bg-clip-text text-transparent">
+                      Community Feed
+                    </h2>
+                    <div className="w-3 h-3 rounded-full bg-orange-500 animate-ping"></div>
                   </div>
-                  <h2 className="text-5xl font-bold text-foreground tracking-tight bg-gradient-to-r from-foreground to-green-500 bg-clip-text text-transparent">
-                    Community Feed
-                  </h2>
-                  <div className="w-3 h-3 rounded-full bg-green-500 animate-ping"></div>
+                  <div className="h-0.5 bg-gradient-to-r from-orange-500 via-transparent to-transparent flex-1"></div>
                 </div>
-                <div className="h-0.5 bg-gradient-to-r from-green-500 via-transparent to-transparent flex-1"></div>
               </div>
 
               {/* Filter Controls */}
@@ -656,7 +660,6 @@ export default function Community() {
           <div className="lg:hidden mt-8">
             <RightSidebar />
           </div>
-            </div>
           </div>
         </div>
       </div>
