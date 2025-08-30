@@ -235,7 +235,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
           <img 
             src={post.imageUrl} 
             alt={post.title} 
-            className="w-full aspect-video object-cover" 
+            className="w-full aspect-[4/3] object-cover" 
             data-testid={`post-image-${post.id}`}
           />
         )}
@@ -252,7 +252,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
 
   return (
     <article 
-      className={`glass-card rounded-xl overflow-hidden hover-lift bg-gradient-to-br from-card/95 to-card/90 backdrop-blur-sm border-2 border-border/30 shadow-lg hover:shadow-xl transition-all duration-300 ${
+      className={`glass-card rounded-xl overflow-hidden hover-lift bg-gradient-to-br from-card/95 to-card/90 backdrop-blur-sm border-2 border-border/30 shadow-lg hover:shadow-xl transition-all duration-300 mb-8 ${
         post.type === 'pulse' ? 'border-l-4 border-primary' : 
         post.type === 'insight' ? 'border-l-4 border-accent' : ''
       }`}
