@@ -270,7 +270,7 @@ export default function Community() {
                   </div>
 
                   {/* Main Featured Card - Larger */}
-                  <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 to-black shadow-2xl h-[500px] flex-1">
+                  <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 to-black shadow-2xl h-[600px] flex-1">
                     {/* Background Image */}
                     <img 
                       src={featuredContent[currentFeaturedIndex].image} 
