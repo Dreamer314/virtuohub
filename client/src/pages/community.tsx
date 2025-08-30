@@ -374,7 +374,10 @@ export default function Community() {
                   <Button
                     variant={selectedCategory === 'All' ? 'default' : 'outline'}
                     size="sm"
-onClick={() => setSelectedCategory('All')}
+onClick={(e) => {
+                      e.preventDefault();
+                      setSelectedCategory('All');
+                    }}
                     className="rounded-full"
                     data-testid="category-all"
                   >
@@ -383,7 +386,10 @@ onClick={() => setSelectedCategory('All')}
                   <Button
                     variant={selectedCategory === 'General' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setSelectedCategory('General')}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSelectedCategory('General');
+                    }}
                     className="rounded-full"
                     data-testid="category-general"
                   >
@@ -392,7 +398,10 @@ onClick={() => setSelectedCategory('All')}
                   <Button
                     variant={selectedCategory === 'Assets for Sale' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setSelectedCategory('Assets for Sale')}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSelectedCategory('Assets for Sale');
+                    }}
                     className="rounded-full"
                     data-testid="category-assets"
                   >
@@ -401,7 +410,10 @@ onClick={() => setSelectedCategory('All')}
                   <Button
                     variant={selectedCategory === 'Jobs & Gigs' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setSelectedCategory('Jobs & Gigs')}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSelectedCategory('Jobs & Gigs');
+                    }}
                     className="rounded-full"
                     data-testid="category-jobs"
                   >
@@ -410,7 +422,10 @@ onClick={() => setSelectedCategory('All')}
                   <Button
                     variant={selectedCategory === 'Freelance/Hiring' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setSelectedCategory('Freelance/Hiring')}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSelectedCategory('Freelance/Hiring');
+                    }}
                     className="rounded-full"
                     data-testid="category-freelance"
                   >
@@ -419,7 +434,10 @@ onClick={() => setSelectedCategory('All')}
                   <Button
                     variant={selectedCategory === 'Collaborations' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setSelectedCategory('Collaborations')}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSelectedCategory('Collaborations');
+                    }}
                     className="rounded-full"
                     data-testid="category-collaborations"
                   >
@@ -428,7 +446,10 @@ onClick={() => setSelectedCategory('All')}
                   <Button
                     variant={selectedCategory === 'WIP' ? 'default' : 'outline'}
                     size="sm"
-                    onClick={() => setSelectedCategory('WIP')}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSelectedCategory('WIP');
+                    }}
                     className="rounded-full"
                     data-testid="category-wip"
                   >
