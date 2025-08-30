@@ -372,22 +372,27 @@ export default function Community() {
             )}
 
             {/* Community Feed Header */}
-            <div className="mb-8" data-testid="community-feed-section">
-              <div className="flex items-center space-x-2 mb-6">
-                <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
-                <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center">
-                    <Plus className="w-6 h-6 text-accent" />
+            <div className="mb-8 relative" data-testid="community-feed-section">
+              {/* Background emphasis */}
+              <div className="absolute inset-0 -mx-4 -my-2 bg-gradient-to-r from-accent/5 via-accent/10 to-accent/5 rounded-2xl blur-3xl"></div>
+              <div className="relative">
+                <div className="flex items-center space-x-2 mb-8">
+                  <div className="h-0.5 bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
+                  <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-accent/10 via-accent/20 to-accent/10 rounded-full border border-accent/30">
+                    <div className="w-12 h-12 rounded-xl bg-accent/20 border-2 border-accent/40 flex items-center justify-center shadow-lg">
+                      <Plus className="w-7 h-7 text-accent animate-pulse" />
+                    </div>
+                    <h2 className="text-5xl font-bold text-foreground tracking-tight bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
+                      Community Feed
+                    </h2>
+                    <div className="w-3 h-3 rounded-full bg-accent animate-ping"></div>
                   </div>
-                  <h2 className="text-4xl font-bold text-foreground tracking-tight">
-                    Community Feed
-                  </h2>
+                  <div className="h-0.5 bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
                 </div>
-                <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
               </div>
 
               {/* Filter Controls */}
-              <div className="glass-card rounded-xl p-6 mb-6">
+              <div className="glass-card rounded-xl p-6 mb-8 border-2 border-accent/20 shadow-2xl bg-gradient-to-br from-background/90 via-background/95 to-accent/5">
                 <div className="flex items-center gap-4 mb-4">
                   <Filter className="w-5 h-5 text-accent" />
                   <h3 className="text-lg font-semibold text-foreground">Filter & Search</h3>
