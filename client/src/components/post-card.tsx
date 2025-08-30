@@ -138,7 +138,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                     "w-full text-left p-3 rounded-lg border transition-all duration-200",
                     hasVoted 
                       ? "cursor-not-allowed bg-muted" 
-                      : "cursor-pointer hover:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/20",
+                      : "cursor-pointer hover:border-accent/50 hover:bg-accent/5 dark:hover:bg-accent/10",
                     selectedOption === index && "border-purple-500 bg-purple-50 dark:bg-purple-950/30"
                   )}
                   data-testid={`pulse-option-${post.id}-${index}`}
@@ -172,7 +172,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 variant="ghost"
                 size="sm"
                 onClick={() => likeMutation.mutate()}
-                className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
                 data-testid={`like-button-${post.id}`}
               >
                 <ThumbsUp size={16} />
@@ -181,7 +181,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
               <Button
                 variant="ghost"
                 size="sm"
-                className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
                 data-testid={`comment-button-${post.id}`}
               >
                 <MessageCircle size={16} />
@@ -191,7 +191,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 variant="ghost"
                 size="sm"
                 onClick={handleShare}
-                className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
                 data-testid={`share-button-${post.id}`}
               >
                 <Share size={16} />
@@ -270,7 +270,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 variant="ghost"
                 size="sm"
                 onClick={() => likeMutation.mutate()}
-                className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
                 data-testid={`like-button-${post.id}`}
               >
                 <ThumbsUp size={16} />
@@ -280,7 +280,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                  className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
                   data-testid={`comment-button-${post.id}`}
                 >
                   <MessageCircle size={16} />
@@ -291,7 +291,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 variant="ghost"
                 size="sm"
                 onClick={handleShare}
-                className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
                 data-testid={`share-button-${post.id}`}
               >
                 <Share size={16} />
@@ -405,7 +405,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 variant="ghost"
                 size="sm"
                 onClick={() => likeMutation.mutate()}
-                className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
                 data-testid={`like-button-${post.id}`}
               >
                 <ThumbsUp size={16} />
@@ -416,7 +416,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 size="sm"
                 onClick={() => saveMutation.mutate()}
                 className={cn(
-                  "flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all",
+                  "flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1",
                   isSaved && "text-red-500"
                 )}
                 data-testid={`save-button-${post.id}`}
@@ -429,7 +429,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                    className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
                     data-testid={`comment-button-${post.id}`}
                   >
                     <MessageCircle size={16} />
@@ -440,7 +440,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                  className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
                   data-testid={`comment-button-${post.id}`}
                 >
                   <MessageCircle size={16} />
@@ -451,7 +451,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 variant="ghost"
                 size="sm"
                 onClick={handleShare}
-                className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
+                className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
                 data-testid={`share-button-${post.id}`}
               >
                 <Share size={16} />
