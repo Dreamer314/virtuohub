@@ -44,6 +44,8 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
     }
   });
 
+  const [shareSuccess, setShareSuccess] = useState(false);
+
   const shareMutation = useMutation({
     mutationFn: () => apiRequest('POST', `/api/posts/${post.id}/share`),
     onSuccess: () => {
@@ -51,6 +53,35 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
       toast({ title: "Post shared!" });
     }
   });
+
+  const handleShare = async () => {
+    // For pulse posts, copy link instead of just sharing
+    if (post.type === 'pulse') {
+      try {
+        const url = `${window.location.origin}/thread/${post.id}`;
+        await navigator.clipboard.writeText(url);
+        setShareSuccess(true);
+        setTimeout(() => setShareSuccess(false), 2000);
+        toast({ title: "Link copied to clipboard!" });
+      } catch (error) {
+        console.error('Failed to copy link:', error);
+        // Fallback for browsers that don't support clipboard API
+        const url = `${window.location.origin}/thread/${post.id}`;
+        const textArea = document.createElement('textarea');
+        textArea.value = url;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        setShareSuccess(true);
+        setTimeout(() => setShareSuccess(false), 2000);
+        toast({ title: "Link copied to clipboard!" });
+      }
+    } else {
+      // Regular posts use normal share mutation
+      shareMutation.mutate();
+    }
+  };
 
   const voteMutation = useMutation({
     mutationFn: (optionIndex: number) => 
@@ -345,12 +376,14 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => shareMutation.mutate()}
+              onClick={handleShare}
               className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
               data-testid={`share-button-${post.id}`}
             >
               <Share size={16} />
-              <span>{post.shares}</span>
+              <span>
+                {post.type === 'pulse' && shareSuccess ? 'Link Copied!' : post.shares}
+              </span>
             </Button>
           </div>
           {post.price && (
