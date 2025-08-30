@@ -236,7 +236,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
       );
       objectStorageService.downloadObject(objectFile, res);
     } catch (error) {
-      console.error("Error checking object access:", error);
       if (error instanceof ObjectNotFoundError) {
         return res.sendStatus(404);
       }
@@ -265,7 +264,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         objectPath: objectPath,
       });
     } catch (error) {
-      console.error("Error setting comment image:", error);
       res.status(500).json({ error: "Internal server error" });
     }
   });

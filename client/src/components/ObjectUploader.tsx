@@ -80,7 +80,6 @@ export function ObjectUploader({
       });
       
     } catch (error) {
-      console.error('Upload error:', error);
       toast({
         title: 'Upload failed',
         description: 'Please try again.',

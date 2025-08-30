@@ -142,7 +142,6 @@ export default function ThreadPage() {
                       setShareSuccess(true);
                       setTimeout(() => setShareSuccess(false), 2000);
                     } catch (error) {
-                      console.error('Failed to copy link:', error);
                       // Fallback for browsers that don't support clipboard API
                       const url = `${window.location.origin}/thread/${postId}`;
                       const textArea = document.createElement('textarea');
@@ -223,16 +222,14 @@ export default function ThreadPage() {
                           maxNumberOfFiles={5}
                           maxFileSize={10485760}
                           onGetUploadParameters={async () => {
-                            const response = await apiRequest('/api/objects/upload', 'POST');
+                            const response = await apiRequest('/api/objects/upload', 'POST') as { uploadURL: string };
                             return {
                               method: 'PUT' as const,
                               url: response.uploadURL,
                             };
                           }}
-                          onComplete={async (files: File[]) => {
-                            // For demo purposes, create object URLs for the uploaded files
-                            const imageUrls = files.map(file => URL.createObjectURL(file));
-                            setUploadedImages(prev => [...prev, ...imageUrls]);
+                          onComplete={async (uploadedUrls: string[]) => {
+                            setUploadedImages(prev => [...prev, ...uploadedUrls]);
                           }}
                           buttonClassName="p-2 h-10 w-10"
                         >

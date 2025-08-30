@@ -64,7 +64,6 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
         setTimeout(() => setShareSuccess(false), 2000);
         toast({ title: "Link copied to clipboard!" });
       } catch (error) {
-        console.error('Failed to copy link:', error);
         // Fallback for browsers that don't support clipboard API
         const url = `${window.location.origin}/thread/${post.id}`;
         const textArea = document.createElement('textarea');

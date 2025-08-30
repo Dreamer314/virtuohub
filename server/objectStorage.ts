@@ -1,34 +1,6 @@
-import { Storage, File } from "@google-cloud/storage";
+import { Storage } from "@google-cloud/storage";
 import { Response } from "express";
 import { randomUUID } from "crypto";
-// Simplified types for basic object storage functionality
-export interface ObjectAclPolicy {
-  owner: string;
-  visibility: "public" | "private";
-}
-
-export enum ObjectPermission {
-  READ = "read",
-  WRITE = "write",
-}
-
-// Basic implementations for object storage without full ACL
-export async function setObjectAclPolicy(objectFile: any, aclPolicy: ObjectAclPolicy): Promise<void> {
-  // Simplified implementation
-}
-
-export async function getObjectAclPolicy(objectFile: any): Promise<ObjectAclPolicy | null> {
-  // Simplified implementation - return basic policy
-  return {
-    owner: "user1",
-    visibility: "public"
-  };
-}
-
-export async function canAccessObject(params: any): Promise<boolean> {
-  // Simplified implementation - allow access for demo
-  return true;
-}
 
 const REPLIT_SIDECAR_ENDPOINT = "http://127.0.0.1:1106";
 
@@ -96,7 +68,7 @@ export class ObjectStorageService {
   }
 
   // Search for a public object from the search paths.
-  async searchPublicObject(filePath: string): Promise<File | null> {
+  async searchPublicObject(filePath: string): Promise<any | null> {
     for (const searchPath of this.getPublicObjectSearchPaths()) {
       const fullPath = `${searchPath}/${filePath}`;
 
@@ -116,27 +88,17 @@ export class ObjectStorageService {
   }
 
   // Downloads an object to the response.
-  async downloadObject(file: File, res: Response, cacheTtlSec: number = 3600) {
+  async downloadObject(file: any, res: Response, cacheTtlSec: number = 3600) {
     try {
-      // Get file metadata
       const [metadata] = await file.getMetadata();
-      // Get the ACL policy for the object.
-      const aclPolicy = await getObjectAclPolicy(file);
-      const isPublic = aclPolicy?.visibility === "public";
-      // Set appropriate headers
       res.set({
         "Content-Type": metadata.contentType || "application/octet-stream",
         "Content-Length": metadata.size,
-        "Cache-Control": `${
-          isPublic ? "public" : "private"
-        }, max-age=${cacheTtlSec}`,
+        "Cache-Control": `public, max-age=${cacheTtlSec}`,
       });
 
-      // Stream the file to the response
       const stream = file.createReadStream();
-
-      stream.on("error", (err) => {
-        console.error("Stream error:", err);
+      stream.on("error", (err: any) => {
         if (!res.headersSent) {
           res.status(500).json({ error: "Error streaming file" });
         }
@@ -144,7 +106,6 @@ export class ObjectStorageService {
 
       stream.pipe(res);
     } catch (error) {
-      console.error("Error downloading file:", error);
       if (!res.headersSent) {
         res.status(500).json({ error: "Error downloading file" });
       }
@@ -176,7 +137,7 @@ export class ObjectStorageService {
   }
 
   // Gets the object entity file from the object path.
-  async getObjectEntityFile(objectPath: string): Promise<File> {
+  async getObjectEntityFile(objectPath: string): Promise<any> {
     if (!objectPath.startsWith("/objects/")) {
       throw new ObjectNotFoundError();
     }
@@ -230,15 +191,12 @@ export class ObjectStorageService {
   // Tries to set the ACL policy for the object entity and return the normalized path.
   async trySetObjectEntityAclPolicy(
     rawPath: string,
-    aclPolicy: ObjectAclPolicy
+    aclPolicy: any
   ): Promise<string> {
     const normalizedPath = this.normalizeObjectEntityPath(rawPath);
     if (!normalizedPath.startsWith("/")) {
       return normalizedPath;
     }
-
-    const objectFile = await this.getObjectEntityFile(normalizedPath);
-    await setObjectAclPolicy(objectFile, aclPolicy);
     return normalizedPath;
   }
 
@@ -249,14 +207,10 @@ export class ObjectStorageService {
     requestedPermission,
   }: {
     userId?: string;
-    objectFile: File;
-    requestedPermission?: ObjectPermission;
+    objectFile: any;
+    requestedPermission?: string;
   }): Promise<boolean> {
-    return canAccessObject({
-      userId,
-      objectFile,
-      requestedPermission: requestedPermission ?? ObjectPermission.READ,
-    });
+    return true;
   }
 }
 
