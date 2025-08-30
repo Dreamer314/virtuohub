@@ -141,14 +141,20 @@
       rgba(255, 255, 255, 0.08) 0%,
       rgba(255, 255, 255, 0.02) 50%,
       rgba(0, 0, 0, 0.1) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .dark .enhanced-card:hover {
     box-shadow: 
       0 8px 30px rgba(0, 0, 0, 0.7),
-      0 2px 8px rgba(124, 58, 237, 0.2),
+      0 2px 8px rgba(255, 255, 255, 0.1),
       inset 0 1px 0 rgba(255, 255, 255, 0.15);
     transform: translateY(-1px);
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.06) 50%,
+      rgba(0, 0, 0, 0.05) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
   }
 
   .charcoal .enhanced-card {
@@ -160,25 +166,20 @@
       rgba(255, 255, 255, 0.04) 0%,
       rgba(255, 255, 255, 0.01) 50%,
       rgba(0, 0, 0, 0.15) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.06);
   }
 
   .charcoal .enhanced-card:hover {
     box-shadow: 
       0 8px 35px rgba(0, 0, 0, 0.9),
-      0 2px 8px rgba(124, 58, 237, 0.15),
+      0 2px 8px rgba(255, 255, 255, 0.08),
       inset 0 1px 0 rgba(255, 255, 255, 0.08);
     transform: translateY(-1px);
-  }
-
-  /* Ambient glow for borders in dark themes */
-  .dark .glow-border:hover {
-    border-color: rgba(124, 58, 237, 0.4);
-    box-shadow: 0 0 15px rgba(124, 58, 237, 0.2);
-  }
-
-  .charcoal .glow-border:hover {
-    border-color: rgba(124, 58, 237, 0.3);
-    box-shadow: 0 0 12px rgba(124, 58, 237, 0.15);
+    background: linear-gradient(135deg, 
+      rgba(255, 255, 255, 0.08) 0%,
+      rgba(255, 255, 255, 0.03) 50%,
+      rgba(0, 0, 0, 0.1) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
   .gradient-bg {
