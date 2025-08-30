@@ -389,24 +389,30 @@ export default function Community() {
               </div>
             )}
 
-            {/* Community Feed Section with Brackets */}
+            {/* Community Feed Section with Large Side Brackets */}
             <div className="relative" data-testid="community-feed-section">
-              {/* Left Bracket */}
-              <div className="absolute left-0 top-0 bottom-0 w-2 flex flex-col items-center">
-                <div className="w-2 h-8 border-l-2 border-t-2 border-accent/60 rounded-tl-lg"></div>
-                <div className="flex-1 w-0.5 bg-gradient-to-b from-accent/60 via-accent/30 to-accent/60"></div>
-                <div className="w-2 h-8 border-l-2 border-b-2 border-accent/60 rounded-bl-lg"></div>
+              {/* Left Large Bracket */}
+              <div className="absolute -left-8 top-0 bottom-0 w-6 flex flex-col items-center z-10">
+                {/* Top bracket corner */}
+                <div className="w-6 h-12 border-l-4 border-t-4 border-accent/70 rounded-tl-2xl"></div>
+                {/* Vertical line */}
+                <div className="flex-1 w-1 bg-gradient-to-b from-accent/70 via-accent/40 to-accent/70 rounded-full"></div>
+                {/* Bottom bracket corner */}
+                <div className="w-6 h-12 border-l-4 border-b-4 border-accent/70 rounded-bl-2xl"></div>
               </div>
               
-              {/* Right Bracket */}
-              <div className="absolute right-0 top-0 bottom-0 w-2 flex flex-col items-center">
-                <div className="w-2 h-8 border-r-2 border-t-2 border-accent/60 rounded-tr-lg"></div>
-                <div className="flex-1 w-0.5 bg-gradient-to-b from-accent/60 via-accent/30 to-accent/60"></div>
-                <div className="w-2 h-8 border-r-2 border-b-2 border-accent/60 rounded-br-lg"></div>
+              {/* Right Large Bracket */}
+              <div className="absolute -right-8 top-0 bottom-0 w-6 flex flex-col items-center z-10">
+                {/* Top bracket corner */}
+                <div className="w-6 h-12 border-r-4 border-t-4 border-accent/70 rounded-tr-2xl"></div>
+                {/* Vertical line */}
+                <div className="flex-1 w-1 bg-gradient-to-b from-accent/70 via-accent/40 to-accent/70 rounded-full"></div>
+                {/* Bottom bracket corner */}
+                <div className="w-6 h-12 border-r-4 border-b-4 border-accent/70 rounded-br-2xl"></div>
               </div>
               
-              {/* Content with padding for brackets */}
-              <div className="px-6">
+              {/* Content with normal padding */}
+              <div>
             
             {/* Community Feed Header */}
             <div className="mb-8 relative">
