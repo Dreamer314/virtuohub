@@ -341,7 +341,7 @@ export default function Community() {
             )}
 
             {/* The Creator Pulse */}
-            {currentTab === 'all' && pulsePosts.length > 0 && (
+            {currentTab === 'all' && (
               <div className="mb-8" data-testid="pulse-posts-feed">
                 <div className="flex items-center space-x-2 mb-6">
                   <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
@@ -354,9 +354,21 @@ export default function Community() {
                   <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                 </div>
                 <div className="space-y-6">
-                  {pulsePosts.map((post: any) => (
-                    <PostCard key={post.id} post={post} />
-                  ))}
+                  {pulsePosts.length > 0 ? (
+                    pulsePosts.map((post: any) => (
+                      <PostCard key={post.id} post={post} />
+                    ))
+                  ) : (
+                    <div className="glass-card rounded-xl p-8 text-center">
+                      <TrendingUp className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-50" />
+                      <p className="text-muted-foreground">
+                        {selectedCategory !== 'All' || searchQuery 
+                          ? 'No pulse posts match your current filters' 
+                          : 'No pulse posts available yet'
+                        }
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
