@@ -237,11 +237,11 @@ export default function Community() {
               </div>
             </div>
 
-            {/* Featured Content */}
+            {/* Featured Content - Breaking Out of Constraints */}
             {currentTab === 'all' && (
-              <div className="mb-16" data-testid="featured-carousel">
+              <div className="mb-16 -mx-6 sm:-mx-8 lg:-mx-12 xl:-mx-16" data-testid="featured-carousel">
                 {/* Section Header */}
-                <div className="text-center mb-12">
+                <div className="text-center mb-12 px-6 sm:px-8 lg:px-12">
                   <h2 className="text-4xl font-bold text-foreground mb-4">Featured Content</h2>
                   <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                     Discover the latest insights, creator spotlights, and industry news from the virtual world community
@@ -249,9 +249,9 @@ export default function Community() {
                 </div>
 
                 {/* Featured Content Layout */}
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-6 px-6 sm:px-8 lg:px-12">
                   {/* Left Navigation Controls */}
-                  <div className="flex flex-col items-center gap-3">
+                  <div className="flex flex-col items-center gap-3 flex-shrink-0">
                     <button
                       onClick={() => setIsAutoplayPaused(!isAutoplayPaused)}
                       className="bg-white/10 backdrop-blur-sm text-white p-3 rounded-full transition-all hover:bg-white/20 border border-white/20"
@@ -269,8 +269,8 @@ export default function Community() {
                     </button>
                   </div>
 
-                  {/* Main Featured Card - Larger */}
-                  <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 to-black shadow-2xl h-[400px] flex-1">
+                  {/* Main Featured Card - Large and Unconstrained */}
+                  <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-gray-900 to-black shadow-2xl h-[500px] flex-1">
                     {/* Background Image */}
                     <img 
                       src={featuredContent[currentFeaturedIndex].image} 
@@ -345,7 +345,7 @@ export default function Community() {
                   {/* Right Navigation */}
                   <button
                     onClick={nextFeatured}
-                    className="bg-white/10 backdrop-blur-sm text-white p-3 rounded-full transition-all hover:bg-white/20 border border-white/20"
+                    className="bg-white/10 backdrop-blur-sm text-white p-3 rounded-full transition-all hover:bg-white/20 border border-white/20 flex-shrink-0"
                     data-testid="featured-next-button"
                   >
                     <ChevronRight className="w-6 h-6" />
