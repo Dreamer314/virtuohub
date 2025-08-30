@@ -303,20 +303,31 @@ export default function Community() {
                           {featuredContent[currentFeaturedIndex].description}
                         </p>
                         
-                        {/* Action Buttons - More Prominent */}
-                        <div className="flex items-center space-x-4">
+                        {/* Action Buttons - Fully Visible */}
+                        <div className="flex items-center space-x-4 flex-wrap">
                           {featuredContent[currentFeaturedIndex].link !== '#' ? (
                             <Link href={featuredContent[currentFeaturedIndex].link}>
-                              <Button className="bg-accent hover:bg-accent/90 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg">
+                              <Button 
+                                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold shadow-xl border-2 border-blue-500"
+                                data-testid="read-article-button"
+                              >
                                 Read Article
                               </Button>
                             </Link>
                           ) : (
-                            <Button className="bg-accent hover:bg-accent/90 text-white px-8 py-4 rounded-lg font-semibold text-lg shadow-lg" disabled>
+                            <Button 
+                              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold shadow-xl border-2 border-blue-500" 
+                              disabled
+                              data-testid="read-article-button"
+                            >
                               Coming Soon
                             </Button>
                           )}
-                          <Button variant="outline" className="border-white/40 text-white hover:bg-white/15 px-8 py-4 rounded-lg font-semibold text-lg shadow-lg backdrop-blur-sm">
+                          <Button 
+                            variant="outline" 
+                            className="bg-white/20 border-2 border-white text-white hover:bg-white/30 px-6 py-3 rounded-lg font-semibold shadow-xl backdrop-blur-sm"
+                            data-testid="learn-more-button"
+                          >
                             Learn More
                           </Button>
                         </div>
