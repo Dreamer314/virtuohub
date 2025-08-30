@@ -363,7 +363,7 @@ export default function Community() {
 
             {/* VHub Pulse */}
             {currentTab === 'all' && pulsePosts.length > 0 && (
-              <div className="mb-8" data-testid="pulse-posts-feed">
+              <div className="mb-16 pb-8 border-b border-border/30" data-testid="pulse-posts-feed">
                 <div className="flex flex-col items-center space-y-3 mb-6">
                   <div className="flex items-center space-x-2 w-full">
                     <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
