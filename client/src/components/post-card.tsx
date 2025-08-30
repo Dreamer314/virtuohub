@@ -294,7 +294,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
               variant="ghost"
               size="sm"
               onClick={() => likeMutation.mutate()}
-              className="flex items-center space-x-2 hover:text-primary transition-colors"
+              className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
               data-testid={`like-button-${post.id}`}
             >
               <ThumbsUp size={16} />
@@ -310,7 +310,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="flex items-center space-x-2 hover:text-primary transition-colors"
+                  className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
                   data-testid={`comment-button-${post.id}`}
                 >
                   <MessageCircle size={16} />
@@ -322,7 +322,7 @@ export function PostCard({ post, currentUserId = 'user1', isDetailView = false }
               variant="ghost"
               size="sm"
               onClick={() => shareMutation.mutate()}
-              className="flex items-center space-x-2 hover:text-primary transition-colors"
+              className="flex items-center space-x-2 hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent transition-all"
               data-testid={`share-button-${post.id}`}
             >
               <Share size={16} />
