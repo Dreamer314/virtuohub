@@ -183,10 +183,17 @@ export default function Community() {
           </div>
         </div>
         
+        {/* Fixed Right Sidebar */}
+        <div className="hidden xl:block w-80 fixed right-0 top-0 h-screen bg-background/95 backdrop-blur-sm border-l border-border z-10">
+          <div className="pt-20 px-4 overflow-y-auto">
+            <RightSidebar />
+          </div>
+        </div>
+
         {/* Main Content Area */}
-        <div className="flex-1 lg:ml-64">
-          <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-12 py-8">
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
+        <div className="flex-1 lg:ml-64 xl:mr-80">
+          <div className="max-w-[1200px] mx-auto px-6 sm:px-8 lg:px-12 py-8">
+            <div className="grid grid-cols-1 gap-8">
           {/* Mobile Left Sidebar */}
           <div className="lg:hidden">
             <LeftSidebar
@@ -198,7 +205,7 @@ export default function Community() {
           </div>
 
           {/* Main Content */}
-          <main className="lg:col-span-4">
+          <main>
             {/* Hero Section */}
             <div className="glass-card rounded-xl mb-8 overflow-hidden hover-lift" data-testid="hero-section">
               <div className="relative h-48 flex items-center justify-center">
@@ -555,7 +562,8 @@ export default function Community() {
             </div>
           </main>
 
-          <div className="lg:col-span-1 lg:ml-4">
+          {/* Mobile Right Sidebar - only show on smaller screens */}
+          <div className="xl:hidden mt-8">
             <RightSidebar />
           </div>
             </div>
