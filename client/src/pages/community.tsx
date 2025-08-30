@@ -439,6 +439,43 @@ export default function Community() {
                       </SelectContent>
                     </Select>
                   </div>
+
+                  {/* Platform Filter Dropdown */}
+                  <div className="min-w-[200px]">
+                    <Select 
+                      value={selectedPlatforms.length === 1 ? selectedPlatforms[0] : 'All'} 
+                      onValueChange={(value: string) => {
+                        if (value === 'All') {
+                          setSelectedPlatforms([]);
+                        } else {
+                          setSelectedPlatforms([value as Platform]);
+                        }
+                      }}
+                    >
+                      <SelectTrigger className="bg-background/50 border-border/50 focus:border-accent focus:ring-1 focus:ring-accent/20" data-testid="platform-select">
+                        <SelectValue placeholder="Filter Platforms" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="All">All Platforms</SelectItem>
+                        <SelectItem value="VRChat">VRChat</SelectItem>
+                        <SelectItem value="Roblox">Roblox</SelectItem>
+                        <SelectItem value="Second Life">Second Life</SelectItem>
+                        <SelectItem value="Unity">Unity</SelectItem>
+                        <SelectItem value="Unreal Engine">Unreal Engine</SelectItem>
+                        <SelectItem value="Minecraft">Minecraft</SelectItem>
+                        <SelectItem value="IMVU">IMVU</SelectItem>
+                        <SelectItem value="Fortnite Creative">Fortnite Creative</SelectItem>
+                        <SelectItem value="Rec Room">Rec Room</SelectItem>
+                        <SelectItem value="VR">VR</SelectItem>
+                        <SelectItem value="AR">AR</SelectItem>
+                        <SelectItem value="Web3/Blockchain">Web3/Blockchain</SelectItem>
+                        <SelectItem value="The Sims">The Sims</SelectItem>
+                        <SelectItem value="GTA RP">GTA RP</SelectItem>
+                        <SelectItem value="Horizon Worlds">Horizon Worlds</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 
                 {/* Sort Toggle */}
@@ -470,13 +507,18 @@ export default function Community() {
                 </div>
                 
                 {/* Active Filters Display */}
-                {(selectedCategory !== 'All' || searchQuery) && (
+                {(selectedCategory !== 'All' || searchQuery || selectedPlatforms.length > 0) && (
                   <div className="mt-4 pt-4 border-t border-border/50">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <span>Active filters:</span>
                       {selectedCategory !== 'All' && (
                         <span className="px-2 py-1 bg-accent/20 text-accent rounded-full">
                           {selectedCategory}
+                        </span>
+                      )}
+                      {selectedPlatforms.length > 0 && (
+                        <span className="px-2 py-1 bg-blue-500/20 text-blue-600 dark:text-blue-400 rounded-full">
+                          {selectedPlatforms[0]}
                         </span>
                       )}
                       {searchQuery && (
@@ -489,6 +531,7 @@ export default function Community() {
                         size="sm"
                         onClick={() => {
                           setSelectedCategory('All');
+                          setSelectedPlatforms([]);
                           setSearchQuery('');
                         }}
                         className="ml-auto h-6 px-2 text-xs hover:bg-destructive/20 hover:text-destructive"
