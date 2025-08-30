@@ -36,37 +36,40 @@ export default function Community() {
     enabled: currentTab === 'saved',
   });
 
-  // Filter posts client-side (simple and reliable)
-  const allFilteredPosts = currentTab === 'all' 
-    ? (Array.isArray(allPosts) ? allPosts : []).filter((post: any) => {
-        // Search filter
-        if (searchQuery && !post.title.toLowerCase().includes(searchQuery.toLowerCase()) && 
-            !post.content.toLowerCase().includes(searchQuery.toLowerCase())) {
-          return false;
-        }
-        // Category filter
-        if (selectedCategory !== 'All' && post.category !== selectedCategory) {
-          return false;
-        }
-        // Platform filter
-        if (selectedPlatforms.length > 0 && !post.platforms.some((p: string) => selectedPlatforms.includes(p as Platform))) {
-          return false;
-        }
-        return true;
-      })
+  // Get all posts first
+  const allPostsData = currentTab === 'all' 
+    ? (Array.isArray(allPosts) ? allPosts : [])
     : (Array.isArray(savedPosts) ? savedPosts : []);
 
-  // Separate special posts by type
-  const pulsePosts = Array.isArray(allFilteredPosts) 
-    ? allFilteredPosts.filter((post: any) => post.type === 'pulse')
+  // Separate posts by type FIRST (before filtering)
+  const pulsePosts = Array.isArray(allPostsData) 
+    ? allPostsData.filter((post: any) => post.type === 'pulse')
     : [];
     
-  const insightPosts = Array.isArray(allFilteredPosts) 
-    ? allFilteredPosts.filter((post: any) => post.type === 'insight')
+  const insightPosts = Array.isArray(allPostsData) 
+    ? allPostsData.filter((post: any) => post.type === 'insight')
     : [];
   
-  const regularPosts = Array.isArray(allFilteredPosts) 
-    ? allFilteredPosts.filter((post: any) => post.type === 'regular')
+  // ONLY filter regular posts (Community Feed posts) - this is key!
+  const regularPosts = Array.isArray(allPostsData) 
+    ? allPostsData
+        .filter((post: any) => post.type === 'regular')
+        .filter((post: any) => {
+          // Search filter
+          if (searchQuery && !post.title.toLowerCase().includes(searchQuery.toLowerCase()) && 
+              !post.content.toLowerCase().includes(searchQuery.toLowerCase())) {
+            return false;
+          }
+          // Category filter
+          if (selectedCategory !== 'All' && post.category !== selectedCategory) {
+            return false;
+          }
+          // Platform filter
+          if (selectedPlatforms.length > 0 && !post.platforms.some((p: string) => selectedPlatforms.includes(p as Platform))) {
+            return false;
+          }
+          return true;
+        })
     : [];
 
   // Featured content data
@@ -341,7 +344,7 @@ export default function Community() {
             )}
 
             {/* The Creator Pulse */}
-            {currentTab === 'all' && (
+            {currentTab === 'all' && pulsePosts.length > 0 && (
               <div className="mb-8" data-testid="pulse-posts-feed">
                 <div className="flex items-center space-x-2 mb-6">
                   <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
@@ -354,21 +357,9 @@ export default function Community() {
                   <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                 </div>
                 <div className="space-y-6">
-                  {pulsePosts.length > 0 ? (
-                    pulsePosts.map((post: any) => (
-                      <PostCard key={post.id} post={post} />
-                    ))
-                  ) : (
-                    <div className="glass-card rounded-xl p-8 text-center">
-                      <TrendingUp className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-50" />
-                      <p className="text-muted-foreground">
-                        {selectedCategory !== 'All' || searchQuery 
-                          ? 'No pulse posts match your current filters' 
-                          : 'No pulse posts available yet'
-                        }
-                      </p>
-                    </div>
-                  )}
+                  {pulsePosts.map((post: any) => (
+                    <PostCard key={post.id} post={post} />
+                  ))}
                 </div>
               </div>
             )}
