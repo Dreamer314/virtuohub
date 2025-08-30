@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Header } from '@/components/layout/header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { ArrowLeft, Calendar, Clock, User, Heart, MessageCircle, Share2 } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, User, Heart, MessageCircle, Share2, BookOpen } from 'lucide-react';
 import { Link } from 'wouter';
 import { formatDistanceToNow } from 'date-fns';
 import type { PostWithAuthor } from '@shared/schema';
@@ -23,35 +23,119 @@ export default function InsightsPage() {
     }
   };
 
+  // Mock data for interviews and articles following the reference design
+  const interviewData = [
+    {
+      id: 'interview1',
+      name: 'Emma Thompson',
+      title: 'Environment Artist',
+      subtitle: 'Crafting Immersive Realms in VRChat',
+      image: '/images/vr-creator.png',
+      type: 'Interview',
+      postId: 'post4'
+    },
+    {
+      id: 'interview2', 
+      name: 'Alex Martinez',
+      title: '3D Artist',
+      subtitle: 'Building Engaging Games on Roblox',
+      image: '/images/unity-developer.png',
+      type: 'Interview',
+      postId: 'post5'
+    },
+    {
+      id: 'interview3',
+      name: 'Sarah Chen',
+      title: 'Avatar Creator', 
+      subtitle: 'Cyberpunk Aesthetic in VRChat',
+      image: '/images/vrchat-creator.png',
+      type: 'Interview',
+      postId: 'post6'
+    },
+    {
+      id: 'interview4',
+      name: 'Doux',
+      title: 'Designer',
+      subtitle: 'Building a Brand in Second Life',
+      image: '/images/second-life-creator.png',
+      type: 'Interview',
+      postId: 'post4'
+    },
+    {
+      id: 'interview5',
+      name: 'Tom Wheeler',
+      title: 'World Builder',
+      subtitle: 'Creating Interactive Environments',
+      image: '/images/game-developer.png',
+      type: 'Interview',
+      postId: 'post5'
+    },
+    {
+      id: 'interview6',
+      name: 'Mike Rodriguez',
+      title: 'Game Developer', 
+      subtitle: 'Developing Adventures for Roblox',
+      image: '/images/roblox-creator.png',
+      type: 'Interview',
+      postId: 'post6'
+    }
+  ];
+
+  const articleData = [
+    {
+      id: 'article1',
+      title: 'Breaking Creative Blocks with AI Tools',
+      excerpt: 'Discover how AI is revolutionizing the creative process for virtual world designers and artists.',
+      image: '/images/unity-metaverse.png',
+      author: 'VirtuoHub Editorial',
+      readTime: 8,
+      type: 'Article',
+      postId: 'post4'
+    },
+    {
+      id: 'article2',
+      title: 'The Economics of Virtual Fashion',
+      excerpt: 'A deep dive into the business models driving the multi-billion dollar virtual fashion industry.',
+      image: '/images/vrchat-world.png', 
+      author: 'Industry Analysis Team',
+      readTime: 12,
+      type: 'Article',
+      postId: 'post5'
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
       
       <div className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="mb-8">
+          <div className="mb-12">
             <Link href="/">
-              <Button variant="ghost" className="mb-4">
+              <Button variant="ghost" className="mb-6 text-muted-foreground hover:text-foreground">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Community
               </Button>
             </Link>
             
-            <div className="text-center mb-6">
-              <h1 className="text-4xl font-bold mb-4">Creator Insights</h1>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Creator Insights is where we hear from the creators making an impact. We feature innovative minds and showcase their work, but more importantly, they share the real-world wisdom and practical tips that can help you level up.
+            <div className="text-center">
+              <h1 className="text-5xl font-bold mb-6 gradient-text">Creator Insights</h1>
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                Interviews with creators from across virtual worlds
+              </p>
+              <p className="text-base text-muted-foreground max-w-4xl mx-auto mt-4 leading-relaxed">
+                In-depth conversations with innovative creators sharing their stories, experiences, and advice. Explore how they are shaping the future of virtual world content creation.
               </p>
             </div>
           </div>
 
           {/* Loading State */}
           {isLoading && (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <Card key={i} className="glass-card animate-pulse">
-                  <div className="h-48 bg-muted rounded-t-lg"></div>
+                  <div className="h-64 bg-muted rounded-t-lg"></div>
                   <CardContent className="p-6">
                     <div className="h-4 bg-muted rounded w-3/4 mb-3"></div>
                     <div className="h-3 bg-muted rounded w-full mb-2"></div>
@@ -62,78 +146,118 @@ export default function InsightsPage() {
             </div>
           )}
 
-          {/* Insights Grid */}
+          {/* Interviews Grid */}
           {!isLoading && (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {insightPosts.map((post) => (
-                <Card key={post.id} className="glass-card hover-lift overflow-hidden group">
-                  <div className="relative h-48 overflow-hidden">
-                    <img
-                      src={post.imageUrl}
-                      alt={post.title}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                  </div>
-                  
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-semibold mb-3 line-clamp-2">
-                      {post.title}
-                    </h3>
-                    
-                    <p className="text-muted-foreground mb-4 line-clamp-3">
-                      {post.content}
-                    </p>
-                    
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
-                      <div className="flex items-center gap-1">
-                        <User className="w-4 h-4" />
-                        <span>{post.author.displayName}</span>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" />
-                        <span>{formatDistanceToNow(new Date(post.createdAt))} ago</span>
-                      </div>
-                    </div>
+            <div className="space-y-16">
+              {/* Interview Cards */}
+              <div>
+                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                  {interviewData.map((interview) => (
+                    <Card key={interview.id} className="glass-card hover-lift overflow-hidden group border-2 border-border/20 hover:border-accent/40 transition-all duration-300 bg-gradient-to-br from-card/95 to-card/85">
+                      <div className="relative h-64 overflow-hidden">
+                        <img
+                          src={interview.image}
+                          alt={interview.name}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                        
+                        {/* Name and title overlay */}
+                        <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+                          <h3 className="text-2xl font-bold mb-1">{interview.name}</h3>
+                          <p className="text-lg font-medium text-gray-200 mb-2">{interview.title}</p>
+                          <p className="text-sm text-gray-300 leading-relaxed">{interview.subtitle}</p>
+                        </div>
 
-                    {/* Engagement Stats */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Heart className="w-4 h-4" />
-                          {post.likes}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <MessageCircle className="w-4 h-4" />
-                          {post.comments}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Share2 className="w-4 h-4" />
-                          {post.shares}
-                        </span>
+                        {/* Type badge */}
+                        <div className="absolute top-4 left-4">
+                          <span className="bg-accent/90 text-accent-foreground px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
+                            {interview.type}
+                          </span>
+                        </div>
                       </div>
-                      <span className="text-xs text-muted-foreground">
-                        <Clock className="w-3 h-3 inline mr-1" />
-                        Interview
-                      </span>
-                    </div>
+                      
+                      <CardContent className="p-6">
+                        <Link href={`/article/${getArticleSlug(interview.postId)}`}>
+                          <Button className="w-full bg-accent hover:bg-accent/90 text-accent-foreground font-medium">
+                            Read Full Interview →
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
 
-                    <Link href={`/article/${getArticleSlug(post.id)}`}>
-                      <Button className="w-full">
-                        Read Full Article →
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              ))}
+              {/* Articles Section */}
+              <div>
+                <div className="text-center mb-10">
+                  <h2 className="text-3xl font-bold mb-4">Featured Articles</h2>
+                  <p className="text-muted-foreground max-w-2xl mx-auto">
+                    Deep dives into industry trends, technical guides, and analytical pieces from our editorial team.
+                  </p>
+                </div>
+
+                <div className="grid gap-8 md:grid-cols-2">
+                  {articleData.map((article) => (
+                    <Card key={article.id} className="glass-card hover-lift overflow-hidden group border-2 border-border/20 hover:border-primary/40 transition-all duration-300 bg-gradient-to-br from-card/95 to-card/85">
+                      <div className="relative h-48 overflow-hidden">
+                        <img
+                          src={article.image}
+                          alt={article.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                        
+                        {/* Type badge */}
+                        <div className="absolute top-4 left-4">
+                          <span className="bg-primary/90 text-primary-foreground px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-sm">
+                            {article.type}
+                          </span>
+                        </div>
+                      </div>
+                      
+                      <CardContent className="p-6">
+                        <h3 className="text-xl font-bold mb-3 line-clamp-2 group-hover:text-primary transition-colors">
+                          {article.title}
+                        </h3>
+                        
+                        <p className="text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
+                          {article.excerpt}
+                        </p>
+                        
+                        <div className="flex items-center justify-between text-sm text-muted-foreground mb-6">
+                          <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-1">
+                              <User className="w-4 h-4" />
+                              <span>{article.author}</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <Clock className="w-4 h-4" />
+                              <span>{article.readTime} min read</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <Link href={`/article/${getArticleSlug(article.postId)}`}>
+                          <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-medium">
+                            <BookOpen className="w-4 h-4 mr-2" />
+                            Read Full Article →
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 
           {/* Empty State */}
-          {!isLoading && insightPosts.length === 0 && (
-            <div className="text-center py-12">
-              <h3 className="text-xl font-semibold mb-2">No insights available yet</h3>
-              <p className="text-muted-foreground">
+          {!isLoading && insightPosts.length === 0 && interviewData.length === 0 && (
+            <div className="text-center py-16">
+              <h3 className="text-2xl font-semibold mb-4">No insights available yet</h3>
+              <p className="text-muted-foreground text-lg max-w-md mx-auto">
                 Check back soon for more creator insights and interviews.
               </p>
             </div>

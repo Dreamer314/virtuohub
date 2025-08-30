@@ -165,6 +165,21 @@ export default function ArticlePage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Navigation */}
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center gap-4 text-sm">
+          <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+            Community
+          </Link>
+          <span className="text-muted-foreground">→</span>
+          <Link href="/insights" className="text-muted-foreground hover:text-foreground transition-colors">
+            Creator Insights
+          </Link>
+          <span className="text-muted-foreground">→</span>
+          <span className="text-foreground font-medium">{article.post.title}</span>
+        </div>
+      </div>
+
       {/* Hero Section */}
       <div className="relative h-96 overflow-hidden">
         <img
