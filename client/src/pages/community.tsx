@@ -240,7 +240,7 @@ export default function Community() {
                   {/* Autoplay Control */}
                   <button
                     onClick={() => setIsAutoplayPaused(!isAutoplayPaused)}
-                    className="bg-accent/20 hover:bg-accent/30 text-accent p-2 rounded-full transition-all hover:scale-110 backdrop-blur-sm border border-accent/20"
+                    className="bg-transparent text-accent p-2 rounded-full transition-all hover:border-accent hover:border-2 border border-accent/30"
                     data-testid="autoplay-toggle-button"
                     title={isAutoplayPaused ? "Start slideshow" : "Pause slideshow"}
                   >
@@ -249,7 +249,7 @@ export default function Community() {
                   {/* Left Navigation Arrow */}
                   <button
                     onClick={prevFeatured}
-                    className="bg-accent/20 hover:bg-accent/30 text-accent p-3 rounded-full transition-all hover:scale-110 backdrop-blur-sm border border-accent/20"
+                    className="bg-transparent text-accent p-3 rounded-full transition-all hover:border-accent hover:border-2 border border-accent/30"
                     data-testid="featured-prev-button"
                   >
                     <ChevronLeft className="w-6 h-6" />
@@ -285,12 +285,12 @@ export default function Community() {
                           <span className="text-sm text-white/70">{featuredContent[currentFeaturedIndex].category}</span>
                           {featuredContent[currentFeaturedIndex].link !== '#' ? (
                             <Link href={featuredContent[currentFeaturedIndex].link}>
-                              <Button size="sm" variant="secondary" className="transition-all hover:scale-105">
+                              <Button size="sm" variant="secondary" className="transition-all hover:border-2">
                                 Read More →
                               </Button>
                             </Link>
                           ) : (
-                            <Button size="sm" variant="secondary" className="transition-all hover:scale-105" disabled>
+                            <Button size="sm" variant="secondary" className="transition-all" disabled>
                               Coming Soon
                             </Button>
                           )}
@@ -302,7 +302,7 @@ export default function Community() {
                   {/* Right Navigation Arrow */}
                   <button
                     onClick={nextFeatured}
-                    className="bg-accent/20 hover:bg-accent/30 text-accent p-3 rounded-full transition-all hover:scale-110 backdrop-blur-sm border border-accent/20"
+                    className="bg-transparent text-accent p-3 rounded-full transition-all hover:border-accent hover:border-2 border border-accent/30"
                     data-testid="featured-next-button"
                   >
                     <ChevronRight className="w-6 h-6" />
@@ -458,7 +458,7 @@ export default function Community() {
                 <Button
                   variant="outline"
                   onClick={() => setIsCreateModalOpen(true)}
-                  className="flex-1 text-left px-4 py-3 bg-input rounded-lg text-muted-foreground hover:bg-muted transition-colors justify-start"
+                  className="flex-1 text-left px-4 py-3 bg-input rounded-lg text-muted-foreground hover:border-2 hover:border-muted-foreground/30 border border-transparent transition-all justify-start"
                   data-testid="create-post-trigger"
                 >
                   Share your latest creation...
@@ -469,7 +469,7 @@ export default function Community() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="px-3 py-2 text-sm bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                    className="px-3 py-2 text-sm bg-transparent text-primary hover:border-primary hover:border-2 border border-primary/30 transition-all"
                     data-testid="media-button"
                   >
                     <Image className="w-4 h-4 mr-2" />
@@ -478,7 +478,7 @@ export default function Community() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="px-3 py-2 text-sm bg-accent/10 text-accent hover:bg-accent/20 transition-colors"
+                    className="px-3 py-2 text-sm bg-transparent text-accent hover:border-accent hover:border-2 border border-accent/30 transition-all"
                     data-testid="poll-button"
                   >
                     <BarChart3 className="w-4 h-4 mr-2" />
@@ -487,7 +487,7 @@ export default function Community() {
                 </div>
                 <Button
                   onClick={() => setIsCreateModalOpen(true)}
-                  className="px-6 py-2 bg-primary text-primary-foreground hover:bg-primary/90 transition-all hover:scale-105"
+                  className="px-6 py-2 bg-transparent text-primary hover:border-primary hover:border-2 border border-primary/30 transition-all"
                   data-testid="post-button"
                 >
                   Post
@@ -514,8 +514,8 @@ export default function Community() {
                   </div>
                 ))
               ) : currentTab === 'saved' ? (
-                Array.isArray(allFilteredPosts) && allFilteredPosts.length > 0 ? (
-                  allFilteredPosts.map((post: any) => (
+                Array.isArray(allPostsData) && allPostsData.length > 0 ? (
+                  allPostsData.map((post: any) => (
                     <PostCard key={post.id} post={post} />
                   ))
                 ) : (
@@ -566,7 +566,7 @@ export default function Community() {
       {/* Floating Action Button */}
       <Button
         onClick={() => setIsCreateModalOpen(true)}
-        className="fixed bottom-8 right-8 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all hover:scale-110 z-40 p-0"
+        className="fixed bottom-8 right-8 w-14 h-14 bg-transparent text-primary rounded-full border border-primary/30 hover:border-primary hover:border-2 transition-all z-40 p-0"
         data-testid="floating-action-button"
       >
         <Plus className="w-6 h-6" />

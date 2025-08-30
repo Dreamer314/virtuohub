@@ -109,25 +109,19 @@
   }
 
   .hover-lift {
-    @apply transition-all duration-300 ease-out;
+    @apply transition-all duration-300 ease-out border border-transparent;
   }
 
   .hover-lift:hover {
-    @apply -translate-y-2 shadow-xl;
-    box-shadow: 0 20px 40px rgba(139, 92, 246, 0.2);
-  }
-
-  .dark .hover-lift:hover {
-    box-shadow: 0 20px 40px rgba(139, 92, 246, 0.3);
+    @apply border-gray-300 dark:border-gray-600;
   }
 
   .platform-tag {
-    @apply transition-all duration-200 ease-out;
+    @apply transition-all duration-200 ease-out border border-transparent;
   }
 
   .platform-tag:hover {
-    @apply scale-105;
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    @apply border-gray-300 dark:border-gray-600;
   }
 
   .floating-element {
@@ -145,7 +139,7 @@
   }
 
   .save-button:hover {
-    @apply text-red-500 scale-110;
+    @apply text-red-500;
   }
 
   .save-button.saved {
