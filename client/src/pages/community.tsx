@@ -376,7 +376,13 @@ export default function Community() {
                     size="sm"
 onClick={(e) => {
                       e.preventDefault();
+                      // Preserve scroll position when going back to Feed
+                      const currentScrollY = window.scrollY;
                       setSelectedCategory('All');
+                      // Use a longer delay to allow all content to render
+                      setTimeout(() => {
+                        window.scrollTo({ top: currentScrollY, behavior: 'auto' });
+                      }, 100);
                     }}
                     className="rounded-full"
                     data-testid="category-all"
