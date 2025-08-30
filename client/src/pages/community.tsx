@@ -197,7 +197,7 @@ export default function Community() {
         {/* Fixed Right Sidebar */}
         <div className="hidden lg:block w-80 fixed right-0 top-0 h-screen bg-background/95 backdrop-blur-sm border-l border-border z-10">
           <div className="pt-20 px-4 overflow-y-auto">
-            <RightSidebar />
+            <RightSidebar onCreatePost={() => setIsCreateModalOpen(true)} />
           </div>
         </div>
 
