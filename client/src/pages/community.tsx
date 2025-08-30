@@ -239,9 +239,9 @@ export default function Community() {
 
             {/* Featured Content Carousel */}
             {currentTab === 'all' && (
-              <div className="mb-8" data-testid="featured-carousel">
+              <div className="mb-12 p-8 bg-gradient-to-br from-purple-500/5 via-purple-500/10 to-purple-500/5 rounded-2xl border border-purple-500/20 shadow-lg" data-testid="featured-carousel">
                 <div className="flex items-center space-x-2 mb-4">
-                  <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
+                  <div className="h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent flex-1"></div>
                   <div className="flex items-center space-x-4">
                     {(() => {
                       const Icon = featuredContent[currentFeaturedIndex].icon;
@@ -251,7 +251,7 @@ export default function Community() {
                       Featured Content
                     </h2>
                   </div>
-                  <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
+                  <div className="h-px bg-gradient-to-r from-purple-500 via-transparent to-transparent flex-1"></div>
                 </div>
                 
                 <div className="flex items-center gap-4">
@@ -363,7 +363,7 @@ export default function Community() {
 
             {/* VHub Pulse */}
             {currentTab === 'all' && pulsePosts.length > 0 && (
-              <div className="mb-16 pb-8 border-b border-border/30" data-testid="pulse-posts-feed">
+              <div className="mb-12 p-8 bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 rounded-2xl border border-primary/20 shadow-lg" data-testid="pulse-posts-feed">
                 <div className="flex flex-col items-center space-y-3 mb-6">
                   <div className="flex items-center space-x-2 w-full">
                     <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
@@ -390,23 +390,19 @@ export default function Community() {
             )}
 
             {/* Community Feed Header */}
-            <div className="mb-8 relative" data-testid="community-feed-section">
-              {/* Background emphasis */}
-              <div className="absolute inset-0 -mx-4 -my-2 bg-gradient-to-r from-accent/5 via-accent/10 to-accent/5 rounded-2xl blur-3xl"></div>
-              <div className="relative">
-                <div className="flex items-center space-x-2 mb-8">
-                  <div className="h-0.5 bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
-                  <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-accent/10 via-accent/20 to-accent/10 rounded-full border border-accent/30">
-                    <div className="w-12 h-12 rounded-xl bg-accent/20 border-2 border-accent/40 flex items-center justify-center shadow-lg">
-                      <Plus className="w-7 h-7 text-accent animate-pulse" />
-                    </div>
-                    <h2 className="text-5xl font-bold text-foreground tracking-tight bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
-                      Community Feed
-                    </h2>
-                    <div className="w-3 h-3 rounded-full bg-accent animate-ping"></div>
+            <div className="mb-8 p-8 bg-gradient-to-br from-green-500/5 via-green-500/10 to-green-500/5 rounded-2xl border border-green-500/20 shadow-lg" data-testid="community-feed-section">
+              <div className="flex items-center space-x-2 mb-8">
+                <div className="h-0.5 bg-gradient-to-r from-transparent via-green-500 to-transparent flex-1"></div>
+                <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-green-500/10 via-green-500/20 to-green-500/10 rounded-full border border-green-500/30">
+                  <div className="w-12 h-12 rounded-xl bg-green-500/20 border-2 border-green-500/40 flex items-center justify-center shadow-lg">
+                    <Plus className="w-7 h-7 text-green-500 animate-pulse" />
                   </div>
-                  <div className="h-0.5 bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
+                  <h2 className="text-5xl font-bold text-foreground tracking-tight bg-gradient-to-r from-foreground to-green-500 bg-clip-text text-transparent">
+                    Community Feed
+                  </h2>
+                  <div className="w-3 h-3 rounded-full bg-green-500 animate-ping"></div>
                 </div>
+                <div className="h-0.5 bg-gradient-to-r from-green-500 via-transparent to-transparent flex-1"></div>
               </div>
 
               {/* Filter Controls */}
