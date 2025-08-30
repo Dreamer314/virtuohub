@@ -219,7 +219,7 @@ export default function Community() {
           <main>
             {/* Hero Section */}
             <div className="glass-card rounded-xl mb-8 overflow-hidden hover-lift" data-testid="hero-section">
-              <div className="relative h-48 flex items-center justify-center">
+              <div className="relative h-64 flex items-center justify-center">
                 <img 
                   src={communityHeaderImage} 
                   alt="VirtuoHub Community Header"
@@ -239,9 +239,9 @@ export default function Community() {
 
             {/* Featured Content */}
             {currentTab === 'all' && (
-              <div className="mb-16" data-testid="featured-carousel">
+              <div className="mb-16 -mx-6 sm:-mx-8 lg:-mx-12" data-testid="featured-carousel">
                 {/* Section Header */}
-                <div className="text-center mb-12">
+                <div className="text-center mb-12 px-6 sm:px-8 lg:px-12">
                   <h2 className="text-4xl font-bold text-foreground mb-4">Featured Content</h2>
                   <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
                     Discover the latest insights, creator spotlights, and industry news from the virtual world community
@@ -249,7 +249,7 @@ export default function Community() {
                 </div>
 
                 {/* Featured Content Layout */}
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-6 px-6 sm:px-8 lg:px-12">
                   {/* Left Navigation Controls */}
                   <div className="flex flex-col items-center gap-3">
                     <button
