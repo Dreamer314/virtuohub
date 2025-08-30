@@ -410,7 +410,7 @@ export default function Community() {
               </div>
 
               {/* Filter Controls */}
-              <div className="bg-sidebar rounded-xl p-6 mb-8 border border-sidebar-border hover:border-primary/30 transition-all duration-300 hover:shadow-md">
+              <div className="bg-sidebar enhanced-card glow-border rounded-xl p-6 mb-8 border border-sidebar-border hover:border-primary/30 transition-all duration-300 hover:shadow-md">
                 <div className="flex items-center gap-4 mb-4">
                   <Filter className="w-5 h-5 text-accent" />
                   <h3 className="text-lg font-semibold text-foreground">Filter & Search</h3>
@@ -553,7 +553,7 @@ export default function Community() {
             </div>
 
             {/* Post Creation */}
-            <div className="bg-sidebar rounded-xl p-6 mb-8 border border-sidebar-border hover:border-primary/30 transition-all duration-300 hover:shadow-md" data-testid="post-creation-section">
+            <div className="bg-sidebar enhanced-card glow-border rounded-xl p-6 mb-8 border border-sidebar-border hover:border-primary/30 transition-all duration-300 hover:shadow-md" data-testid="post-creation-section">
               <div className="flex items-center space-x-4 mb-4">
                 <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-full"></div>
                 <Button

@@ -104,7 +104,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
     const pollData = post.pollData || { question: '', options: [], totalVotes: 0 };
     
     return (
-      <article className="bg-sidebar p-4 rounded-lg border border-sidebar-border hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg" data-testid={`pulse-post-${post.id}`}>
+      <article className="bg-sidebar enhanced-card glow-border p-4 rounded-lg border border-sidebar-border hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg" data-testid={`pulse-post-${post.id}`}>
         <div className="flex items-start space-x-3">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
             <Zap className="w-4 h-4 text-white" />
@@ -209,7 +209,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
   // Handle Creator Insights Posts
   if (post.type === 'insight') {
     return (
-      <article className="bg-sidebar p-4 rounded-lg border border-sidebar-border hover:border-amber-500/50 transition-all duration-300 hover:shadow-lg" data-testid={`insight-post-${post.id}`}>
+      <article className="bg-sidebar enhanced-card glow-border p-4 rounded-lg border border-sidebar-border hover:border-amber-500/50 transition-all duration-300 hover:shadow-lg" data-testid={`insight-post-${post.id}`}>
         <div className="flex items-start space-x-3">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0">
             <Lightbulb className="w-4 h-4 text-white" />
@@ -306,7 +306,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
 
   // Handle Regular Posts (Community Feed)
   return (
-    <article className="bg-sidebar p-4 rounded-lg border border-sidebar-border hover:border-primary/30 transition-all duration-300 hover:shadow-md" data-testid={`regular-post-${post.id}`}>
+    <article className="bg-sidebar enhanced-card glow-border p-4 rounded-lg border border-sidebar-border hover:border-primary/30 transition-all duration-300 hover:shadow-md" data-testid={`regular-post-${post.id}`}>
       <div className="flex items-start space-x-3">
         {/* Author Avatar */}
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center flex-shrink-0">
