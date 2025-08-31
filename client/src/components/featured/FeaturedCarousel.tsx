@@ -93,7 +93,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
   return (
     <section 
       id="featuredV2" 
-      className="relative mx-auto max-w-[1400px] px-6 md:px-8 xl:pr-[360px] not-prose"
+      className="relative mx-auto max-w-[1400px] px-6 md:px-8 xl:pl-[256px] xl:pr-[360px] not-prose"
       aria-roledescription="carousel"
       aria-live="polite"
       onMouseEnter={handleMouseEnter}
