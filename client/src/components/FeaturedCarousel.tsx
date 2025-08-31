@@ -93,127 +93,144 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
 
   return (
     <section 
-      id="featured" 
-      className="relative max-w-[1400px] mx-auto px-6 md:px-8 lg:pr-[380px]"
+      className="relative max-w-[1200px] mx-auto px-6"
       onMouseEnter={() => setIsAutoplayPaused(true)}
       onMouseLeave={() => setIsAutoplayPaused(false)}
       data-testid="featured-carousel"
     >
+      {/* Navigation arrows */}
+      <button
+        onClick={prevSlide}
+        disabled={isTransitioning}
+        aria-label={`Previous featured item (${currentIndex + 1} of ${items.length})`}
+        className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-white/40 disabled:opacity-50 z-10"
+        data-testid="featured-prev-button"
+      >
+        <ChevronLeft className="w-5 h-5 text-white" />
+      </button>
+
+      <button
+        onClick={nextSlide}
+        disabled={isTransitioning}
+        aria-label={`Next featured item (${currentIndex + 1} of ${items.length})`}
+        className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-white/40 disabled:opacity-50 z-10"
+        data-testid="featured-next-button"
+      >
+        <ChevronRight className="w-5 h-5 text-white" />
+      </button>
+
+      {/* Main content */}
       <div 
-        className="relative grid md:grid-cols-[1.75fr_1fr] gap-16 xl:gap-28 items-center"
+        className="grid md:grid-cols-2 gap-8 md:gap-12 items-center"
         aria-live="polite"
         role="region"
         aria-label="Featured content carousel"
       >
-        <div className="relative md:-ml-6 xl:-ml-12">
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(closest-side,rgba(120,100,255,.18),transparent_70%)]" />
-          <div className="w-full aspect-[16/9] min-h-[360px] xl:min-h-[440px] rounded-2xl overflow-hidden shadow-[0_0_90px_rgba(120,100,255,.16)] ring-1 ring-white/8">
+        {/* Image */}
+        <div className="relative">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(closest-side,rgba(120,100,255,.15),transparent_70%)] pointer-events-none" />
+          <div className="aspect-video rounded-2xl overflow-hidden shadow-[0_0_60px_rgba(120,100,255,.15)] ring-1 ring-white/5">
             <img
               src={currentItem.imageSrc}
               alt={currentItem.imageAlt}
-              className="w-full h-full object-cover object-center"
+              className="w-full h-full object-cover"
               loading="lazy"
               data-testid={`featured-image-${currentItem.id}`}
             />
           </div>
         </div>
 
-        <div className="max-w-[36ch] md:mr-2">
-          <div className="text-sm text-white/55" data-testid={`featured-date-${currentItem.id}`}>
+        {/* Text */}
+        <div className="space-y-6">
+          {/* Date */}
+          <div className="text-sm text-white/60" data-testid={`featured-date-${currentItem.id}`}>
             {formatDate(currentItem.dateISO)}
           </div>
-          <div className="mt-2 flex items-center gap-2">
+
+          {/* Tag and type */}
+          <div className="flex items-center gap-2">
             <span 
-              className={`rounded-full px-3 py-1 text-xs font-medium ${chipClass(currentItem.tag)}`}
+              className={`px-3 py-1 rounded-full text-sm font-medium ${chipClass(currentItem.tag)}`}
               data-testid={`featured-tag-${currentItem.id}`}
             >
               {currentItem.tag}
             </span>
-            {currentItem.type ? (
-              <span className="text-white/55 text-xs">• {currentItem.type}</span>
-            ) : null}
+            {currentItem.type && (
+              <span className="text-white/50 text-sm">• {currentItem.type}</span>
+            )}
           </div>
-          <h3 
-            className="text-5xl md:text-6xl leading-[1.05] tracking-tight mt-3 [text-wrap:balance]"
+
+          {/* Title */}
+          <h2 
+            className="text-4xl md:text-5xl font-bold text-white leading-tight"
             data-testid={`featured-title-${currentItem.id}`}
           >
             {currentItem.title}
-          </h3>
+          </h2>
+
+          {/* Blurb */}
           <p 
-            className="text-lg text-white/80 mt-5"
+            className="text-lg text-white/80 leading-relaxed"
             data-testid={`featured-blurb-${currentItem.id}`}
           >
             {currentItem.blurb}
           </p>
-          <a 
-            href={currentItem.ctaHref}
-            className="inline-flex items-center justify-center rounded-xl px-5 py-3 bg-[#6E4BFF] hover:bg-[#825FFF] text-white font-medium mt-6"
-            data-testid={`featured-cta-${currentItem.id}`}
-          >
-            {currentItem.ctaLabel}
-          </a>
+
+          {/* CTA */}
+          <div className="pt-2">
+            <a
+              href={currentItem.ctaHref}
+              className="inline-flex items-center justify-center rounded-xl px-6 py-3 bg-[#6E4BFF] hover:bg-[#825FFF] text-white font-medium transition-colors"
+              data-testid={`featured-cta-${currentItem.id}`}
+            >
+              {currentItem.ctaLabel}
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Controls */}
+      <div className="mt-8 space-y-4">
+        {/* Dots */}
+        <div className="flex justify-center gap-3">
+          {items.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              disabled={isTransitioning}
+              className={`w-3 h-3 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 ${
+                index === currentIndex
+                  ? 'bg-primary scale-125'
+                  : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+              }`}
+              aria-label={`Go to slide ${index + 1} of ${items.length}`}
+              data-testid={`featured-dot-${index}`}
+            >
+              {index === currentIndex && !isAutoplayPaused && (
+                <div className="absolute inset-0 rounded-full border-2 border-primary animate-ping"></div>
+              )}
+            </button>
+          ))}
         </div>
 
-        <button
-          onClick={prevSlide}
-          disabled={isTransitioning}
-          aria-label={`Previous featured item (${currentIndex + 1} of ${items.length})`}
-          className="absolute top-1/2 -translate-y-1/2 left-2 md:left-0 md:-ml-10 xl:-ml-16 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 transition disabled:opacity-50"
-          data-testid="featured-prev-button"
-        >
-          <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-white" />
-        </button>
-
-        <button
-          onClick={nextSlide}
-          disabled={isTransitioning}
-          aria-label={`Next featured item (${currentIndex + 1} of ${items.length})`}
-          className="absolute top-1/2 -translate-y-1/2 right-2 lg:right-[400px] xl:right-[400px] h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 transition disabled:opacity-50"
-          data-testid="featured-next-button"
-        >
-          <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-white" />
-        </button>
-      </div>
-
-      {/* Dots under card */}
-      <div className="mt-10 flex justify-center gap-3">
-        {items.map((_, index) => (
+        {/* Play/pause */}
+        <div className="flex items-center justify-center gap-4">
           <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            disabled={isTransitioning}
-            className={`w-3 h-3 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 ${
-              index === currentIndex
-                ? 'bg-primary scale-125'
-                : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
-            }`}
-            aria-label={`Go to slide ${index + 1} of ${items.length}`}
-            data-testid={`featured-dot-${index}`}
+            onClick={() => setIsAutoplayPaused(!isAutoplayPaused)}
+            className="w-8 h-8 rounded-full bg-background/80 backdrop-blur-sm border border-border hover:bg-background transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+            aria-label={isAutoplayPaused ? "Resume slideshow" : "Pause slideshow"}
+            data-testid="featured-autoplay-toggle"
           >
-            {index === currentIndex && !isAutoplayPaused && (
-              <div className="absolute inset-0 rounded-full border-2 border-primary animate-ping"></div>
+            {isAutoplayPaused ? (
+              <Play className="w-3 h-3 text-foreground ml-0.5" />
+            ) : (
+              <Pause className="w-3 h-3 text-foreground" />
             )}
           </button>
-        ))}
-      </div>
 
-      {/* Play/pause status */}
-      <div className="flex items-center justify-center gap-4 mt-4">
-        <button
-          onClick={() => setIsAutoplayPaused(!isAutoplayPaused)}
-          className="w-8 h-8 rounded-full bg-background/80 backdrop-blur-sm border border-border hover:bg-background transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-          aria-label={isAutoplayPaused ? "Resume slideshow" : "Pause slideshow"}
-          data-testid="featured-autoplay-toggle"
-        >
-          {isAutoplayPaused ? (
-            <Play className="w-3 h-3 text-foreground ml-0.5" />
-          ) : (
-            <Pause className="w-3 h-3 text-foreground" />
-          )}
-        </button>
-
-        <div className="text-xs text-muted-foreground">
-          {isAutoplayPaused ? 'Paused' : 'Auto-rotating every 5s'}
+          <div className="text-xs text-muted-foreground">
+            {isAutoplayPaused ? 'Paused' : 'Auto-rotating every 5s'}
+          </div>
         </div>
       </div>
     </section>
