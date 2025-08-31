@@ -1,0 +1,92 @@
+kept the copy modular so you can swap any piece without touching layout.
+
+Featured Card 1 — Creator Spotlight
+
+Tag: Creator Insights
+Title: From Side Hustle to Studio: Maya Ortiz
+Blurb: See how a solo builder turned Roblox assets into a six-figure studio by standardizing her pipeline, pricing for value, and building trust with short playable demos.
+CTA: Read More →
+
+Image prompt (cinematic VR/gaming):
+“Wide 16:9, glossy cinematic render of a neon city workshop in a virtual world. One creator at a curved ultra-wide monitor with floating islands on screen. Cool blue and violet rim light, clean UI glow, subtle depth of field, no text, no watermark.”
+
+Alt text: Creator at glowing workstation building a VR island scene.
+
+Featured Card 2 — News Update
+
+Tag: News
+Title: MetaHuman for Houdini: Bridge Release
+Blurb: Epic’s latest bridge brings MetaHuman characters into SideFX Houdini with fewer steps and better hair and rig imports. Faster previz, cleaner sim passes, and better handoff to Unreal.
+CTA: Learn More →
+
+Image prompt:
+“16:9, ultra-real facial close-up of a digital human in studio lighting. Subtle skin pores, hair groom detail, neutral background with soft gradient. Cinematic, clean, no UI, no logos.”
+
+Alt text: Realistic digital human portrait in studio light.
+
+Featured Card 3 — Interview
+
+Tag: Interview
+Title: Breaking Creative Blocks with AI Tools
+Blurb: Concept artist Alex Chen shows how to use AI for thumbnails and material studies while keeping style and decisions fully human. Speed without losing the craft.
+CTA: Watch Interview →
+
+Image prompt:
+“16:9, glossy desk setup with twin monitors showing VR concept thumbnails and material swatches. Moody sci-fi studio lighting, soft bloom, faint particles, tidy cables, no brand logos, clean reflections.”
+
+Alt text: Dual-monitor concept art setup with AI thumbnails.
+
+Replit AI coder prompt (drop in as a task)
+
+“Update the Featured Content carousel to a two-column layout: image on the left, text on the right for desktop. Stack vertically on mobile. Use a fixed 16:9 media frame with soft rounded corners and a subtle glow shadow. Preserve my dark theme. For each slide, insert:
+
+category tag chip
+
+H2 title
+
+short blurb (max 35 words)
+
+primary button CTA
+
+Add keyboard and ARIA support. Add gentle 300 ms fade when slides change. Keep code clean and commented. No inline styles. Use utility classes. Ensure images use object-cover and lazy-load.”
+
+Data shape the component should accept
+[
+  {
+    "tag": "Creator Insights",
+    "title": "From Side Hustle to Studio: Maya Ortiz",
+    "blurb": "See how a solo builder turned Roblox assets into a six-figure studio by standardizing her pipeline, pricing for value, and building trust with short playable demos.",
+    "ctaLabel": "Read More →",
+    "ctaHref": "/stories/maya-ortiz",
+    "imageSrc": "/images/featured/maya-ortiz.jpg",
+    "imageAlt": "Creator at glowing workstation building a VR island scene"
+  },
+  {
+    "tag": "News",
+    "title": "MetaHuman for Houdini: Bridge Release",
+    "blurb": "Epic’s latest bridge brings MetaHuman characters into SideFX Houdini with fewer steps and better hair and rig imports. Faster previz, cleaner sim passes, and better handoff to Unreal.",
+    "ctaLabel": "Learn More →",
+    "ctaHref": "/news/metahuman-houdini-bridge",
+    "imageSrc": "/images/featured/metahuman-bridge.jpg",
+    "imageAlt": "Realistic digital human portrait in studio light"
+  },
+  {
+    "tag": "Interview",
+    "title": "Breaking Creative Blocks with AI Tools",
+    "blurb": "Concept artist Alex Chen shows how to use AI for thumbnails and material studies while keeping style and decisions fully human. Speed without losing the craft.",
+    "ctaLabel": "Watch Interview →",
+    "ctaHref": "/interviews/alex-chen",
+    "imageSrc": "/images/featured/ai-blocks.jpg",
+    "imageAlt": "Dual-monitor concept art setup with AI thumbnails"
+  }
+]
+
+Quick design notes
+
+Pad the text column so the headline aligns vertically with the center of the image.
+
+Use a soft radial glow behind the image frame to echo the Unreal vibe.
+
+Keep tag chips consistent: pill, tiny glow, low contrast until hover.
+
+Want me to generate two more cards for Spotlights and Tech Blogs, or tu

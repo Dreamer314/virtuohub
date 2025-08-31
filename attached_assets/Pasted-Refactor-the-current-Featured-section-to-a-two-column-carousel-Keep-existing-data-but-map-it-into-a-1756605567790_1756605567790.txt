@@ -1,0 +1,107 @@
+Refactor the current Featured section to a two-column carousel. Keep existing data but map it into a new FeaturedCarousel component. On desktop: image left, text right. On mobile: stack image above text. Use a fixed 16:9 frame with rounded corners and a subtle outer glow. Add arrow buttons and keyboard navigation. Keep dark theme, no inline styles, clean utility classes.
+
+Accept this data shape:
+
+type FeaturedItem = {
+  id: string
+  tag: 'News' | 'Creator Insights' | 'Spotlight' | 'Interview' | 'Tech'
+  title: string
+  blurb: string
+  ctaLabel: string
+  ctaHref: string
+  imageSrc: string
+  imageAlt: string
+}
+
+
+Map tags to pill styles:
+
+News -> chip bg rgba(56,132,255,.12), text #6EA8FF, faint glow
+
+Creator Insights -> bg rgba(120,255,214,.10), text #7AF3CF
+
+Spotlight -> bg rgba(166,128,255,.12), text #C5A8FF
+
+Interview -> bg rgba(104,220,255,.12), text #9BE3FF
+
+Tech -> bg rgba(255,196,120,.10), text #FFC888
+
+Component rules:
+
+Container: max-w-6xl, mx-auto, px-4
+
+Card: grid md:grid-cols-2, gap-8, items-center
+
+Image frame: aspect-video, overflow-hidden, rounded-2xl, shadow-[0_0_60px_rgba(120,100,255,.15)], object-cover, lazy loading
+
+Text column: tag chip, h2, blurb (max 35 words), primary button
+
+Carousel: aria-live polite, arrow buttons with aria-labels, focus ring, bullets optional
+
+Transition: 300ms fade between slides
+
+Export function to accept an array of FeaturedItem
+
+Replace the existing Featured markup in the page with <FeaturedCarousel items={featuredData} />. Keep existing state management if present.”
+
+Starter data for the first three slides
+
+Use these now so the swap is one-step:
+
+[
+  {
+    "id": "maya-ortiz",
+    "tag": "Creator Insights",
+    "title": "From Side Hustle to Studio: Maya Ortiz",
+    "blurb": "How a solo builder turned Roblox assets into a six-figure studio by standardizing her pipeline and earning trust with short playable demos.",
+    "ctaLabel": "Read More →",
+    "ctaHref": "/stories/maya-ortiz",
+    "imageSrc": "/images/featured/maya-ortiz.jpg",
+    "imageAlt": "Creator at glowing workstation building a VR island scene"
+  },
+  {
+    "id": "metahuman-houdini",
+    "tag": "News",
+    "title": "MetaHuman for Houdini: Bridge Release",
+    "blurb": "Bring MetaHuman characters into Houdini with fewer steps and cleaner hair and rig imports. Faster previz and better handoff to Unreal.",
+    "ctaLabel": "Learn More →",
+    "ctaHref": "/news/metahuman-houdini-bridge",
+    "imageSrc": "/images/featured/metahuman-bridge.jpg",
+    "imageAlt": "Realistic digital human portrait in studio light"
+  },
+  {
+    "id": "alex-chen-interview",
+    "tag": "Interview",
+    "title": "Breaking Creative Blocks with AI Tools",
+    "blurb": "Concept artist Alex Chen uses AI for thumbnails and material studies while keeping taste and style human. Speed without losing the craft.",
+    "ctaLabel": "Watch Interview →",
+    "ctaHref": "/interviews/alex-chen",
+    "imageSrc": "/images/featured/ai-blocks.jpg",
+    "imageAlt": "Dual-monitor concept art setup with AI thumbnails"
+  }
+]
+
+Image prompts for your generator
+
+Tell it to create clean, glossy, cinematic game-world art in 16:9.
+
+Maya Ortiz card
+“Wide 16:9, cinematic glossy render of a neon city workshop in a virtual world. One creator at a curved ultrawide monitor with floating islands on screen. Cool blue and violet rim light, soft bloom, tidy desk, no text or logos.”
+
+MetaHuman news
+“16:9 studio portrait of a realistic digital human. Subtle pores, hair groom detail, neutral gradient background, cinematic key and rim lights, clean and glossy, no UI.”
+
+Alex Chen interview
+“16:9 glossy desk scene with twin monitors showing VR concept thumbnails and material swatches. Moody sci-fi lighting, gentle particles in air, clean reflections, no brands.”
+
+Guardrails so the AI updates the current section
+
+Keep the same section id or export name so routing and analytics still work.
+
+Migrate any existing featured items into the new FeaturedItem shape.
+
+If old data lacks tag values, default to “Spotlight.”
+
+Preserve your autoplay and arrow controls if already present, but swap the layout.
+
+Do not change global colors or spacing outside this section.

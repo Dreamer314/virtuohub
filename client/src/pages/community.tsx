@@ -6,6 +6,7 @@ import { RightSidebar } from "@/components/layout/right-sidebar";
 import { Footer } from "@/components/layout/footer";
 import { PostCard } from "@/components/post-card";
 import { CreatePostModal } from "@/components/create-post-modal";
+import { FeaturedCarousel } from "@/components/FeaturedCarousel";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type Category, type Platform } from "@shared/schema";
@@ -15,6 +16,43 @@ import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import communityHeaderImage from "@/assets/community-header.png";
 import vhubHeaderImage from "@assets/VHub.Header.no.font.Light.Page.png";
+import mayaOrtizImage from "@assets/generated_images/Creator_workshop_virtual_world_2ba8749d.png";
+import metaHumanImage from "@assets/generated_images/MetaHuman_digital_portrait_91b78393.png";
+import alexChenImage from "@assets/generated_images/Concept_artist_dual_monitor_setup_1fa0b899.png";
+
+// Featured data for carousel
+const featuredData = [
+  {
+    id: "maya-ortiz",
+    tag: "Creator Insights" as const,
+    title: "From Side Hustle to Studio: Maya Ortiz",
+    blurb: "How a solo builder turned Roblox assets into a six-figure studio by standardizing her pipeline and earning trust with short playable demos.",
+    ctaLabel: "Read More →",
+    ctaHref: "/stories/maya-ortiz",
+    imageSrc: mayaOrtizImage,
+    imageAlt: "Creator at glowing workstation building a VR island scene"
+  },
+  {
+    id: "metahuman-houdini",
+    tag: "News" as const,
+    title: "MetaHuman for Houdini: Bridge Release",
+    blurb: "Bring MetaHuman characters into Houdini with fewer steps and cleaner hair and rig imports. Faster previz and better handoff to Unreal.",
+    ctaLabel: "Learn More →",
+    ctaHref: "/news/metahuman-houdini-bridge",
+    imageSrc: metaHumanImage,
+    imageAlt: "Realistic digital human portrait in studio light"
+  },
+  {
+    id: "alex-chen-interview",
+    tag: "Interview" as const,
+    title: "Breaking Creative Blocks with AI Tools",
+    blurb: "Concept artist Alex Chen uses AI for thumbnails and material studies while keeping taste and style human. Speed without losing the craft.",
+    ctaLabel: "Watch Interview →",
+    ctaHref: "/interviews/alex-chen",
+    imageSrc: alexChenImage,
+    imageAlt: "Dual-monitor concept art setup with AI thumbnails"
+  }
+];
 
 export default function Community() {
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
@@ -23,8 +61,6 @@ export default function Community() {
   const [currentTab, setCurrentTab] = useState<'all' | 'saved'>('all');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [currentInsightIndex, setCurrentInsightIndex] = useState(0);
-  const [currentFeaturedIndex, setCurrentFeaturedIndex] = useState(0);
-  const [isAutoplayPaused, setIsAutoplayPaused] = useState(false);
   const [sortBy, setSortBy] = useState<'latest' | 'top'>('latest');
 
 
@@ -85,36 +121,6 @@ export default function Community() {
         })
     : [];
 
-  // Featured content data
-  const featuredContent = [
-    {
-      type: 'Creator Insights',
-      icon: Lightbulb,
-      title: 'Breaking Creative Blocks with AI Tools',
-      description: 'Alex Chen shares how he uses generative AI to speed up concept art workflows — without losing the human touch. Practical tips for creators.',
-      image: '/images/unity-metaverse.png',
-      category: 'Interview',
-      link: '/article/breaking-creative-blocks-with-ai-tools'
-    },
-    {
-      type: 'Creator Spotlight',
-      icon: Star,
-      title: 'Emma Thompson: VR Environment Artist',
-      description: 'Creator of award-winning VRChat worlds with over 2M visits. Specializes in atmospheric environments and interactive experiences.',
-      image: '/images/vrchat-world.png',
-      category: 'Profile',
-      link: '/profile/emma-thompson'
-    },
-    {
-      type: 'Industry News',
-      icon: Newspaper,
-      title: 'Virtual Real Estate Market Hits Record High',
-      description: 'Decentraland and Sandbox properties see 40% increase in value this quarter as brands invest heavily in virtual experiences.',
-      image: '/images/roblox-dev.png',
-      category: 'Market Report',
-      link: '/news/virtual-real-estate-market-record-high'
-    }
-  ];
 
   // Navigation functions for insight carousel
   const nextInsight = () => {
@@ -125,31 +131,6 @@ export default function Community() {
     setCurrentInsightIndex((prev) => (prev - 1 + insightPosts.length) % insightPosts.length);
   };
 
-  // Navigation functions for featured content
-  const nextFeatured = () => {
-    setCurrentFeaturedIndex((prev) => (prev + 1) % featuredContent.length);
-    setIsAutoplayPaused(true);
-    // Resume autoplay after 10 seconds of manual control
-    setTimeout(() => setIsAutoplayPaused(false), 10000);
-  };
-
-  const prevFeatured = () => {
-    setCurrentFeaturedIndex((prev) => (prev - 1 + featuredContent.length) % featuredContent.length);
-    setIsAutoplayPaused(true);
-    // Resume autoplay after 10 seconds of manual control
-    setTimeout(() => setIsAutoplayPaused(false), 10000);
-  };
-
-  // Auto-advance featured content every 5 seconds
-  useEffect(() => {
-    if (isAutoplayPaused || featuredContent.length <= 1) return;
-    
-    const interval = setInterval(() => {
-      setCurrentFeaturedIndex((prev) => (prev + 1) % featuredContent.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [featuredContent.length, isAutoplayPaused]);
 
   // Add scroll animation observer
   useEffect(() => {
@@ -249,125 +230,18 @@ export default function Community() {
 
             {/* Featured Content Carousel */}
             {currentTab === 'all' && (
-              <div className="mb-8" data-testid="featured-carousel">
-                <div className="flex items-center space-x-2 mb-4">
+              <div className="mb-8">
+                <div className="flex items-center space-x-2 mb-6">
                   <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
                   <div className="flex items-center space-x-4">
-                    {(() => {
-                      const Icon = featuredContent[currentFeaturedIndex].icon;
-                      return <Icon className="w-8 h-8 text-purple-600" />;
-                    })()}
+                    <Star className="w-8 h-8 text-accent" />
                     <h2 className="text-3xl font-bold text-foreground tracking-tight">
                       Featured Content
                     </h2>
                   </div>
                   <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
                 </div>
-                
-                <div className="flex items-center gap-4">
-                  {/* Autoplay Control */}
-                  <button
-                    onClick={() => setIsAutoplayPaused(!isAutoplayPaused)}
-                    className="bg-transparent text-accent p-2 rounded-full transition-all hover:border-accent hover:border-2 border border-accent/30"
-                    data-testid="autoplay-toggle-button"
-                    title={isAutoplayPaused ? "Start slideshow" : "Pause slideshow"}
-                  >
-                    {isAutoplayPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
-                  </button>
-                  {/* Left Navigation Arrow */}
-                  <button
-                    onClick={prevFeatured}
-                    className="bg-transparent text-accent p-3 rounded-full transition-all hover:border-accent hover:border-2 border border-accent/30"
-                    data-testid="featured-prev-button"
-                  >
-                    <ChevronLeft className="w-6 h-6" />
-                  </button>
-
-                  {/* Featured Content Card */}
-                  <div className="relative glass-card rounded-xl overflow-hidden hover-lift flex-1">
-                    {/* Large Header Image */}
-                    <div className="relative h-96 md:h-[500px] overflow-hidden">
-                      <img 
-                        src={featuredContent[currentFeaturedIndex].image} 
-                        alt={featuredContent[currentFeaturedIndex].title}
-                        className="w-full h-full object-cover transition-transform duration-500"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                      
-                      {/* Content Type Badge */}
-                      <div className="absolute top-4 left-4">
-                        <span className="bg-accent/90 text-white px-3 py-1 rounded-full text-sm font-medium">
-                          {featuredContent[currentFeaturedIndex].type}
-                        </span>
-                      </div>
-                      
-                      {/* Content Overlay */}
-                      <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
-                        <h2 className="text-2xl font-display font-bold mb-2">
-                          {featuredContent[currentFeaturedIndex].title}
-                        </h2>
-                        <p className="text-white/90 mb-4 line-clamp-2">
-                          {featuredContent[currentFeaturedIndex].description}
-                        </p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-sm text-white/70">{featuredContent[currentFeaturedIndex].category}</span>
-                          {featuredContent[currentFeaturedIndex].link !== '#' ? (
-                            <Link href={featuredContent[currentFeaturedIndex].link}>
-                              <Button size="sm" variant="secondary" className="transition-all hover:border-2">
-                                Read More →
-                              </Button>
-                            </Link>
-                          ) : (
-                            <Button size="sm" variant="secondary" className="transition-all" disabled>
-                              Coming Soon
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Right Navigation Arrow */}
-                  <button
-                    onClick={nextFeatured}
-                    className="bg-transparent text-accent p-3 rounded-full transition-all hover:border-accent hover:border-2 border border-accent/30"
-                    data-testid="featured-next-button"
-                  >
-                    <ChevronRight className="w-6 h-6" />
-                  </button>
-                </div>
-                
-                {/* Dots Indicator */}
-                <div className="flex justify-center mt-4 space-x-2">
-                  {featuredContent.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => {
-                        setCurrentFeaturedIndex(index);
-                        setIsAutoplayPaused(true);
-                        setTimeout(() => setIsAutoplayPaused(false), 10000);
-                      }}
-                      className={`relative w-3 h-3 rounded-full transition-all ${
-                        index === currentFeaturedIndex
-                          ? 'bg-accent scale-125'
-                          : 'bg-accent/30 hover:bg-accent/50'
-                      }`}
-                      data-testid={`featured-dot-${index}`}
-                    >
-                      {index === currentFeaturedIndex && !isAutoplayPaused && (
-                        <div className="absolute inset-0 rounded-full border-2 border-accent animate-ping"></div>
-                      )}
-                    </button>
-                  ))}
-                </div>
-                
-                {/* Autoplay Status */}
-                <div className="flex items-center justify-center gap-2 mt-3 text-xs text-muted-foreground">
-                  <div className={`w-2 h-2 rounded-full ${
-                    isAutoplayPaused ? 'bg-orange-500' : 'bg-green-500 animate-pulse'
-                  }`}></div>
-                  <span>{isAutoplayPaused ? 'Slideshow paused' : 'Auto-rotating every 5s'}</span>
-                </div>
+                <FeaturedCarousel items={featuredData} />
               </div>
             )}
 
