@@ -216,25 +216,25 @@ export default function Community() {
           {/* Main Content */}
           <main>
             {/* Hero Section */}
-            <div className="glass-card rounded-xl mb-8 overflow-visible hover-lift relative" data-testid="hero-section">
-              <div className="relative h-48 flex items-center justify-center hero-glow-container">
+            <div className="glass-card rounded-2xl mb-8 overflow-hidden hover-lift relative" data-testid="hero-section">
+              <div className="relative h-[576px] flex items-center justify-center hero-glow-container">
                 <img 
                   src={vhubHeaderImage} 
                   alt="VirtuoHub Community Header"
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover rounded-2xl"
                   style={{
                     filter: 'drop-shadow(0 0 20px rgba(6, 182, 212, 0.2)) drop-shadow(0 0 40px rgba(147, 51, 234, 0.15))'
                   }}
                 />
                 <div className="text-center z-10 relative">
-                  <h1 className="text-3xl font-display font-bold text-white mb-2 drop-shadow-lg">
+                  <h1 className="text-9xl font-display font-bold text-white mb-6 drop-shadow-lg">
                     VirtuoHub Community
                   </h1>
-                  <p className="text-white/90 drop-shadow-md">
+                  <p className="text-3xl text-white/90 drop-shadow-md">
                     Connect, Create, and Collaborate in Virtual Worlds
                   </p>
                 </div>
-                <div className="absolute inset-0 bg-black/20"></div>
+                <div className="absolute inset-0 bg-black/20 rounded-2xl"></div>
               </div>
             </div>
 
