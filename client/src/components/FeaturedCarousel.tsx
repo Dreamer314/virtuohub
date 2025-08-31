@@ -93,43 +93,43 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
 
   return (
     <section 
-      className="relative max-w-[1200px] mx-auto px-6"
+      className="relative max-w-[1400px] mx-auto px-6 md:px-8"
       onMouseEnter={() => setIsAutoplayPaused(true)}
       onMouseLeave={() => setIsAutoplayPaused(false)}
       data-testid="featured-carousel"
     >
-      {/* Navigation arrows */}
+      {/* Navigation arrows - positioned outside content on desktop */}
       <button
         onClick={prevSlide}
         disabled={isTransitioning}
         aria-label={`Previous featured item (${currentIndex + 1} of ${items.length})`}
-        className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-white/40 disabled:opacity-50 z-10"
+        className="absolute left-2 md:-left-14 xl:-left-20 top-1/2 -translate-y-1/2 w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-white/40 disabled:opacity-50 z-10"
         data-testid="featured-prev-button"
       >
-        <ChevronLeft className="w-5 h-5 text-white" />
+        <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-white" />
       </button>
 
       <button
         onClick={nextSlide}
         disabled={isTransitioning}
         aria-label={`Next featured item (${currentIndex + 1} of ${items.length})`}
-        className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-white/40 disabled:opacity-50 z-10"
+        className="absolute right-2 md:-right-14 xl:-right-20 top-1/2 -translate-y-1/2 w-12 h-12 md:w-14 md:h-14 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 hover:bg-white/20 transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-white/40 disabled:opacity-50 z-10"
         data-testid="featured-next-button"
       >
-        <ChevronRight className="w-5 h-5 text-white" />
+        <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-white" />
       </button>
 
-      {/* Main content */}
+      {/* Main content - larger image allocation */}
       <div 
-        className="grid md:grid-cols-2 gap-8 md:gap-12 items-center"
+        className="grid md:grid-cols-[1.6fr_1fr] gap-8 md:gap-16 xl:gap-24 items-center"
         aria-live="polite"
         role="region"
         aria-label="Featured content carousel"
       >
-        {/* Image */}
-        <div className="relative">
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(closest-side,rgba(120,100,255,.15),transparent_70%)] pointer-events-none" />
-          <div className="aspect-video rounded-2xl overflow-hidden shadow-[0_0_60px_rgba(120,100,255,.15)] ring-1 ring-white/5">
+        {/* Image - larger with cinematic aspect */}
+        <div className="relative md:-ml-4 xl:-ml-8">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(closest-side,rgba(120,100,255,.18),transparent_70%)] pointer-events-none" />
+          <div className="aspect-[16/9] w-full min-h-[300px] md:min-h-[400px] xl:min-h-[480px] rounded-2xl overflow-hidden shadow-[0_0_90px_rgba(120,100,255,.16)] ring-1 ring-white/8">
             <img
               src={currentItem.imageSrc}
               alt={currentItem.imageAlt}
@@ -140,8 +140,8 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
           </div>
         </div>
 
-        {/* Text */}
-        <div className="space-y-6">
+        {/* Text - constrained for better readability */}
+        <div className="max-w-[42ch] space-y-6">
           {/* Date */}
           <div className="text-sm text-white/60" data-testid={`featured-date-${currentItem.id}`}>
             {formatDate(currentItem.dateISO)}
@@ -160,9 +160,9 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
             )}
           </div>
 
-          {/* Title */}
+          {/* Title - larger on desktop */}
           <h2 
-            className="text-4xl md:text-5xl font-bold text-white leading-tight"
+            className="text-4xl md:text-5xl xl:text-6xl font-bold text-white leading-tight"
             data-testid={`featured-title-${currentItem.id}`}
           >
             {currentItem.title}
