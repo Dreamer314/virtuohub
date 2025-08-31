@@ -207,7 +207,7 @@ export default function Community() {
         <div className="flex-1 lg:ml-64 lg:mr-80 relative">
           {/* Extended glow effect that affects the whole page */}
           <div className="absolute -top-20 -left-20 -right-20 h-96 pointer-events-none z-0">
-            <div className="w-full h-full bg-gradient-radial from-cyan-400/15 via-purple-500/10 to-orange-400/15 blur-3xl"></div>
+            <div className="w-full h-full bg-gradient-radial from-cyan-400/4 via-purple-500/3 to-orange-400/4 blur-3xl"></div>
           </div>
           
           <div className="px-6 sm:px-8 lg:px-12 py-8 relative z-10">
@@ -232,7 +232,7 @@ export default function Community() {
                   alt="VirtuoHub Community Header"
                   className="absolute inset-0 w-full h-full object-cover"
                   style={{
-                    filter: 'drop-shadow(0 0 30px rgba(6, 182, 212, 0.4)) drop-shadow(0 0 60px rgba(147, 51, 234, 0.3))'
+                    filter: 'drop-shadow(0 0 20px rgba(6, 182, 212, 0.2)) drop-shadow(0 0 40px rgba(147, 51, 234, 0.15))'
                   }}
                 />
                 <div className="text-center z-10 relative">
