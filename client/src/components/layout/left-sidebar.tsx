@@ -53,7 +53,7 @@ export function LeftSidebar({ currentTab, onTabChange, selectedPlatforms = [], o
 
   return (
     <aside className="w-full">
-      <div className="sticky top-4">
+      <div className="sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
         <div className="bg-sidebar enhanced-card glow-border rounded-xl p-6 border border-sidebar-border" data-testid="community-navigation">
           {/* Header */}
           <div className="mb-6">

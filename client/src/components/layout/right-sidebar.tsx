@@ -5,7 +5,7 @@ import { TrendingUp, Calendar, Star, Globe, Flame, Clock } from "lucide-react";
 export function RightSidebar() {
   return (
     <aside className="w-full">
-      <div className="space-y-6">
+      <div className="sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto space-y-6">
         {/* Upcoming Events */}
         <div className="bg-sidebar enhanced-card glow-border rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all duration-300 hover:shadow-md" data-testid="upcoming-events">
           <h3 className="text-lg font-display font-semibold mb-4 flex items-center">
