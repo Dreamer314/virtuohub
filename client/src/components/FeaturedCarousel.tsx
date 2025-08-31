@@ -97,7 +97,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
       data-testid="featured-carousel"
     >
       <div 
-        className="relative grid md:grid-cols-[1.4fr_1fr] gap-24 xl:gap-32 items-center scale-110 transform origin-center"
+        className="relative grid md:grid-cols-[2fr_1fr] gap-16 xl:gap-20 items-center"
         aria-live="polite"
         role="region"
         aria-label="Featured content carousel"
@@ -108,7 +108,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(closest-side,rgba(120,100,255,.18),transparent_70%)] pointer-events-none" />
           
           {/* Media frame */}
-          <div className="aspect-[16/9] w-full rounded-3xl overflow-hidden shadow-[0_0_100px_rgba(120,100,255,.25)] ring-2 ring-white/12 transform scale-105">
+          <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden shadow-[0_0_80px_rgba(120,100,255,.18)] ring-1 ring-white/8">
             <img
               src={currentItem.imageSrc}
               alt={currentItem.imageAlt}
@@ -122,26 +122,26 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
         {/* Text */}
         <div className="max-w-[48ch] pt-2">
           {/* Date */}
-          <div className="text-base text-white/55 mb-3" data-testid={`featured-date-${currentItem.id}`}>
+          <div className="text-sm text-white/55 mb-2" data-testid={`featured-date-${currentItem.id}`}>
             {formatDate(currentItem.dateISO)}
           </div>
 
           {/* Tag and type */}
-          <div className="mt-3 flex items-center gap-3">
+          <div className="mt-2 flex items-center gap-2">
             <span 
-              className={`px-4 py-2 rounded-full text-base font-medium ${tagStyles[currentItem.tag]}`}
+              className={`px-3 py-1 rounded-full text-sm font-medium ${tagStyles[currentItem.tag]}`}
               data-testid={`featured-tag-${currentItem.id}`}
             >
               {currentItem.tag}
             </span>
             {currentItem.type && (
-              <span className="text-white/55 text-base">• {currentItem.type}</span>
+              <span className="text-white/55">• {currentItem.type}</span>
             )}
           </div>
 
           {/* Title */}
           <h3 
-            className="text-7xl leading-tight font-extrabold tracking-tight mt-6 text-balance"
+            className="text-5xl leading-tight font-extrabold tracking-tight mt-3 text-balance"
             data-testid={`featured-title-${currentItem.id}`}
           >
             {currentItem.title}
@@ -149,7 +149,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
 
           {/* Blurb */}
           <p 
-            className="text-2xl text-white/80 mt-6 leading-relaxed"
+            className="text-lg text-white/80 mt-4"
             data-testid={`featured-blurb-${currentItem.id}`}
           >
             {currentItem.blurb}
@@ -158,7 +158,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
           {/* CTA Button */}
           <a
             href={currentItem.ctaHref}
-            className="inline-flex items-center justify-center rounded-xl px-10 py-5 bg-[#6E4BFF] hover:bg-[#825FFF] text-white font-medium text-xl mt-8 transition-colors shadow-lg"
+            className="inline-flex items-center justify-center rounded-xl px-5 py-3 bg-[#6E4BFF] hover:bg-[#825FFF] text-white font-medium mt-6 transition-colors"
             data-testid={`featured-cta-${currentItem.id}`}
           >
             {currentItem.ctaLabel}
