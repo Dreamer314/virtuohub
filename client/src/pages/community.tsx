@@ -1,146 +1,31 @@
-import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Header } from "@/components/layout/header";
-import { LeftSidebar } from "@/components/layout/left-sidebar";
-import { RightSidebar } from "@/components/layout/right-sidebar";
-import { Footer } from "@/components/layout/footer";
-import { PostCard } from "@/components/post-card";
-import { CreatePostModal } from "@/components/create-post-modal";
-import { FeaturedCarousel } from "@/components/featured/FeaturedCarousel";
-import type { FeaturedItem } from "@/components/featured/types";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { type Category, type Platform } from "@shared/schema";
-import { Plus, Image, BarChart3, ChevronLeft, ChevronRight, Lightbulb, Star, Calendar, Newspaper, TrendingUp, Play, Pause, Search, Filter } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Input } from "@/components/ui/input";
-import { Link } from "wouter";
-import communityHeaderImage from "@/assets/community-header.png";
-import vhubHeaderImage from "@assets/VHub.Header.no.font.Light.Page.png";
-import mayaOrtizImage from "@assets/generated_images/Creator_workshop_virtual_world_2ba8749d.png";
-import metaHumanImage from "@assets/generated_images/MetaHuman_digital_portrait_91b78393.png";
-import alexChenImage from "@assets/generated_images/Concept_artist_dual_monitor_setup_1fa0b899.png";
+import React, { useState, useEffect, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
+import { Plus, Star, TrendingUp, Heart } from 'lucide-react';
+import { Header } from '@/components/layout/header';
+import { LeftSidebar } from '@/components/layout/left-sidebar';
+import { RightSidebar } from '@/components/layout/right-sidebar';
+import { PostCard } from '@/components/post-card';
+import { CreatePostModal } from '@/components/create-post-modal';
+import { Footer } from '@/components/layout/footer';
+import { FeaturedCarousel } from '@/components/featured/FeaturedCarousel';
+import { featuredItems } from '@/components/featured/types';
+import vhubHeaderImage from '@assets/VHub.Header.no.font.Light.Page.png';
+import type { Platform } from '@/shared/schema';
 
-// Featured data
-const featuredItems: FeaturedItem[] = [
-  {
-    id: "alex-chen-interview",
-    dateISO: "2025-08-29",
-    tag: "Creator Insights",
-    type: "Interview",
-    title: "Breaking Creative Blocks with AI Tools",
-    blurb: "Concept artist Alex Chen uses AI for thumbnails and material studies while keeping taste and style human. Speed without losing the craft.",
-    ctaLabel: "Watch Interview",
-    ctaHref: "/interviews/alex-chen",
-    imageSrc: alexChenImage,
-    imageAlt: "Dual-monitor concept art setup with AI thumbnails"
-  },
-  {
-    id: "metahuman-houdini",
-    dateISO: "2025-08-26",
-    tag: "Industry News",
-    type: "Article",
-    title: "MetaHuman for Houdini: Bridge Release",
-    blurb: "Bring MetaHuman into Houdini with fewer steps and cleaner hair and rig imports. Faster previz and better handoff to Unreal.",
-    ctaLabel: "Learn More",
-    ctaHref: "/news/metahuman-houdini-bridge",
-    imageSrc: metaHumanImage,
-    imageAlt: "Realistic digital human portrait in studio light"
-  },
-  {
-    id: "maya-ortiz",
-    dateISO: "2025-08-20",
-    tag: "Tips & Guides",
-    type: "Article",
-    title: "From Side Hustle to Studio: Maya Ortiz",
-    blurb: "How a solo builder turned Roblox assets into a six-figure studio by standardizing her pipeline and using short playable demos to build trust.",
-    ctaLabel: "Read More",
-    ctaHref: "/guides/maya-ortiz",
-    imageSrc: mayaOrtizImage,
-    imageAlt: "Creator at glowing workstation building a VR island scene"
-  }
-];
-
-// Feature flag for V2
 const FEATURED_V2 = true;
 
-export default function Community() {
-  const [selectedCategory, setSelectedCategory] = useState<Category>('All');
-  const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
+const CommunityPage: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<'all' | 'saved'>('all');
+  const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [currentInsightIndex, setCurrentInsightIndex] = useState(0);
-  const [sortBy, setSortBy] = useState<'latest' | 'top'>('latest');
 
+  // Mock data for posts - temporarily empty to focus on hero section
+  const posts: any[] = [];
 
-  // Fetch all posts
-  const { data: allPosts, isLoading } = useQuery({
-    queryKey: ['/api/posts'],
-    enabled: currentTab === 'all',
-  });
-
-  const { data: savedPosts } = useQuery({
-    queryKey: ['/api/users/user1/saved-posts'],
-    enabled: currentTab === 'saved',
-  });
-
-  // Get all posts first
-  const allPostsData = currentTab === 'all' 
-    ? (Array.isArray(allPosts) ? allPosts : [])
-    : (Array.isArray(savedPosts) ? savedPosts : []);
-
-  // Separate posts by type FIRST (before filtering)
-  const pulsePosts = Array.isArray(allPostsData) 
-    ? allPostsData.filter((post: any) => post.type === 'pulse')
-    : [];
-    
-  const insightPosts = Array.isArray(allPostsData) 
-    ? allPostsData.filter((post: any) => post.type === 'insight')
-    : [];
-  
-  // ONLY filter regular posts (Community Feed posts) - this is key!
-  const regularPosts = Array.isArray(allPostsData) 
-    ? allPostsData
-        .filter((post: any) => post.type === 'regular')
-        .filter((post: any) => {
-          // Search filter
-          if (searchQuery && !post.title.toLowerCase().includes(searchQuery.toLowerCase()) && 
-              !post.content.toLowerCase().includes(searchQuery.toLowerCase())) {
-            return false;
-          }
-          // Category filter
-          if (selectedCategory !== 'All' && post.category !== selectedCategory) {
-            return false;
-          }
-          // Platform filter
-          if (selectedPlatforms.length > 0 && !post.platforms.some((p: string) => selectedPlatforms.includes(p as Platform))) {
-            return false;
-          }
-          return true;
-        })
-        .sort((a: any, b: any) => {
-          if (sortBy === 'latest') {
-            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-          } else {
-            // Sort by top (likes + comments + shares)
-            const aScore = (a.likes || 0) + (a.comments || 0) + (a.shares || 0);
-            const bScore = (b.likes || 0) + (b.comments || 0) + (b.shares || 0);
-            return bScore - aScore;
-          }
-        })
-    : [];
-
-
-  // Navigation functions for insight carousel
-  const nextInsight = () => {
-    setCurrentInsightIndex((prev) => (prev + 1) % insightPosts.length);
-  };
-
-  const prevInsight = () => {
-    setCurrentInsightIndex((prev) => (prev - 1 + insightPosts.length) % insightPosts.length);
-  };
-
+  const pulsePosts = posts.filter(post => post.type === 'pulse');
+  const insightPosts = posts.filter(post => post.type === 'insight');
+  const regularPosts = posts.filter(post => post.type === 'regular');
+  const allPostsData = currentTab === 'saved' ? [] : regularPosts;
 
   // Add scroll animation observer
   useEffect(() => {
@@ -201,393 +86,167 @@ export default function Community() {
             <div className="w-full h-full bg-gradient-radial from-cyan-400/4 via-purple-500/3 to-orange-400/4 blur-3xl"></div>
           </div>
           
-          <div className="px-6 sm:px-8 lg:px-12 py-8 relative z-10">
-            <div className="max-w-[720px] min-w-[580px] mx-auto grid grid-cols-1 gap-8">
-          {/* Mobile Left Sidebar */}
-          <div className="lg:hidden">
-            <LeftSidebar
-              currentTab={currentTab}
-              onTabChange={setCurrentTab}
-              selectedPlatforms={selectedPlatforms.map(p => p)}
-              onPlatformChange={(platforms) => setSelectedPlatforms(platforms as Platform[])}
-            />
-          </div>
-
-          {/* Main Content */}
-          <main>
-            {/* Hero Section */}
-            <div className="glass-card rounded-2xl mb-8 overflow-hidden hover-lift relative" data-testid="hero-section">
-              <div className="relative min-h-[576px] flex items-center justify-center hero-glow-container">
-                <img 
-                  src={vhubHeaderImage} 
-                  alt="VirtuoHub Community Header"
-                  className="absolute inset-0 w-full h-full object-cover rounded-2xl"
-                  style={{
-                    filter: 'drop-shadow(0 0 20px rgba(6, 182, 212, 0.2)) drop-shadow(0 0 40px rgba(147, 51, 234, 0.15))'
-                  }}
-                />
-                <div className="text-center z-10 relative">
-                  <h1 className="text-9xl font-display font-bold text-white mb-6 drop-shadow-lg">
-                    VirtuoHub Community
-                  </h1>
-                  <p className="text-3xl text-white/90 drop-shadow-md">
-                    Connect, Create, and Collaborate in Virtual Worlds
-                  </p>
-                </div>
-                <div className="absolute inset-0 bg-black/20 rounded-2xl"></div>
-              </div>
-            </div>
-
-            {/* Featured Content Carousel */}
-            {currentTab === 'all' && (
-              <div className="mb-8">
-                <div className="flex items-center space-x-2 mb-6">
-                  <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
-                  <div className="flex items-center space-x-4">
-                    <Star className="w-8 h-8 text-accent" />
-                    <h2 className="text-3xl font-bold text-foreground tracking-tight">
-                      Featured Content
-                    </h2>
-                  </div>
-                  <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
-                </div>
-                {FEATURED_V2 ? (
-                  <FeaturedCarousel items={featuredItems} />
-                ) : (
-                  <div className="space-y-6">
-                    {/* Legacy Featured section would go here */}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* VHub Pulse */}
-            {currentTab === 'all' && pulsePosts.length > 0 && (
-              <div className="mb-16 pb-8 border-b border-border/30" data-testid="pulse-posts-feed">
-                <div className="flex flex-col items-center space-y-3 mb-6">
-                  <div className="flex items-center space-x-2 w-full">
-                    <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
-                    <div className="flex items-center space-x-4">
-                      <TrendingUp className="w-8 h-8 text-primary" />
-                      <h2 className="text-3xl font-bold text-foreground tracking-tight font-tech">
-                        VHub Pulse
-                      </h2>
-                    </div>
-                    <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
-                  </div>
-                  <div className="text-center space-y-1">
-                    <p className="text-lg font-semibold text-accent">Quick polls on Immersive Economy topics.</p>
-                    <p className="text-sm text-muted-foreground">Cast your vote. See results.</p>
-                    <p className="text-sm text-muted-foreground">Tell us what you think.</p>
-                  </div>
-                </div>
-                <div className="space-y-6">
-                  {pulsePosts.map((post: any) => (
-                    <PostCard key={post.id} post={post} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Community Feed Section with Large Side Brackets */}
-            <div className="relative" data-testid="community-feed-section">
-              {/* Left Large Bracket */}
-              <div className="absolute -left-8 top-0 bottom-0 w-6 flex flex-col items-center z-10">
-                {/* Top bracket corner */}
-                <div className="w-6 h-12 border-l-4 border-t-4 border-accent/70 rounded-tl-2xl"></div>
-                {/* Vertical line */}
-                <div className="flex-1 w-1 bg-gradient-to-b from-accent/70 via-accent/40 to-accent/70 rounded-full"></div>
-                {/* Bottom bracket corner */}
-                <div className="w-6 h-12 border-l-4 border-b-4 border-accent/70 rounded-bl-2xl"></div>
-              </div>
-              
-              {/* Right Large Bracket */}
-              <div className="absolute -right-8 top-0 bottom-0 w-6 flex flex-col items-center z-10">
-                {/* Top bracket corner */}
-                <div className="w-6 h-12 border-r-4 border-t-4 border-accent/70 rounded-tr-2xl"></div>
-                {/* Vertical line */}
-                <div className="flex-1 w-1 bg-gradient-to-b from-accent/70 via-accent/40 to-accent/70 rounded-full"></div>
-                {/* Bottom bracket corner */}
-                <div className="w-6 h-12 border-r-4 border-b-4 border-accent/70 rounded-br-2xl"></div>
-              </div>
-              
-              {/* Content with normal padding */}
-              <div>
-            
-            {/* Community Feed Header */}
-            <div className="mb-8 relative">
-              {/* Background emphasis */}
-              <div className="absolute inset-0 -mx-4 -my-2 bg-gradient-to-r from-accent/5 via-accent/10 to-accent/5 rounded-2xl blur-3xl"></div>
-              <div className="relative">
-                <div className="flex items-center space-x-2 mb-8">
-                  <div className="h-0.5 bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
-                  <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-accent/10 via-accent/20 to-accent/10 rounded-full border border-accent/30">
-                    <div className="w-12 h-12 rounded-xl bg-accent/20 border-2 border-accent/40 flex items-center justify-center shadow-lg">
-                      <Plus className="w-7 h-7 text-accent animate-pulse" />
-                    </div>
-                    <h2 className="text-5xl font-bold text-foreground tracking-tight bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
-                      Community Feed
-                    </h2>
-                    <div className="w-3 h-3 rounded-full bg-accent animate-ping"></div>
-                  </div>
-                  <div className="h-0.5 bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
-                </div>
-              </div>
-
-              {/* Filter Controls */}
-              <div className="bg-sidebar enhanced-card glow-border rounded-xl p-6 mb-8 border border-sidebar-border hover:border-primary/30 transition-all duration-300 hover:shadow-md">
-                <div className="flex items-center gap-4 mb-4">
-                  <Filter className="w-5 h-5 text-accent" />
-                  <h3 className="text-lg font-semibold text-foreground">Filter & Search</h3>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-4">
-                  {/* Search Bar */}
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search posts..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 bg-background/50 border-border/50 focus:border-accent focus:ring-1 focus:ring-accent/20"
-                      data-testid="search-input"
-                    />
-                  </div>
-                  
-                  {/* Category Filter Dropdown */}
-                  <div className="min-w-[200px]">
-                    <Select value={selectedCategory} onValueChange={(value: Category) => setSelectedCategory(value)}>
-                      <SelectTrigger className="bg-background/50 border-border/50 focus:border-accent focus:ring-1 focus:ring-accent/20" data-testid="category-select">
-                        <SelectValue placeholder="Filter Categories" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="All">All Categories</SelectItem>
-                        <SelectItem value="General">General</SelectItem>
-                        <SelectItem value="Assets for Sale">Assets for Sale</SelectItem>
-                        <SelectItem value="Jobs & Gigs">Jobs & Gigs</SelectItem>
-                        <SelectItem value="Freelance/Hiring">Freelance/Hiring</SelectItem>
-                        <SelectItem value="Collaborations">Collaborations</SelectItem>
-                        <SelectItem value="WIP">Work in Progress</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Platform Filter Dropdown */}
-                  <div className="min-w-[200px]">
-                    <Select 
-                      value={selectedPlatforms.length === 1 ? selectedPlatforms[0] : 'All'} 
-                      onValueChange={(value: string) => {
-                        if (value === 'All') {
-                          setSelectedPlatforms([]);
-                        } else {
-                          setSelectedPlatforms([value as Platform]);
-                        }
-                      }}
-                    >
-                      <SelectTrigger className="bg-background/50 border-border/50 focus:border-accent focus:ring-1 focus:ring-accent/20" data-testid="platform-select">
-                        <SelectValue placeholder="Filter Platforms" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="All">All Platforms</SelectItem>
-                        <SelectItem value="VRChat">VRChat</SelectItem>
-                        <SelectItem value="Roblox">Roblox</SelectItem>
-                        <SelectItem value="Second Life">Second Life</SelectItem>
-                        <SelectItem value="Unity">Unity</SelectItem>
-                        <SelectItem value="Unreal Engine">Unreal Engine</SelectItem>
-                        <SelectItem value="Minecraft">Minecraft</SelectItem>
-                        <SelectItem value="IMVU">IMVU</SelectItem>
-                        <SelectItem value="Fortnite Creative">Fortnite Creative</SelectItem>
-                        <SelectItem value="Rec Room">Rec Room</SelectItem>
-                        <SelectItem value="VR">VR</SelectItem>
-                        <SelectItem value="AR">AR</SelectItem>
-                        <SelectItem value="Web3/Blockchain">Web3/Blockchain</SelectItem>
-                        <SelectItem value="The Sims">The Sims</SelectItem>
-                        <SelectItem value="GTA RP">GTA RP</SelectItem>
-                        <SelectItem value="Horizon Worlds">Horizon Worlds</SelectItem>
-                        <SelectItem value="Other">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                
-                {/* Sort Toggle */}
-                <div className="mt-4 pt-4 border-t border-border/30">
-                  <div className="flex items-center gap-4">
-                    <BarChart3 className="w-4 h-4 text-muted-foreground" />
-                    <span className="text-sm font-medium text-foreground">Sort by:</span>
-                    <div className="flex bg-background/50 rounded-lg p-1 border border-border/50">
-                      <Button
-                        variant={sortBy === 'latest' ? 'default' : 'ghost'}
-                        size="sm"
-                        onClick={() => setSortBy('latest')}
-                        className="text-xs h-7 px-3"
-                        data-testid="sort-latest"
-                      >
-                        Latest
-                      </Button>
-                      <Button
-                        variant={sortBy === 'top' ? 'default' : 'ghost'}
-                        size="sm"
-                        onClick={() => setSortBy('top')}
-                        className="text-xs h-7 px-3"
-                        data-testid="sort-top"
-                      >
-                        Top
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Active Filters Display */}
-                {(selectedCategory !== 'All' || searchQuery || selectedPlatforms.length > 0) && (
-                  <div className="mt-4 pt-4 border-t border-border/50">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span>Active filters:</span>
-                      {selectedCategory !== 'All' && (
-                        <span className="px-2 py-1 bg-accent/20 text-accent rounded-full">
-                          {selectedCategory}
-                        </span>
-                      )}
-                      {selectedPlatforms.length > 0 && (
-                        <span className="px-2 py-1 bg-blue-500/20 text-blue-600 dark:text-blue-400 rounded-full">
-                          {selectedPlatforms[0]}
-                        </span>
-                      )}
-                      {searchQuery && (
-                        <span className="px-2 py-1 bg-primary/20 text-primary rounded-full">
-                          Search: "{searchQuery}"
-                        </span>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setSelectedCategory('All');
-                          setSelectedPlatforms([]);
-                          setSearchQuery('');
-                        }}
-                        className="ml-auto h-6 px-2 text-xs hover:bg-destructive/20 hover:text-destructive"
-                        data-testid="clear-filters"
-                      >
-                        Clear All
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Post Creation */}
-            <div className="bg-sidebar enhanced-card glow-border rounded-xl p-6 mb-8 border border-sidebar-border hover:border-primary/30 transition-all duration-300 hover:shadow-md" data-testid="post-creation-section">
-              <div className="flex items-center space-x-4 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-full"></div>
-                <Button
-                  variant="outline"
-                  onClick={() => setIsCreateModalOpen(true)}
-                  className="flex-1 text-left px-4 py-3 bg-input rounded-lg text-muted-foreground hover:border-2 hover:border-muted-foreground/30 border border-transparent transition-all justify-start"
-                  data-testid="create-post-trigger"
-                >
-                  Share your latest creation, question, or gig...
-                </Button>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="flex space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="px-3 py-2 text-sm bg-transparent text-primary hover:border-primary hover:border-2 border border-primary/30 transition-all"
-                    data-testid="media-button"
-                  >
-                    <Image className="w-4 h-4 mr-2" />
-                    Media
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="px-3 py-2 text-sm bg-transparent text-accent hover:border-accent hover:border-2 border border-accent/30 transition-all"
-                    data-testid="poll-button"
-                  >
-                    <BarChart3 className="w-4 h-4 mr-2" />
-                    Poll
-                  </Button>
-                </div>
-                <Button
-                  onClick={() => setIsCreateModalOpen(true)}
-                  className="px-6 py-2 bg-transparent text-primary hover:border-primary hover:border-2 border border-primary/30 transition-all"
-                  data-testid="post-button"
-                >
-                  Post
-                </Button>
-              </div>
-            </div>
-
-            {/* Regular Posts Feed */}
-            <div className="space-y-6" data-testid="posts-feed">
-              {isLoading ? (
-                // Loading skeletons
-                Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="glass-card rounded-xl p-6 space-y-4">
-                    <div className="flex items-center space-x-4">
-                      <Skeleton className="w-10 h-10 rounded-full" />
-                      <div className="space-y-2">
-                        <Skeleton className="h-4 w-32" />
-                        <Skeleton className="h-3 w-24" />
-                      </div>
-                    </div>
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-3/4" />
-                    <Skeleton className="h-32 w-full rounded-lg" />
-                  </div>
-                ))
-              ) : currentTab === 'saved' ? (
-                Array.isArray(allPostsData) && allPostsData.length > 0 ? (
-                  allPostsData.map((post: any) => (
-                    <PostCard key={post.id} post={post} />
-                  ))
-                ) : (
-                  <div className="glass-card rounded-xl p-12 text-center" data-testid="empty-state">
-                    <div className="text-6xl mb-4">🌟</div>
-                    <h3 className="text-xl font-display font-semibold mb-2 text-foreground">
-                      No saved posts yet
-                    </h3>
-                    <p className="text-muted-foreground mb-4">
-                      Start saving posts by clicking the heart icon on posts you like!
+          <div className="py-8 relative z-10">
+            {/* Hero Section - Full Width */}
+            <div className="mb-8">
+              <div className="glass-card rounded-2xl overflow-hidden hover-lift relative" data-testid="hero-section">
+                <div className="relative min-h-[576px] flex items-center justify-center hero-glow-container">
+                  <img 
+                    src={vhubHeaderImage} 
+                    alt="VirtuoHub Community Header"
+                    className="absolute inset-0 w-full h-full object-cover rounded-2xl"
+                    style={{
+                      filter: 'drop-shadow(0 0 20px rgba(6, 182, 212, 0.2)) drop-shadow(0 0 40px rgba(147, 51, 234, 0.15))'
+                    }}
+                  />
+                  <div className="text-center z-10 relative">
+                    <h1 className="text-9xl font-display font-bold text-white mb-6 drop-shadow-lg">
+                      VirtuoHub Community
+                    </h1>
+                    <p className="text-3xl text-white/90 drop-shadow-md">
+                      Connect, Create, and Collaborate in Virtual Worlds
                     </p>
                   </div>
-                )
-              ) : regularPosts.length > 0 ? (
-                regularPosts.map((post: any) => (
-                  <PostCard key={post.id} post={post} />
-                ))
-              ) : (
-                <div className="glass-card rounded-xl p-12 text-center" data-testid="empty-state">
-                  <div className="text-6xl mb-4">🌟</div>
-                  <h3 className="text-xl font-display font-semibold mb-2 text-foreground">
-                    No posts found
-                  </h3>
-                  <p className="text-muted-foreground mb-4">
-                    Try adjusting your filters or be the first to create a post!
-                  </p>
-                  <Button
-                    onClick={() => setIsCreateModalOpen(true)}
-                    className="transition-all hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent"
-                    data-testid="create-first-post-button"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Create First Post
-                  </Button>
+                  <div className="absolute inset-0 bg-black/20 rounded-2xl"></div>
                 </div>
-              )}
+              </div>
             </div>
-            
-            </div>
-            </div>
-          </main>
 
-          {/* Mobile Right Sidebar */}
-          <div className="lg:hidden mt-8">
-            <RightSidebar />
-          </div>
+            {/* Constrained Content Area with Padding */}
+            <div className="px-6 sm:px-8 lg:px-12">
+              <div className="max-w-[720px] min-w-[580px] mx-auto grid grid-cols-1 gap-8">
+                {/* Mobile Left Sidebar */}
+                <div className="lg:hidden">
+                  <LeftSidebar
+                    currentTab={currentTab}
+                    onTabChange={setCurrentTab}
+                    selectedPlatforms={selectedPlatforms.map(p => p)}
+                    onPlatformChange={(platforms) => setSelectedPlatforms(platforms as Platform[])}
+                  />
+                </div>
+
+                {/* Main Content */}
+                <main>
+                  {/* Featured Content Carousel */}
+                  {currentTab === 'all' && (
+                    <div className="mb-8">
+                      <div className="flex items-center space-x-2 mb-6">
+                        <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
+                        <div className="flex items-center space-x-4">
+                          <Star className="w-8 h-8 text-accent" />
+                          <h2 className="text-3xl font-bold text-foreground tracking-tight">
+                            Featured Content
+                          </h2>
+                        </div>
+                        <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
+                      </div>
+                      {FEATURED_V2 ? (
+                        <FeaturedCarousel items={featuredItems} />
+                      ) : (
+                        <div className="space-y-6">
+                          {/* Legacy Featured section would go here */}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* VHub Pulse */}
+                  {currentTab === 'all' && pulsePosts.length > 0 && (
+                    <div className="mb-16 pb-8 border-b border-border/30" data-testid="pulse-posts-feed">
+                      <div className="flex flex-col items-center space-y-3 mb-6">
+                        <div className="flex items-center space-x-2 w-full">
+                          <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
+                          <div className="flex items-center space-x-4">
+                            <TrendingUp className="w-8 h-8 text-primary" />
+                            <h2 className="text-3xl font-bold text-foreground tracking-tight font-tech">
+                              VHub Pulse
+                            </h2>
+                          </div>
+                          <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
+                        </div>
+                        <div className="text-center space-y-1">
+                          <p className="text-lg font-semibold text-accent">Quick polls on Immersive Economy topics.</p>
+                          <p className="text-sm text-muted-foreground">Cast your vote. See results.</p>
+                          <p className="text-sm text-muted-foreground">Tell us what you think.</p>
+                        </div>
+                      </div>
+                      <div className="space-y-6">
+                        {pulsePosts.map((post: any) => (
+                          <PostCard key={post.id} post={post} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Community Feed */}
+                  <div className="relative" data-testid="community-feed-section">
+                    {/* Content Area */}
+                    <div className="mb-8 relative">
+                      <div className="flex items-center space-x-2 mb-8">
+                        <div className="h-0.5 bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
+                        <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-accent/10 via-accent/20 to-accent/10 rounded-full border border-accent/30">
+                          <div className="w-12 h-12 rounded-xl bg-accent/20 border-2 border-accent/40 flex items-center justify-center shadow-lg">
+                            <Plus className="w-7 h-7 text-accent animate-pulse" />
+                          </div>
+                          <h2 className="text-5xl font-bold text-foreground tracking-tight bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
+                            Community Feed
+                          </h2>
+                          <div className="w-3 h-3 rounded-full bg-accent animate-ping"></div>
+                        </div>
+                        <div className="h-0.5 bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
+                      </div>
+                    </div>
+
+                    {/* Posts */}
+                    <div className="space-y-6">
+                      {currentTab === 'saved' ? (
+                        allPostsData.length > 0 ? (
+                          allPostsData.map((post: any) => (
+                            <PostCard key={post.id} post={post} />
+                          ))
+                        ) : (
+                          <div className="glass-card rounded-xl p-12 text-center" data-testid="empty-state">
+                            <div className="text-6xl mb-4">🌟</div>
+                            <h3 className="text-xl font-display font-semibold mb-2 text-foreground">
+                              No saved posts yet
+                            </h3>
+                            <p className="text-muted-foreground mb-4">
+                              Start saving posts by clicking the heart icon on posts you like!
+                            </p>
+                          </div>
+                        )
+                      ) : regularPosts.length > 0 ? (
+                        regularPosts.map((post: any) => (
+                          <PostCard key={post.id} post={post} />
+                        ))
+                      ) : (
+                        <div className="glass-card rounded-xl p-12 text-center" data-testid="empty-state">
+                          <div className="text-6xl mb-4">🌟</div>
+                          <h3 className="text-xl font-display font-semibold mb-2 text-foreground">
+                            No posts found
+                          </h3>
+                          <p className="text-muted-foreground mb-4">
+                            Try adjusting your filters or be the first to create a post!
+                          </p>
+                          <Button
+                            onClick={() => setIsCreateModalOpen(true)}
+                            className="transition-all hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent"
+                            data-testid="create-first-post-button"
+                          >
+                            <Plus className="w-4 h-4 mr-2" />
+                            Create First Post
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </main>
+
+                {/* Mobile Right Sidebar */}
+                <div className="lg:hidden mt-8">
+                  <RightSidebar />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -612,4 +271,6 @@ export default function Community() {
       />
     </div>
   );
-}
+};
+
+export default CommunityPage;
