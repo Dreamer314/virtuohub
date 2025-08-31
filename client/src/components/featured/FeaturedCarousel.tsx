@@ -139,8 +139,8 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
         </div>
       </div>
 
-      {/* Arrows on the left side */}
-      <div className="pointer-events-none absolute inset-y-0 left-2 right-2 lg:right-[380px] flex items-center justify-start z-20">
+      {/* Arrows positioned at far left edge */}
+      <div className="pointer-events-none absolute inset-y-0 -left-20 flex items-center z-20">
         <div className="flex flex-col gap-4">
           <button 
             onClick={goToPrevious} 
