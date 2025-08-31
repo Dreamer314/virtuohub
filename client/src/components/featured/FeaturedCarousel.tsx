@@ -139,22 +139,24 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
         </div>
       </div>
 
-      {/* Arrows across the section, not inside the image */}
-      <div className="pointer-events-none absolute inset-y-0 left-2 right-2 lg:right-[380px] flex items-center justify-between z-20">
-        <button 
-          onClick={goToPrevious} 
-          aria-label="Previous slide" 
-          className="pointer-events-auto h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 flex items-center justify-center text-white text-xl font-bold transition-all"
-        >
-          ‹
-        </button>
-        <button 
-          onClick={goToNext} 
-          aria-label="Next slide" 
-          className="pointer-events-auto h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 flex items-center justify-center text-white text-xl font-bold transition-all"
-        >
-          ›
-        </button>
+      {/* Arrows on the left side */}
+      <div className="pointer-events-none absolute inset-y-0 left-2 right-2 lg:right-[380px] flex items-center justify-start z-20">
+        <div className="flex flex-col gap-4">
+          <button 
+            onClick={goToPrevious} 
+            aria-label="Previous slide" 
+            className="pointer-events-auto h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 flex items-center justify-center text-white text-xl font-bold transition-all"
+          >
+            ‹
+          </button>
+          <button 
+            onClick={goToNext} 
+            aria-label="Next slide" 
+            className="pointer-events-auto h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 flex items-center justify-center text-white text-xl font-bold transition-all"
+          >
+            ›
+          </button>
+        </div>
       </div>
 
       {/* Dots */}
