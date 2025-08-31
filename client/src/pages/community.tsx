@@ -250,7 +250,7 @@ export default function Community() {
                   </div>
                   <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
                 </div>
-                <FeaturedSection heroItem={heroItem} gridItems={gridItems} />
+                <FeaturedSection />
               </div>
             )}
 
