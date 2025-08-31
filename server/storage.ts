@@ -703,6 +703,9 @@ As the lines between physical and digital continue to blur, virtual fashion stan
       id,
       likes: 0,
       createdAt: new Date(),
+      postId: commentData.postId || null,
+      articleId: commentData.articleId || null,
+      parentId: commentData.parentId || null,
     };
     this.comments.set(id, comment);
     return comment;

@@ -228,8 +228,8 @@ export default function ThreadPage() {
                               url: response.uploadURL,
                             };
                           }}
-                          onComplete={(result) => {
-                            const urls = result.successful.map(file => file.uploadURL || '');
+                          onComplete={(result: any) => {
+                            const urls = result.successful?.map((file: any) => file.uploadURL || '') || [];
                             setUploadedImages(prev => [...prev, ...urls]);
                           }}
                           buttonClassName="p-2 h-10 w-10"
