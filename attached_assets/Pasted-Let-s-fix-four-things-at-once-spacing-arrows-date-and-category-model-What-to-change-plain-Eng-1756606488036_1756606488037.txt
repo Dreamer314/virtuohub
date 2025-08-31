@@ -1,0 +1,151 @@
+Let’s fix four things at once: spacing, arrows, date, and category model.
+
+What to change (plain English for your AI coder)
+
+Increase image→text spacing
+
+Desktop card grid: grid md:grid-cols-[1.1fr_1fr] gap-12 md:gap-16 xl:gap-24
+
+Give the image frame right margin on desktop: md:mr-4 xl:mr-8
+
+Constrain text width so headlines don’t crash into the image: max-w-[44ch]
+
+Arrows layout and behavior
+
+Arrows sit outside the image frame, vertically centered to the whole card.
+
+Left arrow x-offset: -6 on md, -10 on xl. Right arrow x-offset: mirror.
+
+Size: h-12 w-12 md:h-14 md:w-14 with ring on focus.
+
+Use dark translucent background with subtle glow.
+
+Disable while transitioning.
+
+Add date line
+
+Show a small muted date above the tag: text-sm text-white/50
+
+Format: August 29, 2025 (use your locale formatter)
+
+Fix categories
+
+“Interview” is a content type, not a tag. Use one of:
+
+Creator Insights
+
+Spotlight
+
+Tips & Guides
+
+Industry News
+
+Tech
+
+Optional sublabel for type: Interview, Article, Video
+
+Drop-in data shape
+type FeaturedItem = {
+  id: string
+  dateISO: string              // e.g. "2025-08-29"
+  tag: 'Creator Insights' | 'Spotlight' | 'Tips & Guides' | 'Industry News' | 'Tech'
+  type?: 'Interview' | 'Article' | 'Video'
+  title: string
+  blurb: string
+  ctaLabel: string
+  ctaHref: string
+  imageSrc: string
+  imageAlt: string
+}
+
+Tag styles
+
+Creator Insights → chip text #7AF3CF, bg rgba(120,243,207,.12)
+
+Spotlight → text #C5A8FF, bg rgba(197,168,255,.12)
+
+Tips & Guides → text #B6E86E, bg rgba(182,232,110,.12)
+
+Industry News → text #6EA8FF, bg rgba(56,132,255,.12)
+
+Tech → text #FFC888, bg rgba(255,196,136,.10)
+
+Exact prompt for Replit AI
+
+“Refactor the Featured carousel to improve spacing, arrow placement, and metadata.
+
+Layout
+
+Card uses grid md:grid-cols-[1.1fr_1fr] gap-12 md:gap-16 xl:gap-24 items-center.
+
+Image frame: aspect-video rounded-2xl overflow-hidden object-cover md:mr-4 xl:mr-8 shadow-[0_0_60px_rgba(120,100,255,.15)].
+
+Text column is constrained with max-w-[44ch].
+
+Arrows
+
+Place prev/next buttons outside the media frame, vertically centered to the entire card.
+
+Left arrow container: absolute md:-left-6 xl:-left-10 top-1/2 -translate-y-1/2.
+
+Right arrow: mirror at right.
+
+Buttons: h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 transition.
+
+Disable during slide transition.
+
+Metadata
+
+Add a date line above the tag. Format MMMM d, yyyy from dateISO.
+
+Show type as a small faint label after the tag, like “Creator Insights • Interview”.
+
+Replace any tag “News” with “Industry News”.
+
+Do not use “Interview” as a tag.
+
+Accessibility
+
+aria-live="polite", arrow aria-label includes current index, bullets are buttons.
+
+Do not alter colors outside this section. Keep autoplay and pause on hover.”
+
+Updated sample items
+[
+  {
+    "id": "alex-chen-interview",
+    "dateISO": "2025-08-29",
+    "tag": "Creator Insights",
+    "type": "Interview",
+    "title": "Breaking Creative Blocks with AI Tools",
+    "blurb": "Concept artist Alex Chen uses AI for thumbnails and material studies while keeping taste and style human. Speed without losing the craft.",
+    "ctaLabel": "Watch Interview →",
+    "ctaHref": "/interviews/alex-chen",
+    "imageSrc": "/images/featured/ai-blocks.jpg",
+    "imageAlt": "Dual-monitor concept art setup with VR thumbnails"
+  },
+  {
+    "id": "metahuman-houdini",
+    "dateISO": "2025-08-26",
+    "tag": "Industry News",
+    "type": "Article",
+    "title": "MetaHuman for Houdini: Bridge Release",
+    "blurb": "Bring MetaHuman into Houdini with fewer steps and cleaner hair and rig imports. Faster previz and better handoff to Unreal.",
+    "ctaLabel": "Learn More →",
+    "ctaHref": "/news/metahuman-houdini-bridge",
+    "imageSrc": "/images/featured/metahuman-bridge.jpg",
+    "imageAlt": "Realistic digital human portrait in studio light"
+  },
+  {
+    "id": "maya-ortiz",
+    "dateISO": "2025-08-20",
+    "tag": "Tips & Guides",
+    "type": "Article",
+    "title": "From Side Hustle to Studio: Maya Ortiz",
+    "blurb": "How a solo builder turned Roblox assets into a six-figure studio by standardizing her pipeline and using short playable demos to build trust.",
+    "ctaLabel": "Read More →",
+    "ctaHref": "/guides/maya-ortiz",
+    "imageSrc": "/images/featured/maya-ortiz.jpg",
+    "imageAlt": "Creator at glowing workstation building a VR island scene"
+  }
+]

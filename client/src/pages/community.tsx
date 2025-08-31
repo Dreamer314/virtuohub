@@ -23,34 +23,40 @@ import alexChenImage from "@assets/generated_images/Concept_artist_dual_monitor_
 // Featured data for carousel
 const featuredData = [
   {
-    id: "maya-ortiz",
-    tag: "Creator Insights" as const,
-    title: "From Side Hustle to Studio: Maya Ortiz",
-    blurb: "How a solo builder turned Roblox assets into a six-figure studio by standardizing her pipeline and earning trust with short playable demos.",
-    ctaLabel: "Read More →",
-    ctaHref: "/stories/maya-ortiz",
-    imageSrc: mayaOrtizImage,
-    imageAlt: "Creator at glowing workstation building a VR island scene"
-  },
-  {
-    id: "metahuman-houdini",
-    tag: "News" as const,
-    title: "MetaHuman for Houdini: Bridge Release",
-    blurb: "Bring MetaHuman characters into Houdini with fewer steps and cleaner hair and rig imports. Faster previz and better handoff to Unreal.",
-    ctaLabel: "Learn More →",
-    ctaHref: "/news/metahuman-houdini-bridge",
-    imageSrc: metaHumanImage,
-    imageAlt: "Realistic digital human portrait in studio light"
-  },
-  {
     id: "alex-chen-interview",
-    tag: "Interview" as const,
+    dateISO: "2025-08-29",
+    tag: "Creator Insights" as const,
+    type: "Interview" as const,
     title: "Breaking Creative Blocks with AI Tools",
     blurb: "Concept artist Alex Chen uses AI for thumbnails and material studies while keeping taste and style human. Speed without losing the craft.",
     ctaLabel: "Watch Interview →",
     ctaHref: "/interviews/alex-chen",
     imageSrc: alexChenImage,
     imageAlt: "Dual-monitor concept art setup with AI thumbnails"
+  },
+  {
+    id: "metahuman-houdini",
+    dateISO: "2025-08-26",
+    tag: "Industry News" as const,
+    type: "Article" as const,
+    title: "MetaHuman for Houdini: Bridge Release",
+    blurb: "Bring MetaHuman into Houdini with fewer steps and cleaner hair and rig imports. Faster previz and better handoff to Unreal.",
+    ctaLabel: "Learn More →",
+    ctaHref: "/news/metahuman-houdini-bridge",
+    imageSrc: metaHumanImage,
+    imageAlt: "Realistic digital human portrait in studio light"
+  },
+  {
+    id: "maya-ortiz",
+    dateISO: "2025-08-20",
+    tag: "Tips & Guides" as const,
+    type: "Article" as const,
+    title: "From Side Hustle to Studio: Maya Ortiz",
+    blurb: "How a solo builder turned Roblox assets into a six-figure studio by standardizing her pipeline and using short playable demos to build trust.",
+    ctaLabel: "Read More →",
+    ctaHref: "/guides/maya-ortiz",
+    imageSrc: mayaOrtizImage,
+    imageAlt: "Creator at glowing workstation building a VR island scene"
   }
 ];
 
