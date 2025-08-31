@@ -111,9 +111,15 @@ const CommunityPage: React.FC = () => {
                     <h1 className="text-9xl font-display font-bold text-white mb-6 drop-shadow-lg">
                       VirtuoHub Community
                     </h1>
-                    <p className="text-3xl text-white/90 drop-shadow-md">
-                      Connect, Create, and Collaborate in Virtual Worlds
+                    <h2 className="text-5xl font-display font-bold text-white mb-4 drop-shadow-lg">
+                      Your Immersive Economy HQ
+                    </h2>
+                    <p className="text-3xl text-white/90 drop-shadow-md mb-8">
+                      Discover, connect, and build together.
                     </p>
+                    <button className="px-8 py-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold text-xl transition-all hover:scale-105 drop-shadow-lg">
+                      Join the Community
+                    </button>
                   </div>
                   <div className="absolute inset-0 bg-black/20 rounded-2xl"></div>
                 </div>
