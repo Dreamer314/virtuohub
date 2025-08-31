@@ -93,7 +93,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
   return (
     <section 
       id="featuredV2" 
-      className="relative mx-auto max-w-[1400px] px-6 md:px-8 lg:pr-[360px] not-prose"
+      className="relative mx-auto max-w-[1400px] px-6 md:px-8 xl:pr-[360px] not-prose"
       aria-roledescription="carousel"
       aria-live="polite"
       onMouseEnter={handleMouseEnter}
@@ -101,7 +101,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
       onFocus={handleFocus}
       onBlur={handleBlur}
     >
-      <div className="relative grid gap-12 xl:gap-20 items-start lg:[grid-template-columns:minmax(720px,1fr)_minmax(300px,560px)]">
+      <div className="relative grid gap-12 xl:gap-20 items-start xl:[grid-template-columns:minmax(720px,1fr)_minmax(440px,560px)]">
         {/* Media */}
         <div className="relative md:-ml-6 xl:-ml-12">
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(closest-side,rgba(120,100,255,.18),transparent_70%)]" />
@@ -116,7 +116,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
         </div>
 
         {/* Text */}
-        <div className="cq min-w-0 max-w-[560px] lg:min-w-[300px] xl:min-w-[440px]">
+        <div className="cq max-w-[560px] xl:min-w-[440px]">
           <div className="text-sm text-white/55">{formatDate(currentItem.dateISO)}</div>
           <div className="mt-2 flex items-center gap-2">
             <span className={`rounded-full px-3 py-1 text-xs font-medium ${chipClass(currentItem.tag)}`}>
