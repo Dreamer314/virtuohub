@@ -74,9 +74,9 @@ export class MemStorage implements IStorage {
         price: '$180',
         type: 'regular',
         pollData: null,
-        likes: 156,
-        comments: 23,
-        shares: 9,
+        likes: 0,
+        comments: 0,
+        shares: 0,
         createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 hours ago
       },
       {
@@ -93,9 +93,9 @@ export class MemStorage implements IStorage {
         price: '$30-50/hr',
         type: 'regular',
         pollData: null,
-        likes: 89,
-        comments: 31,
-        shares: 12,
+        likes: 0,
+        comments: 0,
+        shares: 0,
         createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
       },
       {
@@ -114,16 +114,16 @@ export class MemStorage implements IStorage {
         pollData: {
           question: "What's your preferred platform for virtual world creation?",
           options: [
-            { text: 'Unity', votes: 45, percentage: 45 },
-            { text: 'Unreal Engine', votes: 30, percentage: 30 },
-            { text: 'Blender', votes: 25, percentage: 25 }
+            { text: 'Unity', votes: 0, percentage: 0 },
+            { text: 'Unreal Engine', votes: 0, percentage: 0 },
+            { text: 'Blender', votes: 0, percentage: 0 }
           ],
-          totalVotes: 100,
+          totalVotes: 0,
           endsAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000) // 2 days from now
         },
-        likes: 67,
-        comments: 23,
-        shares: 8,
+        likes: 0,
+        comments: 0,
+        shares: 0,
         createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000), // 8 hours ago
       },
       {
@@ -140,9 +140,9 @@ export class MemStorage implements IStorage {
         price: '',
         type: 'insight',
         pollData: null,
-        likes: 156,
-        comments: 42,
-        shares: 28,
+        likes: 0,
+        comments: 0,
+        shares: 0,
         createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
       },
       {
@@ -156,9 +156,9 @@ export class MemStorage implements IStorage {
         price: '',
         type: 'insight',
         pollData: null,
-        likes: 203,
-        comments: 67,
-        shares: 45,
+        likes: 0,
+        comments: 0,
+        shares: 0,
         createdAt: new Date(Date.now() - 18 * 60 * 60 * 1000), // 18 hours ago
       },
       {
@@ -172,9 +172,9 @@ export class MemStorage implements IStorage {
         price: '',
         type: 'insight',
         pollData: null,
-        likes: 178,
-        comments: 34,
-        shares: 29,
+        likes: 0,
+        comments: 0,
+        shares: 0,
         createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
       }
     ];
