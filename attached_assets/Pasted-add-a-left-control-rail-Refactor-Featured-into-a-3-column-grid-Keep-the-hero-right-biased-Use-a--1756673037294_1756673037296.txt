@@ -1,0 +1,136 @@
+add a left control rail
+
+“Refactor Featured into a 3-column grid. Keep the hero right-biased. Use a left control rail for arrows, play/pause, dots, and a short hint.
+
+Grid
+
+Wrapper around Featured row:
+class="relative grid lg:grid-cols-[220px_minmax(0,1fr)_360px] gap-6"
+Left = control rail 220 px, middle = Featured card, right = existing sidebar 360 px.
+
+Put the whole Featured card (media + text) in the middle column.
+
+Remove any negative left margins on media.
+
+Control rail (left column)
+
+Vertical stack, centered:
+
+<aside aria-label="Carousel controls"
+       class="hidden lg:flex col-start-1 flex-col items-start justify-center gap-4 text-white/70">
+  <p class="text-xs">Use ← → to navigate • Space to pause</p>
+  <div class="flex flex-col gap-3">
+    <button aria-label="Previous slide"  class="ctrl-btn">‹</button>
+    <button aria-label="Next slide"      class="ctrl-btn">›</button>
+    <button aria-pressed={paused} aria-label={paused ? 'Resume autoplay' : 'Pause autoplay'} class="ctrl-btn">
+      {paused ? '▶' : '⏸'}
+    </button>
+  </div>
+  <div class="flex gap-2 mt-2">{/* dots here */}</div>
+</aside>
+
+
+Button style utility (reuse):
+ctrl-btn = "h-12 w-12 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40"
+
+Middle column (your current Featured)
+
+Keep your media at aspect-[16/9], object-cover, rounded, glow.
+
+Keep the balanced, fluid headline classes so titles auto-fit:
+text-balance text-pretty keep-words text-[clamp(2.25rem,6cqi,3.75rem)] leading-[1.05]
+
+Keyboard + autoplay
+
+Left/Right keys navigate. Space toggles pause.
+
+Autoplay 5 s. Pause on hover or focus inside Featured.
+
+Mobile
+
+Hide the left rail (hidden lg:flex).
+
+On small screens, show arrows over the image and dots under, as you have now.
+
+Remove the old overlay arrows
+
+Delete the absolute overlay arrow wrapper so only the left rail controls remain on desktop.
+
+Acceptance
+
+At 1280 px, left rail is visible, vertically centered, and the middle column aligns with the right sidebar visually.
+
+No arrow overlap with the image. Title never stacks one word per line.
+
+ESLint clean. No console errors.”
+
+Drop-in JSX skeleton
+<div className="relative grid lg:grid-cols-[220px_minmax(0,1fr)_360px] gap-6">
+  {/* Left control rail */}
+  <aside aria-label="Carousel controls"
+         className="hidden lg:flex flex-col items-start justify-center gap-4 text-white/70">
+    <p className="text-xs">Use ← → to navigate • Space to pause</p>
+    <div className="flex flex-col gap-3">
+      <button onClick={() => go(-1)} aria-label={`Previous slide (${i+1} of ${count})`}
+              className="h-12 w-12 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40">‹</button>
+      <button onClick={() => go(1)} aria-label={`Next slide (${i+1} of ${count})`}
+              className="h-12 w-12 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40">›</button>
+      <button onClick={() => setPaused(p => !p)}
+              aria-pressed={paused}
+              aria-label={paused ? "Resume autoplay" : "Pause autoplay"}
+              className="h-12 w-12 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40">
+        {paused ? "▶" : "⏸"}
+      </button>
+    </div>
+    <div className="flex gap-2 mt-2">
+      {items.map((_, idx) => (
+        <button key={idx} onClick={() => set(idx)}
+                aria-label={`Go to slide ${idx+1}`}
+                className={`h-2.5 w-2.5 rounded-full ${idx===i ? "bg-[#825FFF]" : "bg-white/25 hover:bg-white/40"}`} />
+      ))}
+    </div>
+  </aside>
+
+  {/* Middle: Featured card */}
+  <section id="featuredV2" className="relative mx-auto max-w-[980px] px-6 md:px-0">
+    <div className="grid md:grid-cols-[1.2fr_1fr] gap-14 items-center">
+      {/* media */}
+      <div className="relative">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(closest-side,rgba(120,100,255,.18),transparent_70%)]" />
+        <div className="w-full aspect-[16/9] min-h-[360px] rounded-2xl overflow-hidden shadow-[0_0_90px_rgba(120,100,255,.16)] ring-1 ring-white/8">
+          <img src={item.imageSrc} alt={item.imageAlt} className="w-full h-full object-cover object-center" />
+        </div>
+      </div>
+      {/* text */}
+      <div className="cq max-w-[38ch]">
+        <div className="text-sm text-white/55">{formatDate(item.dateISO)}</div>
+        <div className="mt-2 flex items-center gap-2">
+          <span className={`rounded-full px-3 py-1 text-xs font-medium ${chipClass(item.tag)}`}>{item.tag}</span>
+          {item.type ? <span className="text-white/55 text-xs">• {item.type}</span> : null}
+        </div>
+        <h2 className="mt-3 text-balance text-pretty keep-words text-[clamp(2.25rem,6cqi,3.75rem)] leading-[1.05]">
+          {noWidow(item.title)}
+        </h2>
+        <p className="mt-5 text-lg text-white/80">{item.blurb}</p>
+        <a href={item.ctaHref}
+           className="mt-6 inline-flex items-center justify-center rounded-xl px-5 py-3 bg-[#6E4BFF] hover:bg-[#825FFF] text-white font-medium">
+          {item.ctaLabel}
+        </a>
+      </div>
+    </div>
+    {/* keep mobile overlay arrows and dots here if needed */}
+  </section>
+
+  {/* Right rail spacer (your existing sidebar occupies this column) */}
+  <div className="hidden lg:block" />
+</div>
+
+Why this is the best of both
+
+Keeps your image + copy to the right like you prefer.
+
+Fills the left void with useful controls and a small hint, so the area doesn’t feel empty.
+
+Arrows are no longer on top of the image.
+
+Keyboard and autoplay status are obvious. The toggle button uses aria-pressed for screen readers.
