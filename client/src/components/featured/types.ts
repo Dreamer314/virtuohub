@@ -11,6 +11,10 @@ export type FeaturedItem = {
   imageAlt: string
 }
 
+import vrChatImage from '@assets/generated_images/VRChat_cyberpunk_world_80607687.png';
+import unityImage from '@assets/generated_images/Unity_metaverse_development_54c43114.png';
+import robloxImage from '@assets/generated_images/Roblox_game_development_597c5fdd.png';
+
 export const featuredItems: FeaturedItem[] = [
   {
     id: '1',
@@ -21,7 +25,7 @@ export const featuredItems: FeaturedItem[] = [
     blurb: 'Learn how top creators are leveraging new tools and technologies to build more immersive virtual experiences.',
     ctaLabel: 'Read Interview',
     ctaHref: '/insights/building-immersive-worlds',
-    imageSrc: '/attached_assets/generated_images/VRChat_cyberpunk_world_80607687.png',
+    imageSrc: vrChatImage,
     imageAlt: 'VRChat cyberpunk world showcase'
   },
   {
@@ -33,7 +37,7 @@ export const featuredItems: FeaturedItem[] = [
     blurb: 'Essential tips for creating lag-free experiences that work across all devices and platforms.',
     ctaLabel: 'View Guide',
     ctaHref: '/guides/performance-optimization',
-    imageSrc: '/attached_assets/generated_images/Unity_metaverse_development_54c43114.png',
+    imageSrc: unityImage,
     imageAlt: 'Unity metaverse development'
   },
   {
@@ -45,7 +49,7 @@ export const featuredItems: FeaturedItem[] = [
     blurb: 'Exploring how virtual economies are evolving and creating new opportunities for creators.',
     ctaLabel: 'Learn More',
     ctaHref: '/news/virtual-commerce-future',
-    imageSrc: '/attached_assets/generated_images/Roblox_game_development_597c5fdd.png',
+    imageSrc: robloxImage,
     imageAlt: 'Roblox game development showcase'
   }
 ]

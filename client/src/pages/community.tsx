@@ -10,7 +10,8 @@ import { Footer } from '@/components/layout/footer';
 import { FeaturedCarousel } from '@/components/featured/FeaturedCarousel';
 import { featuredItems } from '@/components/featured/types';
 import vhubHeaderImage from '@assets/VHub.Header.no.font.Light.Page.png';
-import type { Platform } from '@/shared/schema';
+import { useQuery } from '@tanstack/react-query';
+import type { PostWithAuthor, Platform } from '@/shared/schema';
 
 const FEATURED_V2 = true;
 
@@ -19,13 +20,20 @@ const CommunityPage: React.FC = () => {
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-  // Mock data for posts - temporarily empty to focus on hero section
-  const posts: any[] = [];
+  // Fetch posts data from API
+  const { data: posts = [], isLoading: postsLoading } = useQuery<PostWithAuthor[]>({
+    queryKey: ['/api/posts']
+  });
 
+  const { data: savedPosts = [], isLoading: savedLoading } = useQuery<PostWithAuthor[]>({
+    queryKey: ['/api/users/user1/saved-posts']
+  });
+
+  // Filter posts by type
   const pulsePosts = posts.filter(post => post.type === 'pulse');
   const insightPosts = posts.filter(post => post.type === 'insight');
   const regularPosts = posts.filter(post => post.type === 'regular');
-  const allPostsData = currentTab === 'saved' ? [] : regularPosts;
+  const allPostsData = currentTab === 'saved' ? savedPosts : regularPosts;
 
   // Add scroll animation observer
   useEffect(() => {
