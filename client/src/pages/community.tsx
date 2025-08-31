@@ -17,7 +17,7 @@ import { Link } from "wouter";
 import communityHeaderImage from "@/assets/community-header.png";
 import vhubHeaderImage from "@assets/VHub.Header.no.font.Light.Page.png";
 import mayaOrtizImage from "@assets/generated_images/Creator_workshop_virtual_world_2ba8749d.png";
-import metaHumanImage from "@assets/generated_images/MetaHuman_digital_character_banner_6c09e5d8.png";
+import metaHumanImage from "@assets/generated_images/MetaHuman_digital_portrait_91b78393.png";
 import alexChenImage from "@assets/generated_images/Concept_artist_dual_monitor_setup_1fa0b899.png";
 
 // Featured data for carousel
@@ -39,19 +39,19 @@ const featuredData = [
     dateISO: "2025-08-26",
     tag: "Industry News" as const,
     type: "Article" as const,
-    title: "MetaHuman to Houdini with fewer steps",
+    title: "MetaHuman for Houdini: Bridge Release",
     blurb: "Bring MetaHuman into Houdini with fewer steps and cleaner hair and rig imports. Faster previz and better handoff to Unreal.",
     ctaLabel: "Learn More →",
     ctaHref: "/news/metahuman-houdini-bridge",
     imageSrc: metaHumanImage,
-    imageAlt: "MetaHuman portrait banner on neutral studio gradient"
+    imageAlt: "Realistic digital human portrait in studio light"
   },
   {
     id: "maya-ortiz",
     dateISO: "2025-08-20",
     tag: "Tips & Guides" as const,
     type: "Article" as const,
-    title: "From side hustle to a six-figure studio",
+    title: "From Side Hustle to Studio: Maya Ortiz",
     blurb: "How a solo builder turned Roblox assets into a six-figure studio by standardizing her pipeline and using short playable demos to build trust.",
     ctaLabel: "Read More →",
     ctaHref: "/guides/maya-ortiz",
@@ -237,6 +237,16 @@ export default function Community() {
             {/* Featured Content Carousel */}
             {currentTab === 'all' && (
               <div className="mb-8">
+                <div className="flex items-center space-x-2 mb-6">
+                  <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
+                  <div className="flex items-center space-x-4">
+                    <Star className="w-8 h-8 text-accent" />
+                    <h2 className="text-3xl font-bold text-foreground tracking-tight">
+                      Featured Content
+                    </h2>
+                  </div>
+                  <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
+                </div>
                 <FeaturedCarousel items={featuredData} />
               </div>
             )}

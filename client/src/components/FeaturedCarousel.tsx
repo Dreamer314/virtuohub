@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useState, useEffect } from 'react'
+import { ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 type FeaturedItem = {
   id: string
@@ -14,150 +16,218 @@ type FeaturedItem = {
 }
 
 interface FeaturedCarouselProps {
-  items: FeaturedItem[];
+  items: FeaturedItem[]
 }
 
-function formatDate(iso: string) {
-  try { return new Date(iso).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" }); }
-  catch { return iso; }
+const tagStyles = {
+  'Creator Insights': 'bg-[rgba(120,243,207,.12)] text-[#7AF3CF]',
+  'Spotlight': 'bg-[rgba(197,168,255,.12)] text-[#C5A8FF]',
+  'Tips & Guides': 'bg-[rgba(182,232,110,.12)] text-[#B6E86E]',
+  'Industry News': 'bg-[rgba(56,132,255,.12)] text-[#6EA8FF]',
+  'Tech': 'bg-[rgba(255,196,136,.10)] text-[#FFC888]'
 }
 
-function chipClass(tag: string) {
-  switch (tag) {
-    case "Creator Insights": return "text-[#7AF3CF] bg-[rgba(120,243,207,.12)]";
-    case "Spotlight":        return "text-[#C5A8FF] bg-[rgba(197,168,255,.12)]";
-    case "Tips & Guides":    return "text-[#B6E86E] bg-[rgba(182,232,110,.12)]";
-    case "Industry News":    return "text-[#6EA8FF] bg-[rgba(56,132,255,.12)]";
-    case "Tech":             return "text-[#FFC888] bg-[rgba(255,196,136,.10)]";
-    default:                 return "text-white bg-white/10";
+export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
+  const [currentIndex, setCurrentIndex] = useState(0)
+  const [isAutoplayPaused, setIsAutoplayPaused] = useState(false)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+
+  const nextSlide = () => {
+    if (isTransitioning) return
+    setIsTransitioning(true)
+    setCurrentIndex((prev) => (prev + 1) % items.length)
+    setTimeout(() => setIsTransitioning(false), 300)
   }
-}
 
-function noWidow(s: string) {
-  return typeof s === "string" ? s.replace(/\s+([^\s]+)$/, "\u00A0$1") : s;
-}
+  const prevSlide = () => {
+    if (isTransitioning) return
+    setIsTransitioning(true)
+    setCurrentIndex((prev) => (prev - 1 + items.length) % items.length)
+    setTimeout(() => setIsTransitioning(false), 300)
+  }
 
-export function FeaturedCarousel({ items = [], autoMs = 5000 }: FeaturedCarouselProps & { autoMs?: number }) {
-  const [i, setI] = useState(0);
-  const [paused, setPaused] = useState(false);
-  const wrap = useRef<HTMLElement>(null);
-  const count = items.length;
-  const go = (n: number) => setI((p) => (p + n + count) % count);
-  const set = (n: number) => setI(((n % count) + count) % count);
+  const goToSlide = (index: number) => {
+    if (isTransitioning) return
+    setIsTransitioning(true)
+    setCurrentIndex(index)
+    setTimeout(() => setIsTransitioning(false), 300)
+  }
 
+  const formatDate = (dateISO: string) => {
+    const date = new Date(dateISO)
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    })
+  }
+
+  // Auto-advance slides
   useEffect(() => {
-    if (paused || count < 2) return;
-    const t = setInterval(() => go(1), autoMs);
-    return () => clearInterval(t);
-  }, [paused, count, autoMs]);
+    if (isAutoplayPaused) return
 
+    const interval = setInterval(nextSlide, 5000)
+    return () => clearInterval(interval)
+  }, [isAutoplayPaused])
+
+  // Keyboard navigation
   useEffect(() => {
-    const el = wrap.current;
-    if (!el) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") { e.preventDefault(); go(-1); }
-      if (e.key === "ArrowRight") { e.preventDefault(); go(1); }
-      if (e.key === " ") { e.preventDefault(); setPaused((p) => !p); }
-    };
-    el.addEventListener("keydown", onKey);
-    return () => el.removeEventListener("keydown", onKey);
-  }, []);
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        prevSlide()
+      } else if (e.key === 'ArrowRight') {
+        nextSlide()
+      }
+    }
 
-  const item = useMemo(() => items[i] || {} as FeaturedItem, [items, i]);
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
+  if (!items.length) return null
+
+  const currentItem = items[currentIndex]
 
   return (
-    <section
-      id="featured"
-      ref={wrap}
-      tabIndex={0}
-      aria-roledescription="carousel"
-      aria-label="Featured content"
-      className="relative mx-auto max-w-[1400px] px-6 md:px-8 lg:pr-[360px] outline-none"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-      onFocus={() => setPaused(true)}
-      onBlur={() => setPaused(false)}
+    <section 
+      id="featured" 
+      className="relative max-w-[1200px] mx-auto px-6"
+      onMouseEnter={() => setIsAutoplayPaused(true)}
+      onMouseLeave={() => setIsAutoplayPaused(false)}
+      data-testid="featured-carousel"
     >
-      <div className="sr-only" aria-live="polite">
-        Slide {i + 1} of {count}
-      </div>
-
-      <div className="relative grid md:grid-cols-[1.8fr_1fr] gap-20 xl:gap-28 items-center">
+      <div 
+        className="relative grid md:grid-cols-[1.25fr_1fr] gap-16 xl:gap-24 items-center"
+        aria-live="polite"
+        role="region"
+        aria-label="Featured content carousel"
+      >
         {/* Media */}
-        <div className="relative md:-ml-6 xl:-ml-12">
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(closest-side,rgba(120,100,255,.18),transparent_70%)]" />
-          <div className="w-full aspect-[16/9] min-h-[360px] xl:min-h-[440px] rounded-2xl overflow-hidden shadow-[0_0_90px_rgba(120,100,255,.16)] ring-1 ring-white/8">
+        <div className="relative">
+          {/* Radial background */}
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(closest-side,rgba(120,100,255,.18),transparent_70%)] pointer-events-none" />
+          
+          {/* Media frame */}
+          <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden shadow-[0_0_80px_rgba(120,100,255,.18)] ring-1 ring-white/8">
             <img
-              src={item.imageSrc}
-              alt={item.imageAlt || ""}
-              className="w-full h-full object-cover object-center"
+              src={currentItem.imageSrc}
+              alt={currentItem.imageAlt}
+              className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
               loading="lazy"
+              data-testid={`featured-image-${currentItem.id}`}
             />
           </div>
         </div>
 
         {/* Text */}
-        <div className="cq max-w-[38ch] md:mr-2">
-          <div className="text-sm text-white/55">{formatDate(item.dateISO)}</div>
-          <div className="mt-2 flex items-center gap-2">
-            {!!item.tag && (
-              <span className={`rounded-full px-3 py-1 text-xs font-medium ${chipClass(item.tag)}`}>
-                {item.tag}
-              </span>
-            )}
-            {!!item.type && <span className="text-white/55 text-xs">• {item.type}</span>}
+        <div className="max-w-[48ch] pt-2">
+          {/* Date */}
+          <div className="text-sm text-white/55 mb-2" data-testid={`featured-date-${currentItem.id}`}>
+            {formatDate(currentItem.dateISO)}
           </div>
 
-          <h3 className="mt-3 text-balance text-pretty leading-[1.05] tracking-tight text-[clamp(2.25rem,6cqi,3.75rem)]">
-            {noWidow(item.title)}
+          {/* Tag and type */}
+          <div className="mt-2 flex items-center gap-2">
+            <span 
+              className={`px-3 py-1 rounded-full text-sm font-medium ${tagStyles[currentItem.tag]}`}
+              data-testid={`featured-tag-${currentItem.id}`}
+            >
+              {currentItem.tag}
+            </span>
+            {currentItem.type && (
+              <span className="text-white/55">• {currentItem.type}</span>
+            )}
+          </div>
+
+          {/* Title */}
+          <h3 
+            className="text-5xl leading-tight font-extrabold tracking-tight mt-3 text-balance"
+            data-testid={`featured-title-${currentItem.id}`}
+          >
+            {currentItem.title}
           </h3>
 
-          <p className="mt-5 text-lg text-white/80">{item.blurb}</p>
+          {/* Blurb */}
+          <p 
+            className="text-lg text-white/80 mt-4"
+            data-testid={`featured-blurb-${currentItem.id}`}
+          >
+            {currentItem.blurb}
+          </p>
 
-          {!!item.ctaHref && (
-            <a
-              href={item.ctaHref}
-              className="mt-6 inline-flex items-center justify-center rounded-xl px-5 py-3 bg-[#6E4BFF] hover:bg-[#825FFF] text-white font-medium"
-            >
-              {item.ctaLabel || "Read More →"}
-            </a>
+          {/* CTA Button */}
+          <a
+            href={currentItem.ctaHref}
+            className="inline-flex items-center justify-center rounded-xl px-5 py-3 bg-[#6E4BFF] hover:bg-[#825FFF] text-white font-medium mt-6 transition-colors"
+            data-testid={`featured-cta-${currentItem.id}`}
+          >
+            {currentItem.ctaLabel}
+          </a>
+        </div>
+
+        {/* Navigation Arrows */}
+        <button
+          onClick={prevSlide}
+          disabled={isTransitioning}
+          aria-label={`Previous featured item (${currentIndex + 1} of ${items.length})`}
+          className="absolute left-0 md:-left-10 xl:-left-16 top-1/2 -translate-y-1/2 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 transition flex items-center justify-center disabled:opacity-50"
+          data-testid="featured-prev-button"
+        >
+          <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-white" />
+        </button>
+
+        <button
+          onClick={nextSlide}
+          disabled={isTransitioning}
+          aria-label={`Next featured item (${currentIndex + 1} of ${items.length})`}
+          className="absolute right-0 md:-right-10 xl:-right-16 top-1/2 -translate-y-1/2 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 transition flex items-center justify-center disabled:opacity-50"
+          data-testid="featured-next-button"
+        >
+          <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-white" />
+        </button>
+      </div>
+
+      {/* Dots under card */}
+      <div className="mt-8 flex justify-center gap-3">
+        {items.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => goToSlide(index)}
+            disabled={isTransitioning}
+            className={`w-3 h-3 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 ${
+              index === currentIndex
+                ? 'bg-primary scale-125'
+                : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+            }`}
+            aria-label={`Go to slide ${index + 1} of ${items.length}`}
+            data-testid={`featured-dot-${index}`}
+          >
+            {index === currentIndex && !isAutoplayPaused && (
+              <div className="absolute inset-0 rounded-full border-2 border-primary animate-ping"></div>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Play/pause status */}
+      <div className="flex items-center justify-center gap-4 mt-4">
+        <button
+          onClick={() => setIsAutoplayPaused(!isAutoplayPaused)}
+          className="w-8 h-8 rounded-full bg-background/80 backdrop-blur-sm border border-border hover:bg-background transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+          aria-label={isAutoplayPaused ? "Resume slideshow" : "Pause slideshow"}
+          data-testid="featured-autoplay-toggle"
+        >
+          {isAutoplayPaused ? (
+            <Play className="w-3 h-3 text-foreground ml-0.5" />
+          ) : (
+            <Pause className="w-3 h-3 text-foreground" />
           )}
+        </button>
+
+        <div className="text-xs text-muted-foreground">
+          {isAutoplayPaused ? 'Paused' : 'Auto-rotating every 5s'}
         </div>
       </div>
-
-      {/* Arrows anchored to section edges, cleared from right rail */}
-      <div className="pointer-events-none absolute inset-y-0 left-2 right-2 lg:right-[380px] flex items-center justify-between">
-        <button
-          aria-label={`Previous slide (${i + 1} of ${count})`}
-          onClick={() => go(-1)}
-          className="pointer-events-auto h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40"
-        >
-          ‹
-        </button>
-        <button
-          aria-label={`Next slide (${i + 1} of ${count})`}
-          onClick={() => go(1)}
-          className="pointer-events-auto h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40"
-        >
-          ›
-        </button>
-      </div>
-
-      {/* Dots */}
-      {count > 1 && (
-        <div className="mt-10 flex justify-center gap-3">
-          {items.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => set(idx)}
-              aria-label={`Go to slide ${idx + 1}`}
-              className={`h-2.5 w-2.5 rounded-full ${
-                idx === i ? "bg-[#825FFF]" : "bg-white/20 hover:bg-white/35"
-              }`}
-            />
-          ))}
-        </div>
-      )}
     </section>
-  );
+  )
 }

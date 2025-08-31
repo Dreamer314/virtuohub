@@ -124,12 +124,6 @@
 }
 
 @layer utilities {
-  /* Container query and text utilities for FeaturedCarousel */
-  .text-balance { text-wrap: balance; }
-  .text-pretty { text-wrap: pretty; }
-  .cq { container-type: inline-size; }
-  .keep-words { word-break: keep-all; }
-
   .glass-card {
     @apply bg-white/10 backdrop-blur-md border border-white/20;
   }
