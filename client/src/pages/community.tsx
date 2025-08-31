@@ -217,7 +217,7 @@ export default function Community() {
           <main>
             {/* Hero Section */}
             <div className="glass-card rounded-2xl mb-8 overflow-hidden hover-lift relative" data-testid="hero-section">
-              <div className="relative h-[576px] flex items-center justify-center hero-glow-container">
+              <div className="relative min-h-[576px] flex items-center justify-center hero-glow-container">
                 <img 
                   src={vhubHeaderImage} 
                   alt="VirtuoHub Community Header"
