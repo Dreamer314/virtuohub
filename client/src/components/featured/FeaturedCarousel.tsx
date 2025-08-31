@@ -117,19 +117,19 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
 
         {/* Text */}
         <div className="cq max-w-[560px] xl:min-w-[440px]">
-          <div className="text-sm text-white/55">{formatDate(currentItem.dateISO)}</div>
+          <div className="text-sm text-muted-foreground">{formatDate(currentItem.dateISO)}</div>
           <div className="mt-2 flex items-center gap-2">
             <span className={`rounded-full px-3 py-1 text-xs font-medium ${chipClass(currentItem.tag)}`}>
               {currentItem.tag}
             </span>
             {currentItem.type ? (
-              <span className="text-white/55 text-xs">• {currentItem.type}</span>
+              <span className="text-muted-foreground text-xs">• {currentItem.type}</span>
             ) : null}
           </div>
-          <h2 className="mt-3 text-balance text-pretty keep-words leading-[1.05] tracking-tight text-[clamp(2.25rem,6cqi,3.75rem)] text-white font-bold">
+          <h2 className="mt-3 text-balance text-pretty keep-words leading-[1.05] tracking-tight text-[clamp(2.25rem,6cqi,3.75rem)] text-foreground font-bold">
             {noWidow(currentItem.title)}
           </h2>
-          <p className="mt-5 text-lg text-white/80">{currentItem.blurb}</p>
+          <p className="mt-5 text-lg text-foreground/80">{currentItem.blurb}</p>
           <a 
             href={currentItem.ctaHref} 
             className="mt-6 inline-flex items-center justify-center rounded-xl px-5 py-3 bg-[#6E4BFF] hover:bg-[#825FFF] text-white font-medium transition-colors"
@@ -145,14 +145,14 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
           <button 
             onClick={goToPrevious} 
             aria-label="Previous slide" 
-            className="pointer-events-auto h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 flex items-center justify-center text-white text-xl font-bold transition-all"
+            className="pointer-events-auto h-12 w-12 md:h-14 md:w-14 rounded-full bg-background/60 backdrop-blur ring-1 ring-border hover:bg-background/80 focus:outline-none focus:ring-2 focus:ring-ring flex items-center justify-center text-foreground text-xl font-bold transition-all"
           >
             ‹
           </button>
           <button 
             onClick={goToNext} 
             aria-label="Next slide" 
-            className="pointer-events-auto h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 flex items-center justify-center text-white text-xl font-bold transition-all"
+            className="pointer-events-auto h-12 w-12 md:h-14 md:w-14 rounded-full bg-background/60 backdrop-blur ring-1 ring-border hover:bg-background/80 focus:outline-none focus:ring-2 focus:ring-ring flex items-center justify-center text-foreground text-xl font-bold transition-all"
           >
             ›
           </button>
@@ -168,8 +168,8 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
             aria-label={`Go to item ${index + 1} of ${items.length}`}
             className={`w-2 h-2 rounded-full transition-all ${
               index === currentIndex 
-                ? 'bg-white scale-125' 
-                : 'bg-white/30 hover:bg-white/50'
+                ? 'bg-foreground scale-125' 
+                : 'bg-foreground/30 hover:bg-foreground/50'
             }`}
           />
         ))}
