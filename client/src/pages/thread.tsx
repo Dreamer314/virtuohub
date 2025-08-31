@@ -39,7 +39,7 @@ export default function ThreadPage() {
   // Comment submission mutation
   const commentMutation = useMutation({
     mutationFn: async (data: { content: string; images: string[] }) => {
-      return apiRequest(`/api/posts/${postId}/comments`, 'POST', {
+      return apiRequest('POST', `/api/posts/${postId}/comments`, {
         content: data.content, 
         images: data.images,
         authorId: 'user1'
@@ -222,7 +222,7 @@ export default function ThreadPage() {
                           maxNumberOfFiles={5}
                           maxFileSize={10485760}
                           onGetUploadParameters={async () => {
-                            const response = await apiRequest('/api/objects/upload', 'POST') as unknown as { uploadURL: string };
+                            const response = await apiRequest('POST', '/api/objects/upload') as unknown as { uploadURL: string };
                             return {
                               method: 'PUT' as const,
                               url: response.uploadURL,
