@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Header } from "@/components/layout/header";
 import { LeftSidebar } from "@/components/layout/left-sidebar";
 import { RightSidebar } from "@/components/layout/right-sidebar";
+import { Footer } from "@/components/layout/footer";
 import { PostCard } from "@/components/post-card";
 import { CreatePostModal } from "@/components/create-post-modal";
 import { Button } from "@/components/ui/button";
@@ -692,6 +693,9 @@ export default function Community() {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <Footer />
 
       {/* Floating Action Button */}
       <Button
