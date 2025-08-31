@@ -91,13 +91,13 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
   return (
     <section 
       id="featured" 
-      className="relative max-w-[1200px] mx-auto px-6"
+      className="relative max-w-[1400px] mx-auto px-6"
       onMouseEnter={() => setIsAutoplayPaused(true)}
       onMouseLeave={() => setIsAutoplayPaused(false)}
       data-testid="featured-carousel"
     >
       <div 
-        className="relative grid md:grid-cols-[1.25fr_1fr] gap-16 xl:gap-24 items-center"
+        className="relative grid md:grid-cols-[1.35fr_1fr] gap-20 xl:gap-28 items-center"
         aria-live="polite"
         role="region"
         aria-label="Featured content carousel"
@@ -141,7 +141,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
 
           {/* Title */}
           <h3 
-            className="text-5xl leading-tight font-extrabold tracking-tight mt-3 text-balance"
+            className="text-6xl leading-tight font-extrabold tracking-tight mt-3 text-balance"
             data-testid={`featured-title-${currentItem.id}`}
           >
             {currentItem.title}
@@ -149,7 +149,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
 
           {/* Blurb */}
           <p 
-            className="text-lg text-white/80 mt-4"
+            className="text-xl text-white/80 mt-4 leading-relaxed"
             data-testid={`featured-blurb-${currentItem.id}`}
           >
             {currentItem.blurb}
@@ -158,7 +158,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
           {/* CTA Button */}
           <a
             href={currentItem.ctaHref}
-            className="inline-flex items-center justify-center rounded-xl px-5 py-3 bg-[#6E4BFF] hover:bg-[#825FFF] text-white font-medium mt-6 transition-colors"
+            className="inline-flex items-center justify-center rounded-xl px-7 py-4 bg-[#6E4BFF] hover:bg-[#825FFF] text-white font-medium text-lg mt-6 transition-colors"
             data-testid={`featured-cta-${currentItem.id}`}
           >
             {currentItem.ctaLabel}
