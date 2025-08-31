@@ -237,16 +237,6 @@ export default function Community() {
             {/* Featured Content Carousel */}
             {currentTab === 'all' && (
               <div className="mb-8">
-                <div className="flex items-center space-x-2 mb-6">
-                  <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
-                  <div className="flex items-center space-x-4">
-                    <Star className="w-8 h-8 text-accent" />
-                    <h2 className="text-3xl font-bold text-foreground tracking-tight">
-                      Featured Content
-                    </h2>
-                  </div>
-                  <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
-                </div>
                 <FeaturedCarousel items={featuredData} />
               </div>
             )}
