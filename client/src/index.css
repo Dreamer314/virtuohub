@@ -386,3 +386,21 @@
 .bg-gradient-radial {
   background: radial-gradient(ellipse at center, var(--tw-gradient-stops));
 }
+
+/* Container query support */
+.cq {
+  container-type: inline-size;
+}
+
+/* Text wrapping helpers */
+.text-balance {
+  text-wrap: balance;
+}
+
+.text-pretty {
+  text-wrap: pretty;
+}
+
+.keep-words {
+  word-break: keep-all;
+}

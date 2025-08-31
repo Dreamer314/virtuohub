@@ -6,7 +6,8 @@ import { RightSidebar } from "@/components/layout/right-sidebar";
 import { Footer } from "@/components/layout/footer";
 import { PostCard } from "@/components/post-card";
 import { CreatePostModal } from "@/components/create-post-modal";
-import { FeaturedSection } from "@/components/FeaturedCarousel";
+import { FeaturedCarousel } from "@/components/featured/FeaturedCarousel";
+import type { FeaturedItem } from "@/components/featured/types";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type Category, type Platform } from "@shared/schema";
@@ -20,48 +21,48 @@ import mayaOrtizImage from "@assets/generated_images/Creator_workshop_virtual_wo
 import metaHumanImage from "@assets/generated_images/MetaHuman_digital_portrait_91b78393.png";
 import alexChenImage from "@assets/generated_images/Concept_artist_dual_monitor_setup_1fa0b899.png";
 
-// Featured data for new section
-const heroItem = {
-  id: "metahuman-houdini",
-  dateISO: "2025-08-20",
-  tag: "Community",
-  title: "MetaHuman for Houdini Release",
-  description: "Today we're releasing a new version of MetaHuman for Houdini that enables you to bring your MetaHuman characters to life in SideEX Houdini. Available for download from Fab, this release bridges the gap between Unreal...",
-  imageSrc: metaHumanImage,
-  imageAlt: "Realistic digital human portrait in studio light",
-  ctaLabel: "Read more",
-  ctaHref: "/news/metahuman-houdini-bridge"
-};
-
-const gridItems = [
+// Featured data
+const featuredItems: FeaturedItem[] = [
   {
-    id: "rain-garden",
-    dateISO: "2025-08-24",
-    tag: "Community",
-    title: "RAIN GARDEN",
-    description: "Rain Garden Unreal Project",
-    imageSrc: mayaOrtizImage,
-    imageAlt: "Rain garden virtual environment"
-  },
-  {
-    id: "helmet-project",
-    dateISO: "2025-08-15",
-    tag: "Community", 
-    title: "Helmet Design Project",
-    description: "3D helmet modeling showcase",
+    id: "alex-chen-interview",
+    dateISO: "2025-08-29",
+    tag: "Creator Insights",
+    type: "Interview",
+    title: "Breaking Creative Blocks with AI Tools",
+    blurb: "Concept artist Alex Chen uses AI for thumbnails and material studies while keeping taste and style human. Speed without losing the craft.",
+    ctaLabel: "Watch Interview",
+    ctaHref: "/interviews/alex-chen",
     imageSrc: alexChenImage,
-    imageAlt: "3D helmet design"
+    imageAlt: "Dual-monitor concept art setup with AI thumbnails"
   },
   {
-    id: "hanok-unreal",
-    dateISO: "2025-08-08",
-    tag: "Community",
-    title: "HANOK UNREAL PROJECT",
-    description: "Traditional Korean architecture in Unreal Engine",
+    id: "metahuman-houdini",
+    dateISO: "2025-08-26",
+    tag: "Industry News",
+    type: "Article",
+    title: "MetaHuman for Houdini: Bridge Release",
+    blurb: "Bring MetaHuman into Houdini with fewer steps and cleaner hair and rig imports. Faster previz and better handoff to Unreal.",
+    ctaLabel: "Learn More",
+    ctaHref: "/news/metahuman-houdini-bridge",
     imageSrc: metaHumanImage,
-    imageAlt: "Traditional Korean hanok building"
+    imageAlt: "Realistic digital human portrait in studio light"
+  },
+  {
+    id: "maya-ortiz",
+    dateISO: "2025-08-20",
+    tag: "Tips & Guides",
+    type: "Article",
+    title: "From Side Hustle to Studio: Maya Ortiz",
+    blurb: "How a solo builder turned Roblox assets into a six-figure studio by standardizing her pipeline and using short playable demos to build trust.",
+    ctaLabel: "Read More",
+    ctaHref: "/guides/maya-ortiz",
+    imageSrc: mayaOrtizImage,
+    imageAlt: "Creator at glowing workstation building a VR island scene"
   }
 ];
+
+// Feature flag for V2
+const FEATURED_V2 = true;
 
 export default function Community() {
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
@@ -250,7 +251,13 @@ export default function Community() {
                   </div>
                   <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
                 </div>
-                <FeaturedSection />
+                {FEATURED_V2 ? (
+                  <FeaturedCarousel items={featuredItems} />
+                ) : (
+                  <div className="space-y-6">
+                    {/* Legacy Featured section would go here */}
+                  </div>
+                )}
               </div>
             )}
 

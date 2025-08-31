@@ -1,0 +1,133 @@
+Rebuild Featured from scratch and cut over
+
+“Replace the existing Featured section with a fresh, isolated implementation and delete legacy markup for it.
+
+Cutover plan
+
+Create components/featured/FeaturedCarousel.tsx and components/featured/types.ts.
+
+Render it on the Community page at the same position. Keep the old section behind a feature flag FEATURED_V2. Default to V2.
+
+Remove old Featured files after V2 passes acceptance.
+
+Hard isolation
+
+Wrap the new section with:
+
+section#featuredV2 classes: relative isolate not-prose overflow-visible
+
+data-scope="featured"
+
+Do a sweep and remove or override any ancestor classes affecting typography or width near the old section: .prose, .container, .max-w-*, overflow-hidden.
+
+Ensure no parent sets overflow:hidden on the new section’s ancestors. If found, move it down to only where it is needed.
+
+Layout spec
+
+Stage: relative mx-auto max-w-[1400px] px-6 md:px-8 lg:pr-[360px] (adjust the 360 px to your right-rail width).
+
+Grid: relative grid md:grid-cols-[1.8fr_1fr] gap-20 xl:gap-28 items-center.
+
+Media:
+
+Wrapper relative md:-ml-6 xl:-ml-12
+
+Frame w-full aspect-[16/9] min-h-[360px] xl:min-h-[440px] rounded-2xl overflow-hidden shadow-[0_0_90px_rgba(120,100,255,.16)] ring-1 ring-white/8
+
+<img class="w-full h-full object-cover object-center" loading="lazy">
+
+Radial glow behind frame: absolute div with bg-[radial-gradient(closest-side,rgba(120,100,255,.18),transparent_70%)]
+
+Text column:
+
+cq max-w-[38ch] md:mr-2 and add global CSS: .cq{container-type:inline-size}
+
+Date small muted
+
+Tag chip + optional type
+
+Title uses fluid, balanced wrapping:
+
+classes text-balance text-pretty keep-words leading-[1.05] tracking-tight text-[clamp(2.25rem,6cqi,3.75rem)]
+
+helpers: .text-balance{ text-wrap:balance } .text-pretty{ text-wrap:pretty } .keep-words{ word-break:keep-all }
+
+Blurb text-lg text-white/80 mt-5
+
+Primary button below.
+
+Controls
+
+Arrows anchored to section edges, not the image:
+
+Wrapper: pointer-events-none absolute inset-y-0 left-2 right-2 lg:right-[380px] flex items-center justify-between
+
+Buttons: pointer-events-auto h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40
+
+Dots below card mt-10.
+
+Keyboard: Left and Right navigate. Space toggles autoplay.
+
+Autoplay: 5s, pause on hover or focus inside the section.
+
+Accessibility: aria-roledescription="carousel", aria-live="polite", buttons labeled with current index.
+
+Data model
+
+Create components/featured/types.ts:
+
+export type FeaturedItem = {
+  id: string
+  dateISO: string
+  tag: 'Creator Insights' | 'Spotlight' | 'Tips & Guides' | 'Industry News' | 'Tech'
+  type?: 'Interview' | 'Article' | 'Video'
+  title: string
+  blurb: string
+  ctaLabel: string
+  ctaHref: string
+  imageSrc: string
+  imageAlt: string
+}
+
+
+Do not use “Interview” as a tag. Use it as type.
+
+Anti-clobber checks (fail the task if any are true)
+
+Any ancestor of #featuredV2 sets overflow:hidden.
+
+The media <img> does not have object-cover.
+
+The text column computed width > 45ch or < 30ch.
+
+The left or right arrow bounding box overlaps the media bounding box.
+
+The title renders with more than 5 lines at 1024 px width (reduce with the clamp automatically, do not edit the title).
+
+Remove legacy constraints
+
+Search and delete or scope down rules that target generic tags near Featured:
+
+Global h1, h2 font sizes that override Tailwind classes.
+
+.container or .content wrappers setting max-width and paddings around Featured.
+
+.prose typography styles that change heading sizes in this region.
+
+Any img { max-width: 480px; } style, or width utilities like w-80 on media wrappers.
+
+Acceptance
+
+At 1280 px wide viewport:
+
+Media frame visible at ~16:9, at least 60 percent of the grid row width.
+
+24 px minimum gap between media frame and text column.
+
+Arrows sit outside the frame and do not overlap it.
+
+Title auto-balances without manual edits.
+
+ESLint passes. No console errors.
+
+After acceptance, remove the old Featured files and references, and commit with a summary of files added, deleted, and lines reduced.
