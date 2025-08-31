@@ -27,6 +27,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
     mutationFn: () => apiRequest('POST', `/api/posts/${post.id}/like`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/posts', post.id] });
       toast({ title: "Post liked!" });
     }
   });

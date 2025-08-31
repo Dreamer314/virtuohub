@@ -47,6 +47,8 @@ export default function ThreadPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/posts', postId, 'comments'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/posts', postId] });
+      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
       setCommentText("");
       setUploadedImages([]);
       setShowEmojiPicker(false);
