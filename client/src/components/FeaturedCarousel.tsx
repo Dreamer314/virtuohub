@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Play, Pause } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 type FeaturedItem = {
@@ -69,12 +69,31 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
 
   return (
     <div 
-      className="max-w-6xl mx-auto px-4"
+      className="max-w-[90rem] mx-auto px-6"
       onMouseEnter={() => setIsAutoplayPaused(true)}
       onMouseLeave={() => setIsAutoplayPaused(false)}
       data-testid="featured-carousel"
     >
       <div className="relative">
+        {/* Navigation arrows - positioned outside the content */}
+        <button
+          onClick={prevSlide}
+          className="absolute -left-16 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-background/80 backdrop-blur-sm border border-border hover:bg-background transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background z-10"
+          aria-label="Previous featured item"
+          data-testid="featured-prev-button"
+        >
+          <ChevronLeft className="w-6 h-6 text-foreground" />
+        </button>
+
+        <button
+          onClick={nextSlide}
+          className="absolute -right-16 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-background/80 backdrop-blur-sm border border-border hover:bg-background transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background z-10"
+          aria-label="Next featured item"
+          data-testid="featured-next-button"
+        >
+          <ChevronRight className="w-6 h-6 text-foreground" />
+        </button>
+
         {/* Main carousel content */}
         <div 
           className="transition-opacity duration-300 ease-in-out"
@@ -82,7 +101,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
           role="region"
           aria-label="Featured content carousel"
         >
-          <div className="grid md:grid-cols-2 gap-8 items-center">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Image column */}
             <div className="order-1 md:order-1">
               <div className="aspect-video overflow-hidden rounded-2xl shadow-[0_0_60px_rgba(120,100,255,.15)]">
@@ -97,11 +116,11 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
             </div>
 
             {/* Text column */}
-            <div className="order-2 md:order-2 space-y-4">
+            <div className="order-2 md:order-2 space-y-6">
               {/* Tag chip */}
               <div className="inline-block">
                 <span 
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${tagStyles[currentItem.tag]}`}
+                  className={`px-4 py-2 rounded-full text-sm font-medium ${tagStyles[currentItem.tag]}`}
                   data-testid={`featured-tag-${currentItem.id}`}
                 >
                   {currentItem.tag}
@@ -110,7 +129,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
 
               {/* Title */}
               <h2 
-                className="text-2xl md:text-3xl font-bold text-foreground leading-tight"
+                className="text-3xl md:text-4xl font-bold text-foreground leading-tight"
                 data-testid={`featured-title-${currentItem.id}`}
               >
                 {currentItem.title}
@@ -118,18 +137,18 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
 
               {/* Blurb */}
               <p 
-                className="text-muted-foreground text-sm md:text-base leading-relaxed"
+                className="text-muted-foreground text-base md:text-lg leading-relaxed"
                 data-testid={`featured-blurb-${currentItem.id}`}
               >
                 {currentItem.blurb}
               </p>
 
               {/* CTA Button */}
-              <div className="pt-2">
+              <div className="pt-4">
                 <Button
                   variant="default"
                   size="lg"
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium"
+                  className="bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-lg px-8 py-3"
                   onClick={() => window.open(currentItem.ctaHref, '_blank')}
                   data-testid={`featured-cta-${currentItem.id}`}
                 >
@@ -139,54 +158,52 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
             </div>
           </div>
         </div>
-
-        {/* Navigation arrows */}
-        <button
-          onClick={prevSlide}
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-background/80 backdrop-blur-sm border border-border hover:bg-background transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-          aria-label="Previous featured item"
-          data-testid="featured-prev-button"
-        >
-          <ChevronLeft className="w-5 h-5 text-foreground" />
-        </button>
-
-        <button
-          onClick={nextSlide}
-          className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-background/80 backdrop-blur-sm border border-border hover:bg-background transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-          aria-label="Next featured item"
-          data-testid="featured-next-button"
-        >
-          <ChevronRight className="w-5 h-5 text-foreground" />
-        </button>
       </div>
 
-      {/* Indicator dots */}
-      <div className="flex justify-center space-x-2 mt-6">
-        {items.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            className={`w-2 h-2 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background ${
-              index === currentIndex
-                ? 'bg-primary scale-125'
-                : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
-            }`}
-            aria-label={`Go to slide ${index + 1}`}
-            data-testid={`featured-dot-${index}`}
-          >
-            {index === currentIndex && !isAutoplayPaused && (
-              <div className="absolute inset-0 rounded-full border-2 border-primary animate-ping"></div>
-            )}
-          </button>
-        ))}
-      </div>
+      {/* Control bar with dots and play/pause */}
+      <div className="flex items-center justify-center gap-6 mt-8">
+        {/* Play/Pause button */}
+        <button
+          onClick={() => setIsAutoplayPaused(!isAutoplayPaused)}
+          className="w-10 h-10 rounded-full bg-background/80 backdrop-blur-sm border border-border hover:bg-background transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+          aria-label={isAutoplayPaused ? "Resume slideshow" : "Pause slideshow"}
+          data-testid="featured-autoplay-toggle"
+        >
+          {isAutoplayPaused ? (
+            <Play className="w-4 h-4 text-foreground ml-0.5" />
+          ) : (
+            <Pause className="w-4 h-4 text-foreground" />
+          )}
+        </button>
 
-      {/* Autoplay status */}
-      <div className="flex items-center justify-center gap-2 mt-3 text-xs text-muted-foreground">
-        <div className={`w-2 h-2 rounded-full ${
-          isAutoplayPaused ? 'bg-orange-500' : 'bg-green-500 animate-pulse'
-        }`}></div>
-        <span>{isAutoplayPaused ? 'Slideshow paused' : 'Auto-rotating every 5s'}</span>
+        {/* Indicator dots */}
+        <div className="flex space-x-3">
+          {items.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              className={`w-3 h-3 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background ${
+                index === currentIndex
+                  ? 'bg-primary scale-125'
+                  : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+              data-testid={`featured-dot-${index}`}
+            >
+              {index === currentIndex && !isAutoplayPaused && (
+                <div className="absolute inset-0 rounded-full border-2 border-primary animate-ping"></div>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Status text */}
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <div className={`w-2 h-2 rounded-full ${
+            isAutoplayPaused ? 'bg-orange-500' : 'bg-green-500 animate-pulse'
+          }`}></div>
+          <span>{isAutoplayPaused ? 'Slideshow paused' : 'Auto-rotating every 5s'}</span>
+        </div>
       </div>
     </div>
   )
