@@ -120,6 +120,33 @@ const CommunityPage: React.FC = () => {
               </div>
             </div>
 
+            {/* Featured Content Carousel - Full Width */}
+            {currentTab === 'all' && (
+              <div className="mb-8">
+                <div className="px-6 sm:px-8 lg:px-12">
+                  <div className="max-w-[720px] min-w-[580px] mx-auto">
+                    <div className="flex items-center space-x-2 mb-6">
+                      <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
+                      <div className="flex items-center space-x-4">
+                        <Star className="w-8 h-8 text-accent" />
+                        <h2 className="text-3xl font-bold text-foreground tracking-tight">
+                          Featured Content
+                        </h2>
+                      </div>
+                      <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
+                    </div>
+                  </div>
+                </div>
+                {FEATURED_V2 ? (
+                  <FeaturedCarousel items={featuredItems} />
+                ) : (
+                  <div className="space-y-6">
+                    {/* Legacy Featured section would go here */}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Constrained Content Area with Padding */}
             <div className="px-6 sm:px-8 lg:px-12">
               <div className="max-w-[720px] min-w-[580px] mx-auto grid grid-cols-1 gap-8">
@@ -135,28 +162,6 @@ const CommunityPage: React.FC = () => {
 
                 {/* Main Content */}
                 <main>
-                  {/* Featured Content Carousel */}
-                  {currentTab === 'all' && (
-                    <div className="mb-8">
-                      <div className="flex items-center space-x-2 mb-6">
-                        <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
-                        <div className="flex items-center space-x-4">
-                          <Star className="w-8 h-8 text-accent" />
-                          <h2 className="text-3xl font-bold text-foreground tracking-tight">
-                            Featured Content
-                          </h2>
-                        </div>
-                        <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
-                      </div>
-                      {FEATURED_V2 ? (
-                        <FeaturedCarousel items={featuredItems} />
-                      ) : (
-                        <div className="space-y-6">
-                          {/* Legacy Featured section would go here */}
-                        </div>
-                      )}
-                    </div>
-                  )}
 
                   {/* VHub Pulse */}
                   {currentTab === 'all' && pulsePosts.length > 0 && (
