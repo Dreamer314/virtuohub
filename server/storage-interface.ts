@@ -33,5 +33,6 @@ export interface IStorage {
   // Comment methods
   createComment(comment: InsertComment): Promise<Comment>;
   getComments(articleId: string): Promise<CommentWithAuthor[]>;
+  getPostComments(postId: string): Promise<CommentWithAuthor[]>;
   likeComment(commentId: string): Promise<void>;
 }

@@ -711,7 +711,7 @@ As the lines between physical and digital continue to blur, virtual fashion stan
   async getComments(articleId: string): Promise<CommentWithAuthor[]> {
     const comments = Array.from(this.comments.values())
       .filter(comment => comment.articleId === articleId && !comment.parentId)
-      .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+      .sort((a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0));
     
     const commentsWithAuthor = await Promise.all(
       comments.map(async (comment) => {
@@ -721,7 +721,44 @@ As the lines between physical and digital continue to blur, virtual fashion stan
         // Get replies
         const replies = Array.from(this.comments.values())
           .filter(reply => reply.parentId === comment.id)
-          .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+          .sort((a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0));
+        
+        const repliesWithAuthor = await Promise.all(
+          replies.map(async (reply) => {
+            const replyAuthor = await this.getUser(reply.authorId);
+            if (!replyAuthor) return null;
+            return {
+              ...reply,
+              author: replyAuthor,
+            };
+          })
+        );
+        
+        return {
+          ...comment,
+          author,
+          replies: repliesWithAuthor.filter(Boolean) as CommentWithAuthor[],
+        };
+      })
+    );
+    
+    return commentsWithAuthor.filter(Boolean) as CommentWithAuthor[];
+  }
+
+  async getPostComments(postId: string): Promise<CommentWithAuthor[]> {
+    const comments = Array.from(this.comments.values())
+      .filter(comment => comment.postId === postId && !comment.parentId)
+      .sort((a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0));
+    
+    const commentsWithAuthor = await Promise.all(
+      comments.map(async (comment) => {
+        const author = await this.getUser(comment.authorId);
+        if (!author) return null;
+        
+        // Get replies
+        const replies = Array.from(this.comments.values())
+          .filter(reply => reply.parentId === comment.id)
+          .sort((a, b) => (a.createdAt?.getTime() || 0) - (b.createdAt?.getTime() || 0));
         
         const repliesWithAuthor = await Promise.all(
           replies.map(async (reply) => {

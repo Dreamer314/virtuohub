@@ -57,7 +57,8 @@ export const articles = pgTable("articles", {
 
 export const comments = pgTable("comments", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  articleId: varchar("article_id").notNull(),
+  postId: varchar("post_id"), // for post comments
+  articleId: varchar("article_id"), // for article comments
   authorId: varchar("author_id").notNull(),
   content: text("content").notNull(),
   parentId: varchar("parent_id"), // for nested comments

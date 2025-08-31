@@ -196,6 +196,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get comments for a post
+  app.get("/api/posts/:postId/comments", async (req, res) => {
+    try {
+      const comments = await storage.getPostComments(req.params.postId);
+      res.json(comments);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch post comments" });
+    }
+  });
+
   // Create a comment on an article
   app.post("/api/articles/:articleId/comments", async (req, res) => {
     try {
@@ -214,6 +224,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(comment);
     } catch (error) {
       res.status(400).json({ message: "Failed to create comment", error });
+    }
+  });
+
+  // Create a comment on a post
+  app.post("/api/posts/:postId/comments", async (req, res) => {
+    try {
+      const { postId } = req.params;
+      const { content, parentId } = req.body;
+      const authorId = req.body.authorId || 'user1'; // Default for demo
+      
+      const commentData = {
+        postId,
+        authorId,
+        content,
+        parentId: parentId || null,
+      };
+      
+      const comment = await storage.createComment(commentData);
+      
+      // Increment comment count on the post
+      await storage.addComment(postId);
+      
+      res.status(201).json(comment);
+    } catch (error) {
+      console.error("Error creating post comment:", error);
+      res.status(400).json({ message: "Failed to create post comment", error });
     }
   });
 
