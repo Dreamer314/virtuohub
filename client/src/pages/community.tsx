@@ -39,7 +39,7 @@ const featuredData = [
     dateISO: "2025-08-26",
     tag: "Industry News" as const,
     type: "Article" as const,
-    title: "MetaHuman for Houdini: Bridge Release",
+    title: "MetaHuman into Houdini with fewer steps",
     blurb: "Bring MetaHuman into Houdini with fewer steps and cleaner hair and rig imports. Faster previz and better handoff to Unreal.",
     ctaLabel: "Learn More →",
     ctaHref: "/news/metahuman-houdini-bridge",

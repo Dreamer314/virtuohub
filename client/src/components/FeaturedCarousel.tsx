@@ -19,12 +19,15 @@ interface FeaturedCarouselProps {
   items: FeaturedItem[]
 }
 
-const tagStyles = {
-  'Creator Insights': 'bg-[rgba(120,243,207,.12)] text-[#7AF3CF]',
-  'Spotlight': 'bg-[rgba(197,168,255,.12)] text-[#C5A8FF]',
-  'Tips & Guides': 'bg-[rgba(182,232,110,.12)] text-[#B6E86E]',
-  'Industry News': 'bg-[rgba(56,132,255,.12)] text-[#6EA8FF]',
-  'Tech': 'bg-[rgba(255,196,136,.10)] text-[#FFC888]'
+function chipClass(tag: string) {
+  switch (tag) {
+    case 'Creator Insights': return 'text-[#7AF3CF] bg-[rgba(120,243,207,.12)]';
+    case 'Spotlight':        return 'text-[#C5A8FF] bg-[rgba(197,168,255,.12)]';
+    case 'Tips & Guides':    return 'text-[#B6E86E] bg-[rgba(182,232,110,.12)]';
+    case 'Industry News':    return 'text-[#6EA8FF] bg-[rgba(56,132,255,.12)]';
+    case 'Tech':             return 'text-[#FFC888] bg-[rgba(255,196,136,.10)]';
+    default:                 return 'text-white bg-white/10';
+  }
 }
 
 export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
@@ -97,57 +100,58 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
       data-testid="featured-carousel"
     >
       <div 
-        className="relative grid md:grid-cols-[1.6fr_1fr] gap-16 xl:gap-28 items-center"
+        className="relative grid md:grid-cols-[1.75fr_1fr] gap-16 xl:gap-28 items-center"
         aria-live="polite"
         role="region"
         aria-label="Featured content carousel"
       >
-        {/* Media */}
-        <div className="relative md:-ml-4 xl:-ml-10">
-          {/* Radial background */}
-          <div className="absolute inset-0 -z-10 bg-[radial-gradient(closest-side,rgba(120,100,255,.18),transparent_70%)] pointer-events-none" />
-          
-          {/* Media frame */}
-          <div className="aspect-[21/9] md:aspect-[18/9] w-full rounded-2xl overflow-hidden shadow-[0_0_90px_rgba(120,100,255,.16)] ring-1 ring-white/8">
+        {/* MEDIA */}
+        <div className="relative md:-ml-6 xl:-ml-12">
+          {/* soft glow */}
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(closest-side,rgba(120,100,255,.18),transparent_70%)]" />
+          <div
+            className="
+              w-full aspect-[18/9] md:aspect-[16/9]
+              min-h-[220px] md:min-h-[360px] xl:min-h-[440px]
+              rounded-2xl overflow-hidden
+              shadow-[0_0_90px_rgba(120,100,255,.16)] ring-1 ring-white/8
+            "
+          >
             <img
               src={currentItem.imageSrc}
               alt={currentItem.imageAlt}
-              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
               loading="lazy"
+              className="w-full h-full object-cover"
               data-testid={`featured-image-${currentItem.id}`}
             />
           </div>
         </div>
 
-        {/* Text */}
-        <div className="max-w-[36ch] pt-2 md:mr-2">
-          {/* Date */}
-          <div className="text-sm text-white/55 mb-2" data-testid={`featured-date-${currentItem.id}`}>
+        {/* TEXT */}
+        <div className="max-w-[38ch] md:mr-4">
+          <div className="text-sm text-white/55" data-testid={`featured-date-${currentItem.id}`}>
             {formatDate(currentItem.dateISO)}
           </div>
-
-          {/* Tag and type */}
           <div className="mt-2 flex items-center gap-2">
             <span 
-              className={`px-3 py-1 rounded-full text-sm font-medium ${tagStyles[currentItem.tag]}`}
+              className={`rounded-full px-3 py-1 text-xs font-medium ${chipClass(currentItem.tag)}`}
               data-testid={`featured-tag-${currentItem.id}`}
             >
               {currentItem.tag}
             </span>
-            {currentItem.type && (
-              <span className="text-white/55">• {currentItem.type}</span>
-            )}
+            {currentItem.type ? (
+              <span className="text-white/55 text-xs">• {currentItem.type}</span>
+            ) : null}
           </div>
 
-          {/* Title */}
+          {/* Better flowing headline */}
           <h3 
-            className="text-5xl md:text-6xl leading-[1.05] tracking-tight [text-wrap:balance] mt-3"
+            className="text-5xl md:text-6xl leading-[1.05] tracking-tight mt-3 [text-wrap:balance]"
             data-testid={`featured-title-${currentItem.id}`}
           >
             {currentItem.title}
           </h3>
 
-          {/* Blurb */}
           <p 
             className="text-lg text-white/80 mt-5"
             data-testid={`featured-blurb-${currentItem.id}`}
@@ -155,37 +159,36 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
             {currentItem.blurb}
           </p>
 
-          {/* CTA Button */}
-          <a
+          <a 
             href={currentItem.ctaHref}
-            className="inline-flex items-center justify-center rounded-xl px-5 py-3 bg-[#6E4BFF] hover:bg-[#825FFF] text-white font-medium mt-6 transition-colors"
+            className="inline-flex items-center justify-center rounded-xl px-5 py-3 bg-[#6E4BFF] hover:bg-[#825FFF] text-white font-medium mt-6"
             data-testid={`featured-cta-${currentItem.id}`}
           >
             {currentItem.ctaLabel}
           </a>
         </div>
+
+        {/* ARROWS anchored to section edges */}
+        <button
+          onClick={prevSlide}
+          disabled={isTransitioning}
+          aria-label={`Previous featured item (${currentIndex + 1} of ${items.length})`}
+          className="absolute top-1/2 -translate-y-1/2 left-1 md:-left-14 xl:-left-24 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 disabled:opacity-50"
+          data-testid="featured-prev-button"
+        >
+          <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-white" />
+        </button>
+
+        <button
+          onClick={nextSlide}
+          disabled={isTransitioning}
+          aria-label={`Next featured item (${currentIndex + 1} of ${items.length})`}
+          className="absolute top-1/2 -translate-y-1/2 right-1 md:-right-14 xl:-right-24 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 disabled:opacity-50"
+          data-testid="featured-next-button"
+        >
+          <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-white" />
+        </button>
       </div>
-
-      {/* Navigation Arrows - positioned relative to section */}
-      <button
-        onClick={prevSlide}
-        disabled={isTransitioning}
-        aria-label={`Previous featured item (${currentIndex + 1} of ${items.length})`}
-        className="absolute top-1/2 -translate-y-1/2 left-2 md:-left-16 xl:-left-28 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 transition flex items-center justify-center disabled:opacity-50"
-        data-testid="featured-prev-button"
-      >
-        <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-white" />
-      </button>
-
-      <button
-        onClick={nextSlide}
-        disabled={isTransitioning}
-        aria-label={`Next featured item (${currentIndex + 1} of ${items.length})`}
-        className="absolute top-1/2 -translate-y-1/2 right-2 md:-right-16 xl:-right-28 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 transition flex items-center justify-center disabled:opacity-50"
-        data-testid="featured-next-button"
-      >
-        <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-white" />
-      </button>
 
       {/* Dots under card */}
       <div className="mt-10 flex justify-center gap-3">
