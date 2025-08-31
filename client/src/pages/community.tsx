@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { Link } from "wouter";
 import communityHeaderImage from "@/assets/community-header.png";
+import vhubHeaderImage from "@assets/VHub.Header.no.font.Light.Page.png";
 
 export default function Community() {
   const [selectedCategory, setSelectedCategory] = useState<Category>('All');
@@ -203,8 +204,13 @@ export default function Community() {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 lg:ml-64 lg:mr-80">
-          <div className="px-6 sm:px-8 lg:px-12 py-8">
+        <div className="flex-1 lg:ml-64 lg:mr-80 relative">
+          {/* Extended glow effect that affects the whole page */}
+          <div className="absolute -top-20 -left-20 -right-20 h-96 pointer-events-none z-0">
+            <div className="w-full h-full bg-gradient-radial from-cyan-400/15 via-purple-500/10 to-orange-400/15 blur-3xl"></div>
+          </div>
+          
+          <div className="px-6 sm:px-8 lg:px-12 py-8 relative z-10">
             <div className="max-w-[720px] min-w-[580px] mx-auto grid grid-cols-1 gap-8">
           {/* Mobile Left Sidebar */}
           <div className="lg:hidden">
@@ -219,12 +225,10 @@ export default function Community() {
           {/* Main Content */}
           <main>
             {/* Hero Section */}
-            <div className="glass-card rounded-xl mb-8 overflow-hidden hover-lift relative" data-testid="hero-section">
+            <div className="glass-card rounded-xl mb-8 overflow-visible hover-lift relative" data-testid="hero-section">
               <div className="relative h-48 flex items-center justify-center hero-glow-container">
-                {/* Background glow effect */}
-                <div className="absolute inset-0 bg-gradient-radial from-cyan-400/30 via-purple-500/20 to-orange-400/25 blur-3xl scale-150"></div>
                 <img 
-                  src="/attached_assets/VHub.Header.no.font.Light.Page.png" 
+                  src={vhubHeaderImage} 
                   alt="VirtuoHub Community Header"
                   className="absolute inset-0 w-full h-full object-cover"
                   style={{
