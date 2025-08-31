@@ -8,6 +8,7 @@ type FeaturedItem = {
   imageAlt: string
   ctaLabel?: string
   ctaHref?: string
+  hasUnrealLogo?: boolean
 }
 
 interface FeaturedSectionProps {
@@ -26,99 +27,112 @@ export function FeaturedSection({ heroItem, gridItems }: FeaturedSectionProps) {
   }
 
   return (
-    <section className="max-w-7xl mx-auto px-6 py-8 space-y-8">
-      {/* Hero Card */}
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-slate-900 to-slate-800 shadow-2xl">
-        <div className="grid md:grid-cols-2 items-center min-h-[400px]">
-          {/* Hero Image */}
-          <div className="relative h-full">
+    <div className="w-full bg-black text-white">
+      {/* Hero Card - Single large card matching the image exactly */}
+      <div className="relative w-full h-[500px] bg-black">
+        <div className="grid grid-cols-2 h-full">
+          {/* Left side - Image with overlays */}
+          <div className="relative">
             <img
               src={heroItem.imageSrc}
               alt={heroItem.imageAlt}
               className="w-full h-full object-cover"
             />
-            {/* Logo overlay */}
+            
+            {/* MetaHuman Logo overlay - top left */}
             <div className="absolute top-8 left-8">
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center">
-                  <div className="text-black font-bold text-lg">M</div>
+                <div className="w-16 h-16 bg-white rounded-lg flex items-center justify-center">
+                  <svg className="w-10 h-10" viewBox="0 0 100 100" fill="none">
+                    <path d="M20 20 L50 80 L80 20 Z" fill="black"/>
+                  </svg>
                 </div>
                 <div>
-                  <div className="text-white font-bold text-xl">METAHUMAN</div>
-                  <div className="text-blue-400 text-sm">for Houdini</div>
+                  <div className="text-white font-bold text-2xl tracking-wide">METAHUMAN</div>
+                  <div className="text-blue-400 text-base">for Houdini</div>
                 </div>
               </div>
             </div>
-            {/* Tag */}
+
+            {/* Community tag - bottom left */}
             <div className="absolute bottom-8 left-8">
-              <span className="px-3 py-1 bg-teal-500/20 text-teal-400 text-sm rounded-full border border-teal-500/30">
-                {heroItem.tag}
+              <span className="px-4 py-2 bg-teal-600/80 text-teal-100 text-sm font-medium rounded">
+                Community
               </span>
             </div>
           </div>
 
-          {/* Hero Content */}
-          <div className="p-12 space-y-6">
-            <div className="text-white/70 text-sm">
-              {formatDate(heroItem.dateISO)}
+          {/* Right side - Content */}
+          <div className="flex flex-col justify-center px-16 py-12 space-y-6">
+            <div className="text-white/70 text-lg">
+              August 20, 2025
             </div>
             
-            <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
-              {heroItem.title}
-            </h2>
+            <h1 className="text-5xl font-bold text-white leading-tight">
+              MetaHuman for<br />
+              Houdini Release
+            </h1>
             
-            <p className="text-white/80 text-lg leading-relaxed">
-              {heroItem.description}
+            <p className="text-white/80 text-xl leading-relaxed">
+              Today we're releasing a new version of MetaHuman for Houdini that
+              enables you to bring your MetaHuman characters to life in SideEX Houdini.
+              Available for download from Fab, this release bridges the gap between
+              Unreal...
             </p>
 
-            {heroItem.ctaLabel && (
-              <button className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors">
-                {heroItem.ctaLabel}
-              </button>
-            )}
+            <button className="w-fit px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white text-lg font-medium rounded-lg transition-colors">
+              Read more
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Grid Cards */}
-      <div className="grid md:grid-cols-3 gap-6">
-        {gridItems.map((item) => (
-          <div key={item.id} className="group cursor-pointer">
-            <div className="relative rounded-xl overflow-hidden bg-slate-900 shadow-lg hover:shadow-xl transition-all duration-300">
-              <div className="aspect-video relative">
-                <img
-                  src={item.imageSrc}
-                  alt={item.imageAlt}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-                {/* Unreal logo overlay for Unreal items */}
-                {item.title.includes('Unreal') && (
-                  <div className="absolute top-4 right-4">
-                    <div className="w-8 h-8 bg-black rounded flex items-center justify-center">
-                      <div className="text-white font-bold text-sm">U</div>
-                    </div>
+      {/* Bottom Grid - Three equal cards */}
+      <div className="grid grid-cols-3 gap-0 mt-8">
+        {gridItems.map((item, index) => (
+          <div key={item.id} className="relative group cursor-pointer bg-black border-r border-gray-800 last:border-r-0">
+            <div className="aspect-video relative overflow-hidden">
+              <img
+                src={item.imageSrc}
+                alt={item.imageAlt}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+
+              {/* Unreal logo for applicable items */}
+              {item.hasUnrealLogo && (
+                <div className="absolute top-6 right-6">
+                  <div className="w-12 h-12 bg-black rounded-lg flex items-center justify-center border border-white/20">
+                    <div className="text-white font-bold text-xl">U</div>
                   </div>
-                )}
-                {/* Tag */}
-                <div className="absolute bottom-4 left-4">
-                  <span className="px-2 py-1 bg-black/60 text-white text-xs rounded border border-white/20">
-                    {item.tag}
-                  </span>
                 </div>
+              )}
+
+              {/* Community tag overlay */}
+              <div className="absolute bottom-6 left-6">
+                <span className="px-3 py-1 bg-black/80 text-white text-sm font-medium rounded border border-white/30">
+                  Community
+                </span>
               </div>
-              
-              <div className="p-4 space-y-2">
-                <div className="text-white/60 text-xs">
-                  {formatDate(item.dateISO)}
+
+              {/* Title overlay for some cards */}
+              {(index === 0 || index === 2) && (
+                <div className="absolute bottom-6 left-20">
+                  <h3 className="text-white text-2xl font-bold tracking-wider">
+                    {item.title}
+                  </h3>
                 </div>
-                <h3 className="text-white font-semibold text-sm leading-tight group-hover:text-blue-400 transition-colors">
-                  {item.title}
-                </h3>
+              )}
+            </div>
+            
+            {/* Date at bottom */}
+            <div className="p-4 bg-black">
+              <div className="text-white/60 text-sm">
+                {formatDate(item.dateISO)}
               </div>
             </div>
           </div>
         ))}
       </div>
-    </section>
+    </div>
   )
 }
