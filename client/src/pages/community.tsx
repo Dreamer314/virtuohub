@@ -171,7 +171,7 @@ const CommunityPage: React.FC = () => {
                           <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
                           <div className="flex items-center space-x-4">
                             <TrendingUp className="w-8 h-8 text-primary" />
-                            <h2 className="text-3xl font-bold text-foreground tracking-tight font-tech">
+                            <h2 className="text-5xl font-bold text-foreground tracking-tight font-tech">
                               VHub Pulse
                             </h2>
                           </div>
