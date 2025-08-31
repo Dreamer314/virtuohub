@@ -1,4 +1,36 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+Replace the current Featured section with a new FeaturedCarousel that:
+
+Layout
+
+Stage container: relative mx-auto max-w-[1400px] px-6 md:px-8 lg:pr-[360px] (right padding reserves space for the right sidebar; adjust 360px if your rail width differs).
+
+Grid: relative grid md:grid-cols-[1.8fr_1fr] gap-20 xl:gap-28 items-center.
+
+Media wrapper uses a big cinematic banner: w-full aspect-[16/9] min-h-[360px] xl:min-h-[440px] rounded-2xl overflow-hidden shadow-[0_0_90px_rgba(120,100,255,.16)] ring-1 ring-white/8.
+
+Add a soft radial glow behind the media: absolute inset-0 -z-10 bg-[radial-gradient(closest-side,rgba(120,100,255,.18),transparent_70%)].
+
+Typography
+
+Text column is container-query aware: wrap with container-type: inline-size and max-w-[38ch].
+
+Title uses fluid container units and balanced wrapping so long titles auto-fit:
+
+classes: text-balance text-pretty leading-[1.05] tracking-tight mt-3 text-[clamp(2.25rem,6cqi,3.75rem)].
+
+Arrows and controls
+
+Arrows are anchored to the section edges, not the image.
+
+Wrapper: pointer-events-none absolute inset-y-0 left-2 right-2 lg:right-[380px] flex items-center justify-between.
+
+Buttons: pointer-events-auto h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40.
+
+Dots
+
+Place under the card with mt-10. Clickable, labeled for screen readers.
+
+Data model
 
 type FeaturedItem = {
   id: string
@@ -13,16 +45,49 @@ type FeaturedItem = {
   imageAlt: string
 }
 
-interface FeaturedCarouselProps {
-  items: FeaturedItem[];
-}
 
-function formatDate(iso: string) {
+Never use “Interview” as a tag. Use it as type.
+
+Accessibility
+
+aria-live="polite" for slide changes.
+
+Arrow buttons have labels with current index.
+
+Keyboard: Left and Right arrows navigate. Space toggles autoplay.
+
+Autoplay
+
+Autoplay every 5s. Pause on hover or focus inside the section.
+
+Cleanup
+
+Remove any max-w-sm, w-80, object-contain, or inline widths on media elements.
+
+Ensure section#featured is relative. No parent overflow-hidden should clip arrows.
+
+Add the utility CSS:
+
+.text-balance{ text-wrap:balance; }
+.text-pretty{ text-wrap:pretty; }
+.cq{ container-type:inline-size; }
+.keep-words{ word-break:keep-all; }
+
+
+Replace the page’s Featured markup with:
+<FeaturedCarousel items={featuredData} />
+and keep existing data mapped into the new model.
+”
+
+Drop-in React component
+import { useEffect, useMemo, useRef, useState } from "react";
+
+function formatDate(iso) {
   try { return new Date(iso).toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" }); }
   catch { return iso; }
 }
 
-function chipClass(tag: string) {
+function chipClass(tag) {
   switch (tag) {
     case "Creator Insights": return "text-[#7AF3CF] bg-[rgba(120,243,207,.12)]";
     case "Spotlight":        return "text-[#C5A8FF] bg-[rgba(197,168,255,.12)]";
@@ -33,17 +98,17 @@ function chipClass(tag: string) {
   }
 }
 
-function noWidow(s: string) {
+function noWidow(s) {
   return typeof s === "string" ? s.replace(/\s+([^\s]+)$/, "\u00A0$1") : s;
 }
 
-export function FeaturedCarousel({ items = [], autoMs = 5000 }: FeaturedCarouselProps & { autoMs?: number }) {
+export default function FeaturedCarousel({ items = [], autoMs = 5000 }) {
   const [i, setI] = useState(0);
   const [paused, setPaused] = useState(false);
-  const wrap = useRef<HTMLElement>(null);
+  const wrap = useRef(null);
   const count = items.length;
-  const go = (n: number) => setI((p) => (p + n + count) % count);
-  const set = (n: number) => setI(((n % count) + count) % count);
+  const go = (n) => setI((p) => (p + n + count) % count);
+  const set = (n) => setI(((n % count) + count) % count);
 
   useEffect(() => {
     if (paused || count < 2) return;
@@ -54,7 +119,7 @@ export function FeaturedCarousel({ items = [], autoMs = 5000 }: FeaturedCarousel
   useEffect(() => {
     const el = wrap.current;
     if (!el) return;
-    const onKey = (e: KeyboardEvent) => {
+    const onKey = (e) => {
       if (e.key === "ArrowLeft") { e.preventDefault(); go(-1); }
       if (e.key === "ArrowRight") { e.preventDefault(); go(1); }
       if (e.key === " ") { e.preventDefault(); setPaused((p) => !p); }
@@ -63,7 +128,7 @@ export function FeaturedCarousel({ items = [], autoMs = 5000 }: FeaturedCarousel
     return () => el.removeEventListener("keydown", onKey);
   }, []);
 
-  const item = useMemo(() => items[i] || {} as FeaturedItem, [items, i]);
+  const item = useMemo(() => items[i] || {}, [items, i]);
 
   return (
     <section
@@ -161,3 +226,21 @@ export function FeaturedCarousel({ items = [], autoMs = 5000 }: FeaturedCarousel
     </section>
   );
 }
+
+QA checklist to keep you sane
+
+Image reads large: verify <img> has object-cover and the frame uses aspect-[16/9].
+
+Title never turns into a vertical stack: verify .cq on the text column and the clamp text-[clamp(2.25rem,6cqi,3.75rem)].
+
+Arrows clear the right rail: adjust both lg:pr-[360px] and lg:right-[380px] together if your sidebar width is different.
+
+Categories show correctly with color chips.
+
+Tag is one of: Creator Insights, Spotlight, Tips & Guides, Industry News, Tech.
+
+Type is optional and shows after the tag.
+
+Autoplay pauses on hover and focus.
+
+No parent overflow-hidden that clips the arrows.
