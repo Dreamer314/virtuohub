@@ -51,7 +51,7 @@ const featuredData = [
     dateISO: "2025-08-20",
     tag: "Tips & Guides" as const,
     type: "Article" as const,
-    title: "From Side Hustle to Studio: Maya Ortiz",
+    title: "From side hustle to a six-figure studio",
     blurb: "How a solo builder turned Roblox assets into a six-figure studio by standardizing her pipeline and using short playable demos to build trust.",
     ctaLabel: "Read More →",
     ctaHref: "/guides/maya-ortiz",

@@ -91,28 +91,28 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
   return (
     <section 
       id="featured" 
-      className="relative max-w-[1200px] mx-auto px-6"
+      className="relative max-w-[1400px] mx-auto px-6 md:px-8"
       onMouseEnter={() => setIsAutoplayPaused(true)}
       onMouseLeave={() => setIsAutoplayPaused(false)}
       data-testid="featured-carousel"
     >
       <div 
-        className="relative grid md:grid-cols-[1.25fr_1fr] gap-16 xl:gap-24 items-center"
+        className="relative grid md:grid-cols-[1.6fr_1fr] gap-16 xl:gap-28 items-center"
         aria-live="polite"
         role="region"
         aria-label="Featured content carousel"
       >
         {/* Media */}
-        <div className="relative">
+        <div className="relative md:-ml-4 xl:-ml-10">
           {/* Radial background */}
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(closest-side,rgba(120,100,255,.18),transparent_70%)] pointer-events-none" />
           
           {/* Media frame */}
-          <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden shadow-[0_0_80px_rgba(120,100,255,.18)] ring-1 ring-white/8">
+          <div className="aspect-[21/9] md:aspect-[18/9] w-full rounded-2xl overflow-hidden shadow-[0_0_90px_rgba(120,100,255,.16)] ring-1 ring-white/8">
             <img
               src={currentItem.imageSrc}
               alt={currentItem.imageAlt}
-              className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+              className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
               loading="lazy"
               data-testid={`featured-image-${currentItem.id}`}
             />
@@ -120,7 +120,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
         </div>
 
         {/* Text */}
-        <div className="max-w-[48ch] pt-2">
+        <div className="max-w-[36ch] pt-2 md:mr-2">
           {/* Date */}
           <div className="text-sm text-white/55 mb-2" data-testid={`featured-date-${currentItem.id}`}>
             {formatDate(currentItem.dateISO)}
@@ -141,7 +141,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
 
           {/* Title */}
           <h3 
-            className="text-5xl leading-tight font-extrabold tracking-tight mt-3 text-balance"
+            className="text-5xl md:text-6xl leading-[1.05] tracking-tight [text-wrap:balance] mt-3"
             data-testid={`featured-title-${currentItem.id}`}
           >
             {currentItem.title}
@@ -149,7 +149,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
 
           {/* Blurb */}
           <p 
-            className="text-lg text-white/80 mt-4"
+            className="text-lg text-white/80 mt-5"
             data-testid={`featured-blurb-${currentItem.id}`}
           >
             {currentItem.blurb}
@@ -164,31 +164,31 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
             {currentItem.ctaLabel}
           </a>
         </div>
-
-        {/* Navigation Arrows */}
-        <button
-          onClick={prevSlide}
-          disabled={isTransitioning}
-          aria-label={`Previous featured item (${currentIndex + 1} of ${items.length})`}
-          className="absolute left-0 md:-left-10 xl:-left-16 top-1/2 -translate-y-1/2 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 transition flex items-center justify-center disabled:opacity-50"
-          data-testid="featured-prev-button"
-        >
-          <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-white" />
-        </button>
-
-        <button
-          onClick={nextSlide}
-          disabled={isTransitioning}
-          aria-label={`Next featured item (${currentIndex + 1} of ${items.length})`}
-          className="absolute right-0 md:-right-10 xl:-right-16 top-1/2 -translate-y-1/2 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 transition flex items-center justify-center disabled:opacity-50"
-          data-testid="featured-next-button"
-        >
-          <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-white" />
-        </button>
       </div>
 
+      {/* Navigation Arrows - positioned relative to section */}
+      <button
+        onClick={prevSlide}
+        disabled={isTransitioning}
+        aria-label={`Previous featured item (${currentIndex + 1} of ${items.length})`}
+        className="absolute top-1/2 -translate-y-1/2 left-2 md:-left-16 xl:-left-28 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 transition flex items-center justify-center disabled:opacity-50"
+        data-testid="featured-prev-button"
+      >
+        <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-white" />
+      </button>
+
+      <button
+        onClick={nextSlide}
+        disabled={isTransitioning}
+        aria-label={`Next featured item (${currentIndex + 1} of ${items.length})`}
+        className="absolute top-1/2 -translate-y-1/2 right-2 md:-right-16 xl:-right-28 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 transition flex items-center justify-center disabled:opacity-50"
+        data-testid="featured-next-button"
+      >
+        <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-white" />
+      </button>
+
       {/* Dots under card */}
-      <div className="mt-8 flex justify-center gap-3">
+      <div className="mt-10 flex justify-center gap-3">
         {items.map((_, index) => (
           <button
             key={index}
