@@ -17,7 +17,7 @@ import { Link } from "wouter";
 import communityHeaderImage from "@/assets/community-header.png";
 import vhubHeaderImage from "@assets/VHub.Header.no.font.Light.Page.png";
 import mayaOrtizImage from "@assets/generated_images/Creator_workshop_virtual_world_2ba8749d.png";
-import metaHumanImage from "@assets/generated_images/MetaHuman_digital_portrait_91b78393.png";
+import metaHumanImage from "@assets/generated_images/MetaHuman_digital_character_banner_6c09e5d8.png";
 import alexChenImage from "@assets/generated_images/Concept_artist_dual_monitor_setup_1fa0b899.png";
 
 // Featured data for carousel
@@ -39,12 +39,12 @@ const featuredData = [
     dateISO: "2025-08-26",
     tag: "Industry News" as const,
     type: "Article" as const,
-    title: "MetaHuman into Houdini with fewer steps",
+    title: "MetaHuman to Houdini with fewer steps",
     blurb: "Bring MetaHuman into Houdini with fewer steps and cleaner hair and rig imports. Faster previz and better handoff to Unreal.",
     ctaLabel: "Learn More →",
     ctaHref: "/news/metahuman-houdini-bridge",
     imageSrc: metaHumanImage,
-    imageAlt: "Realistic digital human portrait in studio light"
+    imageAlt: "MetaHuman portrait banner on neutral studio gradient"
   },
   {
     id: "maya-ortiz",

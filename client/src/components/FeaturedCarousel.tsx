@@ -94,7 +94,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
   return (
     <section 
       id="featured" 
-      className="relative max-w-[1400px] mx-auto px-6 md:px-8"
+      className="relative max-w-[1400px] mx-auto px-6 md:px-8 lg:pr-[380px]"
       onMouseEnter={() => setIsAutoplayPaused(true)}
       onMouseLeave={() => setIsAutoplayPaused(false)}
       data-testid="featured-carousel"
@@ -105,30 +105,20 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
         role="region"
         aria-label="Featured content carousel"
       >
-        {/* MEDIA */}
         <div className="relative md:-ml-6 xl:-ml-12">
-          {/* soft glow */}
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(closest-side,rgba(120,100,255,.18),transparent_70%)]" />
-          <div
-            className="
-              w-full aspect-[18/9] md:aspect-[16/9]
-              min-h-[220px] md:min-h-[360px] xl:min-h-[440px]
-              rounded-2xl overflow-hidden
-              shadow-[0_0_90px_rgba(120,100,255,.16)] ring-1 ring-white/8
-            "
-          >
+          <div className="w-full aspect-[16/9] min-h-[360px] xl:min-h-[440px] rounded-2xl overflow-hidden shadow-[0_0_90px_rgba(120,100,255,.16)] ring-1 ring-white/8">
             <img
               src={currentItem.imageSrc}
               alt={currentItem.imageAlt}
+              className="w-full h-full object-cover object-center"
               loading="lazy"
-              className="w-full h-full object-cover"
               data-testid={`featured-image-${currentItem.id}`}
             />
           </div>
         </div>
 
-        {/* TEXT */}
-        <div className="max-w-[38ch] md:mr-4">
+        <div className="max-w-[36ch] md:mr-2">
           <div className="text-sm text-white/55" data-testid={`featured-date-${currentItem.id}`}>
             {formatDate(currentItem.dateISO)}
           </div>
@@ -143,22 +133,18 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
               <span className="text-white/55 text-xs">• {currentItem.type}</span>
             ) : null}
           </div>
-
-          {/* Better flowing headline */}
           <h3 
             className="text-5xl md:text-6xl leading-[1.05] tracking-tight mt-3 [text-wrap:balance]"
             data-testid={`featured-title-${currentItem.id}`}
           >
             {currentItem.title}
           </h3>
-
           <p 
             className="text-lg text-white/80 mt-5"
             data-testid={`featured-blurb-${currentItem.id}`}
           >
             {currentItem.blurb}
           </p>
-
           <a 
             href={currentItem.ctaHref}
             className="inline-flex items-center justify-center rounded-xl px-5 py-3 bg-[#6E4BFF] hover:bg-[#825FFF] text-white font-medium mt-6"
@@ -168,12 +154,11 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
           </a>
         </div>
 
-        {/* ARROWS anchored to section edges */}
         <button
           onClick={prevSlide}
           disabled={isTransitioning}
           aria-label={`Previous featured item (${currentIndex + 1} of ${items.length})`}
-          className="absolute top-1/2 -translate-y-1/2 left-1 md:-left-14 xl:-left-24 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 disabled:opacity-50"
+          className="absolute top-1/2 -translate-y-1/2 left-2 md:left-0 md:-ml-10 xl:-ml-16 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 transition disabled:opacity-50"
           data-testid="featured-prev-button"
         >
           <ChevronLeft className="w-5 h-5 md:w-6 md:h-6 text-white" />
@@ -183,7 +168,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
           onClick={nextSlide}
           disabled={isTransitioning}
           aria-label={`Next featured item (${currentIndex + 1} of ${items.length})`}
-          className="absolute top-1/2 -translate-y-1/2 right-1 md:-right-14 xl:-right-24 h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 disabled:opacity-50"
+          className="absolute top-1/2 -translate-y-1/2 right-2 lg:right-[400px] xl:right-[400px] h-12 w-12 md:h-14 md:w-14 rounded-full bg-white/6 backdrop-blur ring-1 ring-white/15 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40 transition disabled:opacity-50"
           data-testid="featured-next-button"
         >
           <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-white" />
