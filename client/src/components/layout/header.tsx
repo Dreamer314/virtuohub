@@ -25,16 +25,11 @@ export function Header({ onCreatePost }: HeaderProps) {
           {/* Logo - Far Left */}
           <div className="flex items-center justify-start" data-testid="logo">
             <div className="relative header-glow">
-              {/* Header image */}
-              <img 
-                src="/attached_assets/VHub.Header.no.font.Light.Page.png" 
-                alt="VirtuoHub" 
-                className="relative h-12 w-auto object-contain rounded-lg shadow-2xl shadow-purple-500/30"
-                style={{
-                  filter: 'drop-shadow(0 0 20px rgba(6, 182, 212, 0.4)) drop-shadow(0 0 40px rgba(147, 51, 234, 0.3))'
-                }}
-              />
+              <div className="w-8 h-8 gradient-bg rounded-lg flex items-center justify-center">
+                <Box className="text-white text-sm" size={16} />
+              </div>
             </div>
+            <span className="text-xl font-display font-bold gradient-text ml-2">VirtuoHub</span>
           </div>
 
           {/* Navigation - Perfect Center */}
