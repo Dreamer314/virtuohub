@@ -104,7 +104,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Image column */}
             <div className="order-1 md:order-1">
-              <div className="aspect-video overflow-hidden rounded-2xl shadow-[0_0_60px_rgba(120,100,255,.15)]">
+              <div className="aspect-video overflow-hidden rounded-2xl shadow-[0_0_60px_rgba(120,100,255,.15)] transform scale-125">
                 <img
                   src={currentItem.imageSrc}
                   alt={currentItem.imageAlt}
@@ -160,24 +160,10 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
         </div>
       </div>
 
-      {/* Control bar with dots and play/pause */}
-      <div className="flex items-center justify-center gap-6 mt-8">
-        {/* Play/Pause button */}
-        <button
-          onClick={() => setIsAutoplayPaused(!isAutoplayPaused)}
-          className="w-10 h-10 rounded-full bg-background/80 backdrop-blur-sm border border-border hover:bg-background transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
-          aria-label={isAutoplayPaused ? "Resume slideshow" : "Pause slideshow"}
-          data-testid="featured-autoplay-toggle"
-        >
-          {isAutoplayPaused ? (
-            <Play className="w-4 h-4 text-foreground ml-0.5" />
-          ) : (
-            <Pause className="w-4 h-4 text-foreground" />
-          )}
-        </button>
-
+      {/* Clean control layout */}
+      <div className="mt-8 space-y-4">
         {/* Indicator dots */}
-        <div className="flex space-x-3">
+        <div className="flex justify-center space-x-3">
           {items.map((_, index) => (
             <button
               key={index}
@@ -197,12 +183,24 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
           ))}
         </div>
 
-        {/* Status text */}
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <div className={`w-2 h-2 rounded-full ${
-            isAutoplayPaused ? 'bg-orange-500' : 'bg-green-500 animate-pulse'
-          }`}></div>
-          <span>{isAutoplayPaused ? 'Slideshow paused' : 'Auto-rotating every 5s'}</span>
+        {/* Play/pause and status in a cleaner layout */}
+        <div className="flex items-center justify-center gap-4">
+          <button
+            onClick={() => setIsAutoplayPaused(!isAutoplayPaused)}
+            className="w-8 h-8 rounded-full bg-background/80 backdrop-blur-sm border border-border hover:bg-background transition-all duration-200 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+            aria-label={isAutoplayPaused ? "Resume slideshow" : "Pause slideshow"}
+            data-testid="featured-autoplay-toggle"
+          >
+            {isAutoplayPaused ? (
+              <Play className="w-3 h-3 text-foreground ml-0.5" />
+            ) : (
+              <Pause className="w-3 h-3 text-foreground" />
+            )}
+          </button>
+
+          <div className="text-xs text-muted-foreground">
+            {isAutoplayPaused ? 'Paused' : 'Auto-rotating every 5s'}
+          </div>
         </div>
       </div>
     </div>
