@@ -370,7 +370,7 @@ export default function Community() {
                     <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
                     <div className="flex items-center space-x-4">
                       <TrendingUp className="w-8 h-8 text-primary" />
-                      <h2 className="text-3xl font-bold text-foreground tracking-tight">
+                      <h2 className="text-3xl font-bold text-foreground tracking-tight font-tech">
                         VHub Pulse
                       </h2>
                     </div>
@@ -426,7 +426,7 @@ export default function Community() {
                     <div className="w-12 h-12 rounded-xl bg-accent/20 border-2 border-accent/40 flex items-center justify-center shadow-lg">
                       <Plus className="w-7 h-7 text-accent animate-pulse" />
                     </div>
-                    <h2 className="text-5xl font-bold text-foreground tracking-tight bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent">
+                    <h2 className="text-5xl font-bold text-foreground tracking-tight bg-gradient-to-r from-foreground to-accent bg-clip-text text-transparent font-tech">
                       Community Feed
                     </h2>
                     <div className="w-3 h-3 rounded-full bg-accent animate-ping"></div>
@@ -439,7 +439,7 @@ export default function Community() {
               <div className="bg-sidebar enhanced-card glow-border rounded-xl p-6 mb-8 border border-sidebar-border hover:border-primary/30 transition-all duration-300 hover:shadow-md">
                 <div className="flex items-center gap-4 mb-4">
                   <Filter className="w-5 h-5 text-accent" />
-                  <h3 className="text-lg font-semibold text-foreground">Filter & Search</h3>
+                  <h3 className="text-lg font-semibold text-foreground font-tech">Filter & Search</h3>
                 </div>
                 
                 <div className="flex flex-col sm:flex-row gap-4">
