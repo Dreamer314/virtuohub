@@ -386,8 +386,8 @@ export default function Community() {
                     <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                   </div>
                   <div className="text-center space-y-1">
-                    <p className="text-lg font-semibold text-accent">Cast your vote. See results.</p>
-                    <p className="text-sm text-muted-foreground">Quick polls on Immersive Economy topics.</p>
+                    <p className="text-lg font-semibold text-accent">Quick polls on Immersive Economy topics.</p>
+                    <p className="text-sm text-muted-foreground">Cast your vote. See results.</p>
                     <p className="text-sm text-muted-foreground">Tell us what you think.</p>
                   </div>
                 </div>
