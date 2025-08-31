@@ -214,45 +214,10 @@ export default function Community() {
 
           {/* Main Content */}
           <main>
-            {/* Hero Section */}
-            <div className="glass-card rounded-xl mb-8 overflow-visible hover-lift relative" data-testid="hero-section">
-              <div className="relative h-48 flex items-center justify-center hero-glow-container">
-                <img 
-                  src={vhubHeaderImage} 
-                  alt="VirtuoHub Community Header"
-                  className="absolute inset-0 w-full h-full object-cover"
-                  style={{
-                    filter: 'drop-shadow(0 0 20px rgba(6, 182, 212, 0.2)) drop-shadow(0 0 40px rgba(147, 51, 234, 0.15))'
-                  }}
-                />
-                <div className="text-center z-10 relative">
-                  <h1 className="text-3xl font-display font-bold text-white mb-2 drop-shadow-lg">
-                    VirtuoHub Community
-                  </h1>
-                  <p className="text-white/90 drop-shadow-md">
-                    Connect, Create, and Collaborate in Virtual Worlds
-                  </p>
-                </div>
-                <div className="absolute inset-0 bg-black/20"></div>
-              </div>
+            {/* MetaHuman Hero Section - Full Width */}
+            <div className="mb-8 -mx-6 sm:-mx-8 lg:-mx-12" data-testid="hero-section">
+              <FeaturedSection />
             </div>
-
-            {/* Featured Content Carousel */}
-            {currentTab === 'all' && (
-              <div className="mb-8">
-                <div className="flex items-center space-x-2 mb-6">
-                  <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
-                  <div className="flex items-center space-x-4">
-                    <Star className="w-8 h-8 text-accent" />
-                    <h2 className="text-3xl font-bold text-foreground tracking-tight">
-                      Featured Content
-                    </h2>
-                  </div>
-                  <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
-                </div>
-                <FeaturedSection />
-              </div>
-            )}
 
             {/* VHub Pulse */}
             {currentTab === 'all' && pulsePosts.length > 0 && (
