@@ -387,20 +387,25 @@
   background: radial-gradient(ellipse at center, var(--tw-gradient-stops));
 }
 
-/* Container query support */
-.cq {
-  container-type: inline-size;
+/* Text hygiene inside Featured only */
+#featuredV2 h1, #featuredV2 h2, #featuredV2 h3 {
+  word-break: normal; 
+  overflow-wrap: normal; 
+  hyphens: manual;
 }
 
-/* Text wrapping helpers */
-.text-balance {
-  text-wrap: balance;
+#featuredV2 .text-balance { 
+  text-wrap: balance; 
 }
 
-.text-pretty {
-  text-wrap: pretty;
+#featuredV2 .text-pretty { 
+  text-wrap: pretty; 
 }
 
-.keep-words {
-  word-break: keep-all;
+#featuredV2 .cq { 
+  container-type: inline-size; 
+}
+
+#featuredV2 .keep-words { 
+  word-break: keep-all; 
 }
