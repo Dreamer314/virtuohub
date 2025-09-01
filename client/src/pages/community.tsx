@@ -129,9 +129,9 @@ const CommunityPage: React.FC = () => {
             {/* Featured Content Carousel - Full Width */}
             {currentTab === 'all' && (
               <div className="mb-24">
-                <div className="px-6 sm:px-8 lg:px-12">
-                  <div className="max-w-[720px] min-w-[580px] mx-auto">
-                    <div className="flex items-center space-x-2 mb-6">
+                <div className="w-full">
+                  <div className="flex items-center justify-center mb-6">
+                    <div className="flex items-center space-x-2 w-full max-w-4xl">
                       <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
                       <div className="flex items-center space-x-4">
                         <Star className="w-8 h-8 text-accent" />
