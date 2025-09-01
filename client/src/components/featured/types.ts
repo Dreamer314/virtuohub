@@ -1,7 +1,7 @@
 export type FeaturedItem = {
   id: string
   dateISO: string
-  tag: 'Creator Insights' | 'Spotlight' | 'Tips & Guides' | 'Industry News' | 'Tech'
+  tag: 'Interview' | 'Spotlight' | 'Tips & Guides' | 'Industry News' | 'Pulse Report' | 'Event'
   type?: 'Interview' | 'Article' | 'Video'
   title: string
   blurb: string
@@ -19,12 +19,12 @@ export const featuredItems: FeaturedItem[] = [
   {
     id: '1',
     dateISO: '2024-12-31',
-    tag: 'Creator Insights',
+    tag: 'Interview',
     type: 'Interview',
     title: 'Building Immersive Worlds with Next-Gen Tech',
     blurb: 'Learn how top creators are leveraging new tools and technologies to build more immersive virtual experiences.',
     ctaLabel: 'Read Interview',
-    ctaHref: '/insights/building-immersive-worlds',
+    ctaHref: '/interviews/building-immersive-worlds',
     imageSrc: vrChatImage,
     imageAlt: 'VRChat cyberpunk world showcase'
   },

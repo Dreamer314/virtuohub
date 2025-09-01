@@ -207,7 +207,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
     );
   }
 
-  // Handle Creator Insights Posts
+  // Handle Interview Posts
   if (post.type === 'insight') {
     return (
       <article className="bg-sidebar enhanced-card glow-border p-4 rounded-lg border border-sidebar-border hover:border-amber-500/50 transition-all duration-300 hover:shadow-lg" data-testid={`insight-post-${post.id}`}>
@@ -219,7 +219,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
           <div className="flex-1 min-w-0">
             {/* Header */}
             <div className="flex items-center space-x-2 mb-2">
-              <span className="text-xs font-medium text-amber-600 dark:text-amber-400">Creator Insights</span>
+              <span className="text-xs font-medium text-amber-600 dark:text-amber-400">Interview</span>
               <span className="text-xs text-muted-foreground">•</span>
               <span className="text-xs text-muted-foreground" data-testid={`insight-time-${post.id}`}>
                 {formatTimeAgo(post.createdAt ? new Date(post.createdAt) : new Date())}

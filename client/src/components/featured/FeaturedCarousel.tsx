@@ -35,12 +35,16 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
 
   const chipClass = (tag: string) => {
     switch (tag) {
-      case 'Creator Insights':
+      case 'Interview':
         return 'bg-teal-500/20 text-teal-300 border border-teal-500/30';
       case 'Industry News':
         return 'bg-blue-500/20 text-blue-300 border border-blue-500/30';
       case 'Tips & Guides':
         return 'bg-green-500/20 text-green-300 border border-green-500/30';
+      case 'Spotlight':
+        return 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30';
+      case 'Pulse Report':
+        return 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30';
       default:
         return 'bg-purple-500/20 text-purple-300 border border-purple-500/30';
     }
