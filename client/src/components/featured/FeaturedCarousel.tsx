@@ -139,25 +139,21 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
         </div>
       </div>
 
-      {/* Arrows positioned within main column bounds */}
-      <div className="pointer-events-none absolute inset-y-0 left-4 flex items-center z-20">
-        <div className="flex flex-col gap-4">
-          <button 
-            onClick={goToPrevious} 
-            aria-label="Previous slide" 
-            className="pointer-events-auto h-12 w-12 md:h-14 md:w-14 rounded-full bg-background/60 backdrop-blur ring-1 ring-border hover:bg-background/80 focus:outline-none focus:ring-2 focus:ring-ring flex items-center justify-center text-foreground text-xl font-bold transition-all"
-          >
-            ‹
-          </button>
-          <button 
-            onClick={goToNext} 
-            aria-label="Next slide" 
-            className="pointer-events-auto h-12 w-12 md:h-14 md:w-14 rounded-full bg-background/60 backdrop-blur ring-1 ring-border hover:bg-background/80 focus:outline-none focus:ring-2 focus:ring-ring flex items-center justify-center text-foreground text-xl font-bold transition-all"
-          >
-            ›
-          </button>
-        </div>
-      </div>
+      {/* Navigation arrows positioned within main column bounds */}
+      <button 
+        onClick={goToPrevious} 
+        aria-label="Previous slide" 
+        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 h-12 w-12 md:h-14 md:w-14 rounded-full bg-background/80 backdrop-blur ring-1 ring-border hover:bg-background hover:ring-primary hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary flex items-center justify-center text-foreground text-2xl font-bold transition-all duration-200 shadow-lg"
+      >
+        ‹
+      </button>
+      <button 
+        onClick={goToNext} 
+        aria-label="Next slide" 
+        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 h-12 w-12 md:h-14 md:w-14 rounded-full bg-background/80 backdrop-blur ring-1 ring-border hover:bg-background hover:ring-primary hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary flex items-center justify-center text-foreground text-2xl font-bold transition-all duration-200 shadow-lg"
+      >
+        ›
+      </button>
 
       {/* Dots */}
       <div className="mt-10 flex justify-center gap-3">
