@@ -94,12 +94,7 @@ export function Footer() {
 
         {/* Bottom Section */}
         <div className="mt-8 pt-8 border-t border-border/50">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-1 text-sm text-muted-foreground mb-4 md:mb-0">
-              <span>Made with</span>
-              <Heart className="w-4 h-4 text-red-500 fill-current" />
-              <span>for the virtual world community</span>
-            </div>
+          <div className="flex justify-center md:justify-end">
             <div className="text-sm text-muted-foreground">
               © 2025 VirtuoHub. All rights reserved.
             </div>
