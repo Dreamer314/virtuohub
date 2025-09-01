@@ -44,14 +44,16 @@ type CreatePostFormData = z.infer<typeof createPostSchema>;
 interface CreatePostModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialType?: 'regular' | 'pulse' | 'insight';
 }
 
-export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
+export function CreatePostModal({ isOpen, onClose, initialType = 'regular' }: CreatePostModalProps) {
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
   const [links, setLinks] = useState<string[]>([]);
   const [newLink, setNewLink] = useState('');
+  const [pollOptions, setPollOptions] = useState<string[]>(['', '']);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -67,8 +69,8 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
       category: "General",
       platforms: [],
       price: "",
-      type: "regular",
-      pollData: null,
+      type: initialType,
+      pollData: initialType === 'pulse' ? { question: '', options: pollOptions, totalVotes: 0 } : null,
     },
   });
 
@@ -202,10 +204,10 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
               name="content"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Content</FormLabel>
+                  <FormLabel>{initialType === 'pulse' ? 'Poll Question' : 'Content'}</FormLabel>
                   <FormControl>
                     <Textarea 
-                      placeholder="Share your latest creation, question, or gig... Tell us about your project, ask for help, or post a job opportunity!"
+                      placeholder={initialType === 'pulse' ? 'What\'s your question for the community?' : "Share your latest creation, question, or gig... Tell us about your project, ask for help, or post a job opportunity!"}
                       className="min-h-32"
                       {...field}
                       data-testid="post-content-input"
@@ -215,6 +217,71 @@ export function CreatePostModal({ isOpen, onClose }: CreatePostModalProps) {
                 </FormItem>
               )}
             />
+
+            {/* Poll Options - only show for pulse type */}
+            {initialType === 'pulse' && (
+              <div className="space-y-3">
+                <FormLabel>Poll Options</FormLabel>
+                {pollOptions.map((option, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <Input
+                      placeholder={`Option ${index + 1}`}
+                      value={option}
+                      onChange={(e) => {
+                        const newOptions = [...pollOptions];
+                        newOptions[index] = e.target.value;
+                        setPollOptions(newOptions);
+                        form.setValue('pollData', { 
+                          question: form.watch('content') || '', 
+                          options: newOptions, 
+                          totalVotes: 0 
+                        });
+                      }}
+                      data-testid={`poll-option-${index}`}
+                    />
+                    {pollOptions.length > 2 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const newOptions = pollOptions.filter((_, i) => i !== index);
+                          setPollOptions(newOptions);
+                          form.setValue('pollData', { 
+                            question: form.watch('content') || '', 
+                            options: newOptions, 
+                            totalVotes: 0 
+                          });
+                        }}
+                        data-testid={`remove-poll-option-${index}`}
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+                {pollOptions.length < 5 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const newOptions = [...pollOptions, ''];
+                      setPollOptions(newOptions);
+                      form.setValue('pollData', { 
+                        question: form.watch('content') || '', 
+                        options: newOptions, 
+                        totalVotes: 0 
+                      });
+                    }}
+                    data-testid="add-poll-option"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add Option
+                  </Button>
+                )}
+              </div>
+            )}
 
 
             {/* Upload Images */}

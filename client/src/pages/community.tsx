@@ -19,6 +19,7 @@ const CommunityPage: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<'all' | 'saved'>('all');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [createModalType, setCreateModalType] = useState<'regular' | 'pulse' | 'insight'>('regular');
 
   // Fetch posts data from API
   const { data: posts = [], isLoading: postsLoading } = useQuery<PostWithAuthor[]>({
@@ -65,7 +66,10 @@ const CommunityPage: React.FC = () => {
         <div className="floating-element absolute bottom-20 left-1/4 w-20 h-20 bg-primary/15 rounded-full blur-xl" style={{ animationDelay: '-4s' }}></div>
       </div>
 
-      <Header onCreatePost={() => setIsCreateModalOpen(true)} />
+      <Header onCreatePost={() => {
+        setCreateModalType('regular');
+        setIsCreateModalOpen(true);
+      }} />
       
       <div className="flex">
         {/* Fixed Left Sidebar */}
@@ -224,7 +228,10 @@ const CommunityPage: React.FC = () => {
                           </div>
                           <div className="flex-1">
                             <button
-                              onClick={() => setIsCreateModalOpen(true)}
+                              onClick={() => {
+                                setCreateModalType('regular');
+                                setIsCreateModalOpen(true);
+                              }}
                               className="w-full text-left px-4 py-3 bg-muted/50 hover:bg-muted/70 rounded-xl border border-border/50 hover:border-primary/30 transition-all duration-200 text-muted-foreground hover:text-foreground"
                               data-testid="create-post-input"
                             >
@@ -236,7 +243,10 @@ const CommunityPage: React.FC = () => {
                             <div className="flex items-center justify-between mt-4">
                               <div className="flex items-center gap-3">
                                 <button
-                                  onClick={() => setIsCreateModalOpen(true)}
+                                  onClick={() => {
+                                    setCreateModalType('pulse');
+                                    setIsCreateModalOpen(true);
+                                  }}
                                   className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
                                   data-testid="add-poll-button"
                                 >
@@ -245,7 +255,10 @@ const CommunityPage: React.FC = () => {
                                 </button>
                               </div>
                               <Button
-                                onClick={() => setIsCreateModalOpen(true)}
+                                onClick={() => {
+                                  setCreateModalType('regular');
+                                  setIsCreateModalOpen(true);
+                                }}
                                 className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-lg font-medium transition-all hover:scale-105"
                                 data-testid="post-button"
                               >
@@ -289,7 +302,10 @@ const CommunityPage: React.FC = () => {
                             Try adjusting your filters or be the first to create a post!
                           </p>
                           <Button
-                            onClick={() => setIsCreateModalOpen(true)}
+                            onClick={() => {
+                              setCreateModalType('regular');
+                              setIsCreateModalOpen(true);
+                            }}
                             className="transition-all hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent"
                             data-testid="create-first-post-button"
                           >
@@ -317,7 +333,10 @@ const CommunityPage: React.FC = () => {
 
       {/* Floating Action Button */}
       <Button
-        onClick={() => setIsCreateModalOpen(true)}
+        onClick={() => {
+          setCreateModalType('regular');
+          setIsCreateModalOpen(true);
+        }}
         className="fixed bottom-8 right-8 w-14 h-14 bg-transparent text-primary rounded-full border border-primary/30 hover:border-primary hover:border-2 transition-all z-40 p-0"
         data-testid="floating-action-button"
       >
@@ -328,6 +347,7 @@ const CommunityPage: React.FC = () => {
       <CreatePostModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
+        initialType={createModalType}
       />
     </div>
   );
