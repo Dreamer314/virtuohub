@@ -139,36 +139,41 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
         </div>
       </div>
 
-      {/* Navigation arrows positioned within main column bounds */}
-      <button 
-        onClick={goToPrevious} 
-        aria-label="Previous slide" 
-        className="absolute left-4 top-1/2 -translate-y-1/2 z-20 h-12 w-12 md:h-14 md:w-14 rounded-full bg-background/80 backdrop-blur ring-1 ring-border hover:bg-background hover:ring-primary hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary flex items-center justify-center text-foreground text-2xl font-bold transition-all duration-200 shadow-lg"
-      >
-        ‹
-      </button>
-      <button 
-        onClick={goToNext} 
-        aria-label="Next slide" 
-        className="absolute right-4 top-1/2 -translate-y-1/2 z-20 h-12 w-12 md:h-14 md:w-14 rounded-full bg-background/80 backdrop-blur ring-1 ring-border hover:bg-background hover:ring-primary hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary flex items-center justify-center text-foreground text-2xl font-bold transition-all duration-200 shadow-lg"
-      >
-        ›
-      </button>
+      {/* Navigation controls below carousel */}
+      <div className="mt-8 flex items-center justify-center gap-6">
+        {/* Previous button */}
+        <button 
+          onClick={goToPrevious} 
+          aria-label="Previous slide" 
+          className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-background border-2 border-border hover:border-primary hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary flex items-center justify-center text-foreground text-2xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl"
+        >
+          ‹
+        </button>
 
-      {/* Dots */}
-      <div className="mt-10 flex justify-center gap-3">
-        {items.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToIndex(index)}
-            aria-label={`Go to item ${index + 1} of ${items.length}`}
-            className={`w-2 h-2 rounded-full transition-all ${
-              index === currentIndex 
-                ? 'bg-foreground scale-125' 
-                : 'bg-foreground/30 hover:bg-foreground/50'
-            }`}
-          />
-        ))}
+        {/* Dots */}
+        <div className="flex justify-center gap-3">
+          {items.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToIndex(index)}
+              aria-label={`Go to item ${index + 1} of ${items.length}`}
+              className={`w-3 h-3 rounded-full transition-all ${
+                index === currentIndex 
+                  ? 'bg-primary scale-125' 
+                  : 'bg-foreground/30 hover:bg-foreground/50'
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Next button */}
+        <button 
+          onClick={goToNext} 
+          aria-label="Next slide" 
+          className="h-12 w-12 md:h-14 md:w-14 rounded-full bg-background border-2 border-border hover:border-primary hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary flex items-center justify-center text-foreground text-2xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl"
+        >
+          ›
+        </button>
       </div>
     </section>
   );
