@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TrendingUp } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
@@ -9,19 +10,45 @@ import { useQuery } from '@tanstack/react-query';
 import type { PostWithAuthor } from '@shared/schema';
 
 const TrendingPage: React.FC = () => {
-  // Fetch all posts and sort by engagement
+  const [activeTab, setActiveTab] = useState<'industry' | 'hub' | 'threads'>('industry');
+  const [timeWindow, setTimeWindow] = useState<'24h' | '7d' | '30d'>('24h');
+
+  // Fetch all posts
   const { data: posts = [], isLoading } = useQuery<PostWithAuthor[]>({
     queryKey: ['/api/posts']
   });
 
-  // Sort by engagement (likes + comments + shares)
-  const trendingPosts = posts
-    .filter(post => post.type === 'regular')
-    .sort((a, b) => {
+  // Filter posts based on active tab
+  const getFilteredPosts = () => {
+    let filtered = posts;
+    
+    switch (activeTab) {
+      case 'industry':
+        filtered = posts.filter(post => 
+          post.type === 'regular' && 
+          (post.title.toLowerCase().includes('industry') || 
+           post.title.toLowerCase().includes('platform') ||
+           post.title.toLowerCase().includes('tool') ||
+           post.title.toLowerCase().includes('release'))
+        );
+        break;
+      case 'hub':
+        filtered = posts.filter(post => post.type === 'regular');
+        break;
+      case 'threads':
+        filtered = posts.filter(post => post.comments && post.comments > 2);
+        break;
+    }
+    
+    // Sort by engagement (likes + comments + shares)
+    return filtered.sort((a, b) => {
       const aEngagement = (a.likes || 0) + (a.comments || 0) + (a.shares || 0);
       const bEngagement = (b.likes || 0) + (b.comments || 0) + (b.shares || 0);
       return bEngagement - aEngagement;
     });
+  };
+
+  const trendingPosts = getFilteredPosts();
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
@@ -75,8 +102,63 @@ const TrendingPage: React.FC = () => {
                       <div className="h-0.5 bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                     </div>
                     <p className="text-center text-lg text-muted-foreground mb-8">
-                      The most popular posts in the VirtuoHub community right now
+                      What the ecosystem is talking about
                     </p>
+                  </div>
+
+                  {/* Tabs and Time Selector */}
+                  <div className="mb-8">
+                    <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                      {/* Tabs */}
+                      <div className="flex gap-2">
+                        <Button
+                          variant={activeTab === 'industry' ? 'default' : 'outline'}
+                          onClick={() => setActiveTab('industry')}
+                          size="sm"
+                        >
+                          Industry
+                        </Button>
+                        <Button
+                          variant={activeTab === 'hub' ? 'default' : 'outline'}
+                          onClick={() => setActiveTab('hub')}
+                          size="sm"
+                        >
+                          On VirtuoHub
+                        </Button>
+                        <Button
+                          variant={activeTab === 'threads' ? 'default' : 'outline'}
+                          onClick={() => setActiveTab('threads')}
+                          size="sm"
+                        >
+                          In Threads
+                        </Button>
+                      </div>
+                      
+                      {/* Time Window Selector */}
+                      <div className="flex gap-2">
+                        <Button
+                          variant={timeWindow === '24h' ? 'default' : 'outline'}
+                          onClick={() => setTimeWindow('24h')}
+                          size="sm"
+                        >
+                          24h
+                        </Button>
+                        <Button
+                          variant={timeWindow === '7d' ? 'default' : 'outline'}
+                          onClick={() => setTimeWindow('7d')}
+                          size="sm"
+                        >
+                          7d
+                        </Button>
+                        <Button
+                          variant={timeWindow === '30d' ? 'default' : 'outline'}
+                          onClick={() => setTimeWindow('30d')}
+                          size="sm"
+                        >
+                          30d
+                        </Button>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Posts */}

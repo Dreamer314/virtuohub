@@ -1,5 +1,5 @@
 import React from 'react';
-import { Newspaper } from 'lucide-react';
+import { Lightbulb } from 'lucide-react';
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
@@ -8,23 +8,15 @@ import { Footer } from '@/components/layout/footer';
 import { useQuery } from '@tanstack/react-query';
 import type { PostWithAuthor } from '@shared/schema';
 
-const IndustryNewsPage: React.FC = () => {
-  // Fetch all posts and filter for industry news
+const InterviewsPage: React.FC = () => {
+  // Fetch all posts and filter for interview posts
   const { data: posts = [], isLoading } = useQuery<PostWithAuthor[]>({
     queryKey: ['/api/posts']
   });
 
-  // Filter for industry news posts
-  const industryNewsPosts = posts.filter(post => 
-    post.type === 'regular' && 
-    (post.category === 'General' && 
-     (post.title.toLowerCase().includes('industry') || 
-      post.title.toLowerCase().includes('news') ||
-      post.title.toLowerCase().includes('update') ||
-      post.title.toLowerCase().includes('announcement') ||
-      post.title.toLowerCase().includes('launch') ||
-      post.title.toLowerCase().includes('release')))
-  ).sort((a, b) => {
+  const interviewPosts = posts
+    .filter(post => post.type === 'insight') // Using insight posts as interview content
+    .sort((a, b) => {
       const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
       const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
       return bTime - aTime;
@@ -41,7 +33,6 @@ const IndustryNewsPage: React.FC = () => {
             <LeftSidebar
               currentTab="all"
               onTabChange={() => {}}
-              currentSection="industry"
             />
           </div>
         </div>
@@ -63,7 +54,6 @@ const IndustryNewsPage: React.FC = () => {
                   <LeftSidebar
                     currentTab="all"
                     onTabChange={() => {}}
-                    currentSection="industry"
                   />
                 </div>
 
@@ -72,17 +62,17 @@ const IndustryNewsPage: React.FC = () => {
                   {/* Page Header */}
                   <div className="mb-8">
                     <div className="flex items-center space-x-2 mb-8">
-                      <div className="h-0.5 bg-gradient-to-r from-transparent via-blue-500 to-transparent flex-1"></div>
-                      <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-blue-500/10 via-blue-500/20 to-blue-500/10 rounded-full border border-blue-500/30">
-                        <Newspaper className="w-8 h-8 text-blue-500" />
+                      <div className="h-0.5 bg-gradient-to-r from-transparent via-purple-500 to-transparent flex-1"></div>
+                      <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-purple-500/10 via-purple-500/20 to-purple-500/10 rounded-full border border-purple-500/30">
+                        <Lightbulb className="w-8 h-8 text-purple-500" />
                         <h1 className="text-5xl font-bold text-foreground tracking-tight">
-                          Industry News
+                          Interviews
                         </h1>
                       </div>
-                      <div className="h-0.5 bg-gradient-to-r from-blue-500 via-transparent to-transparent flex-1"></div>
+                      <div className="h-0.5 bg-gradient-to-r from-purple-500 via-transparent to-transparent flex-1"></div>
                     </div>
                     <p className="text-center text-lg text-muted-foreground mb-8">
-                      Latest updates and announcements from the virtual world industry
+                      Advice and insight from working creators
                     </p>
                   </div>
 
@@ -90,20 +80,20 @@ const IndustryNewsPage: React.FC = () => {
                   <div className="space-y-6">
                     {isLoading ? (
                       <div className="text-center py-12">
-                        <div className="text-muted-foreground">Loading industry news...</div>
+                        <div className="text-muted-foreground">Loading interviews...</div>
                       </div>
-                    ) : industryNewsPosts.length > 0 ? (
-                      industryNewsPosts.map((post) => (
+                    ) : interviewPosts.length > 0 ? (
+                      interviewPosts.map((post) => (
                         <PostCard key={post.id} post={post} />
                       ))
                     ) : (
                       <div className="glass-card rounded-xl p-12 text-center">
-                        <div className="text-6xl mb-4">📰</div>
+                        <div className="text-6xl mb-4">💡</div>
                         <h3 className="text-xl font-display font-semibold mb-2 text-foreground">
-                          No industry news yet
+                          No interviews yet
                         </h3>
                         <p className="text-muted-foreground">
-                          Industry updates and announcements will appear here!
+                          Creator interviews and Q&As will be featured here!
                         </p>
                       </div>
                     )}
@@ -125,4 +115,4 @@ const IndustryNewsPage: React.FC = () => {
   );
 };
 
-export default IndustryNewsPage;
+export default InterviewsPage;

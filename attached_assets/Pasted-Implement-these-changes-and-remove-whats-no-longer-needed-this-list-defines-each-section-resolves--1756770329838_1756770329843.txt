@@ -1,0 +1,200 @@
+Implement these changes and remove whats no longer needed, this list defines each section, resolves the “Creator Spotlight vs Creator Insights” overlap (them sounding the same), sets up canonical pages, and tells Featured Content to open those same pages. Plain English. No layout changes implied. Keep sections on their sidebar, right and left but make the changes as instructured. 
+
+Final IA and naming
+
+Spotlights (formerly “Creator Spotlight”)
+
+Interviews (formerly “Creator Insights”)
+
+Tips & Guides
+
+Industry News 
+
+Trending
+
+Events
+
+Pulse Reports (rename from “Meta Layer Report” to match your VHub Pulse brand)
+
+Saved Posts moves to user profile or thread toolbar, not the sidebar
+
+I’m intentionally removing the second “creator” from the labels. It reads cleaner and avoids the “are these the same thing?” problem.
+
+What each page is
+1) Spotlights
+
+Purpose: Profile pieces about a creator, studio, platform, brand, or tool. Focus on their story, output, and impact.
+Includes: bio, portfolio highlights, key projects, links, optional short Q&A, call to action.
+When featured: Use a hero image and short deck.
+
+URL pattern: /spotlights/:slug
+Hero copy: Spotlight chip, title, 1–2 sentence dek.
+Blocks: Overview, Gallery, Links, Related items.
+
+2) Interviews
+
+Purpose: Advice and perspective in the creator’s own words. Q&A or transcript format.
+Includes: intro, questions, answers, pull quotes, resources, links.
+When featured: quote + portrait or work shot.
+
+URL pattern: /interviews/:slug
+Hero copy: Interview chip, title, dek.
+Blocks: Q&A sections, Tips list, Resources.
+
+Why both: Spotlight = about them or their business. Interview = practical insight in their voice. Different reading intent, different template.
+
+3) Tips & Guides
+
+Purpose: Educational posts that help builders grow skills and income.
+Examples: monetizing on Roblox, saving when hiring, exporting between engines, taxes for creators.
+Format: step-by-step, checklists, examples, downloads.
+When featured: show a clear promise line.
+
+URL pattern: /guides/:slug
+Blocks: Steps, Callouts, Files, “Try this next”.
+
+4) Industry News
+
+Purpose: The running industry newsletter. What changed and why it matters.
+Examples: Maya tool release, VRChat marketplace, Roblox policy, platform payout updates.
+Tone: short, sourced, practical “what to do next”.
+
+URL pattern: /news/:slug
+Blocks: Summary, Context, Impact for creators, Source links.
+
+5) Trending
+
+Purpose: What is trending in the ecosystem and on VirtuoHub.
+Tabs:
+
+Industry (platform changes, hashtags, tool releases)
+
+On VirtuoHub (most saved, most commented)
+
+In Threads (topics, tags)
+Card types: Link back to the source pages or posts.
+
+URL pattern: /trending
+Blocks: 3 tabs, filters, time window selector.
+
+6) Events
+
+Purpose: Upcoming in-person and online events for the industry.
+Data: title, host, date range, location, cost, RSVP link.
+Views: list and calendar.
+
+URL pattern: /events and /events/:slug
+Blocks: Event hero, Details, RSVP, Related.
+
+7) Pulse Reports (rename from Meta Layer Report)
+
+Purpose: Data and analysis from VHub Pulse and other sources. Poll results, creator earnings ranges, platform comparisons.
+Access: free summary, full report for members. Fits your “defining the industry” story without implying Meta’s brand.
+Examples: “Creator payout benchmarks Q2”, “Which platforms are adding creators fastest”, “Tooling that saves the most time”.
+
+URL pattern: /pulse (index) and /pulse/:slug (report)
+Blocks: Key metrics, charts, methodology, download.
+
+8) Saved Posts
+
+Purpose: Personal saved thread items.
+Placement: user menu or thread toolbar, not the sidebar.
+URL pattern: /me/saved or /feed/saved
+Behavior: pagination, filters.
+
+Featured Content behavior
+
+The carousel can feature cards from any of the sections above, plus Events.
+
+Clicking a featured card opens its canonical page listed above.
+
+The right sidebar cards (Spotlight, Pulse, Trending, Events) link to these same canonical pages. No duplicates.
+
+Minimal content models (so the agent knows what to store)
+Common fields across all articles
+
+id, slug, title, dek (short summary), coverImage, type (spotlight, interview, guide, news, pulseReport, event)
+
+tags[], platforms[] (Roblox, VRChat, Unreal, etc), author, publishedAt, updatedAt, isFeatured
+
+Spotlights
+
+subjectType (creator | studio | platform | brand | tool)
+
+bio, links[], gallery[]
+
+Interviews
+
+interviewee, questions[] with q, a
+
+resources[]
+
+Guides
+
+steps[] with title, body, media[]
+
+downloads[]
+
+News
+
+sources[] with title, url
+
+impact[] (bullet list)
+
+Events
+
+start, end, timezone, location, rsvpUrl, host
+
+Pulse Reports
+
+charts[] (config), metrics[], summary, paywalled (bool)
+
+Simple routing and links
+
+Sidebar links route to /spotlights, /interviews, /guides, /news, /trending, /events, /pulse.
+
+Each list page shows cards with filters. Cards link to detail pages above.
+
+Featured cards use the same URLs.
+
+Saved Posts lives at /me/saved or /feed/saved and is not in the global sidebar.
+
+Copy for sidebar headers
+
+Spotlights — Profiles of creators, studios, and brands shaping the space.
+
+Interviews — Advice and insight from working creators.
+
+Tips & Guides — Tutorials and playbooks to level up.
+
+Industry News — What changed and why it matters.
+
+Trending — What the ecosystem is talking about.
+
+Events — What’s happening next, online and IRL.
+
+Pulse Reports — Data and analysis for members.
+
+Saved Posts — Your saved threads and links. (not in sidebar)
+
+Plain prompts for your Replit agent
+
+Create canonical pages and hook Featured
+
+“Create list and detail routes for Spotlights, Interviews, Tips & Guides, Industry News, Trending, Events, and Pulse Reports using the URL patterns above. Use our existing page shell and styles. Do not change global layout.”
+
+“Update the Featured carousel so each card links to the same canonical route the sidebar uses. No new styles.”
+
+“Rename ‘Creator Spotlight’ to ‘Spotlights’ and ‘Creator Insights’ to ‘Interviews’ in nav and chips. Keep existing data.”
+
+Sidebar and Saved
+4) “Remove ‘Saved Posts’ from the sidebar. Add a Saved entry under the user menu that routes to /me/saved. Keep current card design.”
+
+Pulse Reports rename and gating
+5) “Rename ‘Meta Layer Report’ to ‘Pulse Reports’. Create /pulse and /pulse/:slug. Show free summary to all, gate full charts and downloads for members. No visual redesign.”
+
+Trending page
+6) “Build /trending with three tabs: Industry, On VirtuoHub, In Threads. Use existing card components. Add a 24h/7d/30d selector that just filters the list.”
+
+Spotlights vs Interviews
+7) “Ensure Spotlight template includes a bio and gallery. Ensure Interview template renders Q&A with pull quotes. Chips should show Spotlight or Interview.”

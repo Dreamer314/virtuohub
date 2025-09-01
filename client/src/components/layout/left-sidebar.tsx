@@ -33,6 +33,34 @@ export function LeftSidebar({
       href: '/'
     },
     { 
+      id: 'spotlights', 
+      label: 'Spotlights', 
+      icon: Star, 
+      active: location === '/spotlights' || location.startsWith('/spotlights/'), 
+      href: '/spotlights'
+    },
+    { 
+      id: 'interviews', 
+      label: 'Interviews', 
+      icon: Lightbulb, 
+      active: location === '/interviews' || location.startsWith('/interviews/'), 
+      href: '/interviews' 
+    },
+    { 
+      id: 'guides', 
+      label: 'Tips & Guides', 
+      icon: BookOpen, 
+      active: location === '/guides' || location.startsWith('/guides/'), 
+      href: '/guides'
+    },
+    { 
+      id: 'news', 
+      label: 'Industry News', 
+      icon: Newspaper, 
+      active: location === '/news' || location.startsWith('/news/'), 
+      href: '/news'
+    },
+    { 
       id: 'trending', 
       label: 'Trending', 
       icon: TrendingUp, 
@@ -40,43 +68,20 @@ export function LeftSidebar({
       href: '/trending'
     },
     { 
-      id: 'industry', 
-      label: 'Industry News', 
-      icon: Newspaper, 
-      active: location === '/industry-news', 
-      href: '/industry-news'
+      id: 'events', 
+      label: 'Events', 
+      icon: Monitor, 
+      active: location === '/events' || location.startsWith('/events/'), 
+      href: '/events'
     },
     { 
-      id: 'spotlights', 
-      label: 'Creator Spotlights', 
-      icon: Star, 
-      active: location === '/creator-spotlights', 
-      href: '/creator-spotlights'
-    },
-    { 
-      id: 'insights', 
-      label: 'Creator Insights', 
-      icon: Lightbulb, 
-      active: location === '/insights', 
-      href: '/insights' 
-    },
-    { 
-      id: 'tips', 
-      label: 'Tips and Guides', 
-      icon: BookOpen, 
-      active: location === '/tips-guides', 
-      href: '/tips-guides'
+      id: 'pulse', 
+      label: 'Pulse Reports', 
+      icon: Zap, 
+      active: location === '/pulse' || location.startsWith('/pulse/'), 
+      href: '/pulse'
     },
   ];
-
-  // Add saved posts section
-  const savedSection = {
-    id: 'saved',
-    label: 'Saved Posts',
-    icon: Star,
-    active: currentTab === 'saved',
-    onClick: () => onTabChange('saved')
-  };
 
   const platformFilters = [
     { id: 'roblox', label: 'Roblox', icon: SiRoblox },
@@ -154,31 +159,6 @@ export function LeftSidebar({
                   </Link>
                 );
               })}
-              
-              {/* Divider */}
-              <div className="my-3 border-t border-border/50"></div>
-              
-              {/* Saved Posts Section */}
-              <Button
-                variant="ghost"
-                className={`w-full justify-between px-3 h-10 transition-all ${
-                  savedSection.active
-                    ? 'bg-accent/20 text-accent font-medium'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                }`}
-                onClick={savedSection.onClick}
-                data-testid={`nav-${savedSection.id}`}
-              >
-                <div className="flex items-center">
-                  <savedSection.icon className="w-4 h-4 mr-3" />
-                  {savedSection.label}
-                </div>
-                {savedSection.active && (
-                  <span className="text-xs font-semibold text-accent">
-                    [ACTIVE]
-                  </span>
-                )}
-              </Button>
             </div>
           </div>
 

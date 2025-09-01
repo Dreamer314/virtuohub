@@ -9,9 +9,12 @@ import ArticlePage from "@/pages/article";
 import InsightsPage from "@/pages/insights";
 import ThreadPage from "@/pages/thread";
 import TrendingPage from "@/pages/trending";
-import IndustryNewsPage from "@/pages/industry-news";
-import CreatorSpotlightsPage from "@/pages/creator-spotlights";
-import TipsGuidesPage from "@/pages/tips-guides";
+import SpotlightsPage from "@/pages/spotlights";
+import InterviewsPage from "@/pages/interviews";
+import GuidesPage from "@/pages/guides";
+import NewsPage from "@/pages/news";
+import EventsPage from "@/pages/events";
+import PulsePage from "@/pages/pulse";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -19,10 +22,19 @@ function Router() {
     <Switch>
       <Route path="/" component={Community} />
       <Route path="/community" component={Community} />
+      <Route path="/spotlights" component={SpotlightsPage} />
+      <Route path="/spotlights/:slug" component={SpotlightsPage} />
+      <Route path="/interviews" component={InterviewsPage} />
+      <Route path="/interviews/:slug" component={InterviewsPage} />
+      <Route path="/guides" component={GuidesPage} />
+      <Route path="/guides/:slug" component={GuidesPage} />
+      <Route path="/news" component={NewsPage} />
+      <Route path="/news/:slug" component={NewsPage} />
       <Route path="/trending" component={TrendingPage} />
-      <Route path="/industry-news" component={IndustryNewsPage} />
-      <Route path="/creator-spotlights" component={CreatorSpotlightsPage} />
-      <Route path="/tips-guides" component={TipsGuidesPage} />
+      <Route path="/events" component={EventsPage} />
+      <Route path="/events/:slug" component={EventsPage} />
+      <Route path="/pulse" component={PulsePage} />
+      <Route path="/pulse/:slug" component={PulsePage} />
       <Route path="/article/:slug" component={ArticlePage} />
       <Route path="/insights" component={InsightsPage} />
       <Route path="/thread/:postId" component={ThreadPage} />
