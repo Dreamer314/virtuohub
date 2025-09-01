@@ -15,7 +15,11 @@ export function Footer() {
               <span className="text-xl font-display font-bold gradient-text">VirtuoHub</span>
             </div>
             <p className="text-muted-foreground mb-4 max-w-md">
-              The premier community platform for virtual world creators and gamers. Connect, share, and build together across 30+ gaming and virtual platforms.
+              The industry home for immersive creators. Learn, ship, and grow together.
+            </p>
+            <p className="text-muted-foreground text-sm mb-4 max-w-md">
+              A new era for a fragmented industry.<br />
+              Free to join. Creator led. New features regularly.
             </p>
             <div className="flex items-center space-x-4">
               <a 
