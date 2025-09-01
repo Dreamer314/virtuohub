@@ -196,61 +196,6 @@ const CommunityPage: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Create Post Section */}
-                  <div className="mb-8" data-testid="create-post-section">
-                    <div className="glass-card rounded-xl p-6 hover:shadow-lg transition-all duration-300">
-                      <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center border border-primary/30">
-                          <span className="text-sm font-medium text-primary">U</span>
-                        </div>
-                        <div className="flex-1">
-                          <button
-                            onClick={() => setIsCreateModalOpen(true)}
-                            className="w-full text-left px-4 py-3 bg-muted/50 hover:bg-muted/70 rounded-xl border border-border/50 hover:border-primary/30 transition-all duration-200 text-muted-foreground hover:text-foreground"
-                            data-testid="create-post-input"
-                          >
-                            What's happening in your virtual world?
-                          </button>
-                          <div className="flex items-center justify-between mt-4">
-                            <div className="flex items-center gap-3">
-                              <button
-                                onClick={() => setIsCreateModalOpen(true)}
-                                className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-                                data-testid="add-image-button"
-                              >
-                                <ImageIcon className="w-4 h-4" />
-                                Photo
-                              </button>
-                              <button
-                                onClick={() => setIsCreateModalOpen(true)}
-                                className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-                                data-testid="add-poll-button"
-                              >
-                                <BarChart3 className="w-4 h-4" />
-                                Poll
-                              </button>
-                              <button
-                                onClick={() => setIsCreateModalOpen(true)}
-                                className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-                                data-testid="add-file-button"
-                              >
-                                <FileText className="w-4 h-4" />
-                                File
-                              </button>
-                            </div>
-                            <Button
-                              onClick={() => setIsCreateModalOpen(true)}
-                              className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-lg font-medium transition-all hover:scale-105"
-                              data-testid="post-button"
-                            >
-                              Post
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
                   {/* Community Feed */}
                   <div className="relative" data-testid="community-feed-section">
                     {/* Content Area */}
@@ -267,6 +212,48 @@ const CommunityPage: React.FC = () => {
                           <div className="w-3 h-3 rounded-full bg-accent animate-ping"></div>
                         </div>
                         <div className="h-0.5 bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
+                      </div>
+                    </div>
+
+                    {/* Create Post Section */}
+                    <div className="mb-8" data-testid="create-post-section">
+                      <div className="glass-card rounded-xl p-6 hover:shadow-lg transition-all duration-300">
+                        <div className="flex items-start gap-4">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center border border-primary/30">
+                            <span className="text-sm font-medium text-primary">U</span>
+                          </div>
+                          <div className="flex-1">
+                            <button
+                              onClick={() => setIsCreateModalOpen(true)}
+                              className="w-full text-left px-4 py-3 bg-muted/50 hover:bg-muted/70 rounded-xl border border-border/50 hover:border-primary/30 transition-all duration-200 text-muted-foreground hover:text-foreground"
+                              data-testid="create-post-input"
+                            >
+                              What's happening in your virtual world?
+                            </button>
+                            <p className="text-xs text-muted-foreground mt-2 hidden sm:block">
+                              You can attach images or files in the next step.
+                            </p>
+                            <div className="flex items-center justify-between mt-4">
+                              <div className="flex items-center gap-3">
+                                <button
+                                  onClick={() => setIsCreateModalOpen(true)}
+                                  className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground hover:text-primary transition-colors"
+                                  data-testid="add-poll-button"
+                                >
+                                  <BarChart3 className="w-4 h-4" />
+                                  Poll
+                                </button>
+                              </div>
+                              <Button
+                                onClick={() => setIsCreateModalOpen(true)}
+                                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2 rounded-lg font-medium transition-all hover:scale-105"
+                                data-testid="post-button"
+                              >
+                                Post
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
