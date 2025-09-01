@@ -559,7 +559,7 @@ export function CreatePostModal({ isOpen, onClose, initialType = 'regular' }: Cr
                 className="bg-primary hover:bg-primary/90 transition-all hover:scale-105"
                 data-testid="submit-post-button"
               >
-                {createPostMutation.isPending ? "Creating..." : "Create Post"}
+                {createPostMutation.isPending ? "Publishing..." : "Publish"}
               </Button>
             </div>
           </form>
