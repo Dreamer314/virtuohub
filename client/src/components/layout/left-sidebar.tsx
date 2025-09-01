@@ -23,44 +23,34 @@ export function LeftSidebar({
 }: LeftSidebarProps) {
   const [isPlatformFiltersCollapsed, setIsPlatformFiltersCollapsed] = useState(false);
   
-  const handleSectionClick = (sectionId: 'feed' | 'trending' | 'industry' | 'spotlights' | 'insights' | 'tips') => {
-    if (onSectionChange) {
-      onSectionChange(sectionId);
-    }
-    // Also switch to 'all' tab when changing sections
-    if (currentTab !== 'all') {
-      onTabChange('all');
-    }
-  };
-  
   const mainSections = [
     { 
       id: 'feed', 
       label: 'Feed', 
       icon: Home, 
       active: currentTab === 'all' && currentSection === 'feed', 
-      onClick: () => handleSectionClick('feed')
+      href: '/'
     },
     { 
       id: 'trending', 
       label: 'Trending', 
       icon: TrendingUp, 
       active: currentSection === 'trending', 
-      onClick: () => handleSectionClick('trending')
+      href: '/trending'
     },
     { 
       id: 'industry', 
       label: 'Industry News', 
       icon: Newspaper, 
       active: currentSection === 'industry', 
-      onClick: () => handleSectionClick('industry')
+      href: '/industry-news'
     },
     { 
       id: 'spotlights', 
       label: 'Creator Spotlights', 
       icon: Star, 
       active: currentSection === 'spotlights', 
-      onClick: () => handleSectionClick('spotlights')
+      href: '/creator-spotlights'
     },
     { 
       id: 'insights', 
@@ -74,7 +64,7 @@ export function LeftSidebar({
       label: 'Tips and Guides', 
       icon: BookOpen, 
       active: currentSection === 'tips', 
-      onClick: () => handleSectionClick('tips')
+      href: '/tips-guides'
     },
   ];
 
@@ -139,50 +129,26 @@ export function LeftSidebar({
               {mainSections.map((section) => {
                 const Icon = section.icon;
                 
-                if (section.href) {
-                  return (
-                    <Link key={section.id} href={section.href}>
-                      <Button
-                        variant="ghost"
-                        className={`w-full justify-start px-3 h-10 transition-all ${
-                          section.active
-                            ? 'bg-accent/20 text-accent font-medium'
-                            : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                        }`}
-                        data-testid={`nav-${section.id}`}
-                      >
-                        <Icon className="w-4 h-4 mr-3" />
-                        {section.label}
-                        {section.active && (
-                          <span className="ml-auto text-xs font-semibold">
-                            [ACTIVE]
-                          </span>
-                        )}
-                      </Button>
-                    </Link>
-                  );
-                }
-                
                 return (
-                  <Button
-                    key={section.id}
-                    variant="ghost"
-                    className={`w-full justify-start px-3 h-10 transition-all ${
-                      section.active
-                        ? 'bg-accent/20 text-accent font-medium'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                    }`}
-                    onClick={section.onClick}
-                    data-testid={`nav-${section.id}`}
-                  >
-                    <Icon className="w-4 h-4 mr-3" />
-                    {section.label}
-                    {section.active && (
-                      <span className="ml-auto text-xs font-semibold">
-                        [ACTIVE]
-                      </span>
-                    )}
-                  </Button>
+                  <Link key={section.id} href={section.href}>
+                    <Button
+                      variant="ghost"
+                      className={`w-full justify-start px-3 h-10 transition-all ${
+                        section.active
+                          ? 'bg-accent/20 text-accent font-medium'
+                          : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                      }`}
+                      data-testid={`nav-${section.id}`}
+                    >
+                      <Icon className="w-4 h-4 mr-3" />
+                      {section.label}
+                      {section.active && (
+                        <span className="ml-auto text-xs font-semibold">
+                          [ACTIVE]
+                        </span>
+                      )}
+                    </Button>
+                  </Link>
                 );
               })}
               

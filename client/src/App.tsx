@@ -8,6 +8,10 @@ import Community from "@/pages/community";
 import ArticlePage from "@/pages/article";
 import InsightsPage from "@/pages/insights";
 import ThreadPage from "@/pages/thread";
+import TrendingPage from "@/pages/trending";
+import IndustryNewsPage from "@/pages/industry-news";
+import CreatorSpotlightsPage from "@/pages/creator-spotlights";
+import TipsGuidesPage from "@/pages/tips-guides";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -15,6 +19,10 @@ function Router() {
     <Switch>
       <Route path="/" component={Community} />
       <Route path="/community" component={Community} />
+      <Route path="/trending" component={TrendingPage} />
+      <Route path="/industry-news" component={IndustryNewsPage} />
+      <Route path="/creator-spotlights" component={CreatorSpotlightsPage} />
+      <Route path="/tips-guides" component={TipsGuidesPage} />
       <Route path="/article/:slug" component={ArticlePage} />
       <Route path="/insights" component={InsightsPage} />
       <Route path="/thread/:postId" component={ThreadPage} />

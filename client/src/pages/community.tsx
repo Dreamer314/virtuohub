@@ -18,7 +18,6 @@ const FEATURED_V2 = true;
 const CommunityPage: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<'all' | 'saved'>('all');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
-  const [currentSection, setCurrentSection] = useState<'feed' | 'trending' | 'industry' | 'spotlights' | 'insights' | 'tips'>('feed');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createModalType, setCreateModalType] = useState<'regular' | 'pulse' | 'insight'>('regular');
 
@@ -39,59 +38,10 @@ const CommunityPage: React.FC = () => {
     queryKey: ['/api/users/user1/saved-posts']
   });
 
-  // Filter posts by type and section
-  const getFilteredPosts = () => {
-    let filteredPosts = posts;
-    
-    // Filter by section
-    switch (currentSection) {
-      case 'trending':
-        // Sort by engagement (likes + comments + shares)
-        filteredPosts = posts.filter(post => post.type === 'regular').sort((a, b) => {
-          const aEngagement = (a.likes || 0) + (a.comments || 0) + (a.shares || 0);
-          const bEngagement = (b.likes || 0) + (b.comments || 0) + (b.shares || 0);
-          return bEngagement - aEngagement;
-        });
-        break;
-      case 'industry':
-        // Show posts with industry news content or specific keywords
-        filteredPosts = posts.filter(post => 
-          post.type === 'regular' && 
-          (post.category === 'General' && 
-           (post.title.toLowerCase().includes('industry') || 
-            post.title.toLowerCase().includes('news') ||
-            post.title.toLowerCase().includes('update') ||
-            post.title.toLowerCase().includes('announcement')))
-        );
-        break;
-      case 'spotlights':
-        // Show creator spotlights (insight posts)
-        filteredPosts = posts.filter(post => post.type === 'insight');
-        break;
-      case 'insights':
-        filteredPosts = posts.filter(post => post.type === 'insight');
-        break;
-      case 'tips':
-        // Show posts with tips/guides content
-        filteredPosts = posts.filter(post => 
-          post.type === 'regular' && 
-          (post.title.toLowerCase().includes('tip') || 
-           post.title.toLowerCase().includes('guide') ||
-           post.title.toLowerCase().includes('tutorial') ||
-           post.title.toLowerCase().includes('how to'))
-        );
-        break;
-      default: // 'feed'
-        filteredPosts = posts.filter(post => post.type === 'regular');
-        break;
-    }
-    
-    return filteredPosts;
-  };
-
+  // Filter posts by type
   const pulsePosts = posts.filter(post => post.type === 'pulse');
   const insightPosts = posts.filter(post => post.type === 'insight');
-  const regularPosts = getFilteredPosts();
+  const regularPosts = posts.filter(post => post.type === 'regular');
   const allPostsData = currentTab === 'saved' ? savedPosts : regularPosts;
 
   // Add scroll animation observer
@@ -138,8 +88,7 @@ const CommunityPage: React.FC = () => {
               onTabChange={setCurrentTab}
               selectedPlatforms={selectedPlatforms.map(p => p)}
               onPlatformChange={(platforms) => setSelectedPlatforms(platforms as Platform[])}
-              currentSection={currentSection}
-              onSectionChange={setCurrentSection}
+              currentSection="feed"
             />
           </div>
         </div>
@@ -227,8 +176,7 @@ const CommunityPage: React.FC = () => {
                     onTabChange={setCurrentTab}
                     selectedPlatforms={selectedPlatforms.map(p => p)}
                     onPlatformChange={(platforms) => setSelectedPlatforms(platforms as Platform[])}
-                    currentSection={currentSection}
-                    onSectionChange={setCurrentSection}
+                    currentSection="feed"
                   />
                 </div>
 
