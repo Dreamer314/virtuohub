@@ -98,9 +98,9 @@ const CommunityPage: React.FC = () => {
             <div className="w-full h-full bg-gradient-to-br from-cyan-400/15 via-purple-500/10 to-orange-400/15 blur-3xl"></div>
           </div>
           
-          <div className="py-8 relative z-10">
-            {/* Hero Section - Full Width */}
-            <div className="mb-8">
+          <div className="py-8 relative z-10 max-w-none mx-auto px-4 lg:px-8">
+            {/* Hero Section - Constrained Width */}
+            <div className="mb-8 mx-auto max-w-6xl">
               <div className="glass-card rounded-2xl overflow-hidden hover-lift relative" data-testid="hero-section">
                 <div className="relative min-h-[576px] flex items-center justify-center hero-glow-container">
                   <img 
@@ -130,12 +130,12 @@ const CommunityPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Featured Content Carousel - Full Width */}
+            {/* Featured Content Carousel - Constrained Width */}
             {currentTab === 'all' && (
-              <div className="mb-24">
+              <div className="mb-24 mx-auto max-w-6xl">
                 <div className="w-full">
                   <div className="flex items-center justify-center mb-6">
-                    <div className="flex items-center space-x-2 w-full max-w-4xl">
+                    <div className="flex items-center space-x-2 w-full">
                       <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
                       <div className="flex items-center space-x-4">
                         <Star className="w-8 h-8 text-accent" />
@@ -158,8 +158,8 @@ const CommunityPage: React.FC = () => {
             )}
 
             {/* Constrained Content Area with Padding */}
-            <div className="px-6 sm:px-8 lg:px-12">
-              <div className="max-w-[720px] min-w-[580px] mx-auto grid grid-cols-1 gap-8">
+            <div className="w-full">
+              <div className="max-w-4xl mx-auto px-4 lg:px-8 grid grid-cols-1 gap-8">
                 {/* Mobile Left Sidebar */}
                 <div className="lg:hidden">
                   <LeftSidebar
