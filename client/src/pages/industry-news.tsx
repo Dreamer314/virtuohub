@@ -24,7 +24,11 @@ const IndustryNewsPage: React.FC = () => {
       post.title.toLowerCase().includes('announcement') ||
       post.title.toLowerCase().includes('launch') ||
       post.title.toLowerCase().includes('release')))
-  ).sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
+  ).sort((a, b) => {
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return bTime - aTime;
+    });
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">

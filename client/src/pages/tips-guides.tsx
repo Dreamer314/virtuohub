@@ -22,7 +22,11 @@ const TipsGuidesPage: React.FC = () => {
      post.title.toLowerCase().includes('how to') ||
      post.title.toLowerCase().includes('workflow') ||
      post.title.toLowerCase().includes('best practice'))
-  ).sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
+  ).sort((a, b) => {
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return bTime - aTime;
+    });
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
