@@ -54,6 +54,12 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      // Don't capture keyboard events if user is typing in an input, textarea, or contenteditable element
+      const target = event.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.contentEditable === 'true') {
+        return;
+      }
+
       switch (event.key) {
         case 'ArrowLeft':
           event.preventDefault();
