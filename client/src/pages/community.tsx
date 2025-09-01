@@ -11,29 +11,87 @@ import { FeaturedCarousel } from '@/components/featured/FeaturedCarousel';
 import { featuredItems } from '@/components/featured/types';
 import vhubHeaderImage from '@assets/VHub.Header.no.font.Light.Page.png';
 import { useQuery } from '@tanstack/react-query';
-import type { PostWithAuthor, Platform } from '@/shared/schema';
+import type { PostWithAuthor, Platform } from '@shared/schema';
 
 const FEATURED_V2 = true;
 
 const CommunityPage: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<'all' | 'saved'>('all');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
+  const [currentSection, setCurrentSection] = useState<'feed' | 'trending' | 'industry' | 'spotlights' | 'insights' | 'tips'>('feed');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [createModalType, setCreateModalType] = useState<'regular' | 'pulse' | 'insight'>('regular');
 
-  // Fetch posts data from API
+  // Fetch posts data from API with platform filtering
   const { data: posts = [], isLoading: postsLoading } = useQuery<PostWithAuthor[]>({
-    queryKey: ['/api/posts']
+    queryKey: ['/api/posts', selectedPlatforms],
+    queryFn: () => {
+      const params = new URLSearchParams();
+      if (selectedPlatforms.length > 0) {
+        selectedPlatforms.forEach(platform => params.append('platforms', platform));
+      }
+      const url = `/api/posts${params.toString() ? `?${params.toString()}` : ''}`;
+      return fetch(url).then(res => res.json());
+    }
   });
 
   const { data: savedPosts = [], isLoading: savedLoading } = useQuery<PostWithAuthor[]>({
     queryKey: ['/api/users/user1/saved-posts']
   });
 
-  // Filter posts by type
+  // Filter posts by type and section
+  const getFilteredPosts = () => {
+    let filteredPosts = posts;
+    
+    // Filter by section
+    switch (currentSection) {
+      case 'trending':
+        // Sort by engagement (likes + comments + shares)
+        filteredPosts = posts.filter(post => post.type === 'regular').sort((a, b) => {
+          const aEngagement = (a.likes || 0) + (a.comments || 0) + (a.shares || 0);
+          const bEngagement = (b.likes || 0) + (b.comments || 0) + (b.shares || 0);
+          return bEngagement - aEngagement;
+        });
+        break;
+      case 'industry':
+        // Show posts with industry news content or specific keywords
+        filteredPosts = posts.filter(post => 
+          post.type === 'regular' && 
+          (post.category === 'General' && 
+           (post.title.toLowerCase().includes('industry') || 
+            post.title.toLowerCase().includes('news') ||
+            post.title.toLowerCase().includes('update') ||
+            post.title.toLowerCase().includes('announcement')))
+        );
+        break;
+      case 'spotlights':
+        // Show creator spotlights (insight posts)
+        filteredPosts = posts.filter(post => post.type === 'insight');
+        break;
+      case 'insights':
+        filteredPosts = posts.filter(post => post.type === 'insight');
+        break;
+      case 'tips':
+        // Show posts with tips/guides content
+        filteredPosts = posts.filter(post => 
+          post.type === 'regular' && 
+          (post.title.toLowerCase().includes('tip') || 
+           post.title.toLowerCase().includes('guide') ||
+           post.title.toLowerCase().includes('tutorial') ||
+           post.title.toLowerCase().includes('how to'))
+        );
+        break;
+      default: // 'feed'
+        filteredPosts = posts.filter(post => post.type === 'regular');
+        break;
+    }
+    
+    return filteredPosts;
+  };
+
   const pulsePosts = posts.filter(post => post.type === 'pulse');
   const insightPosts = posts.filter(post => post.type === 'insight');
-  const regularPosts = posts.filter(post => post.type === 'regular');
+  const regularPosts = getFilteredPosts();
   const allPostsData = currentTab === 'saved' ? savedPosts : regularPosts;
 
   // Add scroll animation observer
@@ -80,6 +138,8 @@ const CommunityPage: React.FC = () => {
               onTabChange={setCurrentTab}
               selectedPlatforms={selectedPlatforms.map(p => p)}
               onPlatformChange={(platforms) => setSelectedPlatforms(platforms as Platform[])}
+              currentSection={currentSection}
+              onSectionChange={setCurrentSection}
             />
           </div>
         </div>
@@ -167,6 +227,8 @@ const CommunityPage: React.FC = () => {
                     onTabChange={setCurrentTab}
                     selectedPlatforms={selectedPlatforms.map(p => p)}
                     onPlatformChange={(platforms) => setSelectedPlatforms(platforms as Platform[])}
+                    currentSection={currentSection}
+                    onSectionChange={setCurrentSection}
                   />
                 </div>
 

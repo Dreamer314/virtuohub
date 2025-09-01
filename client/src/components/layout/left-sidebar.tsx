@@ -9,18 +9,83 @@ interface LeftSidebarProps {
   onTabChange: (tab: 'all' | 'saved') => void;
   selectedPlatforms?: string[];
   onPlatformChange?: (platforms: string[]) => void;
+  currentSection?: 'feed' | 'trending' | 'industry' | 'spotlights' | 'insights' | 'tips';
+  onSectionChange?: (section: 'feed' | 'trending' | 'industry' | 'spotlights' | 'insights' | 'tips') => void;
 }
 
-export function LeftSidebar({ currentTab, onTabChange, selectedPlatforms = [], onPlatformChange }: LeftSidebarProps) {
+export function LeftSidebar({ 
+  currentTab, 
+  onTabChange, 
+  selectedPlatforms = [], 
+  onPlatformChange,
+  currentSection = 'feed',
+  onSectionChange 
+}: LeftSidebarProps) {
   const [isPlatformFiltersCollapsed, setIsPlatformFiltersCollapsed] = useState(false);
+  
+  const handleSectionClick = (sectionId: 'feed' | 'trending' | 'industry' | 'spotlights' | 'insights' | 'tips') => {
+    if (onSectionChange) {
+      onSectionChange(sectionId);
+    }
+    // Also switch to 'all' tab when changing sections
+    if (currentTab !== 'all') {
+      onTabChange('all');
+    }
+  };
+  
   const mainSections = [
-    { id: 'feed', label: 'Feed', icon: Home, active: currentTab === 'all', onClick: () => onTabChange('all') },
-    { id: 'trending', label: 'Trending', icon: TrendingUp, active: false, onClick: () => {} },
-    { id: 'industry', label: 'Industry News', icon: Newspaper, active: false, onClick: () => {} },
-    { id: 'spotlights', label: 'Creator Spotlights', icon: Star, active: false, onClick: () => {} },
-    { id: 'insights', label: 'Creator Insights', icon: Lightbulb, active: false, href: '/insights' },
-    { id: 'tips', label: 'Tips and Guides', icon: BookOpen, active: false, onClick: () => {} },
+    { 
+      id: 'feed', 
+      label: 'Feed', 
+      icon: Home, 
+      active: currentTab === 'all' && currentSection === 'feed', 
+      onClick: () => handleSectionClick('feed')
+    },
+    { 
+      id: 'trending', 
+      label: 'Trending', 
+      icon: TrendingUp, 
+      active: currentSection === 'trending', 
+      onClick: () => handleSectionClick('trending')
+    },
+    { 
+      id: 'industry', 
+      label: 'Industry News', 
+      icon: Newspaper, 
+      active: currentSection === 'industry', 
+      onClick: () => handleSectionClick('industry')
+    },
+    { 
+      id: 'spotlights', 
+      label: 'Creator Spotlights', 
+      icon: Star, 
+      active: currentSection === 'spotlights', 
+      onClick: () => handleSectionClick('spotlights')
+    },
+    { 
+      id: 'insights', 
+      label: 'Creator Insights', 
+      icon: Lightbulb, 
+      active: currentSection === 'insights', 
+      href: '/insights' 
+    },
+    { 
+      id: 'tips', 
+      label: 'Tips and Guides', 
+      icon: BookOpen, 
+      active: currentSection === 'tips', 
+      onClick: () => handleSectionClick('tips')
+    },
   ];
+
+  // Add saved posts section
+  const savedSection = {
+    id: 'saved',
+    label: 'Saved Posts',
+    icon: Star,
+    active: currentTab === 'saved',
+    onClick: () => onTabChange('saved')
+  };
 
   const platformFilters = [
     { id: 'roblox', label: 'Roblox', icon: SiRoblox },
@@ -120,6 +185,29 @@ export function LeftSidebar({ currentTab, onTabChange, selectedPlatforms = [], o
                   </Button>
                 );
               })}
+              
+              {/* Divider */}
+              <div className="my-3 border-t border-border/50"></div>
+              
+              {/* Saved Posts Section */}
+              <Button
+                variant="ghost"
+                className={`w-full justify-start px-3 h-10 transition-all ${
+                  savedSection.active
+                    ? 'bg-accent/20 text-accent font-medium'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                }`}
+                onClick={savedSection.onClick}
+                data-testid={`nav-${savedSection.id}`}
+              >
+                <savedSection.icon className="w-4 h-4 mr-3" />
+                {savedSection.label}
+                {savedSection.active && (
+                  <span className="ml-auto text-xs font-semibold">
+                    [ACTIVE]
+                  </span>
+                )}
+              </Button>
             </div>
           </div>
 
