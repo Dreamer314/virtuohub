@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Home, TrendingUp, Newspaper, Star, Lightbulb, Monitor, BookOpen, Gamepad2, Hammer, Zap, Mountain, Sword, Target, Palette, Users, Blocks, Globe, ChevronDown, ChevronUp } from "lucide-react";
 import { SiRoblox, SiUnity, SiUnrealengine } from "react-icons/si";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useState } from "react";
 
 interface LeftSidebarProps {
@@ -22,48 +22,49 @@ export function LeftSidebar({
   onSectionChange 
 }: LeftSidebarProps) {
   const [isPlatformFiltersCollapsed, setIsPlatformFiltersCollapsed] = useState(false);
+  const [location] = useLocation();
   
   const mainSections = [
     { 
       id: 'feed', 
       label: 'Feed', 
       icon: Home, 
-      active: currentTab === 'all' && currentSection === 'feed', 
+      active: location === '/' || location === '/community', 
       href: '/'
     },
     { 
       id: 'trending', 
       label: 'Trending', 
       icon: TrendingUp, 
-      active: currentSection === 'trending', 
+      active: location === '/trending', 
       href: '/trending'
     },
     { 
       id: 'industry', 
       label: 'Industry News', 
       icon: Newspaper, 
-      active: currentSection === 'industry', 
+      active: location === '/industry-news', 
       href: '/industry-news'
     },
     { 
       id: 'spotlights', 
       label: 'Creator Spotlights', 
       icon: Star, 
-      active: currentSection === 'spotlights', 
+      active: location === '/creator-spotlights', 
       href: '/creator-spotlights'
     },
     { 
       id: 'insights', 
       label: 'Creator Insights', 
       icon: Lightbulb, 
-      active: currentSection === 'insights', 
+      active: location === '/insights', 
       href: '/insights' 
     },
     { 
       id: 'tips', 
       label: 'Tips and Guides', 
       icon: BookOpen, 
-      active: currentSection === 'tips', 
+      active: location === '/tips-guides', 
       href: '/tips-guides'
     },
   ];
@@ -133,17 +134,19 @@ export function LeftSidebar({
                   <Link key={section.id} href={section.href}>
                     <Button
                       variant="ghost"
-                      className={`w-full justify-start px-3 h-10 transition-all ${
+                      className={`w-full justify-between px-3 h-10 transition-all ${
                         section.active
                           ? 'bg-accent/20 text-accent font-medium'
                           : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                       }`}
                       data-testid={`nav-${section.id}`}
                     >
-                      <Icon className="w-4 h-4 mr-3" />
-                      {section.label}
+                      <div className="flex items-center">
+                        <Icon className="w-4 h-4 mr-3" />
+                        {section.label}
+                      </div>
                       {section.active && (
-                        <span className="ml-auto text-xs font-semibold">
+                        <span className="text-xs font-semibold text-accent">
                           [ACTIVE]
                         </span>
                       )}
@@ -158,7 +161,7 @@ export function LeftSidebar({
               {/* Saved Posts Section */}
               <Button
                 variant="ghost"
-                className={`w-full justify-start px-3 h-10 transition-all ${
+                className={`w-full justify-between px-3 h-10 transition-all ${
                   savedSection.active
                     ? 'bg-accent/20 text-accent font-medium'
                     : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
@@ -166,10 +169,12 @@ export function LeftSidebar({
                 onClick={savedSection.onClick}
                 data-testid={`nav-${savedSection.id}`}
               >
-                <savedSection.icon className="w-4 h-4 mr-3" />
-                {savedSection.label}
+                <div className="flex items-center">
+                  <savedSection.icon className="w-4 h-4 mr-3" />
+                  {savedSection.label}
+                </div>
                 {savedSection.active && (
-                  <span className="ml-auto text-xs font-semibold">
+                  <span className="text-xs font-semibold text-accent">
                     [ACTIVE]
                   </span>
                 )}
