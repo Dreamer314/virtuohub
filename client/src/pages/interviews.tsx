@@ -76,26 +76,94 @@ const InterviewsPage: React.FC = () => {
                     </p>
                   </div>
 
-                  {/* Posts */}
-                  <div className="space-y-6">
+                  {/* Interview Articles */}
+                  <div className="space-y-8">
                     {isLoading ? (
                       <div className="text-center py-12">
                         <div className="text-muted-foreground">Loading interviews...</div>
                       </div>
-                    ) : interviewPosts.length > 0 ? (
-                      interviewPosts.map((post) => (
-                        <PostCard key={post.id} post={post} />
-                      ))
                     ) : (
-                      <div className="glass-card rounded-xl p-12 text-center">
-                        <div className="text-6xl mb-4">💡</div>
-                        <h3 className="text-xl font-display font-semibold mb-2 text-foreground">
-                          No interviews yet
-                        </h3>
-                        <p className="text-muted-foreground">
-                          Creator interviews and Q&As will be featured here!
-                        </p>
-                      </div>
+                      <>
+                        {/* Featured Interview */}
+                        <article className="glass-card rounded-xl border border-purple-500/30">
+                          <div className="p-8">
+                            <div className="flex items-center gap-4 mb-6">
+                              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
+                                <span className="text-2xl">👤</span>
+                              </div>
+                              <div>
+                                <span className="inline-block px-3 py-1 text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full mb-2">Interview</span>
+                                <h2 className="text-2xl font-bold text-foreground">Building Immersive Worlds: A Conversation with Alex Chen</h2>
+                                <p className="text-muted-foreground">Senior World Designer at Horizon Worlds</p>
+                              </div>
+                            </div>
+
+                            <div className="prose prose-invert max-w-none">
+                              <blockquote className="border-l-4 border-purple-500 pl-6 my-6 text-lg italic text-muted-foreground">
+                                "The key to creating truly immersive virtual worlds isn't just technical skill—it's understanding human psychology and what makes people feel present in a space."
+                              </blockquote>
+
+                              <div className="space-y-6">
+                                <div>
+                                  <h3 className="text-lg font-semibold text-foreground mb-3">Q: What's your approach to designing for presence?</h3>
+                                  <p className="text-muted-foreground">
+                                    <strong className="text-purple-400">Alex:</strong> I start with the emotional journey I want users to experience. Whether it's wonder, excitement, or tranquility, every visual element—from lighting to scale—serves that emotional goal. Technical optimization comes second.
+                                  </p>
+                                </div>
+
+                                <div>
+                                  <h3 className="text-lg font-semibold text-foreground mb-3">Q: How has VR design evolved in the past few years?</h3>
+                                  <p className="text-muted-foreground">
+                                    <strong className="text-purple-400">Alex:</strong> We've moved from "wow, this is VR!" novelty to focusing on genuine utility and comfort. Users now expect seamless interactions and intuitive navigation. The bar for quality has risen dramatically.
+                                  </p>
+                                </div>
+
+                                <div>
+                                  <h3 className="text-lg font-semibold text-foreground mb-3">Q: What tools are essential for aspiring world builders?</h3>
+                                  <p className="text-muted-foreground">
+                                    <strong className="text-purple-400">Alex:</strong> Master Unity and Blender first—they're your foundation. But also study traditional architecture and game design principles. The best VR worlds borrow from centuries of spatial design knowledge.
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="mt-8 p-4 bg-muted/20 rounded-lg">
+                                <h4 className="font-semibold text-foreground mb-3">Key Takeaways</h4>
+                                <ul className="space-y-1 text-sm text-muted-foreground">
+                                  <li>• Focus on emotional impact before technical features</li>
+                                  <li>• Study real-world architecture and spatial design</li>
+                                  <li>• Prioritize user comfort and intuitive interactions</li>
+                                  <li>• Test early and often with diverse user groups</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </article>
+
+                        {/* More Interviews */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          <article className="glass-card rounded-xl p-6 border border-sidebar-border hover:border-purple-500/30 transition-all">
+                            <span className="inline-block px-2 py-1 text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full mb-3">Interview</span>
+                            <h3 className="text-lg font-semibold text-foreground mb-2">Monetizing Virtual Fashion</h3>
+                            <p className="text-sm text-muted-foreground mb-4">
+                              Fashion designer Maya Patel shares insights on building a sustainable virtual clothing business across multiple platforms.
+                            </p>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                              <span>8 min read</span> • <span>Dec 28, 2024</span>
+                            </div>
+                          </article>
+
+                          <article className="glass-card rounded-xl p-6 border border-sidebar-border hover:border-purple-500/30 transition-all">
+                            <span className="inline-block px-2 py-1 text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full mb-3">Interview</span>
+                            <h3 className="text-lg font-semibold text-foreground mb-2">From Hobbyist to Studio</h3>
+                            <p className="text-sm text-muted-foreground mb-4">
+                              How Tom Richards grew his weekend VRChat world project into a full-time virtual experiences studio.
+                            </p>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                              <span>12 min read</span> • <span>Dec 25, 2024</span>
+                            </div>
+                          </article>
+                        </div>
+                      </>
                     )}
                   </div>
                 </main>

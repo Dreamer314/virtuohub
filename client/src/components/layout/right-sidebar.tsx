@@ -8,47 +8,49 @@ export function RightSidebar() {
     <aside className="w-full">
       <div className="sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto space-y-6">
         {/* Upcoming Events */}
-        <div className="bg-sidebar enhanced-card glow-border rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all duration-300 hover:shadow-md" data-testid="upcoming-events">
-          <h3 className="text-lg font-display font-semibold mb-4 flex items-center">
-            <Calendar className="text-accent mr-2" size={20} />
-            Upcoming Events
-          </h3>
-          <div className="space-y-4">
-            <div className="border border-border rounded-lg p-4 bg-muted/20">
-              <div className="flex items-center gap-2 mb-2">
-                <Clock className="w-4 h-4 text-accent" />
-                <span className="text-sm font-medium text-accent">Coming Soon</span>
+        <Link href="/events" className="block">
+          <div className="bg-sidebar enhanced-card glow-border rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all duration-300 hover:shadow-md cursor-pointer" data-testid="upcoming-events">
+            <h3 className="text-lg font-display font-semibold mb-4 flex items-center">
+              <Calendar className="text-accent mr-2" size={20} />
+              Upcoming Events
+            </h3>
+            <div className="space-y-4">
+              <div className="border border-border rounded-lg p-4 bg-muted/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <Clock className="w-4 h-4 text-accent" />
+                  <span className="text-sm font-medium text-accent">Coming Soon</span>
+                </div>
+                <h4 className="font-semibold mb-2 text-foreground">
+                  Virtual Creator Conference 2025
+                </h4>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Join industry leaders for talks on the future of virtual world creation, monetization strategies, and emerging technologies.
+                </p>
+                <div className="text-xs text-muted-foreground mb-3">
+                  📅 March 15-17, 2025 • Virtual Event
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full opacity-60 cursor-not-allowed" 
+                  disabled
+                  data-testid="early-access-button"
+                >
+                  Early Access Soon
+                </Button>
               </div>
-              <h4 className="font-semibold mb-2 text-foreground">
-                Virtual Creator Conference 2025
-              </h4>
-              <p className="text-sm text-muted-foreground mb-3">
-                Join industry leaders for talks on the future of virtual world creation, monetization strategies, and emerging technologies.
-              </p>
-              <div className="text-xs text-muted-foreground mb-3">
-                📅 March 15-17, 2025 • Virtual Event
+              
+              <div className="text-center py-4">
+                <p className="text-sm text-muted-foreground mb-2">
+                  More events coming soon!
+                </p>
+                <Button variant="link" className="text-accent hover:text-accent/80 text-sm font-medium p-0">
+                  View All Events →
+                </Button>
               </div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="w-full opacity-60 cursor-not-allowed" 
-                disabled
-                data-testid="early-access-button"
-              >
-                Early Access Soon
-              </Button>
-            </div>
-            
-            <div className="text-center py-4">
-              <p className="text-sm text-muted-foreground mb-2">
-                More events coming soon!
-              </p>
-              <Button variant="link" className="text-accent hover:text-accent/80 text-sm font-medium p-0">
-                Get Notified →
-              </Button>
             </div>
           </div>
-        </div>
+        </Link>
 
         {/* Creator Spotlight */}
         <Link href="/spotlights" className="block">
