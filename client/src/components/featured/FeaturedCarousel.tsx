@@ -93,7 +93,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
   return (
     <section 
       id="featuredV2" 
-      className="relative mx-auto max-w-[1400px] px-6 md:px-8 xl:pl-[256px] xl:pr-[360px] not-prose"
+      className="relative mx-auto max-w-[1400px] px-6 md:px-8 not-prose"
       aria-roledescription="carousel"
       aria-live="polite"
       onMouseEnter={handleMouseEnter}
@@ -139,8 +139,8 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
         </div>
       </div>
 
-      {/* Arrows positioned at far left edge */}
-      <div className="pointer-events-none absolute inset-y-0 -left-32 flex items-center z-20">
+      {/* Arrows positioned within main column bounds */}
+      <div className="pointer-events-none absolute inset-y-0 left-4 flex items-center z-20">
         <div className="flex flex-col gap-4">
           <button 
             onClick={goToPrevious} 

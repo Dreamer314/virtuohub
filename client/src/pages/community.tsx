@@ -71,10 +71,10 @@ const CommunityPage: React.FC = () => {
         setIsCreateModalOpen(true);
       }} />
       
-      <div className="flex">
-        {/* Fixed Left Sidebar */}
-        <div className="hidden lg:block w-64 fixed left-0 top-0 h-screen bg-background/95 backdrop-blur-sm border-r border-border z-10">
-          <div className="pt-20 px-4">
+      <div className="community-grid">
+        {/* Left Sidebar */}
+        <div className="grid-left hidden xl:block bg-background/95 backdrop-blur-sm border-r border-border sticky top-[var(--header-height)] h-[calc(100vh-var(--header-height))] z-10 overflow-y-auto">
+          <div className="p-4">
             <LeftSidebar
               currentTab={currentTab}
               onTabChange={setCurrentTab}
@@ -84,23 +84,23 @@ const CommunityPage: React.FC = () => {
           </div>
         </div>
         
-        {/* Fixed Right Sidebar */}
-        <div className="hidden lg:block w-80 fixed right-0 top-0 h-screen bg-background/95 backdrop-blur-sm border-l border-border z-10">
-          <div className="pt-20 px-4 overflow-y-auto">
+        {/* Right Sidebar */}
+        <div className="grid-right hidden lg:block bg-background/95 backdrop-blur-sm border-l border-border sticky top-[var(--header-height)] h-[calc(100vh-var(--header-height))] z-10 overflow-y-auto">
+          <div className="p-4">
             <RightSidebar />
           </div>
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 lg:ml-64 lg:mr-80 relative">
+        <div className="grid-main relative z-0">
           {/* Extended glow effect that affects the whole page */}
           <div className="absolute -top-20 -left-20 -right-20 h-96 pointer-events-none z-0">
             <div className="w-full h-full bg-gradient-to-br from-cyan-400/15 via-purple-500/10 to-orange-400/15 blur-3xl"></div>
           </div>
           
-          <div className="py-8 relative z-10 max-w-none mx-auto px-4 lg:px-8">
-            {/* Hero Section - Constrained Width */}
-            <div className="mb-8 mx-auto max-w-6xl">
+          <div className="py-8 relative z-10 px-4 lg:px-8">
+            {/* Hero Section */}
+            <div className="mb-8">
               <div className="glass-card rounded-2xl overflow-hidden hover-lift relative" data-testid="hero-section">
                 <div className="relative min-h-[576px] flex items-center justify-center hero-glow-container">
                   <img 
@@ -130,12 +130,12 @@ const CommunityPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Featured Content Carousel - Constrained Width */}
+            {/* Featured Content Carousel */}
             {currentTab === 'all' && (
-              <div className="mb-24 mx-auto max-w-6xl">
+              <div className="mb-24 relative">
                 <div className="w-full">
                   <div className="flex items-center justify-center mb-6">
-                    <div className="flex items-center space-x-2 w-full">
+                    <div className="flex items-center space-x-2 w-full max-w-4xl mx-auto">
                       <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
                       <div className="flex items-center space-x-4">
                         <Star className="w-8 h-8 text-accent" />
@@ -157,11 +157,11 @@ const CommunityPage: React.FC = () => {
               </div>
             )}
 
-            {/* Constrained Content Area with Padding */}
+            {/* Content Area */}
             <div className="w-full">
-              <div className="max-w-4xl mx-auto px-4 lg:px-8 grid grid-cols-1 gap-8">
+              <div className="max-w-4xl mx-auto grid grid-cols-1 gap-8">
                 {/* Mobile Left Sidebar */}
-                <div className="lg:hidden">
+                <div className="xl:hidden">
                   <LeftSidebar
                     currentTab={currentTab}
                     onTabChange={setCurrentTab}
