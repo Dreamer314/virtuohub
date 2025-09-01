@@ -26,7 +26,7 @@ const TipsGuidesPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
-      <Header />
+      <Header onCreatePost={() => {}} />
       
       <div className="community-grid">
         {/* Left Sidebar */}
