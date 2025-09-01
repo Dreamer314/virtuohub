@@ -177,6 +177,24 @@ const CommunityPage: React.FC = () => {
               <div className="px-6 sm:px-8 lg:px-12">
                 <main className="min-h-screen">
                   <div className="max-w-3xl mx-auto">
+                    {/* Community Feed Header */}
+                    <div className="mb-8">
+                      <div className="flex items-center justify-between mb-6">
+                        <div>
+                          <h1 className="text-3xl font-bold text-foreground mb-2">Community Feed</h1>
+                          <p className="text-muted-foreground">Connect with creators across virtual worlds</p>
+                        </div>
+                      </div>
+
+                      {/* Tabs */}
+                      <Tabs value={currentTab} onValueChange={(value) => setCurrentTab(value as 'all' | 'saved')} className="mb-6">
+                        <TabsList className="grid w-full grid-cols-2 lg:w-auto lg:grid-cols-2">
+                          <TabsTrigger value="all" data-testid="all-posts-tab">All Posts</TabsTrigger>
+                          <TabsTrigger value="saved" data-testid="saved-posts-tab">Saved Posts</TabsTrigger>
+                        </TabsList>
+                      </Tabs>
+                    </div>
+
                     {/* Post Creation Section */}
                     <div className="mb-8">
                       <div className="glass-card rounded-xl p-6 bg-card/50 border border-border/50">
