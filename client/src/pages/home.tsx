@@ -8,6 +8,8 @@ import { featuredItems } from "@/components/featured/types";
 import { CreatePostModal } from "@/components/create-post-modal";
 import vhubHeaderImage from '@assets/VHub.Header.no.font.Light.Page.png';
 import { Link } from "wouter";
+import { TitleWithRule } from "@/components/ui/title-with-rule";
+import { CheckItem } from "@/components/ui/check-item";
 import { 
   BookOpen, 
   Calendar, 
@@ -21,7 +23,12 @@ import {
   Star,
   FileText,
   Heart,
-  Zap
+  Zap,
+  DollarSign,
+  Briefcase,
+  GraduationCap,
+  Sparkles,
+  Check
 } from "lucide-react";
 
 const HomePage = () => {
@@ -408,6 +415,223 @@ const HomePage = () => {
                     </CardContent>
                   </Card>
                 </Link>
+              </div>
+            </section>
+
+            {/* Your Community Awaits Section */}
+            <section className="relative px-6 py-16 overflow-hidden">
+              {/* Ambient background */}
+              <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-purple-400/8 via-violet-500/4 to-transparent blur-[120px]"></div>
+              </div>
+              
+              <div className="relative z-10 max-w-6xl mx-auto">
+                {/* Section Header */}
+                <div className="text-center mb-12">
+                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
+                    Your Community Awaits.
+                  </h1>
+                  <div className="max-w-4xl mx-auto">
+                    <p className="text-xl text-muted-foreground mb-4">
+                      We are dedicated to the platforms you build on.
+                    </p>
+                    <p className="text-lg text-muted-foreground">
+                      Our tools, tutorials, and community are built to support the games you actually create in—turning passion into real-world virtual economies.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Platform Brand Row */}
+                <div className="mb-16">
+                  <div className="flex flex-wrap justify-center items-center gap-6 opacity-60">
+                    {[
+                      'Roblox', 'IMVU', 'Second Life', 'Fortnite', 'Minecraft', 'GTA FiveM', 
+                      'Meta Horizon Worlds', 'VRChat', 'Unity', 'Unreal Engine', 'Elder Scrolls', 
+                      'Fallout', 'Counter-Strike', 'Team Fortress 2', 'Dreams', 'Core', 'The Sims', 'CCinZOI'
+                    ].map((platform) => (
+                      <span 
+                        key={platform} 
+                        className="text-sm font-medium text-muted-foreground tracking-wide"
+                        style={{ letterSpacing: '0.1em' }}
+                      >
+                        {platform}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Two Column Content */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-16">
+                  {/* Left Column */}
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">
+                      You don't have to be a pro to begin
+                    </h2>
+                    <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
+                      VirtuoHub is where beginners actually get started.<br />
+                      From your first steps to your first sale,<br />
+                      we combine structured learning paths, AI-assisted tools, and income-ready features—<br />
+                      so creators grow faster and earn sooner.
+                    </p>
+
+                    {/* Progress Images */}
+                    <div className="flex gap-4 mb-8">
+                      <Card className="enhanced-card hover-lift flex-1">
+                        <CardContent className="p-4">
+                          <div className="aspect-square bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 rounded-lg mb-3 flex items-center justify-center">
+                            <div className="w-16 h-16 bg-white/50 dark:bg-slate-700/50 rounded-full"></div>
+                          </div>
+                          <h4 className="font-semibold text-center text-foreground mb-1">Day 1</h4>
+                          <p className="text-sm text-muted-foreground text-center">Your first steps into 3D creation</p>
+                        </CardContent>
+                      </Card>
+                      
+                      <Card className="enhanced-card hover-lift flex-1">
+                        <CardContent className="p-4">
+                          <div className="aspect-square bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900 dark:to-blue-900 rounded-lg mb-3 flex items-center justify-center">
+                            <div className="w-16 h-16 bg-gradient-cosmic rounded-full"></div>
+                          </div>
+                          <h4 className="font-semibold text-center text-foreground mb-1">Week 4</h4>
+                          <p className="text-sm text-muted-foreground text-center">Rapid progress with guided learning</p>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* What you'll get list */}
+                    <div>
+                      <h3 className="text-xl font-semibold text-foreground mb-4">What you'll get:</h3>
+                      <div className="space-y-3">
+                        <CheckItem>Step-by-step learning paths tailored to your platform</CheckItem>
+                        <CheckItem>AI-powered tools to accelerate your creation process</CheckItem>
+                        <CheckItem>Built-in marketplace to start earning immediately</CheckItem>
+                        <CheckItem>Community support from experienced creators</CheckItem>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column */}
+                  <div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">
+                      Your creativity should pay you back
+                    </h2>
+                    
+                    <div className="space-y-4 mb-12">
+                      <Card className="enhanced-card hover-lift cursor-pointer" data-testid="card-sell-assets">
+                        <CardContent className="p-6">
+                          <div className="flex items-start space-x-4">
+                            <DollarSign 
+                              className="w-8 h-8 mt-1 text-transparent bg-gradient-cosmic bg-clip-text" 
+                              style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} 
+                            />
+                            <div>
+                              <h3 className="text-lg font-semibold text-foreground mb-2">
+                                Sell avatars, 3D models, and digital assets
+                              </h3>
+                              <p className="text-muted-foreground text-sm">
+                                Turn your creations into income through our integrated marketplace
+                              </p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card className="enhanced-card hover-lift cursor-pointer" data-testid="card-build-experiences">
+                        <CardContent className="p-6">
+                          <div className="flex items-start space-x-4">
+                            <Sparkles 
+                              className="w-8 h-8 mt-1 text-transparent bg-gradient-nebula bg-clip-text" 
+                              style={{backgroundImage: 'var(--gradient-nebula)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} 
+                            />
+                            <div>
+                              <h3 className="text-lg font-semibold text-foreground mb-2">
+                                Build and monetize virtual experiences
+                              </h3>
+                              <p className="text-muted-foreground text-sm">
+                                Create immersive worlds and games that generate revenue
+                              </p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <Card className="enhanced-card hover-lift cursor-pointer" data-testid="card-teach-workshops">
+                        <CardContent className="p-6">
+                          <div className="flex items-start space-x-4">
+                            <GraduationCap 
+                              className="w-8 h-8 mt-1 text-transparent bg-gradient-aurora bg-clip-text" 
+                              style={{backgroundImage: 'var(--gradient-aurora)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} 
+                            />
+                            <div>
+                              <h3 className="text-lg font-semibold text-foreground mb-2">
+                                Teach others through workshops and courses
+                              </h3>
+                              <p className="text-muted-foreground text-sm">
+                                Share your expertise and build a teaching income stream
+                              </p>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+
+                    {/* We built what we needed */}
+                    <div>
+                      <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">
+                        We built what we needed
+                      </h2>
+                      
+                      <div className="space-y-4">
+                        <Card className="enhanced-card" data-testid="quote-creators">
+                          <CardContent className="p-4">
+                            <p className="text-muted-foreground italic">
+                              "Why isn't there a site just for creators like us?"
+                            </p>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="enhanced-card" data-testid="quote-selling">
+                          <CardContent className="p-4">
+                            <p className="text-muted-foreground italic">
+                              "I want to sell my rig but Upwork isn't it..."
+                            </p>
+                          </CardContent>
+                        </Card>
+
+                        <Card className="enhanced-card" data-testid="quote-workshop">
+                          <CardContent className="p-4">
+                            <p className="text-muted-foreground italic">
+                              "Where do I even find students for my workshop?"
+                            </p>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CTA Band */}
+                <div className="text-center">
+                  <div className="max-w-2xl mx-auto mb-8">
+                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+                      The industry is changing fast
+                    </h2>
+                    <p className="text-lg text-muted-foreground">
+                      AI • VR • Avatars • UGC platforms
+                    </p>
+                    <p className="text-base text-muted-foreground mt-2">
+                      VirtuoHub helps you move with it.
+                    </p>
+                  </div>
+                  
+                  <Button 
+                    asChild 
+                    size="lg" 
+                    className="px-10 py-4 text-lg font-semibold bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-lg hover:shadow-xl transition-all"
+                    data-testid="button-start-journey"
+                  >
+                    <Link href="/">Start Your Journey <ArrowRight className="ml-2 w-5 h-5" /></Link>
+                  </Button>
+                </div>
               </div>
             </section>
 
