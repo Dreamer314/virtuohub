@@ -23,13 +23,14 @@ const HomePage = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="w-full">
+      <div className="relative w-full">
         {/* Extended glow effect that affects the whole page */}
-        <div className="absolute -top-20 -left-20 -right-20 h-96 pointer-events-none z-0">
-          <div className="w-full h-full bg-gradient-to-br from-cyan-400/15 via-purple-500/10 to-orange-400/15 blur-3xl"></div>
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <div className="absolute -top-20 -left-20 -right-20 h-96 bg-gradient-to-br from-cyan-400/15 via-purple-500/10 to-orange-400/15 blur-3xl"></div>
         </div>
         
-        <div className="py-8 relative z-10 px-4 lg:px-8">
+        <main className="relative z-10">
+          <div className="py-8 px-4 lg:px-8">
           {/* Hero Section */}
           <div className="mb-8">
             <div className="glass-card rounded-2xl overflow-hidden hover-lift relative" data-testid="hero-section">
@@ -301,9 +302,10 @@ const HomePage = () => {
                 </Card>
               </div>
             </section>
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
 
       <Footer />
     </div>
