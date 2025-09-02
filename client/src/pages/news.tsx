@@ -1,5 +1,6 @@
 import React from 'react';
-import { Newspaper, ExternalLink } from 'lucide-react';
+import { Newspaper, ExternalLink, ArrowRight } from 'lucide-react';
+import { Link } from 'wouter';
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
@@ -33,10 +34,9 @@ const NewsPage: React.FC = () => {
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       {/* Animated Background Elements */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="floating-element absolute top-28 left-12 w-22 h-22 bg-blue-500/20 rounded-full blur-xl"></div>
-        <div className="floating-element absolute top-56 right-16 w-20 h-20 bg-indigo-500/15 rounded-full blur-xl" style={{ animationDelay: '-2.9s' }}></div>
-        <div className="floating-element absolute bottom-32 left-1/5 w-18 h-18 bg-sky-500/20 rounded-full blur-xl" style={{ animationDelay: '-4.7s' }}></div>
-        <div className="floating-element absolute top-88 right-1/4 w-24 h-24 bg-slate-500/15 rounded-full blur-xl" style={{ animationDelay: '-1.3s' }}></div>
+        <div className="floating-element absolute top-20 left-10 w-16 h-16 bg-primary/20 rounded-full blur-xl"></div>
+        <div className="floating-element absolute top-40 right-20 w-24 h-24 bg-accent/20 rounded-full blur-xl" style={{ animationDelay: '-2s' }}></div>
+        <div className="floating-element absolute bottom-20 left-1/4 w-20 h-20 bg-primary/15 rounded-full blur-xl" style={{ animationDelay: '-4s' }}></div>
       </div>
 
       <Header onCreatePost={() => {}} />
@@ -175,6 +175,12 @@ const NewsPage: React.FC = () => {
                               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
                                 <span>Dec 28, 2024</span> • <span>2 min read</span>
                               </div>
+                              <div className="mb-4">
+                                <Link href="/news/unity-vr-creator-hub" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
+                                  Read Full Article
+                                  <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </Link>
+                              </div>
                               <EngagementSection 
                                 contentId="news-unity-vr-hub"
                                 contentType="news"
@@ -200,6 +206,12 @@ const NewsPage: React.FC = () => {
                               </p>
                               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
                                 <span>Dec 26, 2024</span> • <span>4 min read</span>
+                              </div>
+                              <div className="mb-4">
+                                <Link href="/news/roblox-premium-assets" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
+                                  Read Full Article
+                                  <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </Link>
                               </div>
                               <EngagementSection 
                                 contentId="news-roblox-premium"
@@ -227,6 +239,12 @@ const NewsPage: React.FC = () => {
                               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
                                 <span>Dec 24, 2024</span> • <span>5 min read</span>
                               </div>
+                              <div className="mb-4">
+                                <Link href="/news/vrchat-creator-economy-beta" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
+                                  Read Full Article
+                                  <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </Link>
+                              </div>
                               <EngagementSection 
                                 contentId="news-vrchat-economy"
                                 contentType="news"
@@ -252,6 +270,12 @@ const NewsPage: React.FC = () => {
                               </p>
                               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
                                 <span>Dec 22, 2024</span> • <span>6 min read</span>
+                              </div>
+                              <div className="mb-4">
+                                <Link href="/news/virtual-worlds-market-report" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-yellow-700 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
+                                  Read Full Article
+                                  <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </Link>
                               </div>
                               <EngagementSection 
                                 contentId="news-market-report"

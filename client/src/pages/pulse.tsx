@@ -25,11 +25,9 @@ const PulsePage: React.FC = () => {
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       {/* Animated Background Elements */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="floating-element absolute top-24 left-12 w-24 h-24 bg-cyan-500/20 rounded-full blur-xl"></div>
-        <div className="floating-element absolute top-48 right-20 w-18 h-18 bg-blue-500/15 rounded-full blur-xl" style={{ animationDelay: '-2.8s' }}></div>
-        <div className="floating-element absolute bottom-28 left-1/5 w-20 h-20 bg-indigo-500/20 rounded-full blur-xl" style={{ animationDelay: '-4.2s' }}></div>
-        <div className="floating-element absolute top-72 right-1/5 w-16 h-16 bg-teal-500/15 rounded-full blur-xl" style={{ animationDelay: '-1.2s' }}></div>
-        <div className="floating-element absolute bottom-52 right-12 w-22 h-22 bg-cyan-400/15 rounded-full blur-xl" style={{ animationDelay: '-6s' }}></div>
+        <div className="floating-element absolute top-20 left-10 w-16 h-16 bg-primary/20 rounded-full blur-xl"></div>
+        <div className="floating-element absolute top-40 right-20 w-24 h-24 bg-accent/20 rounded-full blur-xl" style={{ animationDelay: '-2s' }}></div>
+        <div className="floating-element absolute bottom-20 left-1/4 w-20 h-20 bg-primary/15 rounded-full blur-xl" style={{ animationDelay: '-4s' }}></div>
       </div>
 
       <Header onCreatePost={() => {}} />
