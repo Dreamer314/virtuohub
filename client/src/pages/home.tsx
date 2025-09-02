@@ -53,7 +53,7 @@ const HomePage = () => {
         <main className="relative z-10">
           <div className="py-8 px-4 lg:px-8">
           {/* Hero Section */}
-          <div className="mb-8">
+          <div className="mb-20">
             <div className="glass-card rounded-2xl overflow-hidden hover-lift relative" data-testid="hero-section">
               <div className="relative min-h-[576px] flex items-center justify-center hero-glow-container">
                 <img 
@@ -425,7 +425,7 @@ const HomePage = () => {
             </section>
 
             {/* Your Community Awaits Section */}
-            <section className="relative px-6 py-20 overflow-hidden">
+            <section className="relative px-6 py-20 overflow-hidden mb-20">
               {/* Complex ambient background with depth */}
               <div className="absolute inset-0 pointer-events-none overflow-hidden">
                 {/* Primary gradient behind right column */}
@@ -657,7 +657,7 @@ const HomePage = () => {
 
 
             {/* Featured Content Section */}
-            <section className="px-6 py-16">
+            <section className="px-6 py-16 mb-20">
               <div className="text-center mb-8">
                 <div className="flex items-center justify-center mb-6">
                   <div className="flex items-center space-x-2 w-full max-w-4xl mx-auto">
@@ -679,7 +679,7 @@ const HomePage = () => {
             </section>
 
             {/* Pulse Teaser Section */}
-            <section className="px-6 py-12">
+            <section className="px-6 py-12 mb-16">
               <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20">
                 <CardContent className="p-8 text-center">
                   <TrendingUp className="w-12 h-12 text-primary mx-auto mb-4" />
@@ -695,7 +695,7 @@ const HomePage = () => {
             </section>
 
             {/* Community Highlights */}
-            <section className="px-6 py-16">
+            <section className="px-6 py-16 mb-20">
               <h2 className="text-3xl md:text-4xl font-bold text-foreground text-center mb-12">
                 Upcoming Events
               </h2>
