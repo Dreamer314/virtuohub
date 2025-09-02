@@ -268,7 +268,7 @@ const SpotlightDetailPage: React.FC = () => {
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Spotlight not found</h1>
-          <Link href="/spotlights" className="text-yellow-500 hover:underline">
+          <Link href="/spotlights" className="text-primary hover:underline">
             ← Back to Spotlights
           </Link>
         </div>
@@ -306,22 +306,22 @@ const SpotlightDetailPage: React.FC = () => {
               <div className="max-w-4xl mx-auto">
                 
                 {/* Back Navigation */}
-                <Link href="/spotlights" className="inline-flex items-center text-yellow-500 hover:text-yellow-400 transition-colors mb-8 group">
+                <Link href="/spotlights" className="inline-flex items-center text-primary hover:text-primary/80 transition-colors mb-8 group">
                   <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
                   Back to Spotlights
                 </Link>
 
                 {/* Profile Header */}
-                <article className="glass-card rounded-xl overflow-hidden border border-yellow-500/30 mb-8">
+                <article className="glass-card rounded-xl overflow-hidden border border-primary/30 mb-8">
                   <div className={`w-full h-80 bg-gradient-to-br ${spotlight.heroImage} relative flex items-center justify-center`}>
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
                     <div className="relative z-10 text-center px-8">
                       <span className="text-6xl mb-4 block">{spotlight.heroIcon}</span>
-                      <span className="inline-block px-3 py-1 text-xs font-medium bg-yellow-500/30 text-yellow-200 border border-yellow-400/30 rounded-full mb-4">Creator Spotlight</span>
+                      <span className="inline-block px-3 py-1 text-xs font-medium bg-primary/30 text-primary border border-primary/30 rounded-full mb-4">Creator Spotlight</span>
                       <h1 className="text-4xl lg:text-5xl font-bold text-white mb-2">
                         {spotlight.name}
                       </h1>
-                      <p className="text-yellow-200 text-xl mb-2">{spotlight.role}</p>
+                      <p className="text-primary text-xl mb-2">{spotlight.role}</p>
                       <p className="text-white/80 text-lg">{spotlight.stats}</p>
                     </div>
                   </div>
@@ -340,7 +340,7 @@ const SpotlightDetailPage: React.FC = () => {
 
                       <div className="flex flex-wrap gap-2">
                         {spotlight.tags.map((tag, index) => (
-                          <span key={index} className="px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-full text-sm">
+                          <span key={index} className="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm">
                             {tag}
                           </span>
                         ))}
@@ -350,17 +350,17 @@ const SpotlightDetailPage: React.FC = () => {
                     {/* Experience */}
                     <div className="mb-8">
                       <h3 className="text-2xl font-semibold text-foreground mb-6 flex items-center gap-2">
-                        <Award className="w-6 h-6 text-yellow-500" />
+                        <Award className="w-6 h-6 text-primary" />
                         Experience
                       </h3>
                       <div className="space-y-6">
                         {spotlight.experience.map((exp, index) => (
-                          <div key={index} className="border-l-2 border-yellow-500/30 pl-6">
+                          <div key={index} className="border-l-2 border-primary/30 pl-6">
                             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-2">
                               <h4 className="text-lg font-semibold text-foreground">{exp.title}</h4>
                               <span className="text-sm text-muted-foreground">{exp.period}</span>
                             </div>
-                            <p className="text-yellow-400 mb-2">{exp.company}</p>
+                            <p className="text-primary mb-2">{exp.company}</p>
                             <p className="text-muted-foreground">{exp.description}</p>
                           </div>
                         ))}
@@ -376,17 +376,17 @@ const SpotlightDetailPage: React.FC = () => {
                             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-4">
                               <div>
                                 <h4 className="text-xl font-semibold text-foreground mb-1">{item.title}</h4>
-                                <p className="text-yellow-400 mb-2">{item.type}</p>
+                                <p className="text-primary mb-2">{item.type}</p>
                                 <p className="text-muted-foreground mb-4">{item.description}</p>
                               </div>
                               <div className="text-right lg:ml-4">
-                                <div className="text-2xl font-bold text-yellow-500">{item.visits}</div>
+                                <div className="text-2xl font-bold text-primary">{item.visits}</div>
                                 <div className="text-sm text-muted-foreground">visits</div>
                               </div>
                             </div>
                             <div className="flex flex-wrap gap-2">
                               {item.features.map((feature, idx) => (
-                                <span key={idx} className="px-2 py-1 bg-yellow-500/10 text-yellow-400 rounded text-xs">
+                                <span key={idx} className="px-2 py-1 bg-primary/10 text-primary rounded text-xs">
                                   {feature}
                                 </span>
                               ))}
@@ -401,8 +401,8 @@ const SpotlightDetailPage: React.FC = () => {
                       <h3 className="text-2xl font-semibold text-foreground mb-6">Achievements</h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {spotlight.achievements.map((achievement, index) => (
-                          <div key={index} className="flex items-center gap-3 p-4 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 rounded-lg border border-yellow-500/20">
-                            <Award className="w-5 h-5 text-yellow-500 flex-shrink-0" />
+                          <div key={index} className="flex items-center gap-3 p-4 bg-gradient-to-r from-primary/10 to-accent/10 rounded-lg border border-primary/20">
+                            <Award className="w-5 h-5 text-primary flex-shrink-0" />
                             <span className="text-muted-foreground">{achievement}</span>
                           </div>
                         ))}

@@ -285,7 +285,7 @@ export default function ThreadPage() {
                     <Card key={comment.id} className="glass-card">
                       <CardContent className="p-6">
                         <div className="flex space-x-4">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-semibold text-sm">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-semibold text-sm">
                             {comment.author?.displayName?.[0] || 'A'}
                           </div>
                           <div className="flex-1">

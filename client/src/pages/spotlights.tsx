@@ -71,14 +71,14 @@ const SpotlightsPage: React.FC = () => {
                   {/* Page Header */}
                   <div className="mb-8">
                     <div className="flex items-center space-x-2 mb-8">
-                      <div className="h-0.5 bg-gradient-to-r from-transparent via-yellow-500 to-transparent flex-1"></div>
-                      <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-yellow-500/10 via-yellow-500/20 to-yellow-500/10 rounded-full border border-yellow-500/30">
-                        <Star className="w-8 h-8 text-yellow-500" />
+                      <div className="h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
+                      <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-primary/10 via-primary/20 to-primary/10 rounded-full border border-primary/30">
+                        <Star className="w-8 h-8 text-primary" />
                         <h1 className="text-5xl font-bold text-foreground tracking-tight">
                           Spotlights
                         </h1>
                       </div>
-                      <div className="h-0.5 bg-gradient-to-r from-yellow-500 via-transparent to-transparent flex-1"></div>
+                      <div className="h-0.5 bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                     </div>
                     <p className="text-center text-lg text-muted-foreground mb-8">
                       Profiles of creators, studios, and brands shaping the space
@@ -94,7 +94,7 @@ const SpotlightsPage: React.FC = () => {
                     ) : (
                       <>
                         {/* Featured Spotlight */}
-                        <article className="glass-card rounded-xl border border-yellow-500/30 overflow-hidden">
+                        <article className="glass-card rounded-xl border border-primary/30 overflow-hidden">
                           <div className="flex flex-col lg:flex-row gap-8">
                             <div className="lg:w-1/3">
                               <div className="w-full h-64 lg:h-80 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-xl flex items-center justify-center relative overflow-hidden">
@@ -108,7 +108,7 @@ const SpotlightsPage: React.FC = () => {
                             </div>
                             <div className="lg:w-2/3 p-8">
                               <div className="mb-4">
-                                <span className="inline-block px-3 py-1 text-xs font-medium bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 rounded-full">Spotlight</span>
+                                <span className="inline-block px-3 py-1 text-xs font-medium bg-primary/20 text-primary border border-primary/30 rounded-full">Spotlight</span>
                               </div>
                               <h2 className="text-3xl font-bold text-foreground mb-3">Emma Thompson</h2>
                               <p className="text-lg text-muted-foreground mb-6">VR Environment Artist & World Builder</p>
@@ -133,14 +133,14 @@ const SpotlightsPage: React.FC = () => {
                               </div>
 
                               <div className="flex flex-wrap gap-3 mb-6">
-                                <span className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">VRChat</span>
-                                <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">Unity</span>
-                                <span className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-sm">Blender</span>
+                                <span className="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm">VRChat</span>
+                                <span className="px-3 py-1 bg-accent/20 text-accent rounded-full text-sm">Unity</span>
+                                <span className="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm">Blender</span>
                               </div>
 
                               {/* View Full Spotlight Button */}
                               <div className="mb-6">
-                                <Link href="/spotlight/emma-thompson-vr-artist" className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white font-medium rounded-lg transition-all duration-300 group">
+                                <Link href="/spotlight/emma-thompson-vr-artist" className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-medium rounded-lg transition-all duration-300 group">
                                   View Full Spotlight
                                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                                 </Link>
@@ -183,17 +183,17 @@ const SpotlightsPage: React.FC = () => {
                               </div>
                             </div>
                             <div className="p-6">
-                              <span className="inline-block px-2 py-1 text-xs font-medium bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 rounded-full mb-3">Studio Spotlight</span>
+                              <span className="inline-block px-2 py-1 text-xs font-medium bg-primary/20 text-primary border border-primary/30 rounded-full mb-3">Studio Spotlight</span>
                               <h3 className="text-xl font-semibold text-foreground mb-2">PixelCraft Studios</h3>
                               <p className="text-sm text-muted-foreground mb-4">
                                 Independent game studio creating immersive Roblox experiences with over 10M total plays.
                               </p>
                               <div className="flex gap-2 mb-4">
-                                <span className="px-2 py-1 bg-orange-500/20 text-orange-300 rounded text-xs">Roblox</span>
+                                <span className="px-2 py-1 bg-accent/20 text-accent rounded text-xs">Roblox</span>
                                 <span className="px-2 py-1 bg-red-500/20 text-red-300 rounded text-xs">Game Design</span>
                               </div>
                               <div className="mb-4">
-                                <Link href="/spotlight/pixelcraft-studios" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
+                                <Link href="/spotlight/pixelcraft-studios" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
                                   View Full Spotlight
                                   <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
                                 </Link>
@@ -226,7 +226,7 @@ const SpotlightsPage: React.FC = () => {
                                 <span className="px-2 py-1 bg-purple-500/20 text-purple-300 rounded text-xs">Unity</span>
                               </div>
                               <div className="mb-4">
-                                <Link href="/spotlight/virtualforge-ai-tool" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
+                                <Link href="/spotlight/virtualforge-ai-tool" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
                                   View Full Spotlight
                                   <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
                                 </Link>

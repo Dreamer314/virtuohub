@@ -63,14 +63,14 @@ const GuidesPage: React.FC = () => {
                 <main>
                   <div className="mb-8">
                     <div className="flex items-center space-x-2 mb-8">
-                      <div className="h-0.5 bg-gradient-to-r from-transparent via-green-500 to-transparent flex-1"></div>
-                      <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-green-500/10 via-green-500/20 to-green-500/10 rounded-full border border-green-500/30">
-                        <BookOpen className="w-8 h-8 text-green-500" />
+                      <div className="h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
+                      <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-primary/10 via-primary/20 to-primary/10 rounded-full border border-primary/30">
+                        <BookOpen className="w-8 h-8 text-primary" />
                         <h1 className="text-5xl font-bold text-foreground tracking-tight">
                           Tips & Guides
                         </h1>
                       </div>
-                      <div className="h-0.5 bg-gradient-to-r from-green-500 via-transparent to-transparent flex-1"></div>
+                      <div className="h-0.5 bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                     </div>
                     <p className="text-center text-lg text-muted-foreground mb-8">
                       Tutorials and playbooks to level up

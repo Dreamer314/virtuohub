@@ -152,7 +152,7 @@ const InterviewsPage: React.FC = () => {
 
                             {/* Read Full Interview Button */}
                             <div className="mb-6">
-                              <Link href="/interview/alex-chen-vrchat-worlds" className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-medium rounded-lg transition-all duration-300 group">
+                              <Link href="/interview/alex-chen-vrchat-worlds" className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-medium rounded-lg transition-all duration-300 group">
                                 Read Full Interview
                                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                               </Link>
@@ -199,7 +199,7 @@ const InterviewsPage: React.FC = () => {
                                 <span>8 min read</span> • <span>Dec 28, 2024</span>
                               </div>
                               <div className="mb-4">
-                                <Link href="/interview/maya-patel-virtual-fashion" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
+                                <Link href="/interview/maya-patel-virtual-fashion" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
                                   Read Full Interview
                                   <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
                                 </Link>
@@ -227,7 +227,7 @@ const InterviewsPage: React.FC = () => {
                                 <span>12 min read</span> • <span>Dec 25, 2024</span>
                               </div>
                               <div className="mb-4">
-                                <Link href="/interview/tom-richards-hobbyist-studio" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
+                                <Link href="/interview/tom-richards-hobbyist-studio" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
                                   Read Full Interview
                                   <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
                                 </Link>

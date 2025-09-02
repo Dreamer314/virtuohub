@@ -56,14 +56,14 @@ const PulsePage: React.FC = () => {
                 <main>
                   <div className="mb-8">
                     <div className="flex items-center space-x-2 mb-8">
-                      <div className="h-0.5 bg-gradient-to-r from-transparent via-cyan-500 to-transparent flex-1"></div>
-                      <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-cyan-500/10 via-cyan-500/20 to-cyan-500/10 rounded-full border border-cyan-500/30">
-                        <Zap className="w-8 h-8 text-cyan-500" />
+                      <div className="h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
+                      <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-primary/10 via-primary/20 to-primary/10 rounded-full border border-primary/30">
+                        <Zap className="w-8 h-8 text-primary" />
                         <h1 className="text-5xl font-bold text-foreground tracking-tight">
                           Pulse Reports
                         </h1>
                       </div>
-                      <div className="h-0.5 bg-gradient-to-r from-cyan-500 via-transparent to-transparent flex-1"></div>
+                      <div className="h-0.5 bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                     </div>
                     <p className="text-center text-lg text-muted-foreground mb-8">
                       Industry data collection center and poll results

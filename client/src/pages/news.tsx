@@ -65,14 +65,14 @@ const NewsPage: React.FC = () => {
                 <main>
                   <div className="mb-8">
                     <div className="flex items-center space-x-2 mb-8">
-                      <div className="h-0.5 bg-gradient-to-r from-transparent via-blue-500 to-transparent flex-1"></div>
-                      <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-blue-500/10 via-blue-500/20 to-blue-500/10 rounded-full border border-blue-500/30">
-                        <Newspaper className="w-8 h-8 text-blue-500" />
+                      <div className="h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
+                      <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-primary/10 via-primary/20 to-primary/10 rounded-full border border-primary/30">
+                        <Newspaper className="w-8 h-8 text-primary" />
                         <h1 className="text-5xl font-bold text-foreground tracking-tight">
                           Industry News
                         </h1>
                       </div>
-                      <div className="h-0.5 bg-gradient-to-r from-blue-500 via-transparent to-transparent flex-1"></div>
+                      <div className="h-0.5 bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                     </div>
                     <p className="text-center text-lg text-muted-foreground mb-8">
                       What changed and why it matters
@@ -87,7 +87,7 @@ const NewsPage: React.FC = () => {
                     ) : (
                       <>
                         {/* Featured News */}
-                        <article className="glass-card rounded-xl border border-blue-500/30 overflow-hidden">
+                        <article className="glass-card rounded-xl border border-primary/30 overflow-hidden">
                           <div className="w-full h-64 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 relative flex items-center justify-center">
                             <div className="absolute inset-0 bg-black/30"></div>
                             <div className="relative z-10 text-center px-8">
@@ -176,7 +176,7 @@ const NewsPage: React.FC = () => {
                                 <span>Dec 28, 2024</span> • <span>2 min read</span>
                               </div>
                               <div className="mb-4">
-                                <Link href="/news/unity-vr-creator-hub" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
+                                <Link href="/news/unity-vr-creator-hub" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
                                   Read Full Article
                                   <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
                                 </Link>
@@ -208,7 +208,7 @@ const NewsPage: React.FC = () => {
                                 <span>Dec 26, 2024</span> • <span>4 min read</span>
                               </div>
                               <div className="mb-4">
-                                <Link href="/news/roblox-premium-assets" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
+                                <Link href="/news/roblox-premium-assets" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
                                   Read Full Article
                                   <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
                                 </Link>
@@ -240,7 +240,7 @@ const NewsPage: React.FC = () => {
                                 <span>Dec 24, 2024</span> • <span>5 min read</span>
                               </div>
                               <div className="mb-4">
-                                <Link href="/news/vrchat-creator-economy-beta" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
+                                <Link href="/news/vrchat-creator-economy-beta" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
                                   Read Full Article
                                   <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
                                 </Link>
@@ -272,7 +272,7 @@ const NewsPage: React.FC = () => {
                                 <span>Dec 22, 2024</span> • <span>6 min read</span>
                               </div>
                               <div className="mb-4">
-                                <Link href="/news/virtual-worlds-market-report" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-orange-600 to-yellow-600 hover:from-orange-700 hover:to-yellow-700 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
+                                <Link href="/news/virtual-worlds-market-report" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
                                   Read Full Article
                                   <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
                                 </Link>
