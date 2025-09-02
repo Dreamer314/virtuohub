@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
 import { Moon, Sun, Box, MessageCircle, Bell, Plus, Menu, X } from "lucide-react";
-import { useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { useState } from "react";
 
 interface HeaderProps {
@@ -37,11 +37,15 @@ export function Header({ onCreatePost }: HeaderProps) {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center justify-center space-x-8">
-            <a href="#" className="text-foreground hover:text-primary transition-colors font-medium text-base" data-testid="nav-home">Home</a>
+            <Link href="/home" className={`transition-colors font-medium text-base ${
+              location === '/home' ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+            }`} data-testid="nav-home">Home</Link>
             <a href="#" className="text-foreground hover:text-primary transition-colors font-medium text-base" data-testid="nav-learn">Learn</a>
             <a href="#" className="text-foreground hover:text-primary transition-colors font-medium text-base" data-testid="nav-earn">Earn</a>
             <a href="#" className="text-foreground hover:text-primary transition-colors font-medium text-base" data-testid="nav-connect">Connect</a>
-            <a href="#" className="text-primary font-semibold text-base" data-testid="nav-community">Community</a>
+            <Link href="/" className={`transition-colors font-medium text-base ${
+              location === '/' ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+            }`} data-testid="nav-community">Community</Link>
           </nav>
 
           {/* Desktop Actions */}
