@@ -486,10 +486,7 @@ const HomePage = () => {
                       You don't have to be a pro to begin
                     </h2>
                     <p className="text-base text-muted-foreground mb-8 leading-relaxed">
-                      VirtuoHub is where beginners actually get started.<br />
-                      From your first steps to your first sale,<br />
-                      we combine structured learning paths, AI-assisted tools, and income-ready features—<br />
-                      so creators grow faster and earn sooner.
+                      Beginners get unstuck and veterans find collaborators. Share work in progress, ask for help, and learn how the industry actually works.
                     </p>
 
                     {/* Large Progress Images with Arrow */}
@@ -507,8 +504,8 @@ const HomePage = () => {
                           </CardContent>
                         </Card>
                         <div className="mt-3 text-center">
-                          <h4 className="font-bold text-base text-foreground mb-1">Day 1</h4>
-                          <p className="text-sm text-muted-foreground">Your first steps into 3D creation</p>
+                          <h4 className="font-bold text-base text-foreground mb-1">Start here</h4>
+                          <p className="text-sm text-muted-foreground">Your first WIP into 3D and worldbuilding.</p>
                         </div>
                       </div>
                       
@@ -530,8 +527,8 @@ const HomePage = () => {
                           </CardContent>
                         </Card>
                         <div className="mt-3 text-center">
-                          <h4 className="font-bold text-base text-foreground mb-1">Week 4</h4>
-                          <p className="text-sm text-muted-foreground">Rapid progress with guided learning</p>
+                          <h4 className="font-bold text-base text-foreground mb-1">Keep growing</h4>
+                          <p className="text-sm text-muted-foreground">Better every week with peer feedback and practical tips.</p>
                         </div>
                       </div>
                     </div>
@@ -542,10 +539,9 @@ const HomePage = () => {
                         What you'll get:
                       </h3>
                       <div className="space-y-3">
-                        <CheckItem>Step-by-step learning paths tailored to your platform</CheckItem>
-                        <CheckItem>AI-powered tools to accelerate your creation process</CheckItem>
-                        <CheckItem>Built-in marketplace to start earning immediately</CheckItem>
-                        <CheckItem>Community support from experienced creators</CheckItem>
+                        <CheckItem>Organized threads with categories like WIP, Help & Feedback, Jobs & Gigs, Assets for Sale, Events, and General</CheckItem>
+                        <CheckItem>Editorial you can trust: Interviews, Spotlights, Tips & Guides, Industry News, and Pulse Reports</CheckItem>
+                        <CheckItem>Lightweight profiles, simple DMs, and polls that capture the community's voice</CheckItem>
                       </div>
                     </div>
                   </div>
@@ -563,7 +559,7 @@ const HomePage = () => {
                         </div>
                         <div>
                           <h3 className="text-base font-semibold text-foreground mb-1">
-                            Sell avatars, 3D models, and digital assets
+                            Showcase and sell your work
                           </h3>
                         </div>
                       </div>
@@ -574,7 +570,7 @@ const HomePage = () => {
                         </div>
                         <div>
                           <h3 className="text-base font-semibold text-foreground mb-1">
-                            Build and monetize virtual experiences
+                            Build with collaborators
                           </h3>
                         </div>
                       </div>
@@ -585,7 +581,7 @@ const HomePage = () => {
                         </div>
                         <div>
                           <h3 className="text-base font-semibold text-foreground mb-1">
-                            Teach others through workshops and courses
+                            Teach and share what you know
                           </h3>
                         </div>
                       </div>
@@ -608,7 +604,7 @@ const HomePage = () => {
                         <div className="flex items-start gap-3" data-testid="quote-selling">
                           <div className="flex-shrink-0 w-2 h-2 rounded-full bg-purple-500 mt-2"></div>
                           <p className="text-base text-muted-foreground italic">
-                            "I want to sell my rig but Upwork isn't it..."
+                            "WIP + feedback is how I actually get better — not another algorithm."
                           </p>
                         </div>
 
