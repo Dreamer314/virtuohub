@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import Community from "@/pages/community";
+import HomePage from "@/pages/home";
 import ArticlePage from "@/pages/article";
 import InsightsPage from "@/pages/insights";
 import ThreadPage from "@/pages/thread";
@@ -22,7 +23,7 @@ import NotFound from "@/pages/not-found";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Community} />
+      <Route path="/" component={HomePage} />
       <Route path="/community" component={Community} />
       <Route path="/spotlights" component={SpotlightsPage} />
       <Route path="/spotlight/:id" component={SpotlightDetailPage} />
