@@ -128,10 +128,10 @@ const HomePage = () => {
                       Share progress, get eyes on your build, and track iterations.
                     </p>
                     <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm" className="bg-gradient-to-r from-slate-50 to-slate-100 hover:from-slate-100 hover:to-slate-200 border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-wip">
+                      <Button asChild variant="outline" size="sm" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-wip">
                         <Link href="/?tag=wip">Browse</Link>
                       </Button>
-                      <Button size="sm" className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 shadow-lg hover:shadow-xl transition-all" data-testid="button-start-wip">Start a thread</Button>
+                      <Button size="sm" className="bg-gradient-aurora hover:bg-gradient-aurora-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-wip">Start Thread</Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -146,10 +146,10 @@ const HomePage = () => {
                       Ask questions, debug blockers, and get quick reviews.
                     </p>
                     <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm" className="bg-gradient-to-r from-slate-50 to-slate-100 hover:from-slate-100 hover:to-slate-200 border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-help">
+                      <Button asChild variant="outline" size="sm" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-help">
                         <Link href="/?tag=help-feedback">Browse</Link>
                       </Button>
-                      <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all" data-testid="button-start-help">Start a thread</Button>
+                      <Button size="sm" className="bg-gradient-nebula hover:bg-gradient-nebula-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-help">Start Thread</Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -164,10 +164,10 @@ const HomePage = () => {
                       Post step-by-step walkthroughs and quick tips.
                     </p>
                     <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm" className="bg-gradient-to-r from-slate-50 to-slate-100 hover:from-slate-100 hover:to-slate-200 border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-tutorials">
+                      <Button asChild variant="outline" size="sm" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-tutorials">
                         <Link href="/?tag=tutorials-guides">Browse</Link>
                       </Button>
-                      <Button size="sm" className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all" data-testid="button-start-tutorial">Start a thread</Button>
+                      <Button size="sm" className="bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-tutorial">Start Thread</Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -182,10 +182,10 @@ const HomePage = () => {
                       Hire talent or offer your services.
                     </p>
                     <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm" className="bg-gradient-to-r from-slate-50 to-slate-100 hover:from-slate-100 hover:to-slate-200 border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-jobs">
+                      <Button asChild variant="outline" size="sm" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-jobs">
                         <Link href="/?tag=jobs-gigs">Browse</Link>
                       </Button>
-                      <Button size="sm" className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all" data-testid="button-start-job">Start a thread</Button>
+                      <Button size="sm" className="bg-gradient-aurora hover:bg-gradient-aurora-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-job">Start Thread</Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -200,10 +200,10 @@ const HomePage = () => {
                       List avatars, props, shaders, tools, and more.
                     </p>
                     <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm" className="bg-gradient-to-r from-slate-50 to-slate-100 hover:from-slate-100 hover:to-slate-200 border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-assets">
+                      <Button asChild variant="outline" size="sm" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-assets">
                         <Link href="/?tag=assets-for-sale">Browse</Link>
                       </Button>
-                      <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 shadow-lg hover:shadow-xl transition-all" data-testid="button-start-asset">Start a thread</Button>
+                      <Button size="sm" className="bg-gradient-nebula hover:bg-gradient-nebula-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-asset">Start Thread</Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -218,10 +218,10 @@ const HomePage = () => {
                       Find collaborators or recruit for a project.
                     </p>
                     <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm" className="bg-gradient-to-r from-slate-50 to-slate-100 hover:from-slate-100 hover:to-slate-200 border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-collabs">
+                      <Button asChild variant="outline" size="sm" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-collabs">
                         <Link href="/?tag=collabs-teams">Browse</Link>
                       </Button>
-                      <Button size="sm" className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shadow-lg hover:shadow-xl transition-all" data-testid="button-start-collab">Start a thread</Button>
+                      <Button size="sm" className="bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-collab">Start Thread</Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -236,10 +236,10 @@ const HomePage = () => {
                       Promote a session, stream, or in-person meetup.
                     </p>
                     <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm" className="bg-gradient-to-r from-slate-50 to-slate-100 hover:from-slate-100 hover:to-slate-200 border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-events-cat">
+                      <Button asChild variant="outline" size="sm" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-events-cat">
                         <Link href="/?tag=events-workshops">Browse</Link>
                       </Button>
-                      <Button size="sm" className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 shadow-lg hover:shadow-xl transition-all" data-testid="button-start-event">Start a thread</Button>
+                      <Button size="sm" className="bg-gradient-aurora hover:bg-gradient-aurora-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-event">Start Thread</Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -254,10 +254,10 @@ const HomePage = () => {
                       Roblox, VRChat, Horizon, Second Life, and more.
                     </p>
                     <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm" className="bg-gradient-to-r from-slate-50 to-slate-100 hover:from-slate-100 hover:to-slate-200 border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-platform">
+                      <Button asChild variant="outline" size="sm" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-platform">
                         <Link href="/?tag=platform-qa">Browse</Link>
                       </Button>
-                      <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all" data-testid="button-start-platform">Start a thread</Button>
+                      <Button size="sm" className="bg-gradient-nebula hover:bg-gradient-nebula-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-platform">Start Thread</Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -272,10 +272,10 @@ const HomePage = () => {
                       Anything that doesn't fit the other buckets.
                     </p>
                     <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm" className="bg-gradient-to-r from-slate-50 to-slate-100 hover:from-slate-100 hover:to-slate-200 border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-general">
+                      <Button asChild variant="outline" size="sm" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-general">
                         <Link href="/?tag=general">Browse</Link>
                       </Button>
-                      <Button size="sm" className="bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all" data-testid="button-start-general">Start a thread</Button>
+                      <Button size="sm" className="bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-general">Start Thread</Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -310,7 +310,7 @@ const HomePage = () => {
                     <p className="text-muted-foreground mb-4 flex-1">
                       Featured creator profiles and success stories.
                     </p>
-                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-purple-50 to-violet-50 hover:from-purple-100 hover:to-violet-100 border-purple-200 text-purple-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-read-spotlights">
+                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-dawn hover:bg-gradient-dawn-hover border-purple-200 text-purple-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-read-spotlights">
                       <Link href="/spotlights">Read</Link>
                     </Button>
                   </CardContent>
@@ -325,7 +325,7 @@ const HomePage = () => {
                     <p className="text-muted-foreground mb-4 flex-1">
                       In-depth Q&As with industry leaders and creators.
                     </p>
-                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 border-indigo-200 text-indigo-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-read-interviews">
+                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-dusk hover:bg-gradient-dusk-hover border-indigo-200 text-indigo-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-read-interviews">
                       <Link href="/interviews">Read</Link>
                     </Button>
                   </CardContent>
@@ -340,7 +340,7 @@ const HomePage = () => {
                     <p className="text-muted-foreground mb-4 flex-1">
                       Expert tutorials and best practice guides.
                     </p>
-                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-violet-50 to-indigo-50 hover:from-violet-100 hover:to-indigo-100 border-violet-200 text-violet-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-read-guides">
+                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-dawn hover:bg-gradient-dawn-hover border-violet-200 text-violet-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-read-guides">
                       <Link href="/guides">Read</Link>
                     </Button>
                   </CardContent>
@@ -355,7 +355,7 @@ const HomePage = () => {
                     <p className="text-muted-foreground mb-4 flex-1">
                       Latest updates from virtual world platforms.
                     </p>
-                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-purple-50 to-indigo-50 hover:from-purple-100 hover:to-indigo-100 border-purple-200 text-purple-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-read-news">
+                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-dusk hover:bg-gradient-dusk-hover border-purple-200 text-purple-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-read-news">
                       <Link href="/news">Read</Link>
                     </Button>
                   </CardContent>
@@ -370,7 +370,7 @@ const HomePage = () => {
                     <p className="text-muted-foreground mb-4 flex-1">
                       Most popular content across all categories.
                     </p>
-                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-indigo-50 to-violet-50 hover:from-indigo-100 hover:to-violet-100 border-indigo-200 text-indigo-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-explore-trending">
+                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-dawn hover:bg-gradient-dawn-hover border-indigo-200 text-indigo-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-explore-trending">
                       <Link href="/trending">Explore</Link>
                     </Button>
                   </CardContent>
@@ -385,7 +385,7 @@ const HomePage = () => {
                     <p className="text-muted-foreground mb-4 flex-1">
                       Community events and workshops calendar.
                     </p>
-                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-violet-50 to-purple-50 hover:from-violet-100 hover:to-purple-100 border-violet-200 text-violet-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-view-schedule">
+                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-dusk hover:bg-gradient-dusk-hover border-violet-200 text-violet-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-view-schedule">
                       <Link href="/events">View Schedule</Link>
                     </Button>
                   </CardContent>
@@ -400,7 +400,7 @@ const HomePage = () => {
                     <p className="text-muted-foreground mb-4 flex-1">
                       Data insights and community polls analysis.
                     </p>
-                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-purple-50 to-violet-50 hover:from-purple-100 hover:to-violet-100 border-purple-200 text-purple-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-explore-pulse">
+                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-dawn hover:bg-gradient-dawn-hover border-purple-200 text-purple-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-explore-pulse">
                       <Link href="/pulse">Explore</Link>
                     </Button>
                   </CardContent>
