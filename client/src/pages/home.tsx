@@ -173,7 +173,7 @@ const HomePage = () => {
 
               <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
                 <Link href="/?tag=wip" data-testid="card-wip">
-                  <Card className="enhanced-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
                     <CardContent className="p-6">
                       <MessageSquare className="w-8 h-8 mb-4 text-transparent bg-gradient-cosmic bg-clip-text" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
@@ -187,7 +187,7 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/?tag=help-feedback" data-testid="card-help-feedback">
-                  <Card className="enhanced-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
                     <CardContent className="p-6">
                       <Users className="w-8 h-8 mb-4 text-transparent bg-gradient-nebula bg-clip-text" style={{backgroundImage: 'var(--gradient-nebula)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
@@ -201,7 +201,7 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/?tag=tutorials-guides" data-testid="card-tutorials-guides">
-                  <Card className="enhanced-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
                     <CardContent className="p-6">
                       <BookOpen className="w-8 h-8 mb-4 text-transparent bg-gradient-aurora bg-clip-text" style={{backgroundImage: 'var(--gradient-aurora)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
@@ -215,7 +215,7 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/?tag=jobs-gigs" data-testid="card-jobs-gigs">
-                  <Card className="enhanced-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
                     <CardContent className="p-6">
                       <Users className="w-8 h-8 mb-4 text-transparent bg-gradient-dusk bg-clip-text" style={{backgroundImage: 'var(--gradient-dusk)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
@@ -229,7 +229,7 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/?tag=assets-sale" data-testid="card-assets-sale">
-                  <Card className="enhanced-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
                     <CardContent className="p-6">
                       <ShoppingBag className="w-8 h-8 mb-4 text-transparent bg-gradient-mist bg-clip-text" style={{backgroundImage: 'var(--gradient-mist)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
@@ -243,7 +243,7 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/?tag=collabs-teams" data-testid="card-collabs-teams">
-                  <Card className="enhanced-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
                     <CardContent className="p-6">
                       <Users className="w-8 h-8 mb-4 text-transparent bg-gradient-cosmic bg-clip-text" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
@@ -257,7 +257,7 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/?tag=events-workshops" data-testid="card-events-workshops">
-                  <Card className="enhanced-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
                     <CardContent className="p-6">
                       <Calendar className="w-8 h-8 mb-4 text-transparent bg-gradient-dawn bg-clip-text" style={{backgroundImage: 'var(--gradient-dawn)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
@@ -271,7 +271,7 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/?tag=platform-qa" data-testid="card-platform-qa">
-                  <Card className="enhanced-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
                     <CardContent className="p-6">
                       <MessageSquare className="w-8 h-8 mb-4 text-transparent bg-gradient-nebula bg-clip-text" style={{backgroundImage: 'var(--gradient-nebula)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
@@ -285,7 +285,7 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/?tag=general" data-testid="card-general">
-                  <Card className="enhanced-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
                     <CardContent className="p-6">
                       <MessageSquare className="w-8 h-8 mb-4 text-transparent bg-gradient-aurora bg-clip-text" style={{backgroundImage: 'var(--gradient-aurora)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
@@ -329,10 +329,10 @@ const HomePage = () => {
 
               <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
                 <Link href="/spotlights" data-testid="card-spotlights">
-                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/10 hover:scale-[1.02]">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
                     <CardContent className="p-6">
-                      <Users className="w-8 h-8 mb-4 text-transparent bg-gradient-cosmic bg-clip-text" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
-                      <h3 className="text-xl font-semibold text-foreground mb-3 group-hover:text-cyan-600 transition-colors duration-300">
+                      <Users className="w-8 h-8 mb-4 text-transparent bg-gradient-cosmic bg-clip-text group-hover:scale-110 transition-all duration-300" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
+                      <h3 className="text-xl font-semibold text-foreground mb-3">
                         Creator Spotlights
                       </h3>
                       <p className="text-muted-foreground">
@@ -343,13 +343,13 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/interviews" data-testid="card-interviews">
-                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-500 hover:shadow-2xl hover:shadow-pink-500/25 hover:scale-110 hover:border-pink-400/60 hover:bg-gradient-to-br hover:from-pink-50 hover:to-purple-50">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
                     <CardContent className="p-6">
-                      <MessageSquare className="w-8 h-8 mb-4 text-transparent bg-gradient-nebula bg-clip-text group-hover:scale-150 group-hover:rotate-12 transition-all duration-500" style={{backgroundImage: 'var(--gradient-nebula)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
-                      <h3 className="text-xl font-semibold text-foreground mb-3 group-hover:text-pink-600 group-hover:font-bold transition-all duration-300">
+                      <MessageSquare className="w-8 h-8 mb-4 text-transparent bg-gradient-nebula bg-clip-text group-hover:scale-110 transition-all duration-300" style={{backgroundImage: 'var(--gradient-nebula)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
+                      <h3 className="text-xl font-semibold text-foreground mb-3">
                         Interviews
                       </h3>
-                      <p className="text-muted-foreground group-hover:text-pink-700 transition-colors duration-300">
+                      <p className="text-muted-foreground">
                         In-depth Q&As with industry leaders and creators.
                       </p>
                     </CardContent>
@@ -357,13 +357,13 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/guides" data-testid="card-tips-guides">
-                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/25 hover:scale-110 hover:border-blue-400/60 hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
                     <CardContent className="p-6">
-                      <BookOpen className="w-8 h-8 mb-4 text-transparent bg-gradient-aurora bg-clip-text group-hover:scale-150 group-hover:-rotate-12 transition-all duration-500" style={{backgroundImage: 'var(--gradient-aurora)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
-                      <h3 className="text-xl font-semibold text-foreground mb-3 group-hover:text-blue-600 group-hover:font-bold transition-all duration-300">
+                      <BookOpen className="w-8 h-8 mb-4 text-transparent bg-gradient-aurora bg-clip-text group-hover:scale-110 transition-all duration-300" style={{backgroundImage: 'var(--gradient-aurora)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
+                      <h3 className="text-xl font-semibold text-foreground mb-3">
                         Tips & Guides
                       </h3>
-                      <p className="text-muted-foreground group-hover:text-blue-700 transition-colors duration-300">
+                      <p className="text-muted-foreground">
                         Expert tutorials and best practice guides.
                       </p>
                     </CardContent>
@@ -371,13 +371,13 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/news" data-testid="card-industry-news">
-                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-500 hover:shadow-2xl hover:shadow-green-500/25 hover:scale-110 hover:border-green-400/60 hover:bg-gradient-to-br hover:from-green-50 hover:to-emerald-50">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
                     <CardContent className="p-6">
-                      <BarChart3 className="w-8 h-8 mb-4 text-transparent bg-gradient-mist bg-clip-text group-hover:scale-150 group-hover:rotate-45 transition-all duration-500" style={{backgroundImage: 'var(--gradient-mist)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
-                      <h3 className="text-xl font-semibold text-foreground mb-3 group-hover:text-green-600 group-hover:font-bold transition-all duration-300">
+                      <BarChart3 className="w-8 h-8 mb-4 text-transparent bg-gradient-mist bg-clip-text group-hover:scale-110 transition-all duration-300" style={{backgroundImage: 'var(--gradient-mist)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
+                      <h3 className="text-xl font-semibold text-foreground mb-3">
                         Industry News
                       </h3>
-                      <p className="text-muted-foreground group-hover:text-green-700 transition-colors duration-300">
+                      <p className="text-muted-foreground">
                         Latest updates from virtual world platforms.
                       </p>
                     </CardContent>
@@ -385,9 +385,9 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/trending" data-testid="card-trending">
-                  <Card className="enhanced-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
                     <CardContent className="p-6">
-                      <TrendingUp className="w-8 h-8 mb-4 text-transparent bg-gradient-dawn bg-clip-text" style={{backgroundImage: 'var(--gradient-dawn)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
+                      <TrendingUp className="w-8 h-8 mb-4 text-transparent bg-gradient-dawn bg-clip-text group-hover:scale-110 transition-all duration-300" style={{backgroundImage: 'var(--gradient-dawn)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
                         Trending
                       </h3>
@@ -399,9 +399,9 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/events" data-testid="card-upcoming-events">
-                  <Card className="enhanced-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
                     <CardContent className="p-6">
-                      <Calendar className="w-8 h-8 mb-4 text-transparent bg-gradient-dusk bg-clip-text" style={{backgroundImage: 'var(--gradient-dusk)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
+                      <Calendar className="w-8 h-8 mb-4 text-transparent bg-gradient-dusk bg-clip-text group-hover:scale-110 transition-all duration-300" style={{backgroundImage: 'var(--gradient-dusk)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
                         Upcoming Events
                       </h3>
@@ -413,9 +413,9 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/pulse" data-testid="card-pulse-reports">
-                  <Card className="enhanced-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
                     <CardContent className="p-6">
-                      <BarChart3 className="w-8 h-8 mb-4 text-transparent bg-gradient-cosmic bg-clip-text" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
+                      <BarChart3 className="w-8 h-8 mb-4 text-transparent bg-gradient-cosmic bg-clip-text group-hover:scale-110 transition-all duration-300" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
                         Pulse Reports
                       </h3>
@@ -704,7 +704,7 @@ const HomePage = () => {
                 Upcoming Events
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="enhanced-card hover-lift" data-testid="card-event-1">
+                <Card className="enhanced-card hover-lift group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30" data-testid="card-event-1">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-3 mb-3">
                       <Clock className="w-5 h-5 text-primary mt-0.5" />
@@ -722,7 +722,7 @@ const HomePage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="enhanced-card hover-lift" data-testid="card-event-2">
+                <Card className="enhanced-card hover-lift group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30" data-testid="card-event-2">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-3 mb-3">
                       <Clock className="w-5 h-5 text-primary mt-0.5" />
@@ -740,7 +740,7 @@ const HomePage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="enhanced-card hover-lift" data-testid="card-event-3">
+                <Card className="enhanced-card hover-lift group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30" data-testid="card-event-3">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-3 mb-3">
                       <Clock className="w-5 h-5 text-primary mt-0.5" />
