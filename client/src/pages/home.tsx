@@ -4,6 +4,7 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { FeaturedCarousel } from "@/components/featured/FeaturedCarousel";
 import { featuredItems } from "@/components/featured/types";
+import vhubHeaderImage from '@assets/VHub.Header.no.font.Light.Page.png';
 import { Link } from "wouter";
 import { 
   BookOpen, 
@@ -22,41 +23,62 @@ const HomePage = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-        <main className="w-full">
-          <div className="max-w-6xl mx-auto">
-            {/* Hero Section */}
-            <section className="px-6 py-16 text-center">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
-                The leading cultural and educational hub for active and aspiring world builders.
-              </h1>
-              <p className="text-xl text-muted-foreground mb-8 max-w-3xl mx-auto leading-relaxed">
-                Shaping the future of digital creators with insider insights, multi-platform learning, and real business growth. Learn. Monetize. Connect.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <div className="flex flex-col items-center gap-2">
-                  <Button 
-                    asChild 
-                    size="lg" 
-                    className="px-8 py-3 text-lg"
-                    data-testid="button-join-community"
-                  >
-                    <Link href="/">Join the Community</Link>
-                  </Button>
-                  <span className="text-sm text-muted-foreground" data-testid="text-signup-micro">
-                    Create your free account today
-                  </span>
+      <main className="w-full">
+        {/* Extended glow effect that affects the whole page */}
+        <div className="absolute -top-20 -left-20 -right-20 h-96 pointer-events-none z-0">
+          <div className="w-full h-full bg-gradient-to-br from-cyan-400/15 via-purple-500/10 to-orange-400/15 blur-3xl"></div>
+        </div>
+        
+        <div className="py-8 relative z-10 px-4 lg:px-8">
+          {/* Hero Section */}
+          <div className="mb-8">
+            <div className="glass-card rounded-2xl overflow-hidden hover-lift relative" data-testid="hero-section">
+              <div className="relative min-h-[576px] flex items-center justify-center hero-glow-container">
+                <img 
+                  src={vhubHeaderImage} 
+                  alt="VirtuoHub Homepage Header"
+                  className="absolute inset-0 w-full h-full object-cover rounded-2xl"
+                  style={{
+                    filter: 'drop-shadow(0 0 20px rgba(6, 182, 212, 0.2)) drop-shadow(0 0 40px rgba(147, 51, 234, 0.15))'
+                  }}
+                />
+                <div className="text-center z-10 relative">
+                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white mb-6 drop-shadow-lg max-w-5xl mx-auto leading-tight">
+                    The leading cultural and educational hub for active and aspiring world builders.
+                  </h1>
+                  <p className="text-xl md:text-2xl lg:text-3xl text-white/90 drop-shadow-md mb-8 max-w-4xl mx-auto leading-relaxed">
+                    Shaping the future of digital creators with insider insights, multi-platform learning, and real business growth. Learn. Monetize. Connect.
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <div className="flex flex-col items-center gap-2">
+                      <Button 
+                        asChild 
+                        size="lg" 
+                        className="px-8 py-4 text-xl font-semibold transition-all hover:scale-105 drop-shadow-lg"
+                        data-testid="button-join-community"
+                      >
+                        <Link href="/">Join the Community</Link>
+                      </Button>
+                      <span className="text-lg text-white/80 drop-shadow-md" data-testid="text-signup-micro">
+                        Create your free account today
+                      </span>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="lg" 
+                      className="px-8 py-4 text-xl font-semibold bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all hover:scale-105 drop-shadow-lg"
+                      data-testid="button-watch-demo"
+                    >
+                      Watch Demo
+                    </Button>
+                  </div>
                 </div>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className="px-8 py-3 text-lg"
-                  data-testid="button-watch-demo"
-                >
-                  Watch Demo
-                </Button>
+                <div className="absolute inset-0 bg-black/20 rounded-2xl"></div>
               </div>
-            </section>
+            </div>
+          </div>
 
+          <div className="max-w-6xl mx-auto">
             {/* All Creators. One Hub Section */}
             <section className="px-6 py-16 bg-muted/30 rounded-2xl mx-6 mb-16">
               <div className="max-w-3xl mx-auto text-center">
@@ -280,7 +302,8 @@ const HomePage = () => {
               </div>
             </section>
           </div>
-        </main>
+        </div>
+      </main>
 
       <Footer />
     </div>
