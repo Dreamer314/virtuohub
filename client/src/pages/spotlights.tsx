@@ -1,5 +1,6 @@
 import React from 'react';
-import { Star } from 'lucide-react';
+import { Star, ArrowRight } from 'lucide-react';
+import { Link } from 'wouter';
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
@@ -128,6 +129,14 @@ const SpotlightsPage: React.FC = () => {
                                 <span className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">VRChat</span>
                                 <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">Unity</span>
                                 <span className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-sm">Blender</span>
+                              </div>
+
+                              {/* View Full Spotlight Button */}
+                              <div className="mb-6">
+                                <Link href="/spotlight/emma-thompson-vr-artist" className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white font-medium rounded-lg transition-all duration-300 group">
+                                  View Full Spotlight
+                                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </Link>
                               </div>
 
                               {/* Engagement Section */}

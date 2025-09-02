@@ -1,5 +1,6 @@
 import React from 'react';
-import { Lightbulb } from 'lucide-react';
+import { Lightbulb, ArrowRight } from 'lucide-react';
+import { Link } from 'wouter';
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
@@ -140,6 +141,14 @@ const InterviewsPage: React.FC = () => {
                                   <li>• Test early and often with diverse user groups</li>
                                 </ul>
                               </div>
+                            </div>
+
+                            {/* Read Full Interview Button */}
+                            <div className="mb-6">
+                              <Link href="/interview/alex-chen-vrchat-worlds" className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-medium rounded-lg transition-all duration-300 group">
+                                Read Full Interview
+                                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                              </Link>
                             </div>
 
                             {/* Engagement Section */}

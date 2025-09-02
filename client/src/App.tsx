@@ -10,7 +10,9 @@ import InsightsPage from "@/pages/insights";
 import ThreadPage from "@/pages/thread";
 import TrendingPage from "@/pages/trending";
 import SpotlightsPage from "@/pages/spotlights";
+import SpotlightDetailPage from "@/pages/spotlight-detail";
 import InterviewsPage from "@/pages/interviews";
+import InterviewDetailPage from "@/pages/interview-detail";
 import GuidesPage from "@/pages/guides";
 import NewsPage from "@/pages/news";
 import EventsPage from "@/pages/events";
@@ -23,9 +25,9 @@ function Router() {
       <Route path="/" component={Community} />
       <Route path="/community" component={Community} />
       <Route path="/spotlights" component={SpotlightsPage} />
-      <Route path="/spotlights/:slug" component={SpotlightsPage} />
+      <Route path="/spotlight/:id" component={SpotlightDetailPage} />
       <Route path="/interviews" component={InterviewsPage} />
-      <Route path="/interviews/:slug" component={InterviewsPage} />
+      <Route path="/interview/:id" component={InterviewDetailPage} />
       <Route path="/guides" component={GuidesPage} />
       <Route path="/guides/:slug" component={GuidesPage} />
       <Route path="/news" component={NewsPage} />
