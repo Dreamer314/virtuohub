@@ -47,7 +47,11 @@ const HomePage = () => {
       <div className="relative w-full">
         {/* Extended glow effect that affects the whole page */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          <div className="absolute -top-20 -left-20 -right-20 h-96 bg-gradient-to-br from-cyan-400/15 via-purple-500/10 to-orange-400/15 blur-3xl"></div>
+          <div className="absolute -top-20 -left-20 -right-20 h-96 bg-gradient-to-br from-cyan-400/15 via-purple-500/10 to-orange-400/15 blur-3xl animate-pulse"></div>
+          {/* Floating ambient orbs */}
+          <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-purple-400/8 rounded-full blur-2xl" style={{animation: 'float-gentle 18s ease-in-out infinite', animationDelay: '0s'}}></div>
+          <div className="absolute top-3/4 right-1/3 w-24 h-24 bg-cyan-400/6 rounded-full blur-2xl" style={{animation: 'float-drift 24s ease-in-out infinite', animationDelay: '3s'}}></div>
+          <div className="absolute bottom-1/4 left-1/2 w-20 h-20 bg-orange-400/5 rounded-full blur-xl" style={{animation: 'gentle-pulse 15s ease-in-out infinite', animationDelay: '6s'}}></div>
         </div>
         
         <main className="relative z-10">
@@ -325,10 +329,10 @@ const HomePage = () => {
 
               <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
                 <Link href="/spotlights" data-testid="card-spotlights">
-                  <Card className="enhanced-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/10 hover:scale-[1.02]">
                     <CardContent className="p-6">
                       <Users className="w-8 h-8 mb-4 text-transparent bg-gradient-cosmic bg-clip-text" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
-                      <h3 className="text-xl font-semibold text-foreground mb-3">
+                      <h3 className="text-xl font-semibold text-foreground mb-3 group-hover:text-cyan-600 transition-colors duration-300">
                         Creator Spotlights
                       </h3>
                       <p className="text-muted-foreground">
@@ -465,8 +469,8 @@ const HomePage = () => {
                       ].map((platform, index) => (
                         <span 
                           key={platform} 
-                          className="text-sm md:text-base font-medium text-muted-foreground tracking-wider px-2 py-1 rounded-md 
-                                     transition-all duration-300 hover:text-primary hover:scale-105 hover:opacity-100"
+                          className="text-sm md:text-base font-medium text-muted-foreground tracking-wider px-3 py-2 rounded-lg 
+                                     transition-all duration-300 hover:text-primary hover:scale-110 hover:opacity-100 hover:bg-primary/10 hover:shadow-lg cursor-default"
                           style={{ 
                             letterSpacing: '0.1em',
                             animationDelay: `${index * 0.1}s`,
