@@ -49,9 +49,9 @@ const HomePage = () => {
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
           <div className="absolute -top-20 -left-20 -right-20 h-96 bg-gradient-to-br from-cyan-400/15 via-purple-500/10 to-orange-400/15 blur-3xl animate-pulse"></div>
           {/* Floating ambient orbs */}
-          <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-purple-400/8 rounded-full blur-2xl" style={{animation: 'float-gentle 18s ease-in-out infinite', animationDelay: '0s'}}></div>
-          <div className="absolute top-3/4 right-1/3 w-24 h-24 bg-cyan-400/6 rounded-full blur-2xl" style={{animation: 'float-drift 24s ease-in-out infinite', animationDelay: '3s'}}></div>
-          <div className="absolute bottom-1/4 left-1/2 w-20 h-20 bg-orange-400/5 rounded-full blur-xl" style={{animation: 'gentle-pulse 15s ease-in-out infinite', animationDelay: '6s'}}></div>
+          <div className="absolute top-1/4 left-1/4 w-40 h-40 bg-purple-400/20 rounded-full blur-2xl" style={{animation: 'float-gentle 18s ease-in-out infinite', animationDelay: '0s'}}></div>
+          <div className="absolute top-3/4 right-1/3 w-32 h-32 bg-cyan-400/15 rounded-full blur-2xl" style={{animation: 'float-drift 24s ease-in-out infinite', animationDelay: '3s'}}></div>
+          <div className="absolute bottom-1/4 left-1/2 w-28 h-28 bg-orange-400/12 rounded-full blur-xl" style={{animation: 'gentle-pulse 15s ease-in-out infinite', animationDelay: '6s'}}></div>
         </div>
         
         <main className="relative z-10">
@@ -343,13 +343,13 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/interviews" data-testid="card-interviews">
-                  <Card className="enhanced-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-500 hover:shadow-2xl hover:shadow-pink-500/25 hover:scale-110 hover:border-pink-400/60 hover:bg-gradient-to-br hover:from-pink-50 hover:to-purple-50">
                     <CardContent className="p-6">
-                      <MessageSquare className="w-8 h-8 mb-4 text-transparent bg-gradient-nebula bg-clip-text" style={{backgroundImage: 'var(--gradient-nebula)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
-                      <h3 className="text-xl font-semibold text-foreground mb-3">
+                      <MessageSquare className="w-8 h-8 mb-4 text-transparent bg-gradient-nebula bg-clip-text group-hover:scale-150 group-hover:rotate-12 transition-all duration-500" style={{backgroundImage: 'var(--gradient-nebula)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
+                      <h3 className="text-xl font-semibold text-foreground mb-3 group-hover:text-pink-600 group-hover:font-bold transition-all duration-300">
                         Interviews
                       </h3>
-                      <p className="text-muted-foreground">
+                      <p className="text-muted-foreground group-hover:text-pink-700 transition-colors duration-300">
                         In-depth Q&As with industry leaders and creators.
                       </p>
                     </CardContent>
@@ -357,13 +357,13 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/guides" data-testid="card-tips-guides">
-                  <Card className="enhanced-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/25 hover:scale-110 hover:border-blue-400/60 hover:bg-gradient-to-br hover:from-blue-50 hover:to-cyan-50">
                     <CardContent className="p-6">
-                      <BookOpen className="w-8 h-8 mb-4 text-transparent bg-gradient-aurora bg-clip-text" style={{backgroundImage: 'var(--gradient-aurora)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
-                      <h3 className="text-xl font-semibold text-foreground mb-3">
+                      <BookOpen className="w-8 h-8 mb-4 text-transparent bg-gradient-aurora bg-clip-text group-hover:scale-150 group-hover:-rotate-12 transition-all duration-500" style={{backgroundImage: 'var(--gradient-aurora)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
+                      <h3 className="text-xl font-semibold text-foreground mb-3 group-hover:text-blue-600 group-hover:font-bold transition-all duration-300">
                         Tips & Guides
                       </h3>
-                      <p className="text-muted-foreground">
+                      <p className="text-muted-foreground group-hover:text-blue-700 transition-colors duration-300">
                         Expert tutorials and best practice guides.
                       </p>
                     </CardContent>
@@ -371,13 +371,13 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/news" data-testid="card-industry-news">
-                  <Card className="enhanced-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-500 hover:shadow-2xl hover:shadow-green-500/25 hover:scale-110 hover:border-green-400/60 hover:bg-gradient-to-br hover:from-green-50 hover:to-emerald-50">
                     <CardContent className="p-6">
-                      <BarChart3 className="w-8 h-8 mb-4 text-transparent bg-gradient-mist bg-clip-text" style={{backgroundImage: 'var(--gradient-mist)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
-                      <h3 className="text-xl font-semibold text-foreground mb-3">
+                      <BarChart3 className="w-8 h-8 mb-4 text-transparent bg-gradient-mist bg-clip-text group-hover:scale-150 group-hover:rotate-45 transition-all duration-500" style={{backgroundImage: 'var(--gradient-mist)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
+                      <h3 className="text-xl font-semibold text-foreground mb-3 group-hover:text-green-600 group-hover:font-bold transition-all duration-300">
                         Industry News
                       </h3>
-                      <p className="text-muted-foreground">
+                      <p className="text-muted-foreground group-hover:text-green-700 transition-colors duration-300">
                         Latest updates from virtual world platforms.
                       </p>
                     </CardContent>
