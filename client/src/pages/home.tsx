@@ -443,7 +443,7 @@ const HomePage = () => {
                     Get your voice heard on the latest industry trends. Quick polls on the hottest topics in the immersive economy.
                   </p>
                   <Button asChild size="lg" className="bg-gradient-aurora hover:bg-gradient-aurora-hover text-white">
-                    <Link href="/">Participate in Polls</Link>
+                    <Link href="/pulse">Participate in Polls</Link>
                   </Button>
                 </CardContent>
               </Card>
