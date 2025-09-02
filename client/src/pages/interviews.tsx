@@ -70,15 +70,17 @@ const InterviewsPage: React.FC = () => {
                 <main>
                   {/* Page Header */}
                   <div className="mb-8">
-                    <div className="flex items-center space-x-2 mb-8">
-                      <div className="h-0.5 bg-gradient-to-r from-transparent via-purple-500 to-transparent flex-1"></div>
-                      <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-purple-500/10 via-purple-500/20 to-purple-500/10 rounded-full border border-purple-500/30">
-                        <Lightbulb className="w-8 h-8 text-purple-500" />
-                        <h1 className="text-5xl font-bold text-foreground tracking-tight">
-                          Interviews
-                        </h1>
+                    <div className="flex items-center justify-center mb-6">
+                      <div className="flex items-center space-x-2 w-full max-w-4xl mx-auto">
+                        <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
+                        <div className="flex items-center space-x-4">
+                          <Lightbulb className="w-8 h-8 text-transparent bg-gradient-nebula bg-clip-text" style={{backgroundImage: 'var(--gradient-nebula)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
+                          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+                            Interviews
+                          </h1>
+                        </div>
+                        <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
                       </div>
-                      <div className="h-0.5 bg-gradient-to-r from-purple-500 via-transparent to-transparent flex-1"></div>
                     </div>
                     <p className="text-center text-lg text-muted-foreground mb-8">
                       Advice and insight from working creators
@@ -94,7 +96,7 @@ const InterviewsPage: React.FC = () => {
                     ) : (
                       <>
                         {/* Featured Interview */}
-                        <article className="glass-card rounded-xl border border-purple-500/30 overflow-hidden">
+                        <article className="enhanced-card hover-lift rounded-xl border border-purple-500/30 overflow-hidden">
                           {/* Hero Image */}
                           <div className="w-full h-80 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 relative flex items-center justify-center">
                             <div className="absolute inset-0 bg-black/20"></div>
@@ -185,7 +187,7 @@ const InterviewsPage: React.FC = () => {
 
                         {/* More Interviews */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                          <article className="glass-card rounded-xl border border-sidebar-border hover:border-purple-500/30 transition-all overflow-hidden">
+                          <article className="enhanced-card hover-lift rounded-xl border border-sidebar-border hover:border-purple-500/30 transition-all overflow-hidden">
                             <div className="w-full h-32 bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
                               <span className="text-3xl">👗</span>
                             </div>
@@ -213,7 +215,7 @@ const InterviewsPage: React.FC = () => {
                             </div>
                           </article>
 
-                          <article className="glass-card rounded-xl border border-sidebar-border hover:border-purple-500/30 transition-all overflow-hidden">
+                          <article className="enhanced-card hover-lift rounded-xl border border-sidebar-border hover:border-purple-500/30 transition-all overflow-hidden">
                             <div className="w-full h-32 bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
                               <span className="text-3xl">🏢</span>
                             </div>

@@ -64,15 +64,17 @@ const NewsPage: React.FC = () => {
 
                 <main>
                   <div className="mb-8">
-                    <div className="flex items-center space-x-2 mb-8">
-                      <div className="h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
-                      <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-primary/10 via-primary/20 to-primary/10 rounded-full border border-primary/30">
-                        <Newspaper className="w-8 h-8 text-primary" />
-                        <h1 className="text-5xl font-bold text-foreground tracking-tight">
-                          Industry News
-                        </h1>
+                    <div className="flex items-center justify-center mb-6">
+                      <div className="flex items-center space-x-2 w-full max-w-4xl mx-auto">
+                        <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
+                        <div className="flex items-center space-x-4">
+                          <Newspaper className="w-8 h-8 text-transparent bg-gradient-mist bg-clip-text" style={{backgroundImage: 'var(--gradient-mist)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
+                          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+                            Industry News
+                          </h1>
+                        </div>
+                        <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                       </div>
-                      <div className="h-0.5 bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                     </div>
                     <p className="text-center text-lg text-muted-foreground mb-8">
                       What changed and why it matters
@@ -87,7 +89,7 @@ const NewsPage: React.FC = () => {
                     ) : (
                       <>
                         {/* Featured News */}
-                        <article className="glass-card rounded-xl border border-primary/30 overflow-hidden">
+                        <article className="enhanced-card hover-lift rounded-xl overflow-hidden">
                           <div className="w-full h-64 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 relative flex items-center justify-center">
                             <div className="absolute inset-0 bg-black/30"></div>
                             <div className="relative z-10 text-center px-8">

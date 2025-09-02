@@ -40,15 +40,17 @@ const EventsPage: React.FC = () => {
 
                 <main>
                   <div className="mb-8">
-                    <div className="flex items-center space-x-2 mb-8">
-                      <div className="h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
-                      <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-primary/10 via-primary/20 to-primary/10 rounded-full border border-primary/30">
-                        <Monitor className="w-8 h-8 text-primary" />
-                        <h1 className="text-5xl font-bold text-foreground tracking-tight">
-                          Events
-                        </h1>
+                    <div className="flex items-center justify-center mb-6">
+                      <div className="flex items-center space-x-2 w-full max-w-4xl mx-auto">
+                        <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
+                        <div className="flex items-center space-x-4">
+                          <Monitor className="w-8 h-8 text-transparent bg-gradient-dusk bg-clip-text" style={{backgroundImage: 'var(--gradient-dusk)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
+                          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+                            Events
+                          </h1>
+                        </div>
+                        <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
                       </div>
-                      <div className="h-0.5 bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                     </div>
                     <p className="text-center text-lg text-muted-foreground mb-8">
                       What's happening next, online and IRL
@@ -56,7 +58,7 @@ const EventsPage: React.FC = () => {
                   </div>
 
                   <div className="space-y-6">
-                    <div className="glass-card rounded-xl p-12 text-center">
+                    <div className="enhanced-card hover-lift rounded-xl p-12 text-center">
                       <div className="text-6xl mb-4">📅</div>
                       <h3 className="text-xl font-display font-semibold mb-2 text-foreground">
                         Events coming soon

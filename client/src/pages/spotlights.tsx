@@ -70,15 +70,17 @@ const SpotlightsPage: React.FC = () => {
                 <main>
                   {/* Page Header */}
                   <div className="mb-8">
-                    <div className="flex items-center space-x-2 mb-8">
-                      <div className="h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
-                      <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-primary/10 via-primary/20 to-primary/10 rounded-full border border-primary/30">
-                        <Star className="w-8 h-8 text-primary" />
-                        <h1 className="text-5xl font-bold text-foreground tracking-tight">
-                          Spotlights
-                        </h1>
+                    <div className="flex items-center justify-center mb-6">
+                      <div className="flex items-center space-x-2 w-full max-w-4xl mx-auto">
+                        <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
+                        <div className="flex items-center space-x-4">
+                          <Star className="w-8 h-8 text-transparent bg-gradient-cosmic bg-clip-text" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
+                          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+                            Creator Spotlights
+                          </h1>
+                        </div>
+                        <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                       </div>
-                      <div className="h-0.5 bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                     </div>
                     <p className="text-center text-lg text-muted-foreground mb-8">
                       Profiles of creators, studios, and brands shaping the space
@@ -94,7 +96,7 @@ const SpotlightsPage: React.FC = () => {
                     ) : (
                       <>
                         {/* Featured Spotlight */}
-                        <article className="glass-card rounded-xl border border-primary/30 overflow-hidden">
+                        <article className="enhanced-card hover-lift rounded-xl overflow-hidden">
                           <div className="flex flex-col lg:flex-row gap-8">
                             <div className="lg:w-1/3">
                               <div className="w-full h-64 lg:h-80 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-xl flex items-center justify-center relative overflow-hidden">
@@ -174,7 +176,7 @@ const SpotlightsPage: React.FC = () => {
 
                         {/* More Spotlights */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <article className="glass-card rounded-xl border border-sidebar-border hover:border-yellow-500/30 transition-all overflow-hidden">
+                          <article className="enhanced-card hover-lift rounded-xl border border-sidebar-border hover:border-yellow-500/30 transition-all overflow-hidden">
                             <div className="w-full h-48 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center relative">
                               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
                               <span className="text-4xl relative z-10">🏢</span>
@@ -207,7 +209,7 @@ const SpotlightsPage: React.FC = () => {
                             </div>
                           </article>
 
-                          <article className="glass-card rounded-xl border border-sidebar-border hover:border-yellow-500/30 transition-all overflow-hidden">
+                          <article className="enhanced-card hover-lift rounded-xl border border-sidebar-border hover:border-yellow-500/30 transition-all overflow-hidden">
                             <div className="w-full h-48 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg flex items-center justify-center relative">
                               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
                               <span className="text-4xl relative z-10">🛠️</span>

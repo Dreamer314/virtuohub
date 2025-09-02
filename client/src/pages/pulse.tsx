@@ -55,15 +55,17 @@ const PulsePage: React.FC = () => {
 
                 <main>
                   <div className="mb-8">
-                    <div className="flex items-center space-x-2 mb-8">
-                      <div className="h-0.5 bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
-                      <div className="flex items-center space-x-4 px-6 py-3 bg-gradient-to-r from-primary/10 via-primary/20 to-primary/10 rounded-full border border-primary/30">
-                        <Zap className="w-8 h-8 text-primary" />
-                        <h1 className="text-5xl font-bold text-foreground tracking-tight">
-                          Pulse Reports
-                        </h1>
+                    <div className="flex items-center justify-center mb-6">
+                      <div className="flex items-center space-x-2 w-full max-w-4xl mx-auto">
+                        <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
+                        <div className="flex items-center space-x-4">
+                          <Zap className="w-8 h-8 text-transparent bg-gradient-cosmic bg-clip-text" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
+                          <h1 className="text-3xl md:text-4xl font-bold text-foreground">
+                            Pulse Reports
+                          </h1>
+                        </div>
+                        <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                       </div>
-                      <div className="h-0.5 bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                     </div>
                     <p className="text-center text-lg text-muted-foreground mb-8">
                       Industry data collection center and poll results
@@ -77,7 +79,7 @@ const PulsePage: React.FC = () => {
                       Active Polls
                     </h2>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <article className="glass-card rounded-xl p-6 border border-green-500/30">
+                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-green-500/30">
                         <div className="flex items-center justify-between mb-4">
                           <span className="inline-block px-3 py-1 text-xs font-medium bg-green-500/20 text-green-300 border border-green-500/30 rounded-full">Active Poll</span>
                           <span className="text-sm text-muted-foreground">Ends in 5 days</span>
@@ -120,7 +122,7 @@ const PulsePage: React.FC = () => {
                         </button>
                       </article>
 
-                      <article className="glass-card rounded-xl p-6 border border-green-500/30">
+                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-green-500/30">
                         <div className="flex items-center justify-between mb-4">
                           <span className="inline-block px-3 py-1 text-xs font-medium bg-green-500/20 text-green-300 border border-green-500/30 rounded-full">Active Poll</span>
                           <span className="text-sm text-muted-foreground">Ends in 12 days</span>
@@ -169,7 +171,7 @@ const PulsePage: React.FC = () => {
                   <div className="mb-12">
                     <h2 className="text-2xl font-bold text-foreground mb-6">Completed Polls</h2>
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <article className="glass-card rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
+                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                           <span className="inline-block px-3 py-1 text-xs font-medium bg-gray-500/20 text-gray-300 border border-gray-500/30 rounded-full">Completed</span>
                           <span className="text-sm text-muted-foreground">Ended Dec 20</span>
@@ -209,7 +211,7 @@ const PulsePage: React.FC = () => {
                         <p className="text-xs text-muted-foreground">4,562 responses</p>
                       </article>
 
-                      <article className="glass-card rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
+                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                           <span className="inline-block px-3 py-1 text-xs font-medium bg-gray-500/20 text-gray-300 border border-gray-500/30 rounded-full">Completed</span>
                           <span className="text-sm text-muted-foreground">Ended Dec 15</span>
@@ -249,7 +251,7 @@ const PulsePage: React.FC = () => {
                         <p className="text-xs text-muted-foreground">3,891 responses</p>
                       </article>
 
-                      <article className="glass-card rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
+                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                           <span className="inline-block px-3 py-1 text-xs font-medium bg-gray-500/20 text-gray-300 border border-gray-500/30 rounded-full">Completed</span>
                           <span className="text-sm text-muted-foreground">Ended Dec 10</span>
@@ -289,7 +291,7 @@ const PulsePage: React.FC = () => {
                         <p className="text-xs text-muted-foreground">5,234 responses</p>
                       </article>
 
-                      <article className="glass-card rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
+                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
                         <div className="flex items-center justify-between mb-4">
                           <span className="inline-block px-3 py-1 text-xs font-medium bg-gray-500/20 text-gray-300 border border-gray-500/30 rounded-full">Completed</span>
                           <span className="text-sm text-muted-foreground">Ended Dec 5</span>
@@ -336,7 +338,7 @@ const PulsePage: React.FC = () => {
                     <h2 className="text-2xl font-bold text-foreground mb-6">Published Reports</h2>
                     <div className="space-y-6">
                       {/* Free Report */}
-                      <article className="glass-card rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
+                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
                         <div className="flex items-start justify-between mb-4">
                           <div>
                             <span className="inline-block px-3 py-1 text-xs font-medium bg-primary/20 text-primary border border-primary/30 rounded-full mb-3">Free Report</span>
@@ -364,7 +366,7 @@ const PulsePage: React.FC = () => {
                       </article>
 
                       {/* Premium Report */}
-                      <article className="glass-card rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
+                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
                         <div className="flex items-start justify-between mb-4">
                           <div>
                             <span className="inline-block px-3 py-1 text-xs font-medium bg-accent/20 text-accent border border-accent/30 rounded-full mb-3">Premium Report</span>
@@ -392,7 +394,7 @@ const PulsePage: React.FC = () => {
                       </article>
 
                       {/* Private Report */}
-                      <article className="glass-card rounded-xl p-6 border border-sidebar-border hover:border-cyan-500/30 transition-all opacity-60">
+                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-sidebar-border hover:border-cyan-500/30 transition-all opacity-60">
                         <div className="flex items-start justify-between mb-4">
                           <div>
                             <span className="inline-block px-3 py-1 text-xs font-medium bg-muted/20 text-muted-foreground border border-muted/30 rounded-full mb-3">Private Report</span>
@@ -420,7 +422,7 @@ const PulsePage: React.FC = () => {
                       </article>
 
                       {/* Completed Poll Results */}
-                      <article className="glass-card rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
+                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
                         <div className="flex items-start justify-between mb-4">
                           <div>
                             <span className="inline-block px-3 py-1 text-xs font-medium bg-primary/20 text-primary border border-primary/30 rounded-full mb-3">Poll Results</span>
