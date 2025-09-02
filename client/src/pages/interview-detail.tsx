@@ -75,6 +75,117 @@ const InterviewDetailPage: React.FC = () => {
           likes: 19
         }
       ]
+    },
+    'maya-patel-virtual-fashion': {
+      title: 'Monetizing Virtual Fashion',
+      subtitle: 'Fashion designer Maya Patel shares insights on building a sustainable virtual clothing business across multiple platforms',
+      author: 'Maya Patel',
+      role: 'Virtual Fashion Designer',
+      date: 'Dec 28, 2024',
+      readTime: '8 min read',
+      heroImage: 'from-pink-500 to-rose-600',
+      heroIcon: '👗',
+      stats: '150K+ items sold • 50K followers',
+      tags: ['Virtual Fashion', 'Business', 'Multi-platform'],
+      questions: [
+        {
+          question: "How did you transition from traditional fashion to virtual clothing?",
+          answer: "I started experimenting with virtual fashion during the pandemic when physical fashion shows were cancelled. What began as a creative outlet quickly became a viable business when I realized the demand for unique digital clothing. The virtual space offers unlimited creative freedom without material constraints."
+        },
+        {
+          question: "What platforms do you focus on and why?",
+          answer: "I primarily work across VRChat, Second Life, and various social VR platforms. Each has its own aesthetic and technical requirements. VRChat tends to favor more fantastical designs, while Second Life has a strong market for realistic clothing. Diversifying across platforms reduces risk and maximizes reach."
+        },
+        {
+          question: "How do you price virtual clothing items?",
+          answer: "Pricing depends on complexity, exclusivity, and platform economics. Simple accessories might be $2-5, while elaborate outfits can go for $20-50. Limited editions command premium prices. I also offer customization services which can range from $30-200 depending on the request."
+        },
+        {
+          question: "What advice would you give to aspiring virtual fashion designers?",
+          answer: "Start by understanding your target platforms deeply. Learn the technical constraints, study what sells well, and develop your unique style. Build a portfolio on multiple platforms and engage with the community. Most importantly, treat it as a real business from day one - track metrics, understand your customers, and reinvest in better tools and marketing."
+        }
+      ],
+      keyTakeaways: [
+        "Platform diversification reduces business risk",
+        "Understanding technical constraints is crucial for success",
+        "Community engagement drives sales and brand awareness",
+        "Treat virtual fashion as a legitimate business from the start"
+      ],
+      likes: 89,
+      comments: [
+        {
+          id: '1',
+          author: 'DesignEnthusiast',
+          content: 'Maya\'s approach to cross-platform design is brilliant. Her pricing strategy is really helpful for new creators!',
+          timestamp: '1 hour ago',
+          likes: 12
+        },
+        {
+          id: '2',
+          author: 'VirtualBusiness_Pro',
+          content: 'The business insights here are gold. Virtual fashion is definitely the future of digital expression.',
+          timestamp: '3 hours ago',
+          likes: 8
+        }
+      ]
+    },
+    'tom-richards-hobbyist-studio': {
+      title: 'From Hobbyist to Studio',
+      subtitle: 'How Tom Richards grew his weekend VRChat world project into a full-time virtual experiences studio',
+      author: 'Tom Richards',
+      role: 'Virtual Experience Studio Founder',
+      date: 'Dec 25, 2024',
+      readTime: '12 min read',
+      heroImage: 'from-blue-500 to-cyan-600',
+      heroIcon: '🏢',
+      stats: 'Studio: 25 projects • Team: 8 people',
+      tags: ['Entrepreneurship', 'VRChat', 'Studio Management'],
+      questions: [
+        {
+          question: "What started as a hobby project that became your business?",
+          answer: "I was building VRChat worlds on weekends as a stress relief from my day job in software development. One world I created for a friend's virtual birthday party got shared widely and suddenly I had 20+ commission requests. That's when I realized there was real demand for custom virtual experiences."
+        },
+        {
+          question: "How did you scale from solo creator to running a studio?",
+          answer: "It was gradual but intentional. First, I brought on a 3D artist friend to help with modeling. Then we added a sound designer, then a Unity specialist. Each hire allowed us to take on bigger, more complex projects. We went from $500 birthday party worlds to $50K corporate virtual events."
+        },
+        {
+          question: "What are the biggest challenges in running a virtual experiences studio?",
+          answer: "Client education is huge - many don't understand the technical limitations or time requirements. Project scope creep is constant. We've also had to develop entirely new workflows for virtual event management, avatar customization, and cross-platform deployment. It's a new industry with no established best practices."
+        },
+        {
+          question: "What's your advice for creators wanting to monetize their work?",
+          answer: "Start treating every project professionally, even personal ones. Document your process, track your time, and always deliver more than promised. Build a portfolio that shows range and technical skill. Most importantly, learn the business side - contracts, pricing, client management. The technical skills are just the foundation."
+        },
+        {
+          question: "Where do you see the virtual experiences industry heading?",
+          answer: "We're seeing increasing demand from corporate clients for training simulations, product launches, and team building events. The technology is finally reliable enough for professional use. I predict every major company will have some form of virtual presence within 5 years, creating massive opportunities for creators who understand both the tech and business sides."
+        }
+      ],
+      keyTakeaways: [
+        "Start with quality work, even on hobby projects",
+        "Scale gradually by adding complementary skills to your team",
+        "Client education and scope management are critical",
+        "Learn business fundamentals alongside technical skills",
+        "Corporate demand for virtual experiences is exploding"
+      ],
+      likes: 156,
+      comments: [
+        {
+          id: '1',
+          author: 'StartupFounder_VR',
+          content: 'Tom\'s journey from hobby to business is exactly what I needed to see. The scaling advice is incredibly practical.',
+          timestamp: '2 hours ago',
+          likes: 18
+        },
+        {
+          id: '2',
+          author: 'CreativeEntrepreneur',
+          content: 'The corporate market opportunity he mentions is huge. Time to start building those business skills!',
+          timestamp: '5 hours ago',
+          likes: 14
+        }
+      ]
     }
   };
 

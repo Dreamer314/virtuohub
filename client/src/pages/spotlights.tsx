@@ -185,6 +185,12 @@ const SpotlightsPage: React.FC = () => {
                                 <span className="px-2 py-1 bg-orange-500/20 text-orange-300 rounded text-xs">Roblox</span>
                                 <span className="px-2 py-1 bg-red-500/20 text-red-300 rounded text-xs">Game Design</span>
                               </div>
+                              <div className="mb-4">
+                                <Link href="/spotlight/pixelcraft-studios" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
+                                  View Full Spotlight
+                                  <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </Link>
+                              </div>
                               <EngagementSection 
                                 contentId="spotlight-pixelcraft"
                                 contentType="spotlight"
@@ -211,6 +217,12 @@ const SpotlightsPage: React.FC = () => {
                               <div className="flex gap-2 mb-4">
                                 <span className="px-2 py-1 bg-cyan-500/20 text-cyan-300 rounded text-xs">AI Tools</span>
                                 <span className="px-2 py-1 bg-purple-500/20 text-purple-300 rounded text-xs">Unity</span>
+                              </div>
+                              <div className="mb-4">
+                                <Link href="/spotlight/virtualforge-ai-tool" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
+                                  View Full Spotlight
+                                  <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </Link>
                               </div>
                               <EngagementSection 
                                 contentId="spotlight-virtualforge"

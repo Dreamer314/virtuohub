@@ -191,6 +191,12 @@ const InterviewsPage: React.FC = () => {
                               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
                                 <span>8 min read</span> • <span>Dec 28, 2024</span>
                               </div>
+                              <div className="mb-4">
+                                <Link href="/interview/maya-patel-virtual-fashion" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
+                                  Read Full Interview
+                                  <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </Link>
+                              </div>
                               <EngagementSection 
                                 contentId="interview-maya-fashion"
                                 contentType="interview"
@@ -212,6 +218,12 @@ const InterviewsPage: React.FC = () => {
                               </p>
                               <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
                                 <span>12 min read</span> • <span>Dec 25, 2024</span>
+                              </div>
+                              <div className="mb-4">
+                                <Link href="/interview/tom-richards-hobbyist-studio" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
+                                  Read Full Interview
+                                  <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </Link>
                               </div>
                               <EngagementSection 
                                 contentId="interview-tom-studio"

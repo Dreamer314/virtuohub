@@ -102,6 +102,162 @@ const SpotlightDetailPage: React.FC = () => {
           likes: 18
         }
       ]
+    },
+    'pixelcraft-studios': {
+      name: 'PixelCraft Studios',
+      role: 'Independent Game Studio',
+      location: 'Remote Team',
+      heroImage: 'from-blue-500 to-purple-600',
+      heroIcon: '🏢',
+      stats: '10M+ total plays • 25+ games • 4 years in business',
+      tags: ['Roblox', 'Game Design', 'Studio Management', 'Independent'],
+      bio: {
+        short: 'Independent game studio creating immersive Roblox experiences with over 10M total plays.',
+        long: 'PixelCraft Studios is a pioneering independent game development studio that has carved out a significant niche in the Roblox ecosystem. Founded four years ago by a team of passionate developers, the studio has consistently delivered high-quality, engaging experiences that have collectively garnered over 10 million plays. Their approach combines innovative gameplay mechanics with stunning visual design, creating worlds that captivate players and build lasting communities. The studio is known for their meticulous attention to detail, player-centric design philosophy, and commitment to pushing the boundaries of what\'s possible within the Roblox platform.'
+      },
+      experience: [
+        {
+          title: 'Independent Game Studio',
+          company: 'PixelCraft Studios',
+          period: '2020 - Present',
+          description: 'Founded and operating successful game development studio specializing in Roblox experiences.'
+        },
+        {
+          title: 'Senior Game Developer',
+          company: 'Various Projects',
+          period: '2018 - 2020',
+          description: 'Freelance game development across multiple platforms before founding PixelCraft.'
+        }
+      ],
+      portfolio: [
+        {
+          title: 'Neon Racing Championship',
+          type: 'Racing Game',
+          visits: '4.2M+',
+          description: 'High-speed racing game with customizable vehicles, multiple tracks, and competitive tournaments.',
+          features: ['Vehicle customization', 'Tournament system', 'Leaderboards', 'Daily challenges']
+        },
+        {
+          title: 'Mystery Mansion Detective',
+          type: 'Adventure/Puzzle',
+          visits: '3.8M+',
+          description: 'Interactive mystery adventure where players solve crimes and uncover secrets in a haunted mansion.',
+          features: ['Story-driven gameplay', 'Puzzle mechanics', 'Multiplayer cooperation', 'Branching narratives']
+        },
+        {
+          title: 'Sky Castle Builders',
+          type: 'Building/Creative',
+          visits: '2M+',
+          description: 'Creative building game allowing players to construct floating castles with unique physics mechanics.',
+          features: ['Advanced building system', 'Physics simulation', 'Social building', 'Gallery sharing']
+        }
+      ],
+      achievements: [
+        'Roblox Developer Conference Speaker 2023',
+        'Featured on Roblox Front Page 12 times',
+        'DevAward Winner - Best Multiplayer Experience 2022',
+        'Community Choice Award - Most Innovative Game 2021'
+      ],
+      socialLinks: [
+        { platform: 'Roblox', handle: '@PixelCraftStudios' },
+        { platform: 'Twitter', handle: '@PixelCraft_Dev' },
+        { platform: 'Discord', handle: 'PixelCraft Community Server' }
+      ],
+      likes: 178,
+      comments: [
+        {
+          id: '1',
+          author: 'GameDev_Enthusiast',
+          content: 'PixelCraft\'s attention to detail is incredible. Their games always feel polished and fun to play!',
+          timestamp: '2 hours ago',
+          likes: 12
+        },
+        {
+          id: '2',
+          author: 'RobloxPlayer_2024',
+          content: 'Neon Racing Championship is my favorite game on the platform. The tournament system is amazing!',
+          timestamp: '4 hours ago',
+          likes: 8
+        }
+      ]
+    },
+    'virtualforge-ai-tool': {
+      name: 'VirtualForge',
+      role: 'AI-Powered World Generation Tool',
+      location: 'San Francisco, CA',
+      heroImage: 'from-green-500 to-teal-600',
+      heroIcon: '🛠️',
+      stats: '50K+ worlds created • 15K+ active users • 2 years in market',
+      tags: ['AI Tools', 'Unity', 'World Generation', 'Automation'],
+      bio: {
+        short: 'AI-powered world generation tool helping creators build immersive environments 10x faster.',
+        long: 'VirtualForge represents a revolutionary leap in world creation technology, leveraging advanced AI algorithms to dramatically accelerate the development of immersive virtual environments. Developed by a team of industry veterans and AI specialists, VirtualForge has transformed how creators approach world building by automating complex tasks while preserving creative control. The tool integrates seamlessly with Unity and other popular development platforms, offering intelligent terrain generation, automated lighting setups, and procedural asset placement that would traditionally take weeks to accomplish manually. Since launching two years ago, VirtualForge has empowered over 15,000 creators to bring their visions to life, resulting in more than 50,000 unique worlds across various platforms.'
+      },
+      experience: [
+        {
+          title: 'AI World Generation Platform',
+          company: 'VirtualForge Technologies',
+          period: '2022 - Present',
+          description: 'Leading AI-powered tool for accelerated virtual world creation and development.'
+        },
+        {
+          title: 'Research & Development',
+          company: 'VirtualForge Labs',
+          period: '2020 - 2022',
+          description: 'Two years of intensive R&D developing breakthrough AI algorithms for world generation.'
+        }
+      ],
+      portfolio: [
+        {
+          title: 'Terrain Generation AI',
+          type: 'Core Feature',
+          visits: 'Used in 30K+ worlds',
+          description: 'Advanced terrain generation using machine learning to create realistic landscapes and environments.',
+          features: ['Heightmap generation', 'Biome blending', 'Erosion simulation', 'Custom parameters']
+        },
+        {
+          title: 'Smart Lighting System',
+          type: 'Automation Tool',
+          visits: 'Used in 25K+ worlds',
+          description: 'AI-driven lighting setup that automatically optimizes illumination for any environment type.',
+          features: ['Automatic light placement', 'Dynamic shadows', 'Mood presets', 'Performance optimization']
+        },
+        {
+          title: 'Asset Placement Engine',
+          type: 'AI Assistant',
+          visits: 'Used in 20K+ worlds',
+          description: 'Intelligent system that places environmental assets naturally and realistically throughout worlds.',
+          features: ['Procedural placement', 'Density control', 'Style matching', 'Collision avoidance']
+        }
+      ],
+      achievements: [
+        'Unity Asset Store - Editor\'s Choice 2023',
+        'AI Innovation Award - GDC 2023',
+        'Best Developer Tool - VR Awards 2022',
+        '5-Star Rating with 2,000+ Reviews'
+      ],
+      socialLinks: [
+        { platform: 'Website', handle: 'virtualforge.ai' },
+        { platform: 'Twitter', handle: '@VirtualForgeAI' },
+        { platform: 'Discord', handle: 'VirtualForge Community' }
+      ],
+      likes: 203,
+      comments: [
+        {
+          id: '1',
+          author: 'UnityDeveloper_Pro',
+          content: 'VirtualForge has saved me hundreds of hours of work. The AI terrain generation is mind-blowing!',
+          timestamp: '1 hour ago',
+          likes: 15
+        },
+        {
+          id: '2',
+          author: 'WorldBuilder_Sarah',
+          content: 'As someone who struggled with lighting, the smart lighting system is a game-changer. Perfect results every time.',
+          timestamp: '3 hours ago',
+          likes: 11
+        }
+      ]
     }
   };
 
