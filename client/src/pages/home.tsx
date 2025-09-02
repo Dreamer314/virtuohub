@@ -433,28 +433,28 @@ const HomePage = () => {
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-radial from-purple-400/6 via-indigo-500/3 to-transparent blur-[100px]"></div>
               </div>
               
-              <div className="relative z-10 max-w-6xl mx-auto">
+              <div className="relative z-10 max-w-7xl mx-auto">
                 {/* Section Header with enhanced typography */}
-                <div className="text-center mb-16">
+                <div className="text-center mb-20">
                   <div className="relative inline-block">
-                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-8 relative">
+                    <h1 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-foreground mb-10 relative">
                       <span className="bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
                         Build in Public. Level Up Faster.
                       </span>
                     </h1>
                     <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 blur-xl -z-10"></div>
                   </div>
-                  <div className="max-w-4xl mx-auto">
-                    <p className="text-xl md:text-2xl text-muted-foreground font-medium leading-relaxed">
+                  <div className="max-w-5xl mx-auto">
+                    <p className="text-2xl md:text-3xl lg:text-4xl text-muted-foreground font-medium leading-relaxed">
                       VirtuoHub is where immersive creators post WIP, get feedback, and turn threads into collaborations across VR and UGC platforms.
                     </p>
                   </div>
                 </div>
 
                 {/* Enhanced Platform Brand Row */}
-                <div className="mb-20">
+                <div className="mb-24">
                   <div className="relative">
-                    <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6 lg:gap-8 opacity-70">
+                    <div className="flex flex-wrap justify-center items-center gap-6 md:gap-8 lg:gap-10 xl:gap-12 opacity-70">
                       {[
                         'Roblox', 'IMVU', 'Second Life', 'Fortnite', 'Minecraft', 'GTA FiveM', 
                         'Meta Horizon Worlds', 'VRChat', 'Unity', 'Unreal Engine', 'Elder Scrolls', 
@@ -462,7 +462,7 @@ const HomePage = () => {
                       ].map((platform, index) => (
                         <span 
                           key={platform} 
-                          className="text-sm md:text-base font-medium text-muted-foreground tracking-wider px-2 py-1 rounded-md 
+                          className="text-base md:text-lg lg:text-xl font-medium text-muted-foreground tracking-wider px-3 py-2 rounded-lg 
                                      transition-all duration-300 hover:text-primary hover:scale-105 hover:opacity-100"
                           style={{ 
                             letterSpacing: '0.1em',
@@ -479,21 +479,21 @@ const HomePage = () => {
                 </div>
 
                 {/* Enhanced Two Column Content */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 mb-20">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 xl:gap-32 mb-24">
                   {/* Left Column - Enhanced */}
                   <div className="relative">
                     <div className="sticky top-24">
-                      <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8 leading-tight">
+                      <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-10 leading-tight">
                         You don't have to be a pro to begin
                       </h2>
-                      <div className="prose prose-lg text-muted-foreground mb-10 leading-relaxed">
-                        <p className="text-lg">
+                      <div className="prose prose-lg text-muted-foreground mb-12 leading-relaxed">
+                        <p className="text-xl md:text-2xl lg:text-3xl">
                           Beginners get unstuck and veterans find collaborators. Share work in progress, ask for help, and learn how the industry actually works.
                         </p>
                       </div>
 
                       {/* Enhanced Progress Images with Arrow */}
-                      <div className="flex items-center gap-6 mb-8">
+                      <div className="flex items-center gap-8 lg:gap-10 mb-12">
                         <div className="flex-1">
                           <Card className="enhanced-card hover-lift group overflow-hidden">
                             <CardContent className="p-0">
@@ -506,15 +506,15 @@ const HomePage = () => {
                               </div>
                             </CardContent>
                           </Card>
-                          <div className="mt-4 text-center">
-                            <h4 className="font-bold text-lg text-foreground mb-1">Start here</h4>
-                            <p className="text-sm text-muted-foreground">Your first WIP into 3D and worldbuilding.</p>
+                          <div className="mt-6 text-center">
+                            <h4 className="font-bold text-xl lg:text-2xl text-foreground mb-2">Start here</h4>
+                            <p className="text-base lg:text-lg text-muted-foreground">Your first WIP into 3D and worldbuilding.</p>
                           </div>
                         </div>
                         
                         {/* Arrow */}
                         <div className="flex-shrink-0 flex items-center justify-center">
-                          <ChevronRight className="w-8 h-8 text-primary" />
+                          <ChevronRight className="w-10 h-10 lg:w-12 lg:h-12 text-primary" />
                         </div>
                         
                         <div className="flex-1">
@@ -529,20 +529,20 @@ const HomePage = () => {
                               </div>
                             </CardContent>
                           </Card>
-                          <div className="mt-4 text-center">
-                            <h4 className="font-bold text-lg text-foreground mb-1">Keep growing</h4>
-                            <p className="text-sm text-muted-foreground">Better every week with peer feedback and practical tips.</p>
+                          <div className="mt-6 text-center">
+                            <h4 className="font-bold text-xl lg:text-2xl text-foreground mb-2">Keep growing</h4>
+                            <p className="text-base lg:text-lg text-muted-foreground">Better every week with peer feedback and practical tips.</p>
                           </div>
                         </div>
                       </div>
 
                       {/* Enhanced What you'll get list */}
-                      <div className="relative mb-8">
-                        <h3 className="text-2xl font-bold text-foreground mb-6 flex items-center">
-                          <Sparkles className="w-6 h-6 text-primary mr-3" />
+                      <div className="relative mb-10">
+                        <h3 className="text-3xl lg:text-4xl font-bold text-foreground mb-8 flex items-center">
+                          <Sparkles className="w-8 h-8 lg:w-10 lg:h-10 text-primary mr-4" />
                           What you'll get:
                         </h3>
-                        <div className="space-y-4 pl-9">
+                        <div className="space-y-6 pl-12 lg:pl-14">
                           <CheckItem>Organized threads with categories like WIP, Help & Feedback, Jobs & Gigs, Assets for Sale, Events, and General</CheckItem>
                           <CheckItem>Editorial you can trust: Interviews, Spotlights, Tips & Guides, Industry News, and Pulse Reports</CheckItem>
                           <CheckItem>Lightweight profiles, simple DMs, and polls that capture the community's voice</CheckItem>
@@ -550,9 +550,9 @@ const HomePage = () => {
                       </div>
 
                       {/* Coming next section */}
-                      <div className="pl-9">
-                        <h4 className="text-sm font-semibold text-muted-foreground/70 mb-3">Coming next</h4>
-                        <div className="space-y-2 text-sm text-muted-foreground/70">
+                      <div className="pl-12 lg:pl-14">
+                        <h4 className="text-base lg:text-lg font-semibold text-muted-foreground/70 mb-4">Coming next</h4>
+                        <div className="space-y-3 text-base lg:text-lg text-muted-foreground/70">
                           <div>• Courses & live workshop library</div>
                           <div>• Smart creator tools</div>
                           <div>• Creator marketplace</div>
@@ -564,23 +564,23 @@ const HomePage = () => {
 
                   {/* Right Column - Enhanced with rich visual depth */}
                   <div className="relative">
-                    <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8 leading-tight">
+                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-10 leading-tight">
                       Your creativity should pay you back
                     </h2>
                     
-                    <div className="space-y-6 mb-16">
+                    <div className="space-y-8 lg:space-y-10 mb-20">
                       <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10" data-testid="card-sell-assets">
-                        <CardContent className="p-8 relative overflow-hidden">
+                        <CardContent className="p-10 lg:p-12 relative overflow-hidden">
                           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-cosmic opacity-10 rounded-full blur-2xl group-hover:opacity-20 transition-opacity"></div>
-                          <div className="flex items-start space-x-6 relative z-10">
-                            <div className="p-3 rounded-xl bg-gradient-cosmic/10 backdrop-blur-sm border border-primary/20">
-                              <DollarSign className="w-8 h-8 text-primary" />
+                          <div className="flex items-start space-x-8 relative z-10">
+                            <div className="p-4 lg:p-5 rounded-xl bg-gradient-cosmic/10 backdrop-blur-sm border border-primary/20">
+                              <DollarSign className="w-10 h-10 lg:w-12 lg:h-12 text-primary" />
                             </div>
                             <div>
-                              <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
+                              <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4 group-hover:text-primary transition-colors">
                                 Showcase and sell your work
                               </h3>
-                              <p className="text-muted-foreground leading-relaxed">
+                              <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed">
                                 Post assets, tag "Assets for Sale," and link to your shop or marketplace.
                               </p>
                             </div>
@@ -589,17 +589,17 @@ const HomePage = () => {
                       </Card>
 
                       <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/10" data-testid="card-build-experiences">
-                        <CardContent className="p-8 relative overflow-hidden">
+                        <CardContent className="p-10 lg:p-12 relative overflow-hidden">
                           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-nebula opacity-10 rounded-full blur-2xl group-hover:opacity-20 transition-opacity"></div>
-                          <div className="flex items-start space-x-6 relative z-10">
-                            <div className="p-3 rounded-xl bg-gradient-nebula/10 backdrop-blur-sm border border-purple-500/20">
-                              <Sparkles className="w-8 h-8 text-purple-500" />
+                          <div className="flex items-start space-x-8 relative z-10">
+                            <div className="p-4 lg:p-5 rounded-xl bg-gradient-nebula/10 backdrop-blur-sm border border-purple-500/20">
+                              <Sparkles className="w-10 h-10 lg:w-12 lg:h-12 text-purple-500" />
                             </div>
                             <div>
-                              <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-purple-500 transition-colors">
+                              <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4 group-hover:text-purple-500 transition-colors">
                                 Build with collaborators
                               </h3>
-                              <p className="text-muted-foreground leading-relaxed">
+                              <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed">
                                 Find teammates, post gigs, and ship worlds people actually use.
                               </p>
                             </div>
@@ -608,17 +608,17 @@ const HomePage = () => {
                       </Card>
 
                       <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/10" data-testid="card-teach-workshops">
-                        <CardContent className="p-8 relative overflow-hidden">
+                        <CardContent className="p-10 lg:p-12 relative overflow-hidden">
                           <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-aurora opacity-10 rounded-full blur-2xl group-hover:opacity-20 transition-opacity"></div>
-                          <div className="flex items-start space-x-6 relative z-10">
-                            <div className="p-3 rounded-xl bg-gradient-aurora/10 backdrop-blur-sm border border-blue-500/20">
-                              <GraduationCap className="w-8 h-8 text-blue-500" />
+                          <div className="flex items-start space-x-8 relative z-10">
+                            <div className="p-4 lg:p-5 rounded-xl bg-gradient-aurora/10 backdrop-blur-sm border border-blue-500/20">
+                              <GraduationCap className="w-10 h-10 lg:w-12 lg:h-12 text-blue-500" />
                             </div>
                             <div>
-                              <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-blue-500 transition-colors">
+                              <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4 group-hover:text-blue-500 transition-colors">
                                 Teach and share what you know
                               </h3>
-                              <p className="text-muted-foreground leading-relaxed">
+                              <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed">
                                 Announce workshops or streams, share threads, and grow your audience.
                               </p>
                             </div>
@@ -629,37 +629,37 @@ const HomePage = () => {
 
                     {/* Enhanced We built what we needed */}
                     <div className="relative">
-                      <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8 leading-tight">
+                      <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-10 leading-tight">
                         We built what we needed
                       </h2>
                       
-                      <div className="space-y-4 relative">
+                      <div className="space-y-6 lg:space-y-8 relative">
                         <Card className="enhanced-card border border-primary/20 bg-primary/5 backdrop-blur-sm" data-testid="quote-creators">
-                          <CardContent className="p-6">
-                            <p className="text-foreground italic text-lg relative">
-                              <span className="text-primary text-2xl absolute -left-2 -top-2">"</span>
+                          <CardContent className="p-8 lg:p-10">
+                            <p className="text-foreground italic text-xl lg:text-2xl relative">
+                              <span className="text-primary text-3xl lg:text-4xl absolute -left-3 -top-3">"</span>
                               Why isn't there one hub where creator Q&A doesn't get buried?
-                              <span className="text-primary text-2xl absolute -bottom-1 ml-1">"</span>
+                              <span className="text-primary text-3xl lg:text-4xl absolute -bottom-2 ml-1">"</span>
                             </p>
                           </CardContent>
                         </Card>
 
                         <Card className="enhanced-card border border-purple-500/20 bg-purple-500/5 backdrop-blur-sm" data-testid="quote-selling">
-                          <CardContent className="p-6">
-                            <p className="text-foreground italic text-lg relative">
-                              <span className="text-purple-500 text-2xl absolute -left-2 -top-2">"</span>
+                          <CardContent className="p-8 lg:p-10">
+                            <p className="text-foreground italic text-xl lg:text-2xl relative">
+                              <span className="text-purple-500 text-3xl lg:text-4xl absolute -left-3 -top-3">"</span>
                               WIP + feedback is how I actually get better — not another algorithm.
-                              <span className="text-purple-500 text-2xl absolute -bottom-1 ml-1">"</span>
+                              <span className="text-purple-500 text-3xl lg:text-4xl absolute -bottom-2 ml-1">"</span>
                             </p>
                           </CardContent>
                         </Card>
 
                         <Card className="enhanced-card border border-blue-500/20 bg-blue-500/5 backdrop-blur-sm" data-testid="quote-workshop">
-                          <CardContent className="p-6">
-                            <p className="text-foreground italic text-lg relative">
-                              <span className="text-blue-500 text-2xl absolute -left-2 -top-2">"</span>
+                          <CardContent className="p-8 lg:p-10">
+                            <p className="text-foreground italic text-xl lg:text-2xl relative">
+                              <span className="text-blue-500 text-3xl lg:text-4xl absolute -left-3 -top-3">"</span>
                               Where do I even find collaborators or students for my workshop?
-                              <span className="text-blue-500 text-2xl absolute -bottom-1 ml-1">"</span>
+                              <span className="text-blue-500 text-3xl lg:text-4xl absolute -bottom-2 ml-1">"</span>
                             </p>
                           </CardContent>
                         </Card>
@@ -670,11 +670,11 @@ const HomePage = () => {
 
                 {/* Enhanced CTA Band */}
                 <div className="text-center relative">
-                  <div className="max-w-3xl mx-auto mb-12">
-                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-tight">
+                  <div className="max-w-4xl mx-auto mb-16">
+                    <h2 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground mb-8 leading-tight">
                       The industry is changing fast
                     </h2>
-                    <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+                    <p className="text-xl md:text-2xl lg:text-3xl text-muted-foreground leading-relaxed mb-12">
                       UGC platforms evolve monthly. VirtuoHub keeps creators in the loop so you can adapt and grow.
                     </p>
                     
@@ -682,18 +682,18 @@ const HomePage = () => {
                       <Button 
                         asChild 
                         size="lg" 
-                        className="px-12 py-6 text-xl font-bold bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-2xl shadow-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-primary/50 rounded-2xl"
+                        className="px-16 py-8 text-2xl lg:text-3xl font-bold bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-2xl shadow-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-primary/50 rounded-2xl"
                         data-testid="button-join-community"
                       >
                         <Link href="/">
                           Join the Community 
-                          <ArrowRight className="ml-3 w-6 h-6" />
+                          <ArrowRight className="ml-4 w-8 h-8 lg:w-10 lg:h-10" />
                         </Link>
                       </Button>
-                      <div className="absolute -inset-2 bg-gradient-cosmic opacity-20 blur-xl rounded-2xl -z-10"></div>
+                      <div className="absolute -inset-3 bg-gradient-cosmic opacity-20 blur-xl rounded-2xl -z-10"></div>
                     </div>
                     
-                    <p className="text-sm text-muted-foreground mt-4">
+                    <p className="text-lg lg:text-xl text-muted-foreground mt-6">
                       Create your free account today
                     </p>
                   </div>
