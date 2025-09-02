@@ -7,6 +7,8 @@ import { FeaturedCarousel } from "@/components/featured/FeaturedCarousel";
 import { featuredItems } from "@/components/featured/types";
 import { CreatePostModal } from "@/components/create-post-modal";
 import vhubHeaderImage from '@assets/VHub.Header.no.font.Light.Page.png';
+import day1Image from '@assets/download (2).png';
+import week4Image from '@assets/download (1).png';
 import { Link } from "wouter";
 import { TitleWithRule } from "@/components/ui/title-with-rule";
 import { CheckItem } from "@/components/ui/check-item";
@@ -419,115 +421,155 @@ const HomePage = () => {
             </section>
 
             {/* Your Community Awaits Section */}
-            <section className="relative px-6 py-16 overflow-hidden">
-              {/* Ambient background */}
+            <section className="relative px-6 py-20 overflow-hidden">
+              {/* Complex ambient background with depth */}
               <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-radial from-purple-400/8 via-violet-500/4 to-transparent blur-[120px]"></div>
+                {/* Primary gradient behind right column */}
+                <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[1000px] h-[1000px] bg-gradient-radial from-violet-400/12 via-purple-500/6 to-transparent blur-[150px]"></div>
+                {/* Secondary accent behind left column */}
+                <div className="absolute top-1/3 left-1/4 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-cyan-400/8 via-blue-500/4 to-transparent blur-[120px]"></div>
+                {/* Bottom glow */}
+                <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-radial from-purple-400/6 via-indigo-500/3 to-transparent blur-[100px]"></div>
               </div>
               
               <div className="relative z-10 max-w-6xl mx-auto">
-                {/* Section Header */}
-                <div className="text-center mb-12">
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
-                    Your Community Awaits.
-                  </h1>
-                  <div className="max-w-4xl mx-auto">
-                    <p className="text-xl text-muted-foreground mb-4">
+                {/* Section Header with enhanced typography */}
+                <div className="text-center mb-16">
+                  <div className="relative inline-block">
+                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-8 relative">
+                      <span className="bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+                        Your Community Awaits.
+                      </span>
+                    </h1>
+                    <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 blur-xl -z-10"></div>
+                  </div>
+                  <div className="max-w-4xl mx-auto space-y-4">
+                    <p className="text-xl md:text-2xl text-muted-foreground font-medium">
                       We are dedicated to the platforms you build on.
                     </p>
-                    <p className="text-lg text-muted-foreground">
-                      Our tools, tutorials, and community are built to support the games you actually create in—turning passion into real-world virtual economies.
+                    <p className="text-lg text-muted-foreground/90 leading-relaxed">
+                      Our tools, tutorials, and community are built to support the games you actually create in—<br />
+                      turning passion into real-world virtual economies.
                     </p>
                   </div>
                 </div>
 
-                {/* Platform Brand Row */}
-                <div className="mb-16">
-                  <div className="flex flex-wrap justify-center items-center gap-6 opacity-60">
-                    {[
-                      'Roblox', 'IMVU', 'Second Life', 'Fortnite', 'Minecraft', 'GTA FiveM', 
-                      'Meta Horizon Worlds', 'VRChat', 'Unity', 'Unreal Engine', 'Elder Scrolls', 
-                      'Fallout', 'Counter-Strike', 'Team Fortress 2', 'Dreams', 'Core', 'The Sims', 'CCinZOI'
-                    ].map((platform) => (
-                      <span 
-                        key={platform} 
-                        className="text-sm font-medium text-muted-foreground tracking-wide"
-                        style={{ letterSpacing: '0.1em' }}
-                      >
-                        {platform}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Two Column Content */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-16">
-                  {/* Left Column */}
-                  <div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">
-                      You don't have to be a pro to begin
-                    </h2>
-                    <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                      VirtuoHub is where beginners actually get started.<br />
-                      From your first steps to your first sale,<br />
-                      we combine structured learning paths, AI-assisted tools, and income-ready features—<br />
-                      so creators grow faster and earn sooner.
-                    </p>
-
-                    {/* Progress Images */}
-                    <div className="flex gap-4 mb-8">
-                      <Card className="enhanced-card hover-lift flex-1">
-                        <CardContent className="p-4">
-                          <div className="aspect-square bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 rounded-lg mb-3 flex items-center justify-center">
-                            <div className="w-16 h-16 bg-white/50 dark:bg-slate-700/50 rounded-full"></div>
-                          </div>
-                          <h4 className="font-semibold text-center text-foreground mb-1">Day 1</h4>
-                          <p className="text-sm text-muted-foreground text-center">Your first steps into 3D creation</p>
-                        </CardContent>
-                      </Card>
-                      
-                      <Card className="enhanced-card hover-lift flex-1">
-                        <CardContent className="p-4">
-                          <div className="aspect-square bg-gradient-to-br from-purple-100 to-blue-100 dark:from-purple-900 dark:to-blue-900 rounded-lg mb-3 flex items-center justify-center">
-                            <div className="w-16 h-16 bg-gradient-cosmic rounded-full"></div>
-                          </div>
-                          <h4 className="font-semibold text-center text-foreground mb-1">Week 4</h4>
-                          <p className="text-sm text-muted-foreground text-center">Rapid progress with guided learning</p>
-                        </CardContent>
-                      </Card>
+                {/* Enhanced Platform Brand Row */}
+                <div className="mb-20">
+                  <div className="relative">
+                    <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6 lg:gap-8 opacity-70">
+                      {[
+                        'Roblox', 'IMVU', 'Second Life', 'Fortnite', 'Minecraft', 'GTA FiveM', 
+                        'Meta Horizon Worlds', 'VRChat', 'Unity', 'Unreal Engine', 'Elder Scrolls', 
+                        'Fallout', 'Counter-Strike', 'Team Fortress 2', 'Dreams', 'Core', 'The Sims', 'CCinZOI'
+                      ].map((platform, index) => (
+                        <span 
+                          key={platform} 
+                          className="text-sm md:text-base font-medium text-muted-foreground tracking-wider px-2 py-1 rounded-md 
+                                     transition-all duration-300 hover:text-primary hover:scale-105 hover:opacity-100"
+                          style={{ 
+                            letterSpacing: '0.1em',
+                            animationDelay: `${index * 0.1}s`,
+                          }}
+                        >
+                          {platform}
+                        </span>
+                      ))}
                     </div>
+                    {/* Subtle divider lines */}
+                    <div className="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
+                  </div>
+                </div>
 
-                    {/* What you'll get list */}
-                    <div>
-                      <h3 className="text-xl font-semibold text-foreground mb-4">What you'll get:</h3>
-                      <div className="space-y-3">
-                        <CheckItem>Step-by-step learning paths tailored to your platform</CheckItem>
-                        <CheckItem>AI-powered tools to accelerate your creation process</CheckItem>
-                        <CheckItem>Built-in marketplace to start earning immediately</CheckItem>
-                        <CheckItem>Community support from experienced creators</CheckItem>
+                {/* Enhanced Two Column Content */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 mb-20">
+                  {/* Left Column - Enhanced */}
+                  <div className="relative">
+                    <div className="sticky top-24">
+                      <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8 leading-tight">
+                        You don't have to be a pro to begin
+                      </h2>
+                      <div className="prose prose-lg text-muted-foreground mb-10 leading-relaxed">
+                        <p className="text-lg">
+                          VirtuoHub is where beginners actually get started.<br />
+                          From your first steps to your first sale,<br />
+                          we combine structured learning paths, AI-assisted tools, and income-ready features—<br />
+                          <span className="text-primary font-semibold">so creators grow faster and earn sooner.</span>
+                        </p>
+                      </div>
+
+                      {/* Enhanced Progress Images */}
+                      <div className="flex gap-6 mb-12">
+                        <Card className="enhanced-card hover-lift flex-1 group overflow-hidden">
+                          <CardContent className="p-0">
+                            <div className="relative overflow-hidden">
+                              <img 
+                                src={day1Image} 
+                                alt="Day 1 - Wireframe 3D Model" 
+                                className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-500"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                              <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                <h4 className="font-bold text-lg mb-1">Day 1</h4>
+                                <p className="text-sm text-white/90">Your first steps into 3D creation</p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                        
+                        <Card className="enhanced-card hover-lift flex-1 group overflow-hidden">
+                          <CardContent className="p-0">
+                            <div className="relative overflow-hidden">
+                              <img 
+                                src={week4Image} 
+                                alt="Week 4 - Stylized Avatar" 
+                                className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-500"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-purple-900/60 via-transparent to-transparent"></div>
+                              <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
+                                <h4 className="font-bold text-lg mb-1">Week 4</h4>
+                                <p className="text-sm text-white/90">Rapid progress with guided learning</p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+
+                      {/* Enhanced What you'll get list */}
+                      <div className="relative">
+                        <h3 className="text-2xl font-bold text-foreground mb-6 flex items-center">
+                          <Sparkles className="w-6 h-6 text-primary mr-3" />
+                          What you'll get:
+                        </h3>
+                        <div className="space-y-4 pl-9">
+                          <CheckItem>Step-by-step learning paths tailored to your platform</CheckItem>
+                          <CheckItem>AI-powered tools to accelerate your creation process</CheckItem>
+                          <CheckItem>Built-in marketplace to start earning immediately</CheckItem>
+                          <CheckItem>Community support from experienced creators</CheckItem>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Right Column */}
-                  <div>
-                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">
+                  {/* Right Column - Enhanced with rich visual depth */}
+                  <div className="relative">
+                    <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8 leading-tight">
                       Your creativity should pay you back
                     </h2>
                     
-                    <div className="space-y-4 mb-12">
-                      <Card className="enhanced-card hover-lift cursor-pointer" data-testid="card-sell-assets">
-                        <CardContent className="p-6">
-                          <div className="flex items-start space-x-4">
-                            <DollarSign 
-                              className="w-8 h-8 mt-1 text-transparent bg-gradient-cosmic bg-clip-text" 
-                              style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} 
-                            />
+                    <div className="space-y-6 mb-16">
+                      <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10" data-testid="card-sell-assets">
+                        <CardContent className="p-8 relative overflow-hidden">
+                          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-cosmic opacity-10 rounded-full blur-2xl group-hover:opacity-20 transition-opacity"></div>
+                          <div className="flex items-start space-x-6 relative z-10">
+                            <div className="p-3 rounded-xl bg-gradient-cosmic/10 backdrop-blur-sm border border-primary/20">
+                              <DollarSign className="w-8 h-8 text-primary" />
+                            </div>
                             <div>
-                              <h3 className="text-lg font-semibold text-foreground mb-2">
+                              <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
                                 Sell avatars, 3D models, and digital assets
                               </h3>
-                              <p className="text-muted-foreground text-sm">
+                              <p className="text-muted-foreground leading-relaxed">
                                 Turn your creations into income through our integrated marketplace
                               </p>
                             </div>
@@ -535,18 +577,18 @@ const HomePage = () => {
                         </CardContent>
                       </Card>
 
-                      <Card className="enhanced-card hover-lift cursor-pointer" data-testid="card-build-experiences">
-                        <CardContent className="p-6">
-                          <div className="flex items-start space-x-4">
-                            <Sparkles 
-                              className="w-8 h-8 mt-1 text-transparent bg-gradient-nebula bg-clip-text" 
-                              style={{backgroundImage: 'var(--gradient-nebula)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} 
-                            />
+                      <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/10" data-testid="card-build-experiences">
+                        <CardContent className="p-8 relative overflow-hidden">
+                          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-nebula opacity-10 rounded-full blur-2xl group-hover:opacity-20 transition-opacity"></div>
+                          <div className="flex items-start space-x-6 relative z-10">
+                            <div className="p-3 rounded-xl bg-gradient-nebula/10 backdrop-blur-sm border border-purple-500/20">
+                              <Sparkles className="w-8 h-8 text-purple-500" />
+                            </div>
                             <div>
-                              <h3 className="text-lg font-semibold text-foreground mb-2">
+                              <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-purple-500 transition-colors">
                                 Build and monetize virtual experiences
                               </h3>
-                              <p className="text-muted-foreground text-sm">
+                              <p className="text-muted-foreground leading-relaxed">
                                 Create immersive worlds and games that generate revenue
                               </p>
                             </div>
@@ -554,18 +596,18 @@ const HomePage = () => {
                         </CardContent>
                       </Card>
 
-                      <Card className="enhanced-card hover-lift cursor-pointer" data-testid="card-teach-workshops">
-                        <CardContent className="p-6">
-                          <div className="flex items-start space-x-4">
-                            <GraduationCap 
-                              className="w-8 h-8 mt-1 text-transparent bg-gradient-aurora bg-clip-text" 
-                              style={{backgroundImage: 'var(--gradient-aurora)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} 
-                            />
+                      <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/10" data-testid="card-teach-workshops">
+                        <CardContent className="p-8 relative overflow-hidden">
+                          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-aurora opacity-10 rounded-full blur-2xl group-hover:opacity-20 transition-opacity"></div>
+                          <div className="flex items-start space-x-6 relative z-10">
+                            <div className="p-3 rounded-xl bg-gradient-aurora/10 backdrop-blur-sm border border-blue-500/20">
+                              <GraduationCap className="w-8 h-8 text-blue-500" />
+                            </div>
                             <div>
-                              <h3 className="text-lg font-semibold text-foreground mb-2">
+                              <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-blue-500 transition-colors">
                                 Teach others through workshops and courses
                               </h3>
-                              <p className="text-muted-foreground text-sm">
+                              <p className="text-muted-foreground leading-relaxed">
                                 Share your expertise and build a teaching income stream
                               </p>
                             </div>
@@ -574,33 +616,39 @@ const HomePage = () => {
                       </Card>
                     </div>
 
-                    {/* We built what we needed */}
-                    <div>
-                      <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">
+                    {/* Enhanced We built what we needed */}
+                    <div className="relative">
+                      <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8 leading-tight">
                         We built what we needed
                       </h2>
                       
-                      <div className="space-y-4">
-                        <Card className="enhanced-card" data-testid="quote-creators">
-                          <CardContent className="p-4">
-                            <p className="text-muted-foreground italic">
-                              "Why isn't there a site just for creators like us?"
+                      <div className="space-y-4 relative">
+                        <Card className="enhanced-card border border-primary/20 bg-primary/5 backdrop-blur-sm" data-testid="quote-creators">
+                          <CardContent className="p-6">
+                            <p className="text-foreground italic text-lg relative">
+                              <span className="text-primary text-2xl absolute -left-2 -top-2">"</span>
+                              Why isn't there a site just for creators like us?
+                              <span className="text-primary text-2xl absolute -bottom-1 ml-1">"</span>
                             </p>
                           </CardContent>
                         </Card>
 
-                        <Card className="enhanced-card" data-testid="quote-selling">
-                          <CardContent className="p-4">
-                            <p className="text-muted-foreground italic">
-                              "I want to sell my rig but Upwork isn't it..."
+                        <Card className="enhanced-card border border-purple-500/20 bg-purple-500/5 backdrop-blur-sm" data-testid="quote-selling">
+                          <CardContent className="p-6">
+                            <p className="text-foreground italic text-lg relative">
+                              <span className="text-purple-500 text-2xl absolute -left-2 -top-2">"</span>
+                              I want to sell my rig but Upwork isn't it...
+                              <span className="text-purple-500 text-2xl absolute -bottom-1 ml-1">"</span>
                             </p>
                           </CardContent>
                         </Card>
 
-                        <Card className="enhanced-card" data-testid="quote-workshop">
-                          <CardContent className="p-4">
-                            <p className="text-muted-foreground italic">
-                              "Where do I even find students for my workshop?"
+                        <Card className="enhanced-card border border-blue-500/20 bg-blue-500/5 backdrop-blur-sm" data-testid="quote-workshop">
+                          <CardContent className="p-6">
+                            <p className="text-foreground italic text-lg relative">
+                              <span className="text-blue-500 text-2xl absolute -left-2 -top-2">"</span>
+                              Where do I even find students for my workshop?
+                              <span className="text-blue-500 text-2xl absolute -bottom-1 ml-1">"</span>
                             </p>
                           </CardContent>
                         </Card>
@@ -609,28 +657,36 @@ const HomePage = () => {
                   </div>
                 </div>
 
-                {/* CTA Band */}
-                <div className="text-center">
-                  <div className="max-w-2xl mx-auto mb-8">
-                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-                      The industry is changing fast
-                    </h2>
-                    <p className="text-lg text-muted-foreground">
-                      AI • VR • Avatars • UGC platforms
-                    </p>
-                    <p className="text-base text-muted-foreground mt-2">
-                      VirtuoHub helps you move with it.
-                    </p>
+                {/* Enhanced CTA Band */}
+                <div className="text-center relative">
+                  <div className="relative inline-block mb-12">
+                    <div className="max-w-3xl mx-auto">
+                      <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-tight">
+                        The industry is changing fast
+                      </h2>
+                      <div className="text-xl md:text-2xl text-muted-foreground font-medium mb-4 tracking-wide">
+                        <span className="text-primary">AI</span> • <span className="text-purple-500">VR</span> • <span className="text-blue-500">Avatars</span> • <span className="text-cyan-500">UGC platforms</span>
+                      </div>
+                      <p className="text-lg text-muted-foreground">
+                        VirtuoHub helps you move with it.
+                      </p>
+                    </div>
                   </div>
                   
-                  <Button 
-                    asChild 
-                    size="lg" 
-                    className="px-10 py-4 text-lg font-semibold bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-lg hover:shadow-xl transition-all"
-                    data-testid="button-start-journey"
-                  >
-                    <Link href="/">Start Your Journey <ArrowRight className="ml-2 w-5 h-5" /></Link>
-                  </Button>
+                  <div className="relative inline-block">
+                    <Button 
+                      asChild 
+                      size="lg" 
+                      className="px-12 py-6 text-xl font-bold bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-2xl shadow-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-primary/50 rounded-2xl"
+                      data-testid="button-start-journey"
+                    >
+                      <Link href="/">
+                        Start Your Journey 
+                        <ArrowRight className="ml-3 w-6 h-6" />
+                      </Link>
+                    </Button>
+                    <div className="absolute -inset-2 bg-gradient-cosmic opacity-20 blur-xl rounded-2xl -z-10"></div>
+                  </div>
                 </div>
               </div>
             </section>
