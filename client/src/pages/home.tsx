@@ -49,31 +49,31 @@ const HomePage = () => {
                   <p className="text-lg md:text-xl text-white/90 drop-shadow-md mb-12 max-w-3xl mx-auto leading-relaxed">
                     Shaping the future of digital creators with insider insights, multi-platform learning, and real business growth. Learn. Monetize. Connect.
                   </p>
-                  <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-                    <div className="flex flex-col items-center gap-3">
+                  <div className="flex flex-col gap-6 justify-center items-center">
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                       <Button 
                         asChild 
                         size="lg" 
-                        className="px-10 py-4 text-lg font-semibold transition-all hover:scale-105 drop-shadow-lg"
+                        className="px-10 py-4 text-lg font-semibold bg-gradient-to-r from-primary via-purple-600 to-accent hover:from-primary/90 hover:via-purple-500 hover:to-accent/90 text-white shadow-2xl shadow-primary/50 transition-all hover:scale-105 hover:shadow-primary/70"
                         data-testid="button-join-community"
                       >
                         <Link href="/">Join the Community</Link>
                       </Button>
-                      <span className="text-base text-white/80 drop-shadow-md" data-testid="text-signup-micro">
-                        Create your free account today
-                      </span>
+                      <Button 
+                        variant="outline" 
+                        size="lg" 
+                        className="px-10 py-4 text-lg font-semibold bg-white/95 backdrop-blur-sm border-2 border-white/80 text-gray-900 hover:bg-white hover:border-white shadow-2xl shadow-white/30 transition-all hover:scale-105 hover:shadow-white/50"
+                        data-testid="button-watch-demo"
+                      >
+                        Watch Demo
+                      </Button>
                     </div>
-                    <Button 
-                      variant="outline" 
-                      size="lg" 
-                      className="px-10 py-4 text-lg font-semibold bg-white/90 border-white text-gray-900 hover:bg-white transition-all hover:scale-105 drop-shadow-lg"
-                      data-testid="button-watch-demo"
-                    >
-                      Watch Demo
-                    </Button>
+                    <span className="text-base text-white/90 drop-shadow-lg" data-testid="text-signup-micro">
+                      Create your free account today
+                    </span>
                   </div>
                 </div>
-                <div className="absolute inset-0 bg-black/20 rounded-2xl"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-black/35 rounded-2xl"></div>
               </div>
             </div>
           </div>
