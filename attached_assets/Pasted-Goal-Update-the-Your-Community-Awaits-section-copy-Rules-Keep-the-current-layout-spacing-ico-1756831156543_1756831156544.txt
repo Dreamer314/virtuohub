@@ -1,0 +1,112 @@
+Goal: Update the “Your Community Awaits” section copy.
+Rules:
+
+Keep the current layout, spacing, icons, images, and CTA styles.
+
+Replace text only (headlines, subheads, bullets, card titles/descriptions, captions).
+
+Remove any promises about built-in marketplace or AI tools.
+
+Add a small “Coming next” teaser list in muted text under the “What you’ll get” bullets.
+
+Do not rename classes or restructure markup.
+
+1) Section hero
+
+Headline (replace existing):
+Build in Public. Level Up Faster.
+(If you prefer an alternate flavor, here are approved options you can swap in without changing layout: “Make. Share. Improve.” or “Ship together, not alone.”)
+
+Subline (replace existing small paragraph):
+VirtuoHub is where immersive creators post WIP, get feedback, and turn threads into collaborations across VR and UGC platforms.
+
+(Keep the logos row as is.)
+
+2) Left column block
+
+Left block headline (keep structure):
+You don’t have to be a pro to begin
+
+Left block body paragraph (replace):
+Beginners get unstuck and veterans find collaborators. Share work in progress, ask for help, and learn how the industry actually works.
+
+Under the two images, replace captions:
+
+Image 1 caption title: Start here
+caption text: Your first WIP into 3D and worldbuilding.
+
+Image 2 caption title: Keep growing
+caption text: Better every week with peer feedback and practical tips.
+
+“What you’ll get” list (replace bullets with the list below):
+
+Organized threads with categories like WIP, Help & Feedback, Jobs & Gigs, Assets for Sale, Events, and General
+
+Editorial you can trust: Interviews, Spotlights, Tips & Guides, Industry News, and Pulse Reports
+
+Lightweight profiles, simple DMs, and polls that capture the community’s voice
+
+Add a muted micro-list directly under the bullets titled “Coming next” (small, subdued text):
+
+Courses & live workshop library
+
+Smart creator tools
+
+Creator marketplace
+
+Analytics & talent network dashboards
+
+(Use text-sm opacity-70 or equivalent to style the “Coming next” list.)
+
+3) Right column block
+
+Right block headline (keep the “Your creativity…” title but update copy below):
+Your creativity should pay you back
+
+Replace the three card titles + descriptions to tie them to the community feed:
+
+Card 1 title: Showcase and sell your work
+description: Post assets, tag “Assets for Sale,” and link to your shop or marketplace.
+
+Card 2 title: Build with collaborators
+description: Find teammates, post gigs, and ship worlds people actually use.
+
+Card 3 title: Teach and share what you know
+description: Announce workshops or streams, share threads, and grow your audience.
+
+4) “We built what we needed” quotes
+
+Keep the block and styling. Update (or keep) the three bullets/quotes to the following:
+
+“Why isn’t there one hub where creator Q&A doesn’t get buried?”
+
+“WIP + feedback is how I actually get better — not another algorithm.”
+
+“Where do I even find collaborators or students for my workshop?”
+
+5) Bottom banner
+
+Mini-headline (keep): The industry is changing fast
+
+Small paragraph (replace):
+UGC platforms evolve monthly. VirtuoHub keeps creators in the loop so you can adapt and grow.
+
+CTA: keep the existing button label and style. If needed, set primary CTA to Join the Community with existing microcopy Create your free account today.
+
+6) Accessibility (quick text-only updates)
+
+Ensure the two images have descriptive alt text:
+
+Image 1 alt: “Early 3D head model—work in progress”
+
+Image 2 alt: “Refined character head—improved after feedback”
+
+Why this is better (for context only—do not render on page)
+
+Reflects what VirtuoHub does today (threads, categories, profiles, DMs, polls, editorial).
+
+Keeps the motivational “Day 1 → Week” idea without overpromising tools.
+
+Connects “sell/build/teach” directly to how the community enables it (posting, linking, collaborating).
+
+Adds a small “Coming next” teaser to hint at the roadmap without turning this into a pitch deck.

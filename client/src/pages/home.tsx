@@ -30,7 +30,8 @@ import {
   Briefcase,
   GraduationCap,
   Sparkles,
-  Check
+  Check,
+  ChevronRight
 } from "lucide-react";
 
 const HomePage = () => {
@@ -438,18 +439,14 @@ const HomePage = () => {
                   <div className="relative inline-block">
                     <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-8 relative">
                       <span className="bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
-                        Your Community Awaits.
+                        Build in Public. Level Up Faster.
                       </span>
                     </h1>
                     <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 blur-xl -z-10"></div>
                   </div>
-                  <div className="max-w-4xl mx-auto space-y-4">
-                    <p className="text-xl md:text-2xl text-muted-foreground font-medium">
-                      We are dedicated to the platforms you build on.
-                    </p>
-                    <p className="text-lg text-muted-foreground/90 leading-relaxed">
-                      Our tools, tutorials, and community are built to support the games you actually create in—<br />
-                      turning passion into real-world virtual economies.
+                  <div className="max-w-4xl mx-auto">
+                    <p className="text-xl md:text-2xl text-muted-foreground font-medium leading-relaxed">
+                      VirtuoHub is where immersive creators post WIP, get feedback, and turn threads into collaborations across VR and UGC platforms.
                     </p>
                   </div>
                 </div>
@@ -491,61 +488,75 @@ const HomePage = () => {
                       </h2>
                       <div className="prose prose-lg text-muted-foreground mb-10 leading-relaxed">
                         <p className="text-lg">
-                          VirtuoHub is where beginners actually get started.<br />
-                          From your first steps to your first sale,<br />
-                          we combine structured learning paths, AI-assisted tools, and income-ready features—<br />
-                          <span className="text-primary font-semibold">so creators grow faster and earn sooner.</span>
+                          Beginners get unstuck and veterans find collaborators. Share work in progress, ask for help, and learn how the industry actually works.
                         </p>
                       </div>
 
-                      {/* Enhanced Progress Images */}
-                      <div className="flex gap-6 mb-12">
-                        <Card className="enhanced-card hover-lift flex-1 group overflow-hidden">
-                          <CardContent className="p-0">
-                            <div className="relative overflow-hidden">
-                              <img 
-                                src={day1Image} 
-                                alt="Day 1 - Wireframe 3D Model" 
-                                className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-500"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                              <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                                <h4 className="font-bold text-lg mb-1">Day 1</h4>
-                                <p className="text-sm text-white/90">Your first steps into 3D creation</p>
+                      {/* Enhanced Progress Images with Arrow */}
+                      <div className="flex items-center gap-6 mb-8">
+                        <div className="flex-1">
+                          <Card className="enhanced-card hover-lift group overflow-hidden">
+                            <CardContent className="p-0">
+                              <div className="relative overflow-hidden">
+                                <img 
+                                  src={day1Image} 
+                                  alt="Early 3D head model—work in progress" 
+                                  className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-500"
+                                />
                               </div>
-                            </div>
-                          </CardContent>
-                        </Card>
+                            </CardContent>
+                          </Card>
+                          <div className="mt-4 text-center">
+                            <h4 className="font-bold text-lg text-foreground mb-1">Start here</h4>
+                            <p className="text-sm text-muted-foreground">Your first WIP into 3D and worldbuilding.</p>
+                          </div>
+                        </div>
                         
-                        <Card className="enhanced-card hover-lift flex-1 group overflow-hidden">
-                          <CardContent className="p-0">
-                            <div className="relative overflow-hidden">
-                              <img 
-                                src={week4Image} 
-                                alt="Week 4 - Stylized Avatar" 
-                                className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-500"
-                              />
-                              <div className="absolute inset-0 bg-gradient-to-t from-purple-900/60 via-transparent to-transparent"></div>
-                              <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-                                <h4 className="font-bold text-lg mb-1">Week 4</h4>
-                                <p className="text-sm text-white/90">Rapid progress with guided learning</p>
+                        {/* Arrow */}
+                        <div className="flex-shrink-0 flex items-center justify-center">
+                          <ChevronRight className="w-8 h-8 text-primary" />
+                        </div>
+                        
+                        <div className="flex-1">
+                          <Card className="enhanced-card hover-lift group overflow-hidden">
+                            <CardContent className="p-0">
+                              <div className="relative overflow-hidden">
+                                <img 
+                                  src={week4Image} 
+                                  alt="Refined character head—improved after feedback" 
+                                  className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-500"
+                                />
                               </div>
-                            </div>
-                          </CardContent>
-                        </Card>
+                            </CardContent>
+                          </Card>
+                          <div className="mt-4 text-center">
+                            <h4 className="font-bold text-lg text-foreground mb-1">Keep growing</h4>
+                            <p className="text-sm text-muted-foreground">Better every week with peer feedback and practical tips.</p>
+                          </div>
+                        </div>
                       </div>
 
                       {/* Enhanced What you'll get list */}
-                      <div className="relative">
+                      <div className="relative mb-8">
                         <h3 className="text-2xl font-bold text-foreground mb-6 flex items-center">
                           <Sparkles className="w-6 h-6 text-primary mr-3" />
                           What you'll get:
                         </h3>
                         <div className="space-y-4 pl-9">
-                          <CheckItem>Step-by-step learning paths tailored to your platform</CheckItem>
-                          <CheckItem>AI-powered tools to accelerate your creation process</CheckItem>
-                          <CheckItem>Built-in marketplace to start earning immediately</CheckItem>
-                          <CheckItem>Community support from experienced creators</CheckItem>
+                          <CheckItem>Organized threads with categories like WIP, Help & Feedback, Jobs & Gigs, Assets for Sale, Events, and General</CheckItem>
+                          <CheckItem>Editorial you can trust: Interviews, Spotlights, Tips & Guides, Industry News, and Pulse Reports</CheckItem>
+                          <CheckItem>Lightweight profiles, simple DMs, and polls that capture the community's voice</CheckItem>
+                        </div>
+                      </div>
+
+                      {/* Coming next section */}
+                      <div className="pl-9">
+                        <h4 className="text-sm font-semibold text-muted-foreground/70 mb-3">Coming next</h4>
+                        <div className="space-y-2 text-sm text-muted-foreground/70">
+                          <div>• Courses & live workshop library</div>
+                          <div>• Smart creator tools</div>
+                          <div>• Creator marketplace</div>
+                          <div>• Analytics & talent network dashboards</div>
                         </div>
                       </div>
                     </div>
@@ -567,10 +578,10 @@ const HomePage = () => {
                             </div>
                             <div>
                               <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
-                                Sell avatars, 3D models, and digital assets
+                                Showcase and sell your work
                               </h3>
                               <p className="text-muted-foreground leading-relaxed">
-                                Turn your creations into income through our integrated marketplace
+                                Post assets, tag "Assets for Sale," and link to your shop or marketplace.
                               </p>
                             </div>
                           </div>
@@ -586,10 +597,10 @@ const HomePage = () => {
                             </div>
                             <div>
                               <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-purple-500 transition-colors">
-                                Build and monetize virtual experiences
+                                Build with collaborators
                               </h3>
                               <p className="text-muted-foreground leading-relaxed">
-                                Create immersive worlds and games that generate revenue
+                                Find teammates, post gigs, and ship worlds people actually use.
                               </p>
                             </div>
                           </div>
@@ -605,10 +616,10 @@ const HomePage = () => {
                             </div>
                             <div>
                               <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-blue-500 transition-colors">
-                                Teach others through workshops and courses
+                                Teach and share what you know
                               </h3>
                               <p className="text-muted-foreground leading-relaxed">
-                                Share your expertise and build a teaching income stream
+                                Announce workshops or streams, share threads, and grow your audience.
                               </p>
                             </div>
                           </div>
@@ -627,7 +638,7 @@ const HomePage = () => {
                           <CardContent className="p-6">
                             <p className="text-foreground italic text-lg relative">
                               <span className="text-primary text-2xl absolute -left-2 -top-2">"</span>
-                              Why isn't there a site just for creators like us?
+                              Why isn't there one hub where creator Q&A doesn't get buried?
                               <span className="text-primary text-2xl absolute -bottom-1 ml-1">"</span>
                             </p>
                           </CardContent>
@@ -637,7 +648,7 @@ const HomePage = () => {
                           <CardContent className="p-6">
                             <p className="text-foreground italic text-lg relative">
                               <span className="text-purple-500 text-2xl absolute -left-2 -top-2">"</span>
-                              I want to sell my rig but Upwork isn't it...
+                              WIP + feedback is how I actually get better — not another algorithm.
                               <span className="text-purple-500 text-2xl absolute -bottom-1 ml-1">"</span>
                             </p>
                           </CardContent>
@@ -647,7 +658,7 @@ const HomePage = () => {
                           <CardContent className="p-6">
                             <p className="text-foreground italic text-lg relative">
                               <span className="text-blue-500 text-2xl absolute -left-2 -top-2">"</span>
-                              Where do I even find students for my workshop?
+                              Where do I even find collaborators or students for my workshop?
                               <span className="text-blue-500 text-2xl absolute -bottom-1 ml-1">"</span>
                             </p>
                           </CardContent>
@@ -664,11 +675,8 @@ const HomePage = () => {
                       <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-tight">
                         The industry is changing fast
                       </h2>
-                      <div className="text-xl md:text-2xl text-muted-foreground font-medium mb-4 tracking-wide">
-                        <span className="text-primary">AI</span> • <span className="text-purple-500">VR</span> • <span className="text-blue-500">Avatars</span> • <span className="text-cyan-500">UGC platforms</span>
-                      </div>
-                      <p className="text-lg text-muted-foreground">
-                        VirtuoHub helps you move with it.
+                      <p className="text-lg text-muted-foreground leading-relaxed">
+                        UGC platforms evolve monthly. VirtuoHub keeps creators in the loop so you can adapt and grow.
                       </p>
                     </div>
                   </div>
@@ -678,13 +686,16 @@ const HomePage = () => {
                       asChild 
                       size="lg" 
                       className="px-12 py-6 text-xl font-bold bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-2xl shadow-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-primary/50 rounded-2xl"
-                      data-testid="button-start-journey"
+                      data-testid="button-join-community"
                     >
                       <Link href="/">
-                        Start Your Journey 
+                        Join the Community 
                         <ArrowRight className="ml-3 w-6 h-6" />
                       </Link>
                     </Button>
+                    <p className="text-sm text-muted-foreground mt-4">
+                      Create your free account today
+                    </p>
                     <div className="absolute -inset-2 bg-gradient-cosmic opacity-20 blur-xl rounded-2xl -z-10"></div>
                   </div>
                 </div>
