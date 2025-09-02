@@ -479,190 +479,145 @@ const HomePage = () => {
                 </div>
 
                 {/* Enhanced Two Column Content */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 mb-20">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-16">
                   {/* Left Column - Enhanced */}
                   <div className="relative">
-                    <div className="sticky top-24">
-                      <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8 leading-tight">
-                        You don't have to be a pro to begin
-                      </h2>
-                      <div className="prose prose-lg text-muted-foreground mb-10 leading-relaxed">
-                        <p className="text-lg">
-                          Beginners get unstuck and veterans find collaborators. Share work in progress, ask for help, and learn how the industry actually works.
-                        </p>
-                      </div>
+                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6 leading-tight">
+                      You don't have to be a pro to begin
+                    </h2>
+                    <p className="text-base text-muted-foreground mb-8 leading-relaxed">
+                      VirtuoHub is where beginners actually get started.<br />
+                      From your first steps to your first sale,<br />
+                      we combine structured learning paths, AI-assisted tools, and income-ready features—<br />
+                      so creators grow faster and earn sooner.
+                    </p>
 
-                      {/* Enhanced Progress Images with Arrow */}
-                      <div className="flex items-center gap-6 mb-8">
-                        <div className="flex-1">
-                          <Card className="enhanced-card hover-lift group overflow-hidden">
-                            <CardContent className="p-0">
-                              <div className="relative overflow-hidden">
-                                <img 
-                                  src={day1Image} 
-                                  alt="Early 3D head model—work in progress" 
-                                  className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-500"
-                                />
-                              </div>
-                            </CardContent>
-                          </Card>
-                          <div className="mt-4 text-center">
-                            <h4 className="font-bold text-lg text-foreground mb-1">Start here</h4>
-                            <p className="text-sm text-muted-foreground">Your first WIP into 3D and worldbuilding.</p>
-                          </div>
-                        </div>
-                        
-                        {/* Arrow */}
-                        <div className="flex-shrink-0 flex items-center justify-center">
-                          <ChevronRight className="w-8 h-8 text-primary" />
-                        </div>
-                        
-                        <div className="flex-1">
-                          <Card className="enhanced-card hover-lift group overflow-hidden">
-                            <CardContent className="p-0">
-                              <div className="relative overflow-hidden">
-                                <img 
-                                  src={week4Image} 
-                                  alt="Refined character head—improved after feedback" 
-                                  className="w-full aspect-square object-cover group-hover:scale-105 transition-transform duration-500"
-                                />
-                              </div>
-                            </CardContent>
-                          </Card>
-                          <div className="mt-4 text-center">
-                            <h4 className="font-bold text-lg text-foreground mb-1">Keep growing</h4>
-                            <p className="text-sm text-muted-foreground">Better every week with peer feedback and practical tips.</p>
-                          </div>
+                    {/* Large Progress Images with Arrow */}
+                    <div className="flex items-center gap-6 mb-8">
+                      <div className="flex-1">
+                        <Card className="enhanced-card hover-lift group overflow-hidden">
+                          <CardContent className="p-0">
+                            <div className="relative overflow-hidden" style={{ aspectRatio: '4/5' }}>
+                              <img 
+                                src={day1Image} 
+                                alt="Early 3D head model—work in progress" 
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              />
+                            </div>
+                          </CardContent>
+                        </Card>
+                        <div className="mt-3 text-center">
+                          <h4 className="font-bold text-base text-foreground mb-1">Day 1</h4>
+                          <p className="text-sm text-muted-foreground">Your first steps into 3D creation</p>
                         </div>
                       </div>
-
-                      {/* Enhanced What you'll get list */}
-                      <div className="relative mb-8">
-                        <h3 className="text-2xl font-bold text-foreground mb-6 flex items-center">
-                          <Sparkles className="w-6 h-6 text-primary mr-3" />
-                          What you'll get:
-                        </h3>
-                        <div className="space-y-4 pl-9">
-                          <CheckItem>Organized threads with categories like WIP, Help & Feedback, Jobs & Gigs, Assets for Sale, Events, and General</CheckItem>
-                          <CheckItem>Editorial you can trust: Interviews, Spotlights, Tips & Guides, Industry News, and Pulse Reports</CheckItem>
-                          <CheckItem>Lightweight profiles, simple DMs, and polls that capture the community's voice</CheckItem>
+                      
+                      {/* Arrow */}
+                      <div className="flex-shrink-0 flex items-center justify-center">
+                        <ChevronRight className="w-6 h-6 text-primary" />
+                      </div>
+                      
+                      <div className="flex-1">
+                        <Card className="enhanced-card hover-lift group overflow-hidden">
+                          <CardContent className="p-0">
+                            <div className="relative overflow-hidden" style={{ aspectRatio: '4/5' }}>
+                              <img 
+                                src={week4Image} 
+                                alt="Refined character head—improved after feedback" 
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              />
+                            </div>
+                          </CardContent>
+                        </Card>
+                        <div className="mt-3 text-center">
+                          <h4 className="font-bold text-base text-foreground mb-1">Week 4</h4>
+                          <p className="text-sm text-muted-foreground">Rapid progress with guided learning</p>
                         </div>
                       </div>
+                    </div>
 
-                      {/* Coming next section */}
-                      <div className="pl-9">
-                        <h4 className="text-sm font-semibold text-muted-foreground/70 mb-3">Coming next</h4>
-                        <div className="space-y-2 text-sm text-muted-foreground/70">
-                          <div>• Courses & live workshop library</div>
-                          <div>• Smart creator tools</div>
-                          <div>• Creator marketplace</div>
-                          <div>• Analytics & talent network dashboards</div>
-                        </div>
+                    {/* What you'll get list */}
+                    <div className="relative">
+                      <h3 className="text-lg font-bold text-foreground mb-4">
+                        What you'll get:
+                      </h3>
+                      <div className="space-y-3">
+                        <CheckItem>Step-by-step learning paths tailored to your platform</CheckItem>
+                        <CheckItem>AI-powered tools to accelerate your creation process</CheckItem>
+                        <CheckItem>Built-in marketplace to start earning immediately</CheckItem>
+                        <CheckItem>Community support from experienced creators</CheckItem>
                       </div>
                     </div>
                   </div>
 
-                  {/* Right Column - Enhanced with rich visual depth */}
+                  {/* Right Column - Compact horizontal cards */}
                   <div className="relative">
-                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-10 leading-tight">
+                    <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6 leading-tight">
                       Your creativity should pay you back
                     </h2>
                     
-                    <div className="space-y-8 lg:space-y-10 mb-20">
-                      <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-2xl hover:shadow-primary/10" data-testid="card-sell-assets">
-                        <CardContent className="p-10 lg:p-12 relative overflow-hidden">
-                          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-cosmic opacity-10 rounded-full blur-2xl group-hover:opacity-20 transition-opacity"></div>
-                          <div className="flex items-start space-x-8 relative z-10">
-                            <div className="p-4 lg:p-5 rounded-xl bg-gradient-cosmic/10 backdrop-blur-sm border border-primary/20">
-                              <DollarSign className="w-10 h-10 lg:w-12 lg:h-12 text-primary" />
-                            </div>
-                            <div>
-                              <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4 group-hover:text-primary transition-colors">
-                                Showcase and sell your work
-                              </h3>
-                              <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed">
-                                Post assets, tag "Assets for Sale," and link to your shop or marketplace.
-                              </p>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
+                    <div className="space-y-4 mb-12">
+                      <div className="flex items-center gap-4 p-4 rounded-lg border border-primary/20 bg-primary/5 backdrop-blur-sm" data-testid="card-sell-assets">
+                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                          <DollarSign className="w-5 h-5 text-primary" />
+                        </div>
+                        <div>
+                          <h3 className="text-base font-semibold text-foreground mb-1">
+                            Sell avatars, 3D models, and digital assets
+                          </h3>
+                        </div>
+                      </div>
 
-                      <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-2xl hover:shadow-purple-500/10" data-testid="card-build-experiences">
-                        <CardContent className="p-10 lg:p-12 relative overflow-hidden">
-                          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-nebula opacity-10 rounded-full blur-2xl group-hover:opacity-20 transition-opacity"></div>
-                          <div className="flex items-start space-x-8 relative z-10">
-                            <div className="p-4 lg:p-5 rounded-xl bg-gradient-nebula/10 backdrop-blur-sm border border-purple-500/20">
-                              <Sparkles className="w-10 h-10 lg:w-12 lg:h-12 text-purple-500" />
-                            </div>
-                            <div>
-                              <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4 group-hover:text-purple-500 transition-colors">
-                                Build with collaborators
-                              </h3>
-                              <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed">
-                                Find teammates, post gigs, and ship worlds people actually use.
-                              </p>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
+                      <div className="flex items-center gap-4 p-4 rounded-lg border border-purple-500/20 bg-purple-500/5 backdrop-blur-sm" data-testid="card-build-experiences">
+                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center">
+                          <Sparkles className="w-5 h-5 text-purple-500" />
+                        </div>
+                        <div>
+                          <h3 className="text-base font-semibold text-foreground mb-1">
+                            Build and monetize virtual experiences
+                          </h3>
+                        </div>
+                      </div>
 
-                      <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/10" data-testid="card-teach-workshops">
-                        <CardContent className="p-10 lg:p-12 relative overflow-hidden">
-                          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-aurora opacity-10 rounded-full blur-2xl group-hover:opacity-20 transition-opacity"></div>
-                          <div className="flex items-start space-x-8 relative z-10">
-                            <div className="p-4 lg:p-5 rounded-xl bg-gradient-aurora/10 backdrop-blur-sm border border-blue-500/20">
-                              <GraduationCap className="w-10 h-10 lg:w-12 lg:h-12 text-blue-500" />
-                            </div>
-                            <div>
-                              <h3 className="text-2xl lg:text-3xl font-bold text-foreground mb-4 group-hover:text-blue-500 transition-colors">
-                                Teach and share what you know
-                              </h3>
-                              <p className="text-lg lg:text-xl text-muted-foreground leading-relaxed">
-                                Announce workshops or streams, share threads, and grow your audience.
-                              </p>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
+                      <div className="flex items-center gap-4 p-4 rounded-lg border border-blue-500/20 bg-blue-500/5 backdrop-blur-sm" data-testid="card-teach-workshops">
+                        <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                          <GraduationCap className="w-5 h-5 text-blue-500" />
+                        </div>
+                        <div>
+                          <h3 className="text-base font-semibold text-foreground mb-1">
+                            Teach others through workshops and courses
+                          </h3>
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Enhanced We built what we needed */}
+                    {/* We built what we needed - Compact list style */}
                     <div className="relative">
-                      <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-10 leading-tight">
+                      <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6 leading-tight">
                         We built what we needed
                       </h2>
                       
-                      <div className="space-y-6 lg:space-y-8 relative">
-                        <Card className="enhanced-card border border-primary/20 bg-primary/5 backdrop-blur-sm" data-testid="quote-creators">
-                          <CardContent className="p-8 lg:p-10">
-                            <p className="text-foreground italic text-xl lg:text-2xl relative">
-                              <span className="text-primary text-3xl lg:text-4xl absolute -left-3 -top-3">"</span>
-                              Why isn't there one hub where creator Q&A doesn't get buried?
-                              <span className="text-primary text-3xl lg:text-4xl absolute -bottom-2 ml-1">"</span>
-                            </p>
-                          </CardContent>
-                        </Card>
+                      <div className="space-y-3">
+                        <div className="flex items-start gap-3" data-testid="quote-creators">
+                          <div className="flex-shrink-0 w-2 h-2 rounded-full bg-primary mt-2"></div>
+                          <p className="text-base text-muted-foreground italic">
+                            "Why isn't there one hub where creator Q&A doesn't get buried?"
+                          </p>
+                        </div>
 
-                        <Card className="enhanced-card border border-purple-500/20 bg-purple-500/5 backdrop-blur-sm" data-testid="quote-selling">
-                          <CardContent className="p-8 lg:p-10">
-                            <p className="text-foreground italic text-xl lg:text-2xl relative">
-                              <span className="text-purple-500 text-3xl lg:text-4xl absolute -left-3 -top-3">"</span>
-                              WIP + feedback is how I actually get better — not another algorithm.
-                              <span className="text-purple-500 text-3xl lg:text-4xl absolute -bottom-2 ml-1">"</span>
-                            </p>
-                          </CardContent>
-                        </Card>
+                        <div className="flex items-start gap-3" data-testid="quote-selling">
+                          <div className="flex-shrink-0 w-2 h-2 rounded-full bg-purple-500 mt-2"></div>
+                          <p className="text-base text-muted-foreground italic">
+                            "I want to sell my rig but Upwork isn't it..."
+                          </p>
+                        </div>
 
-                        <Card className="enhanced-card border border-blue-500/20 bg-blue-500/5 backdrop-blur-sm" data-testid="quote-workshop">
-                          <CardContent className="p-8 lg:p-10">
-                            <p className="text-foreground italic text-xl lg:text-2xl relative">
-                              <span className="text-blue-500 text-3xl lg:text-4xl absolute -left-3 -top-3">"</span>
-                              Where do I even find collaborators or students for my workshop?
-                              <span className="text-blue-500 text-3xl lg:text-4xl absolute -bottom-2 ml-1">"</span>
-                            </p>
-                          </CardContent>
-                        </Card>
+                        <div className="flex items-start gap-3" data-testid="quote-workshop">
+                          <div className="flex-shrink-0 w-2 h-2 rounded-full bg-blue-500 mt-2"></div>
+                          <p className="text-base text-muted-foreground italic">
+                            "Where do I even find collaborators or students for my workshop?"
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
