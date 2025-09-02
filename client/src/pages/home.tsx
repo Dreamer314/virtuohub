@@ -1,9 +1,11 @@
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { FeaturedCarousel } from "@/components/featured/FeaturedCarousel";
 import { featuredItems } from "@/components/featured/types";
+import { CreatePostModal } from "@/components/create-post-modal";
 import vhubHeaderImage from '@assets/VHub.Header.no.font.Light.Page.png';
 import { Link } from "wouter";
 import { 
@@ -19,6 +21,8 @@ import {
 } from "lucide-react";
 
 const HomePage = () => {
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -117,22 +121,26 @@ const HomePage = () => {
                 </p>
               </div>
 
+              {/* Centralized Action Buttons */}
+              <div className="relative z-10 text-center mb-8">
+                <div className="flex justify-center gap-4">
+                  <Button asChild variant="outline" size="lg" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-all">
+                    <Link href="/">Browse Community</Link>
+                  </Button>
+                  <Button size="lg" className="bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-thread" onClick={() => setIsCreateModalOpen(true)}>Start Thread</Button>
+                </div>
+              </div>
+
               <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-wip">
+                <Card className="glass-card hover-lift" data-testid="card-wip">
                   <CardContent className="p-6">
                     <MessageSquare className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
                       WIP (Work in Progress)
                     </h3>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-muted-foreground">
                       Share progress, get eyes on your build, and track iterations.
                     </p>
-                    <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-wip">
-                        <Link href="/?tag=wip">Browse</Link>
-                      </Button>
-                      <Button size="sm" className="bg-gradient-aurora hover:bg-gradient-aurora-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-wip">Start Thread</Button>
-                    </div>
                   </CardContent>
                 </Card>
 
@@ -154,129 +162,87 @@ const HomePage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-tutorials-guides">
+                <Card className="glass-card hover-lift" data-testid="card-tutorials-guides">
                   <CardContent className="p-6">
                     <BookOpen className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
                       Tutorials & Guides
                     </h3>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-muted-foreground">
                       Post step-by-step walkthroughs and quick tips.
                     </p>
-                    <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-tutorials">
-                        <Link href="/?tag=tutorials-guides">Browse</Link>
-                      </Button>
-                      <Button size="sm" className="bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-tutorial">Start Thread</Button>
-                    </div>
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-jobs-gigs">
+                <Card className="glass-card hover-lift" data-testid="card-jobs-gigs">
                   <CardContent className="p-6">
                     <Users className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
                       Jobs & Gigs
                     </h3>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-muted-foreground">
                       Hire talent or offer your services.
                     </p>
-                    <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-jobs">
-                        <Link href="/?tag=jobs-gigs">Browse</Link>
-                      </Button>
-                      <Button size="sm" className="bg-gradient-aurora hover:bg-gradient-aurora-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-job">Start Thread</Button>
-                    </div>
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-assets-sale">
+                <Card className="glass-card hover-lift" data-testid="card-assets-sale">
                   <CardContent className="p-6">
                     <ShoppingBag className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
                       Assets for Sale
                     </h3>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-muted-foreground">
                       List avatars, props, shaders, tools, and more.
                     </p>
-                    <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-assets">
-                        <Link href="/?tag=assets-for-sale">Browse</Link>
-                      </Button>
-                      <Button size="sm" className="bg-gradient-nebula hover:bg-gradient-nebula-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-asset">Start Thread</Button>
-                    </div>
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-collabs-teams">
+                <Card className="glass-card hover-lift" data-testid="card-collabs-teams">
                   <CardContent className="p-6">
                     <Users className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
                       Collabs & Teams
                     </h3>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-muted-foreground">
                       Find collaborators or recruit for a project.
                     </p>
-                    <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-collabs">
-                        <Link href="/?tag=collabs-teams">Browse</Link>
-                      </Button>
-                      <Button size="sm" className="bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-collab">Start Thread</Button>
-                    </div>
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-events-workshops">
+                <Card className="glass-card hover-lift" data-testid="card-events-workshops">
                   <CardContent className="p-6">
                     <Calendar className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
                       Events & Workshops
                     </h3>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-muted-foreground">
                       Promote a session, stream, or in-person meetup.
                     </p>
-                    <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-events-cat">
-                        <Link href="/?tag=events-workshops">Browse</Link>
-                      </Button>
-                      <Button size="sm" className="bg-gradient-aurora hover:bg-gradient-aurora-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-event">Start Thread</Button>
-                    </div>
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-platform-qa">
+                <Card className="glass-card hover-lift" data-testid="card-platform-qa">
                   <CardContent className="p-6">
                     <MessageSquare className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
                       Platform Q&A
                     </h3>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-muted-foreground">
                       Roblox, VRChat, Horizon, Second Life, and more.
                     </p>
-                    <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-platform">
-                        <Link href="/?tag=platform-qa">Browse</Link>
-                      </Button>
-                      <Button size="sm" className="bg-gradient-nebula hover:bg-gradient-nebula-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-platform">Start Thread</Button>
-                    </div>
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-general">
+                <Card className="glass-card hover-lift" data-testid="card-general">
                   <CardContent className="p-6">
                     <MessageSquare className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
                       General
                     </h3>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-muted-foreground">
                       Anything that doesn't fit the other buckets.
                     </p>
-                    <div className="flex gap-2">
-                      <Button asChild variant="outline" size="sm" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-general">
-                        <Link href="/?tag=general">Browse</Link>
-                      </Button>
-                      <Button size="sm" className="bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-general">Start Thread</Button>
-                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -301,7 +267,7 @@ const HomePage = () => {
               </div>
 
               <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-spotlights">
+                <Card className="glass-card hover-lift" data-testid="card-spotlights">
                   <CardContent className="p-6 flex flex-col h-full">
                     <Users className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
@@ -316,7 +282,7 @@ const HomePage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-interviews">
+                <Card className="glass-card hover-lift" data-testid="card-interviews">
                   <CardContent className="p-6 flex flex-col h-full">
                     <MessageSquare className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
@@ -331,7 +297,7 @@ const HomePage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-tips-guides">
+                <Card className="glass-card hover-lift" data-testid="card-tips-guides">
                   <CardContent className="p-6 flex flex-col h-full">
                     <BookOpen className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
@@ -346,7 +312,7 @@ const HomePage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-industry-news">
+                <Card className="glass-card hover-lift" data-testid="card-industry-news">
                   <CardContent className="p-6 flex flex-col h-full">
                     <BarChart3 className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
@@ -361,7 +327,7 @@ const HomePage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-trending">
+                <Card className="glass-card hover-lift" data-testid="card-trending">
                   <CardContent className="p-6 flex flex-col h-full">
                     <TrendingUp className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
@@ -376,7 +342,7 @@ const HomePage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-upcoming-events">
+                <Card className="glass-card hover-lift" data-testid="card-upcoming-events">
                   <CardContent className="p-6 flex flex-col h-full">
                     <Calendar className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
@@ -391,7 +357,7 @@ const HomePage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-pulse-reports">
+                <Card className="glass-card hover-lift" data-testid="card-pulse-reports">
                   <CardContent className="p-6 flex flex-col h-full">
                     <BarChart3 className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
@@ -470,7 +436,7 @@ const HomePage = () => {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-event-1">
+                <Card className="glass-card hover-lift" data-testid="card-event-1">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-3 mb-3">
                       <Clock className="w-5 h-5 text-primary mt-0.5" />
@@ -488,7 +454,7 @@ const HomePage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-event-2">
+                <Card className="glass-card hover-lift" data-testid="card-event-2">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-3 mb-3">
                       <Clock className="w-5 h-5 text-primary mt-0.5" />
@@ -506,7 +472,7 @@ const HomePage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-event-3">
+                <Card className="glass-card hover-lift" data-testid="card-event-3">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-3 mb-3">
                       <Clock className="w-5 h-5 text-primary mt-0.5" />
@@ -531,6 +497,13 @@ const HomePage = () => {
       </div>
 
       <Footer />
+      
+      {/* Create Post Modal */}
+      <CreatePostModal 
+        isOpen={isCreateModalOpen} 
+        onClose={() => setIsCreateModalOpen(false)}
+        initialType="regular"
+      />
     </div>
   );
 };
