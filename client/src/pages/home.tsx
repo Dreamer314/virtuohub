@@ -66,7 +66,7 @@ const HomePage = () => {
                     <Button 
                       variant="outline" 
                       size="lg" 
-                      className="px-10 py-4 text-lg font-semibold bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all hover:scale-105 drop-shadow-lg"
+                      className="px-10 py-4 text-lg font-semibold bg-white/90 border-white text-gray-900 hover:bg-white transition-all hover:scale-105 drop-shadow-lg"
                       data-testid="button-watch-demo"
                     >
                       Watch Demo
