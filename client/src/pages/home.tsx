@@ -31,7 +31,10 @@ import {
   GraduationCap,
   Sparkles,
   Check,
-  ChevronRight
+  ChevronRight,
+  Lock,
+  HelpCircle,
+  EyeOff
 } from "lucide-react";
 
 const HomePage = () => {
@@ -652,112 +655,6 @@ const HomePage = () => {
               </div>
             </section>
 
-            {/* Footer CTA Section */}
-            <section className="relative">
-              {/* Purple gradient section */}
-              <div className="bg-gradient-to-r from-purple-600 via-purple-500 to-purple-600 py-16">
-                <div className="max-w-4xl mx-auto text-center px-6">
-                  <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                    Ready to start creating?
-                  </h2>
-                  <p className="text-purple-100 mb-8 text-lg">
-                    Join thousands of creators building the future.
-                  </p>
-                  
-                  <Button 
-                    asChild 
-                    size="lg" 
-                    className="px-8 py-3 text-lg font-semibold bg-white text-purple-600 hover:bg-gray-100 rounded-lg mb-12"
-                    data-testid="button-join-footer"
-                  >
-                    <Link href="/">
-                      Join Early!
-                    </Link>
-                  </Button>
-
-                  {/* Stats */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                    <div>
-                      <div className="text-2xl md:text-3xl font-bold text-white">50K+</div>
-                      <div className="text-purple-200 text-sm">Creators</div>
-                    </div>
-                    <div>
-                      <div className="text-2xl md:text-3xl font-bold text-white">15+</div>
-                      <div className="text-purple-200 text-sm">Platforms</div>
-                    </div>
-                    <div>
-                      <div className="text-2xl md:text-3xl font-bold text-white">$2M+</div>
-                      <div className="text-purple-200 text-sm">Sales Generated</div>
-                    </div>
-                    <div>
-                      <div className="text-2xl md:text-3xl font-bold text-white">24/7</div>
-                      <div className="text-purple-200 text-sm">Community Support</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Dark section - Why Creators Get Stuck */}
-              <div className="bg-gray-900 py-16">
-                <div className="max-w-6xl mx-auto px-6">
-                  <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">
-                    Why Creators Get Stuck
-                  </h2>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-blue-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-                        <svg className="w-8 h-8 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>
-                      </div>
-                      <h3 className="text-xl font-bold text-white mb-3">Too many tools. No Clear System</h3>
-                      <p className="text-gray-400 text-sm leading-relaxed">
-                        You bounce between Discord, Reddit, YouTube, and still feel like you're starting from scratch.
-                      </p>
-                    </div>
-
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-yellow-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-                        <svg className="w-8 h-8 text-yellow-400" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                        </svg>
-                      </div>
-                      <h3 className="text-xl font-bold text-white mb-3">Didn't realize this could be a career?</h3>
-                      <p className="text-gray-400 text-sm leading-relaxed">
-                        People keep saying "follow your passion" and "build in public, especially where income feels impossible to new."
-                      </p>
-                    </div>
-
-                    <div className="text-center">
-                      <div className="w-16 h-16 bg-red-500/20 rounded-lg flex items-center justify-center mx-auto mb-4">
-                        <svg className="w-8 h-8 text-red-400" fill="currentColor" viewBox="0 0 24 24">
-                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>
-                      </div>
-                      <h3 className="text-xl font-bold text-white mb-3">You're Skilled—but you're Invisible.</h3>
-                      <p className="text-gray-400 text-sm leading-relaxed">
-                        Skill alone isn't enough to grow an audience, reputation, and real opportunities to rise.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Arrow pointing right */}
-                  <div className="text-center mb-8">
-                    <div className="inline-block p-3 bg-purple-600 rounded-full">
-                      <ChevronRight className="w-6 h-6 text-white" />
-                    </div>
-                  </div>
-
-                  {/* Final CTA */}
-                  <div className="text-center">
-                    <p className="text-xl md:text-2xl font-bold text-white">
-                      Stop building in the dark—and start building your future.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </section>
 
             {/* Featured Content Section */}
             <section className="px-6 py-16">
@@ -861,6 +758,107 @@ const HomePage = () => {
             </div>
           </div>
         </main>
+      </div>
+
+      {/* Footer CTA Section */}
+      <div className="relative">
+        {/* Purple gradient section */}
+        <div className="bg-gradient-to-r from-primary via-purple-500 to-primary px-6 py-20">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Ready to start creating?
+            </h2>
+            <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
+              Join thousands of creators building the future.
+            </p>
+            
+            <Button 
+              asChild 
+              size="lg" 
+              className="px-10 py-4 text-lg font-bold bg-white text-primary hover:bg-white/90 rounded-xl mb-16 shadow-xl"
+              data-testid="button-join-footer"
+            >
+              <Link href="/">
+                Join Early!
+              </Link>
+            </Button>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+              <div className="text-center">
+                <div className="text-4xl md:text-5xl font-bold text-white mb-2">50K+</div>
+                <div className="text-white/70 text-base">Creators</div>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl md:text-5xl font-bold text-white mb-2">15+</div>
+                <div className="text-white/70 text-base">Platforms</div>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl md:text-5xl font-bold text-white mb-2">$2M+</div>
+                <div className="text-white/70 text-base">Sales Generated</div>
+              </div>
+              <div className="text-center">
+                <div className="text-4xl md:text-5xl font-bold text-white mb-2">24/7</div>
+                <div className="text-white/70 text-base">Community Support</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Dark section - Why Creators Get Stuck */}
+        <div className="bg-background border-t border-border px-6 py-20">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground text-center mb-16">
+              Why Creators Get Stuck
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+              <div className="text-center">
+                <div className="w-20 h-20 rounded-2xl bg-card border border-border flex items-center justify-center mx-auto mb-6 enhanced-card">
+                  <Lock className="w-10 h-10 text-muted-foreground" />
+                </div>
+                <h3 className="text-2xl font-bold text-foreground mb-4">Too many tools. No Clear System</h3>
+                <p className="text-muted-foreground text-base leading-relaxed">
+                  You bounce between Discord, Reddit, YouTube, and still feel like you're starting from scratch.
+                </p>
+              </div>
+
+              <div className="text-center">
+                <div className="w-20 h-20 rounded-2xl bg-card border border-border flex items-center justify-center mx-auto mb-6 enhanced-card">
+                  <HelpCircle className="w-10 h-10 text-muted-foreground" />
+                </div>
+                <h3 className="text-2xl font-bold text-foreground mb-4">Didn't realize this could be a career?</h3>
+                <p className="text-muted-foreground text-base leading-relaxed">
+                  People keep saying "follow your passion" and "build in public," especially where income feels impossible to new.
+                </p>
+              </div>
+
+              <div className="text-center">
+                <div className="w-20 h-20 rounded-2xl bg-card border border-border flex items-center justify-center mx-auto mb-6 enhanced-card">
+                  <EyeOff className="w-10 h-10 text-muted-foreground" />
+                </div>
+                <h3 className="text-2xl font-bold text-foreground mb-4">You're Skilled—but you're Invisible.</h3>
+                <p className="text-muted-foreground text-base leading-relaxed">
+                  Skill alone isn't enough to grow an audience, reputation, and real opportunities to rise.
+                </p>
+              </div>
+            </div>
+
+            {/* Arrow pointing right */}
+            <div className="text-center mb-12">
+              <div className="inline-block p-4 bg-primary rounded-full enhanced-card">
+                <ArrowRight className="w-8 h-8 text-white" />
+              </div>
+            </div>
+
+            {/* Final CTA */}
+            <div className="text-center">
+              <p className="text-3xl md:text-4xl font-bold text-foreground">
+                Stop building in the dark—and start building your future.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       <Footer />
