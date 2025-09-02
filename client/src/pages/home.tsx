@@ -1,8 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Header } from "@/components/layout/header";
-import { LeftSidebar } from "@/components/layout/left-sidebar";
-import { RightSidebar } from "@/components/layout/right-sidebar";
 import { Footer } from "@/components/layout/footer";
 import { FeaturedCarousel } from "@/components/featured/FeaturedCarousel";
 import { featuredItems } from "@/components/featured/types";
@@ -24,14 +22,8 @@ const HomePage = () => {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <div className="flex">
-        <LeftSidebar 
-          currentTab="all" 
-          onTabChange={() => {}} 
-        />
-        
-        <main className="flex-1 min-w-0">
-          <div className="max-w-4xl mx-auto">
+        <main className="w-full">
+          <div className="max-w-6xl mx-auto">
             {/* Hero Section */}
             <section className="px-6 py-16 text-center">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
@@ -48,7 +40,7 @@ const HomePage = () => {
                     className="px-8 py-3 text-lg"
                     data-testid="button-join-community"
                   >
-                    <Link href="/community">Join the Community</Link>
+                    <Link href="/">Join the Community</Link>
                   </Button>
                   <span className="text-sm text-muted-foreground" data-testid="text-signup-micro">
                     Create your free account today
@@ -79,7 +71,7 @@ const HomePage = () => {
                   size="lg"
                   data-testid="button-find-community"
                 >
-                  <Link href="/community">Find Your Community</Link>
+                  <Link href="/">Find Your Community</Link>
                 </Button>
               </div>
             </section>
@@ -289,9 +281,6 @@ const HomePage = () => {
             </section>
           </div>
         </main>
-
-        <RightSidebar />
-      </div>
 
       <Footer />
     </div>
