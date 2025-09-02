@@ -42,31 +42,31 @@ const HomePage = () => {
                     filter: 'drop-shadow(0 0 20px rgba(6, 182, 212, 0.2)) drop-shadow(0 0 40px rgba(147, 51, 234, 0.15))'
                   }}
                 />
-                <div className="text-center z-10 relative">
-                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-display font-bold text-white mb-6 drop-shadow-lg max-w-5xl mx-auto leading-tight">
+                <div className="text-center z-10 relative px-6">
+                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white mb-8 drop-shadow-lg max-w-4xl mx-auto leading-tight">
                     The leading cultural and educational hub for active and aspiring world builders.
                   </h1>
-                  <p className="text-xl md:text-2xl lg:text-3xl text-white/90 drop-shadow-md mb-8 max-w-4xl mx-auto leading-relaxed">
+                  <p className="text-lg md:text-xl text-white/90 drop-shadow-md mb-12 max-w-3xl mx-auto leading-relaxed">
                     Shaping the future of digital creators with insider insights, multi-platform learning, and real business growth. Learn. Monetize. Connect.
                   </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <div className="flex flex-col items-center gap-2">
+                  <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+                    <div className="flex flex-col items-center gap-3">
                       <Button 
                         asChild 
                         size="lg" 
-                        className="px-8 py-4 text-xl font-semibold transition-all hover:scale-105 drop-shadow-lg"
+                        className="px-10 py-4 text-lg font-semibold transition-all hover:scale-105 drop-shadow-lg"
                         data-testid="button-join-community"
                       >
                         <Link href="/">Join the Community</Link>
                       </Button>
-                      <span className="text-lg text-white/80 drop-shadow-md" data-testid="text-signup-micro">
+                      <span className="text-base text-white/80 drop-shadow-md" data-testid="text-signup-micro">
                         Create your free account today
                       </span>
                     </div>
                     <Button 
                       variant="outline" 
                       size="lg" 
-                      className="px-8 py-4 text-xl font-semibold bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all hover:scale-105 drop-shadow-lg"
+                      className="px-10 py-4 text-lg font-semibold bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all hover:scale-105 drop-shadow-lg"
                       data-testid="button-watch-demo"
                     >
                       Watch Demo
