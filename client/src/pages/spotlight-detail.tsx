@@ -278,6 +278,14 @@ const SpotlightDetailPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="floating-element absolute top-36 left-14 w-20 h-20 bg-yellow-500/20 rounded-full blur-xl"></div>
+        <div className="floating-element absolute top-72 right-18 w-24 h-24 bg-orange-500/15 rounded-full blur-xl" style={{ animationDelay: '-2.7s' }}></div>
+        <div className="floating-element absolute bottom-36 left-1/5 w-18 h-18 bg-amber-500/20 rounded-full blur-xl" style={{ animationDelay: '-4.9s' }}></div>
+        <div className="floating-element absolute top-44 right-1/4 w-16 h-16 bg-red-500/15 rounded-full blur-xl" style={{ animationDelay: '-1.6s' }}></div>
+      </div>
+
       <Header onCreatePost={() => {}} />
       
       <div className="community-grid">

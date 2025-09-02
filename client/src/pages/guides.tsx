@@ -30,6 +30,14 @@ const GuidesPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="floating-element absolute top-24 left-16 w-20 h-20 bg-green-500/20 rounded-full blur-xl"></div>
+        <div className="floating-element absolute top-64 right-20 w-16 h-16 bg-emerald-500/15 rounded-full blur-xl" style={{ animationDelay: '-3.4s' }}></div>
+        <div className="floating-element absolute bottom-28 left-1/6 w-24 h-24 bg-teal-500/20 rounded-full blur-xl" style={{ animationDelay: '-5.1s' }}></div>
+        <div className="floating-element absolute top-80 right-1/5 w-18 h-18 bg-lime-500/15 rounded-full blur-xl" style={{ animationDelay: '-1.9s' }}></div>
+      </div>
+
       <Header onCreatePost={() => {}} />
       
       <div className="community-grid">

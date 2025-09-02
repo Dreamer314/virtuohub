@@ -8,6 +8,14 @@ import { Footer } from '@/components/layout/footer';
 const EventsPage: React.FC = () => {
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="floating-element absolute top-32 left-10 w-24 h-24 bg-orange-500/20 rounded-full blur-xl"></div>
+        <div className="floating-element absolute top-60 right-14 w-18 h-18 bg-red-500/15 rounded-full blur-xl" style={{ animationDelay: '-2.6s' }}></div>
+        <div className="floating-element absolute bottom-40 left-1/3 w-20 h-20 bg-pink-500/20 rounded-full blur-xl" style={{ animationDelay: '-4.3s' }}></div>
+        <div className="floating-element absolute top-92 right-1/6 w-16 h-16 bg-rose-500/15 rounded-full blur-xl" style={{ animationDelay: '-1.7s' }}></div>
+      </div>
+
       <Header onCreatePost={() => {}} />
       
       <div className="community-grid">

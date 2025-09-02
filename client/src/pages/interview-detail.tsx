@@ -206,6 +206,14 @@ const InterviewDetailPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="floating-element absolute top-20 left-8 w-22 h-22 bg-cyan-500/20 rounded-full blur-xl"></div>
+        <div className="floating-element absolute top-64 right-12 w-18 h-18 bg-blue-500/15 rounded-full blur-xl" style={{ animationDelay: '-3.2s' }}></div>
+        <div className="floating-element absolute bottom-24 left-1/4 w-20 h-20 bg-indigo-500/20 rounded-full blur-xl" style={{ animationDelay: '-5.8s' }}></div>
+        <div className="floating-element absolute top-96 right-1/3 w-16 h-16 bg-purple-500/15 rounded-full blur-xl" style={{ animationDelay: '-2.1s' }}></div>
+      </div>
+
       <Header onCreatePost={() => {}} />
       
       <div className="community-grid">
