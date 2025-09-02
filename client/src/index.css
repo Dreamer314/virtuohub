@@ -314,6 +314,28 @@
     @apply border-gray-300 dark:border-gray-600;
   }
 
+  /* Override enhanced-card hover effects to allow custom hover effects */
+  .enhanced-card.group:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    background: none !important;
+    border: none !important;
+  }
+
+  .dark .enhanced-card.group:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    background: none !important;  
+    border: none !important;
+  }
+
+  .charcoal .enhanced-card.group:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    background: none !important;
+    border: none !important;
+  }
+
   .platform-tag {
     @apply transition-all duration-200 ease-out border border-transparent;
   }
