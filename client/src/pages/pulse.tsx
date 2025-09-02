@@ -158,6 +158,172 @@ const PulsePage: React.FC = () => {
                     </div>
                   </div>
 
+                  {/* Completed Polls Section */}
+                  <div className="mb-12">
+                    <h2 className="text-2xl font-bold text-foreground mb-6">Completed Polls</h2>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                      <article className="glass-card rounded-xl p-6 border border-sidebar-border hover:border-cyan-500/30 transition-all">
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="inline-block px-3 py-1 text-xs font-medium bg-gray-500/20 text-gray-300 border border-gray-500/30 rounded-full">Completed</span>
+                          <span className="text-sm text-muted-foreground">Ended Dec 20</span>
+                        </div>
+                        <h3 className="text-lg font-semibold text-foreground mb-3">
+                          Which creation tool do you use most?
+                        </h3>
+                        <div className="space-y-3 mb-4">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Unity</span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+                                <div className="h-full bg-blue-500 rounded-full" style={{width: '52%'}}></div>
+                              </div>
+                              <span className="text-sm text-blue-400">52%</span>
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Blender</span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+                                <div className="h-full bg-orange-500 rounded-full" style={{width: '28%'}}></div>
+                              </div>
+                              <span className="text-sm text-orange-400">28%</span>
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Unreal Engine</span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+                                <div className="h-full bg-purple-500 rounded-full" style={{width: '20%'}}></div>
+                              </div>
+                              <span className="text-sm text-purple-400">20%</span>
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-xs text-muted-foreground">4,562 responses</p>
+                      </article>
+
+                      <article className="glass-card rounded-xl p-6 border border-sidebar-border hover:border-cyan-500/30 transition-all">
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="inline-block px-3 py-1 text-xs font-medium bg-gray-500/20 text-gray-300 border border-gray-500/30 rounded-full">Completed</span>
+                          <span className="text-sm text-muted-foreground">Ended Dec 15</span>
+                        </div>
+                        <h3 className="text-lg font-semibold text-foreground mb-3">
+                          How many hours per week do you spend creating?
+                        </h3>
+                        <div className="space-y-3 mb-4">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">20+ hours (Full-time)</span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+                                <div className="h-full bg-green-500 rounded-full" style={{width: '34%'}}></div>
+                              </div>
+                              <span className="text-sm text-green-400">34%</span>
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">10-20 hours</span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+                                <div className="h-full bg-yellow-500 rounded-full" style={{width: '31%'}}></div>
+                              </div>
+                              <span className="text-sm text-yellow-400">31%</span>
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">5-10 hours</span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+                                <div className="h-full bg-cyan-500 rounded-full" style={{width: '35%'}}></div>
+                              </div>
+                              <span className="text-sm text-cyan-400">35%</span>
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-xs text-muted-foreground">3,891 responses</p>
+                      </article>
+
+                      <article className="glass-card rounded-xl p-6 border border-sidebar-border hover:border-cyan-500/30 transition-all">
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="inline-block px-3 py-1 text-xs font-medium bg-gray-500/20 text-gray-300 border border-gray-500/30 rounded-full">Completed</span>
+                          <span className="text-sm text-muted-foreground">Ended Dec 10</span>
+                        </div>
+                        <h3 className="text-lg font-semibold text-foreground mb-3">
+                          What's your biggest creation challenge?
+                        </h3>
+                        <div className="space-y-3 mb-4">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Learning new tools</span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+                                <div className="h-full bg-red-500 rounded-full" style={{width: '42%'}}></div>
+                              </div>
+                              <span className="text-sm text-red-400">42%</span>
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Finding time</span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+                                <div className="h-full bg-blue-500 rounded-full" style={{width: '33%'}}></div>
+                              </div>
+                              <span className="text-sm text-blue-400">33%</span>
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Technical limitations</span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+                                <div className="h-full bg-purple-500 rounded-full" style={{width: '25%'}}></div>
+                              </div>
+                              <span className="text-sm text-purple-400">25%</span>
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-xs text-muted-foreground">5,234 responses</p>
+                      </article>
+
+                      <article className="glass-card rounded-xl p-6 border border-sidebar-border hover:border-cyan-500/30 transition-all">
+                        <div className="flex items-center justify-between mb-4">
+                          <span className="inline-block px-3 py-1 text-xs font-medium bg-gray-500/20 text-gray-300 border border-gray-500/30 rounded-full">Completed</span>
+                          <span className="text-sm text-muted-foreground">Ended Dec 5</span>
+                        </div>
+                        <h3 className="text-lg font-semibold text-foreground mb-3">
+                          Which monetization model works best?
+                        </h3>
+                        <div className="space-y-3 mb-4">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">One-time purchases</span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+                                <div className="h-full bg-green-500 rounded-full" style={{width: '39%'}}></div>
+                              </div>
+                              <span className="text-sm text-green-400">39%</span>
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Subscriptions</span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+                                <div className="h-full bg-orange-500 rounded-full" style={{width: '32%'}}></div>
+                              </div>
+                              <span className="text-sm text-orange-400">32%</span>
+                            </div>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-muted-foreground">Commission-based</span>
+                            <div className="flex items-center gap-2">
+                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+                                <div className="h-full bg-cyan-500 rounded-full" style={{width: '29%'}}></div>
+                              </div>
+                              <span className="text-sm text-cyan-400">29%</span>
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-xs text-muted-foreground">2,678 responses</p>
+                      </article>
+                    </div>
+                  </div>
+
                   {/* Published Reports */}
                   <div>
                     <h2 className="text-2xl font-bold text-foreground mb-6">Published Reports</h2>

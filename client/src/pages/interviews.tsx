@@ -5,6 +5,7 @@ import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
 import { PostCard } from '@/components/post-card';
 import { Footer } from '@/components/layout/footer';
+import { EngagementSection } from '@/components/engagement-section';
 import { useQuery } from '@tanstack/react-query';
 import type { PostWithAuthor } from '@shared/schema';
 
@@ -85,18 +86,22 @@ const InterviewsPage: React.FC = () => {
                     ) : (
                       <>
                         {/* Featured Interview */}
-                        <article className="glass-card rounded-xl border border-purple-500/30">
-                          <div className="p-8">
-                            <div className="flex items-center gap-4 mb-6">
-                              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
-                                <span className="text-2xl">👤</span>
+                        <article className="glass-card rounded-xl border border-purple-500/30 overflow-hidden">
+                          {/* Hero Image */}
+                          <div className="w-full h-80 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700 relative flex items-center justify-center">
+                            <div className="absolute inset-0 bg-black/20"></div>
+                            <div className="relative z-10 text-center">
+                              <div className="w-24 h-24 bg-gradient-to-br from-purple-400 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white/20">
+                                <span className="text-4xl">👤</span>
                               </div>
-                              <div>
-                                <span className="inline-block px-3 py-1 text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full mb-2">Interview</span>
-                                <h2 className="text-2xl font-bold text-foreground">Building Immersive Worlds: A Conversation with Alex Chen</h2>
-                                <p className="text-muted-foreground">Senior World Designer at Horizon Worlds</p>
-                              </div>
+                              <span className="inline-block px-3 py-1 text-xs font-medium bg-purple-500/30 text-purple-200 border border-purple-400/30 rounded-full mb-2">Interview</span>
+                              <h2 className="text-3xl font-bold text-white mb-2">Building Immersive Worlds</h2>
+                              <p className="text-purple-200">A Conversation with Alex Chen</p>
+                              <p className="text-purple-300 text-sm">Senior World Designer at Horizon Worlds</p>
                             </div>
+                          </div>
+                          
+                          <div className="p-8">
 
                             <div className="prose prose-invert max-w-none">
                               <blockquote className="border-l-4 border-purple-500 pl-6 my-6 text-lg italic text-muted-foreground">
@@ -136,30 +141,75 @@ const InterviewsPage: React.FC = () => {
                                 </ul>
                               </div>
                             </div>
+
+                            {/* Engagement Section */}
+                            <EngagementSection 
+                              contentId="interview-alex-chen"
+                              contentType="interview"
+                              initialLikes={247}
+                              initialComments={[
+                                {
+                                  id: '1',
+                                  author: 'Maya Singh',
+                                  content: 'This is exactly what I needed to hear! The part about emotional journey first, technical second really resonates with my approach.',
+                                  timestamp: '2 hours ago',
+                                  likes: 12
+                                },
+                                {
+                                  id: '2', 
+                                  author: 'Jordan Kim',
+                                  content: 'Great insights on the evolution of VR design. The comparison to traditional architecture is spot on.',
+                                  timestamp: '4 hours ago',
+                                  likes: 8
+                                }
+                              ]}
+                            />
                           </div>
                         </article>
 
                         {/* More Interviews */}
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                          <article className="glass-card rounded-xl p-6 border border-sidebar-border hover:border-purple-500/30 transition-all">
-                            <span className="inline-block px-2 py-1 text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full mb-3">Interview</span>
-                            <h3 className="text-lg font-semibold text-foreground mb-2">Monetizing Virtual Fashion</h3>
-                            <p className="text-sm text-muted-foreground mb-4">
-                              Fashion designer Maya Patel shares insights on building a sustainable virtual clothing business across multiple platforms.
-                            </p>
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <span>8 min read</span> • <span>Dec 28, 2024</span>
+                          <article className="glass-card rounded-xl border border-sidebar-border hover:border-purple-500/30 transition-all overflow-hidden">
+                            <div className="w-full h-32 bg-gradient-to-br from-pink-500 to-rose-600 flex items-center justify-center">
+                              <span className="text-3xl">👗</span>
+                            </div>
+                            <div className="p-6">
+                              <span className="inline-block px-2 py-1 text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full mb-3">Interview</span>
+                              <h3 className="text-lg font-semibold text-foreground mb-2">Monetizing Virtual Fashion</h3>
+                              <p className="text-sm text-muted-foreground mb-4">
+                                Fashion designer Maya Patel shares insights on building a sustainable virtual clothing business across multiple platforms.
+                              </p>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
+                                <span>8 min read</span> • <span>Dec 28, 2024</span>
+                              </div>
+                              <EngagementSection 
+                                contentId="interview-maya-fashion"
+                                contentType="interview"
+                                initialLikes={89}
+                                initialComments={[]}
+                              />
                             </div>
                           </article>
 
-                          <article className="glass-card rounded-xl p-6 border border-sidebar-border hover:border-purple-500/30 transition-all">
-                            <span className="inline-block px-2 py-1 text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full mb-3">Interview</span>
-                            <h3 className="text-lg font-semibold text-foreground mb-2">From Hobbyist to Studio</h3>
-                            <p className="text-sm text-muted-foreground mb-4">
-                              How Tom Richards grew his weekend VRChat world project into a full-time virtual experiences studio.
-                            </p>
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                              <span>12 min read</span> • <span>Dec 25, 2024</span>
+                          <article className="glass-card rounded-xl border border-sidebar-border hover:border-purple-500/30 transition-all overflow-hidden">
+                            <div className="w-full h-32 bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
+                              <span className="text-3xl">🏢</span>
+                            </div>
+                            <div className="p-6">
+                              <span className="inline-block px-2 py-1 text-xs font-medium bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-full mb-3">Interview</span>
+                              <h3 className="text-lg font-semibold text-foreground mb-2">From Hobbyist to Studio</h3>
+                              <p className="text-sm text-muted-foreground mb-4">
+                                How Tom Richards grew his weekend VRChat world project into a full-time virtual experiences studio.
+                              </p>
+                              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
+                                <span>12 min read</span> • <span>Dec 25, 2024</span>
+                              </div>
+                              <EngagementSection 
+                                contentId="interview-tom-studio"
+                                contentType="interview"
+                                initialLikes={156}
+                                initialComments={[]}
+                              />
                             </div>
                           </article>
                         </div>

@@ -5,6 +5,7 @@ import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
 import { PostCard } from '@/components/post-card';
 import { Footer } from '@/components/layout/footer';
+import { EngagementSection } from '@/components/engagement-section';
 import { useQuery } from '@tanstack/react-query';
 import type { PostWithAuthor } from '@shared/schema';
 
@@ -85,14 +86,19 @@ const SpotlightsPage: React.FC = () => {
                     ) : (
                       <>
                         {/* Featured Spotlight */}
-                        <article className="glass-card rounded-xl p-8 border border-yellow-500/30">
+                        <article className="glass-card rounded-xl border border-yellow-500/30 overflow-hidden">
                           <div className="flex flex-col lg:flex-row gap-8">
                             <div className="lg:w-1/3">
-                              <div className="w-full h-64 lg:h-80 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl flex items-center justify-center">
-                                <span className="text-6xl">👤</span>
+                              <div className="w-full h-64 lg:h-80 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-xl flex items-center justify-center relative overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                                <span className="text-6xl relative z-10">👤</span>
+                                <div className="absolute bottom-4 left-4 right-4 z-10">
+                                  <div className="text-white font-semibold">Emma Thompson</div>
+                                  <div className="text-white/80 text-sm">2M+ world visits</div>
+                                </div>
                               </div>
                             </div>
-                            <div className="lg:w-2/3">
+                            <div className="lg:w-2/3 p-8">
                               <div className="mb-4">
                                 <span className="inline-block px-3 py-1 text-xs font-medium bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 rounded-full">Spotlight</span>
                               </div>
@@ -118,44 +124,91 @@ const SpotlightsPage: React.FC = () => {
                                 </ul>
                               </div>
 
-                              <div className="flex flex-wrap gap-3">
+                              <div className="flex flex-wrap gap-3 mb-6">
                                 <span className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">VRChat</span>
                                 <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">Unity</span>
                                 <span className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-sm">Blender</span>
                               </div>
+
+                              {/* Engagement Section */}
+                              <EngagementSection 
+                                contentId="spotlight-emma-thompson"
+                                contentType="spotlight"
+                                initialLikes={324}
+                                initialComments={[
+                                  {
+                                    id: '1',
+                                    author: 'Alex Rivera',
+                                    content: 'Emma\'s Neon Dreams world is absolutely stunning! The lighting work is incredible.',
+                                    timestamp: '1 hour ago',
+                                    likes: 15
+                                  },
+                                  {
+                                    id: '2',
+                                    author: 'Sam Chen',
+                                    content: 'Been following her work for years. True pioneer in VR environment design!',
+                                    timestamp: '3 hours ago',
+                                    likes: 22
+                                  }
+                                ]}
+                              />
                             </div>
                           </div>
                         </article>
 
                         {/* More Spotlights */}
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <article className="glass-card rounded-xl p-6 border border-sidebar-border hover:border-yellow-500/30 transition-all">
-                            <div className="w-full h-48 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg mb-4 flex items-center justify-center">
-                              <span className="text-4xl">🏢</span>
+                          <article className="glass-card rounded-xl border border-sidebar-border hover:border-yellow-500/30 transition-all overflow-hidden">
+                            <div className="w-full h-48 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center relative">
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                              <span className="text-4xl relative z-10">🏢</span>
+                              <div className="absolute bottom-4 left-4 right-4 z-10">
+                                <div className="text-white font-semibold text-sm">10M+ total plays</div>
+                              </div>
                             </div>
-                            <span className="inline-block px-2 py-1 text-xs font-medium bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 rounded-full mb-3">Studio Spotlight</span>
-                            <h3 className="text-xl font-semibold text-foreground mb-2">PixelCraft Studios</h3>
-                            <p className="text-sm text-muted-foreground mb-4">
-                              Independent game studio creating immersive Roblox experiences with over 10M total plays.
-                            </p>
-                            <div className="flex gap-2">
-                              <span className="px-2 py-1 bg-orange-500/20 text-orange-300 rounded text-xs">Roblox</span>
-                              <span className="px-2 py-1 bg-red-500/20 text-red-300 rounded text-xs">Game Design</span>
+                            <div className="p-6">
+                              <span className="inline-block px-2 py-1 text-xs font-medium bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 rounded-full mb-3">Studio Spotlight</span>
+                              <h3 className="text-xl font-semibold text-foreground mb-2">PixelCraft Studios</h3>
+                              <p className="text-sm text-muted-foreground mb-4">
+                                Independent game studio creating immersive Roblox experiences with over 10M total plays.
+                              </p>
+                              <div className="flex gap-2 mb-4">
+                                <span className="px-2 py-1 bg-orange-500/20 text-orange-300 rounded text-xs">Roblox</span>
+                                <span className="px-2 py-1 bg-red-500/20 text-red-300 rounded text-xs">Game Design</span>
+                              </div>
+                              <EngagementSection 
+                                contentId="spotlight-pixelcraft"
+                                contentType="spotlight"
+                                initialLikes={178}
+                                initialComments={[]}
+                              />
                             </div>
                           </article>
 
-                          <article className="glass-card rounded-xl p-6 border border-sidebar-border hover:border-yellow-500/30 transition-all">
-                            <div className="w-full h-48 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg mb-4 flex items-center justify-center">
-                              <span className="text-4xl">🛠️</span>
+                          <article className="glass-card rounded-xl border border-sidebar-border hover:border-yellow-500/30 transition-all overflow-hidden">
+                            <div className="w-full h-48 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg flex items-center justify-center relative">
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                              <span className="text-4xl relative z-10">🛠️</span>
+                              <div className="absolute bottom-4 left-4 right-4 z-10">
+                                <div className="text-white font-semibold text-sm">AI-Powered</div>
+                              </div>
                             </div>
-                            <span className="inline-block px-2 py-1 text-xs font-medium bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 rounded-full mb-3">Tool Spotlight</span>
-                            <h3 className="text-xl font-semibold text-foreground mb-2">VirtualForge</h3>
-                            <p className="text-sm text-muted-foreground mb-4">
-                              AI-powered world generation tool helping creators build immersive environments 10x faster.
-                            </p>
-                            <div className="flex gap-2">
-                              <span className="px-2 py-1 bg-cyan-500/20 text-cyan-300 rounded text-xs">AI Tools</span>
-                              <span className="px-2 py-1 bg-purple-500/20 text-purple-300 rounded text-xs">Unity</span>
+                            <div className="p-6">
+                              <span className="inline-block px-2 py-1 text-xs font-medium bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 rounded-full mb-3">Tool Spotlight</span>
+                              <h3 className="text-xl font-semibold text-foreground mb-2">VirtualForge</h3>
+                              <p className="text-sm text-muted-foreground mb-4">
+                                AI-powered world generation tool helping creators build immersive environments 10x faster.
+                              </p>
+                              <div className="flex gap-2 mb-4">
+                                <span className="px-2 py-1 bg-cyan-500/20 text-cyan-300 rounded text-xs">AI Tools</span>
+                                <span className="px-2 py-1 bg-purple-500/20 text-purple-300 rounded text-xs">Unity</span>
+                              </div>
+                              <EngagementSection 
+                                contentId="spotlight-virtualforge"
+                                contentType="spotlight"
+                                initialLikes={203}
+                                initialComments={[]}
+                              />
                             </div>
                           </article>
                         </div>
