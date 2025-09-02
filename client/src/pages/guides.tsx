@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BookOpen } from 'lucide-react';
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
@@ -9,6 +9,11 @@ import { useQuery } from '@tanstack/react-query';
 import type { PostWithAuthor } from '@shared/schema';
 
 const GuidesPage: React.FC = () => {
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Fetch all posts and filter for tips and guides
   const { data: posts = [], isLoading } = useQuery<PostWithAuthor[]>({
     queryKey: ['/api/posts']
