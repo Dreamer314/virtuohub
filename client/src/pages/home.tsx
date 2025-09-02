@@ -17,7 +17,11 @@ import {
   BarChart3,
   ArrowRight,
   TrendingUp,
-  Clock
+  Clock,
+  Star,
+  FileText,
+  Heart,
+  Zap
 } from "lucide-react";
 
 const HomePage = () => {
@@ -87,9 +91,18 @@ const HomePage = () => {
             {/* All Creators. One Hub Section */}
             <section className="px-6 py-16 bg-muted/30 rounded-2xl mx-6 mb-16">
               <div className="max-w-3xl mx-auto text-center">
-                <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                  All Creators. One Hub.
-                </h2>
+                <div className="flex items-center justify-center mb-6">
+                  <div className="flex items-center space-x-2 w-full max-w-4xl mx-auto">
+                    <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
+                    <div className="flex items-center space-x-4">
+                      <Zap className="w-8 h-8 text-primary" />
+                      <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                        All Creators. One Hub.
+                      </h2>
+                    </div>
+                    <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
+                  </div>
+                </div>
                 <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
                   Ditch scattered subchannels, forums, and buried comments. Find exactly what you need. VirtuoHub gives you profiles, organized feeds, and real opportunities in one place where your work is seen and valued.
                 </p>
@@ -114,9 +127,18 @@ const HomePage = () => {
               </div>
               
               <div className="relative z-10 text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                  What You Can Post
-                </h2>
+                <div className="flex items-center justify-center mb-6">
+                  <div className="flex items-center space-x-2 w-full max-w-4xl mx-auto">
+                    <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
+                    <div className="flex items-center space-x-4">
+                      <FileText className="w-8 h-8 text-accent" />
+                      <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                        What You Can Post
+                      </h2>
+                    </div>
+                    <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
+                  </div>
+                </div>
                 <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                   Choose the right category for your post. Each section is designed to help you connect with the right audience and get the engagement you need.
                 </p>
@@ -134,9 +156,9 @@ const HomePage = () => {
 
               <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
                 <Link href="/?tag=wip" data-testid="card-wip">
-                  <Card className="glass-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer">
                     <CardContent className="p-6">
-                      <MessageSquare className="w-8 h-8 text-primary mb-4" />
+                      <MessageSquare className="w-8 h-8 mb-4 text-transparent bg-gradient-cosmic bg-clip-text" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
                         WIP (Work in Progress)
                       </h3>
@@ -148,9 +170,9 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/?tag=help-feedback" data-testid="card-help-feedback">
-                  <Card className="glass-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer">
                     <CardContent className="p-6">
-                      <Users className="w-8 h-8 text-primary mb-4" />
+                      <Users className="w-8 h-8 mb-4 text-transparent bg-gradient-nebula bg-clip-text" style={{backgroundImage: 'var(--gradient-nebula)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
                         Help & Feedback
                       </h3>
@@ -162,9 +184,9 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/?tag=tutorials-guides" data-testid="card-tutorials-guides">
-                  <Card className="glass-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer">
                     <CardContent className="p-6">
-                      <BookOpen className="w-8 h-8 text-primary mb-4" />
+                      <BookOpen className="w-8 h-8 mb-4 text-transparent bg-gradient-aurora bg-clip-text" style={{backgroundImage: 'var(--gradient-aurora)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
                         Tutorials & Guides
                       </h3>
@@ -176,9 +198,9 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/?tag=jobs-gigs" data-testid="card-jobs-gigs">
-                  <Card className="glass-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer">
                     <CardContent className="p-6">
-                      <Users className="w-8 h-8 text-primary mb-4" />
+                      <Users className="w-8 h-8 mb-4 text-transparent bg-gradient-dusk bg-clip-text" style={{backgroundImage: 'var(--gradient-dusk)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
                         Jobs & Gigs
                       </h3>
@@ -190,9 +212,9 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/?tag=assets-sale" data-testid="card-assets-sale">
-                  <Card className="glass-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer">
                     <CardContent className="p-6">
-                      <ShoppingBag className="w-8 h-8 text-primary mb-4" />
+                      <ShoppingBag className="w-8 h-8 mb-4 text-transparent bg-gradient-mist bg-clip-text" style={{backgroundImage: 'var(--gradient-mist)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
                         Assets for Sale
                       </h3>
@@ -204,9 +226,9 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/?tag=collabs-teams" data-testid="card-collabs-teams">
-                  <Card className="glass-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer">
                     <CardContent className="p-6">
-                      <Users className="w-8 h-8 text-primary mb-4" />
+                      <Users className="w-8 h-8 mb-4 text-transparent bg-gradient-cosmic bg-clip-text" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
                         Collabs & Teams
                       </h3>
@@ -218,9 +240,9 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/?tag=events-workshops" data-testid="card-events-workshops">
-                  <Card className="glass-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer">
                     <CardContent className="p-6">
-                      <Calendar className="w-8 h-8 text-primary mb-4" />
+                      <Calendar className="w-8 h-8 mb-4 text-transparent bg-gradient-dawn bg-clip-text" style={{backgroundImage: 'var(--gradient-dawn)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
                         Events & Workshops
                       </h3>
@@ -232,9 +254,9 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/?tag=platform-qa" data-testid="card-platform-qa">
-                  <Card className="glass-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer">
                     <CardContent className="p-6">
-                      <MessageSquare className="w-8 h-8 text-primary mb-4" />
+                      <MessageSquare className="w-8 h-8 mb-4 text-transparent bg-gradient-nebula bg-clip-text" style={{backgroundImage: 'var(--gradient-nebula)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
                         Platform Q&A
                       </h3>
@@ -246,9 +268,9 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/?tag=general" data-testid="card-general">
-                  <Card className="glass-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer">
                     <CardContent className="p-6">
-                      <MessageSquare className="w-8 h-8 text-primary mb-4" />
+                      <MessageSquare className="w-8 h-8 mb-4 text-transparent bg-gradient-aurora bg-clip-text" style={{backgroundImage: 'var(--gradient-aurora)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
                         General
                       </h3>
@@ -263,17 +285,26 @@ const HomePage = () => {
 
             {/* Editorial & Data Section */}
             <section className="relative px-6 py-16 bg-muted/30 rounded-2xl mx-6 overflow-hidden">
-              {/* Subtle ambient background shapes for Editorial section */}
+              {/* Centered ambient background behind icon cluster */}
               <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                <div className="absolute -top-24 -right-24 w-[450px] h-[450px] bg-gradient-radial from-violet-400/6 via-purple-500/3 to-transparent blur-[90px]"></div>
-                <div className="absolute -bottom-24 -left-24 w-[400px] h-[400px] bg-gradient-radial from-indigo-400/5 via-blue-500/2 to-transparent blur-[70px]"></div>
-                <div className="absolute top-1/2 right-1/3 w-[300px] h-[300px] bg-gradient-radial from-cyan-400/4 via-teal-500/2 to-transparent blur-[50px]"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-radial from-violet-400/8 via-purple-500/4 to-transparent blur-[120px]"></div>
+                <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-gradient-radial from-indigo-400/6 via-blue-500/3 to-transparent blur-[80px]"></div>
+                <div className="absolute bottom-1/4 left-1/4 w-[350px] h-[350px] bg-gradient-radial from-cyan-400/5 via-teal-500/2 to-transparent blur-[70px]"></div>
               </div>
               
               <div className="relative z-10 text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                  Editorial & Data
-                </h2>
+                <div className="flex items-center justify-center mb-6">
+                  <div className="flex items-center space-x-2 w-full max-w-4xl mx-auto">
+                    <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
+                    <div className="flex items-center space-x-4">
+                      <BarChart3 className="w-8 h-8 text-primary" />
+                      <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                        Editorial & Data
+                      </h2>
+                    </div>
+                    <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
+                  </div>
+                </div>
                 <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                   Curated content, insights, and data-driven reports from our editorial team and community research.
                 </p>
@@ -281,9 +312,9 @@ const HomePage = () => {
 
               <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
                 <Link href="/spotlights" data-testid="card-spotlights">
-                  <Card className="glass-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer">
                     <CardContent className="p-6">
-                      <Users className="w-8 h-8 text-primary mb-4" />
+                      <Users className="w-8 h-8 mb-4 text-transparent bg-gradient-cosmic bg-clip-text" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
                         Creator Spotlights
                       </h3>
@@ -295,9 +326,9 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/interviews" data-testid="card-interviews">
-                  <Card className="glass-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer">
                     <CardContent className="p-6">
-                      <MessageSquare className="w-8 h-8 text-primary mb-4" />
+                      <MessageSquare className="w-8 h-8 mb-4 text-transparent bg-gradient-nebula bg-clip-text" style={{backgroundImage: 'var(--gradient-nebula)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
                         Interviews
                       </h3>
@@ -309,9 +340,9 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/guides" data-testid="card-tips-guides">
-                  <Card className="glass-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer">
                     <CardContent className="p-6">
-                      <BookOpen className="w-8 h-8 text-primary mb-4" />
+                      <BookOpen className="w-8 h-8 mb-4 text-transparent bg-gradient-aurora bg-clip-text" style={{backgroundImage: 'var(--gradient-aurora)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
                         Tips & Guides
                       </h3>
@@ -323,9 +354,9 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/news" data-testid="card-industry-news">
-                  <Card className="glass-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer">
                     <CardContent className="p-6">
-                      <BarChart3 className="w-8 h-8 text-primary mb-4" />
+                      <BarChart3 className="w-8 h-8 mb-4 text-transparent bg-gradient-mist bg-clip-text" style={{backgroundImage: 'var(--gradient-mist)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
                         Industry News
                       </h3>
@@ -337,9 +368,9 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/trending" data-testid="card-trending">
-                  <Card className="glass-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer">
                     <CardContent className="p-6">
-                      <TrendingUp className="w-8 h-8 text-primary mb-4" />
+                      <TrendingUp className="w-8 h-8 mb-4 text-transparent bg-gradient-dawn bg-clip-text" style={{backgroundImage: 'var(--gradient-dawn)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
                         Trending
                       </h3>
@@ -351,9 +382,9 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/events" data-testid="card-upcoming-events">
-                  <Card className="glass-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer">
                     <CardContent className="p-6">
-                      <Calendar className="w-8 h-8 text-primary mb-4" />
+                      <Calendar className="w-8 h-8 mb-4 text-transparent bg-gradient-dusk bg-clip-text" style={{backgroundImage: 'var(--gradient-dusk)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
                         Upcoming Events
                       </h3>
@@ -365,9 +396,9 @@ const HomePage = () => {
                 </Link>
 
                 <Link href="/pulse" data-testid="card-pulse-reports">
-                  <Card className="glass-card hover-lift cursor-pointer">
+                  <Card className="enhanced-card hover-lift cursor-pointer">
                     <CardContent className="p-6">
-                      <BarChart3 className="w-8 h-8 text-primary mb-4" />
+                      <BarChart3 className="w-8 h-8 mb-4 text-transparent bg-gradient-cosmic bg-clip-text" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                       <h3 className="text-xl font-semibold text-foreground mb-3">
                         Pulse Reports
                       </h3>
@@ -383,9 +414,18 @@ const HomePage = () => {
             {/* Featured Content Section */}
             <section className="px-6 py-16">
               <div className="text-center mb-8">
-                <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                  Featured Content
-                </h2>
+                <div className="flex items-center justify-center mb-6">
+                  <div className="flex items-center space-x-2 w-full max-w-4xl mx-auto">
+                    <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
+                    <div className="flex items-center space-x-4">
+                      <Star className="w-8 h-8 text-accent" />
+                      <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                        Featured Content
+                      </h2>
+                    </div>
+                    <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
+                  </div>
+                </div>
                 <p className="text-lg text-muted-foreground">
                   Discover the latest insights, interviews, and guides from our community
                 </p>
@@ -396,53 +436,26 @@ const HomePage = () => {
             {/* Pulse Teaser Section */}
             <section className="px-6 py-12">
               <Card className="bg-gradient-to-r from-primary/10 to-accent/10 border-primary/20">
-                <CardContent className="p-8">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
-                        <TrendingUp className="w-6 h-6 text-primary" />
-                        VHub Data Pulse
-                      </h3>
-                      <p className="text-muted-foreground mb-4">
-                        Real insights from our creator community. See what's trending across platforms.
-                      </p>
-                      <div className="flex gap-6 text-sm">
-                        <div data-testid="metric-active-polls">
-                          <span className="block text-2xl font-bold text-primary">12</span>
-                          <span className="text-muted-foreground">Active Polls</span>
-                        </div>
-                        <div data-testid="metric-responses">
-                          <span className="block text-2xl font-bold text-accent">1,247</span>
-                          <span className="text-muted-foreground">Responses</span>
-                        </div>
-                        <div data-testid="metric-insights">
-                          <span className="block text-2xl font-bold text-primary">8</span>
-                          <span className="text-muted-foreground">New Insights</span>
-                        </div>
-                      </div>
-                    </div>
-                    <Button asChild variant="outline" data-testid="button-view-pulse">
-                      <Link href="/pulse">
-                        View Full Charts
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Link>
-                    </Button>
-                  </div>
+                <CardContent className="p-8 text-center">
+                  <TrendingUp className="w-12 h-12 text-primary mx-auto mb-4" />
+                  <h3 className="text-2xl font-bold text-foreground mb-4">VHub Pulse</h3>
+                  <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+                    Get your voice heard on the latest industry trends. Quick polls on the hottest topics in the immersive economy.
+                  </p>
+                  <Button asChild size="lg" className="bg-gradient-aurora hover:bg-gradient-aurora-hover text-white">
+                    <Link href="/">Participate in Polls</Link>
+                  </Button>
                 </CardContent>
               </Card>
             </section>
 
-            {/* Events Strip Section */}
-            <section className="px-6 py-12">
-              <div className="flex items-center justify-between mb-8">
-                <h3 className="text-2xl font-bold text-foreground">Upcoming Events</h3>
-                <Button asChild variant="outline" data-testid="button-see-all-events">
-                  <Link href="/events">See All Events</Link>
-                </Button>
-              </div>
-              
+            {/* Community Highlights */}
+            <section className="px-6 py-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground text-center mb-12">
+                Upcoming Events
+              </h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card className="glass-card hover-lift" data-testid="card-event-1">
+                <Card className="enhanced-card hover-lift" data-testid="card-event-1">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-3 mb-3">
                       <Clock className="w-5 h-5 text-primary mt-0.5" />
@@ -460,7 +473,7 @@ const HomePage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="glass-card hover-lift" data-testid="card-event-2">
+                <Card className="enhanced-card hover-lift" data-testid="card-event-2">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-3 mb-3">
                       <Clock className="w-5 h-5 text-primary mt-0.5" />
@@ -478,7 +491,7 @@ const HomePage = () => {
                   </CardContent>
                 </Card>
 
-                <Card className="glass-card hover-lift" data-testid="card-event-3">
+                <Card className="enhanced-card hover-lift" data-testid="card-event-3">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-3 mb-3">
                       <Clock className="w-5 h-5 text-primary mt-0.5" />

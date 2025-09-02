@@ -1,0 +1,96 @@
+Frontend help: make homepage visuals match Community page across light, dark, and charcoal modes
+
+Context
+I have a Community page with finalized visual design. My homepage needs to match it exactly. You will have screenshots of the Community page cards and title treatments, plus current homepage screenshots. The codebase already has the Community page components and theme tokens.
+
+Goal
+Make the homepage look and feel identical to the Community page across all themes. One system, one set of tokens, one card style.
+
+Assets I will provide
+
+Screenshot: Community page cards and title treatments
+
+Screenshot: Current homepage sections that need parity
+
+The four gradient specs used on button icons
+
+Repo access or code snippets for the Community page Card component and theme variables
+
+Scope
+Update the homepage only, but use the existing shared styles from the Community page so the whole site is cohesive.
+
+Requirements
+
+Card parity
+
+Apply the exact same lighting, dimensions, border radius, padding, shadow, borders, and hover states as the Community page cards.
+
+Reuse the same Card component or extract a shared one and import it on the homepage. No forks or near matches.
+
+Theme consistency
+
+Light, Dark, and Charcoal must render with the same card shading, elevation, and color tokens as the Community page.
+
+Use the same theme variables. Do not hardcode per section.
+
+Section title treatments
+
+Replicate the Community page title treatment: horizontal lines on both sides of the title label plus a small icon next to the text.
+
+Apply this to these homepage sections:
+• For All Creators One Hub
+• What You Can Post
+• Editorial and Data
+• Featured Content
+
+Spacing, line weight, and icon sizing must match the Community page.
+
+Icon styling in three blocks
+
+In What You Can Post, Editorial and Data, and any card icon lists, apply the same gradient effects used on the four button icons.
+
+Icons should have the same gradient fill, depth, and subtle highlight for dimension. No flat, boring glyphs.
+
+Ambient effect fix
+
+There is a harsh bottom edge in the ambient glow for the Editorial and Data section.
+
+If you cannot blur it enough to remove the seam, remove that bottom glow and instead add a centered ambient element behind the icon cluster that feathers out softly at the edges.
+
+Code hygiene
+
+Centralize design tokens and card styles. Do not duplicate CSS.
+
+If needed, create shared primitives like --card-bg, --card-shadow, --surface-1, --surface-2, and icon gradient variables.
+
+Homepage must import the same tokens the Community page uses.
+
+Acceptance criteria
+
+Pixel parity with Community page card visuals across all three themes.
+
+Title treatments match in spacing, line weight, icon placement, and typography.
+
+Icon gradients match the four provided gradient specs.
+
+No visible seams in ambient effects at common viewport widths.
+
+Works at mobile, tablet, and desktop breakpoints.
+
+Passes basic a11y checks: text contrast, focus states on interactive cards, aria labels on decorative icons ignored.
+
+Deliverables
+
+PR with diff and brief notes on what was centralized or refactored
+
+Before and after screenshots for each theme and breakpoint
+
+A short list of any remaining visual gaps, if any
+
+Tech notes
+
+Please prefer existing components over new ones.
+
+If you must add styles, use the project’s token system and utility classes already in use.
+
+No regressions on the Community page.
