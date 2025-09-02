@@ -99,39 +99,206 @@ const HomePage = () => {
               </div>
             </section>
 
-            {/* What You'll Find Section */}
+            {/* Thread Categories Section */}
             <section className="px-6 py-16">
               <div className="text-center mb-12">
                 <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-                  What You'll Find in the Community
+                  What You Can Post
                 </h2>
                 <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-                  VirtuoHub is a smarter way to run community threads. Tutorials, events, insights, talent, and real discussions that move the industry forward.
+                  Choose the right category for your post. Each section is designed to help you connect with the right audience and get the engagement you need.
                 </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-tutorials">
+                <Card className="hover:shadow-lg transition-shadow" data-testid="card-wip">
                   <CardContent className="p-6">
-                    <BookOpen className="w-8 h-8 text-primary mb-4" />
+                    <MessageSquare className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
-                      Tutorials and Guides
+                      WIP (Work in Progress)
                     </h3>
-                    <p className="text-muted-foreground">
-                      Learn faster with step-by-step posts from creators like you.
+                    <p className="text-muted-foreground mb-4">
+                      Share progress, get eyes on your build, and track iterations.
                     </p>
+                    <div className="flex gap-2">
+                      <Button asChild variant="outline" size="sm" data-testid="button-browse-wip">
+                        <Link href="/?tag=wip">Browse</Link>
+                      </Button>
+                      <Button size="sm" data-testid="button-start-wip">Start a thread</Button>
+                    </div>
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-workshops">
+                <Card className="hover:shadow-lg transition-shadow" data-testid="card-help-feedback">
+                  <CardContent className="p-6">
+                    <Users className="w-8 h-8 text-primary mb-4" />
+                    <h3 className="text-xl font-semibold text-foreground mb-3">
+                      Help & Feedback
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      Ask questions, debug blockers, and get quick reviews.
+                    </p>
+                    <div className="flex gap-2">
+                      <Button asChild variant="outline" size="sm" data-testid="button-browse-help">
+                        <Link href="/?tag=help-feedback">Browse</Link>
+                      </Button>
+                      <Button size="sm" data-testid="button-start-help">Start a thread</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="hover:shadow-lg transition-shadow" data-testid="card-tutorials-guides">
+                  <CardContent className="p-6">
+                    <BookOpen className="w-8 h-8 text-primary mb-4" />
+                    <h3 className="text-xl font-semibold text-foreground mb-3">
+                      Tutorials & Guides
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      Post step-by-step walkthroughs and quick tips.
+                    </p>
+                    <div className="flex gap-2">
+                      <Button asChild variant="outline" size="sm" data-testid="button-browse-tutorials">
+                        <Link href="/?tag=tutorials-guides">Browse</Link>
+                      </Button>
+                      <Button size="sm" data-testid="button-start-tutorial">Start a thread</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="hover:shadow-lg transition-shadow" data-testid="card-jobs-gigs">
+                  <CardContent className="p-6">
+                    <Users className="w-8 h-8 text-primary mb-4" />
+                    <h3 className="text-xl font-semibold text-foreground mb-3">
+                      Jobs & Gigs
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      Hire talent or offer your services.
+                    </p>
+                    <div className="flex gap-2">
+                      <Button asChild variant="outline" size="sm" data-testid="button-browse-jobs">
+                        <Link href="/?tag=jobs-gigs">Browse</Link>
+                      </Button>
+                      <Button size="sm" data-testid="button-start-job">Start a thread</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="hover:shadow-lg transition-shadow" data-testid="card-assets-sale">
+                  <CardContent className="p-6">
+                    <ShoppingBag className="w-8 h-8 text-primary mb-4" />
+                    <h3 className="text-xl font-semibold text-foreground mb-3">
+                      Assets for Sale
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      List avatars, props, shaders, tools, and more.
+                    </p>
+                    <div className="flex gap-2">
+                      <Button asChild variant="outline" size="sm" data-testid="button-browse-assets">
+                        <Link href="/?tag=assets-for-sale">Browse</Link>
+                      </Button>
+                      <Button size="sm" data-testid="button-start-asset">Start a thread</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="hover:shadow-lg transition-shadow" data-testid="card-collabs-teams">
+                  <CardContent className="p-6">
+                    <Users className="w-8 h-8 text-primary mb-4" />
+                    <h3 className="text-xl font-semibold text-foreground mb-3">
+                      Collabs & Teams
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      Find collaborators or recruit for a project.
+                    </p>
+                    <div className="flex gap-2">
+                      <Button asChild variant="outline" size="sm" data-testid="button-browse-collabs">
+                        <Link href="/?tag=collabs-teams">Browse</Link>
+                      </Button>
+                      <Button size="sm" data-testid="button-start-collab">Start a thread</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="hover:shadow-lg transition-shadow" data-testid="card-events-workshops">
                   <CardContent className="p-6">
                     <Calendar className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
-                      Workshops and Events
+                      Events & Workshops
                     </h3>
-                    <p className="text-muted-foreground">
-                      Host or join live sessions and share skills in real time.
+                    <p className="text-muted-foreground mb-4">
+                      Promote a session, stream, or in-person meetup.
                     </p>
+                    <div className="flex gap-2">
+                      <Button asChild variant="outline" size="sm" data-testid="button-browse-events-cat">
+                        <Link href="/?tag=events-workshops">Browse</Link>
+                      </Button>
+                      <Button size="sm" data-testid="button-start-event">Start a thread</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="hover:shadow-lg transition-shadow" data-testid="card-platform-qa">
+                  <CardContent className="p-6">
+                    <MessageSquare className="w-8 h-8 text-primary mb-4" />
+                    <h3 className="text-xl font-semibold text-foreground mb-3">
+                      Platform Q&A
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      Roblox, VRChat, Horizon, Second Life, and more.
+                    </p>
+                    <div className="flex gap-2">
+                      <Button asChild variant="outline" size="sm" data-testid="button-browse-platform">
+                        <Link href="/?tag=platform-qa">Browse</Link>
+                      </Button>
+                      <Button size="sm" data-testid="button-start-platform">Start a thread</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="hover:shadow-lg transition-shadow" data-testid="card-general">
+                  <CardContent className="p-6">
+                    <MessageSquare className="w-8 h-8 text-primary mb-4" />
+                    <h3 className="text-xl font-semibold text-foreground mb-3">
+                      General
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      Anything that doesn't fit the other buckets.
+                    </p>
+                    <div className="flex gap-2">
+                      <Button asChild variant="outline" size="sm" data-testid="button-browse-general">
+                        <Link href="/?tag=general">Browse</Link>
+                      </Button>
+                      <Button size="sm" data-testid="button-start-general">Start a thread</Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </section>
+
+            {/* Editorial & Data Section */}
+            <section className="px-6 py-16 bg-muted/30 rounded-2xl mx-6">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
+                  Editorial & Data
+                </h2>
+                <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                  Curated content, insights, and data-driven reports from our editorial team and community research.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-16">
+                <Card className="hover:shadow-lg transition-shadow" data-testid="card-spotlights">
+                  <CardContent className="p-6">
+                    <Users className="w-8 h-8 text-primary mb-4" />
+                    <h3 className="text-xl font-semibold text-foreground mb-3">
+                      Creator Spotlights
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      Featured creator profiles and success stories.
+                    </p>
+                    <Button asChild variant="outline" size="sm" className="w-full" data-testid="button-read-spotlights">
+                      <Link href="/spotlights">Read</Link>
+                    </Button>
                   </CardContent>
                 </Card>
 
@@ -141,45 +308,87 @@ const HomePage = () => {
                     <h3 className="text-xl font-semibold text-foreground mb-3">
                       Interviews
                     </h3>
-                    <p className="text-muted-foreground">
-                      Stay ahead with creator stories, updates, and deep dives.
+                    <p className="text-muted-foreground mb-4">
+                      In-depth Q&As with industry leaders and creators.
                     </p>
+                    <Button asChild variant="outline" size="sm" className="w-full" data-testid="button-read-interviews">
+                      <Link href="/interviews">Read</Link>
+                    </Button>
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-talent">
+                <Card className="hover:shadow-lg transition-shadow" data-testid="card-tips-guides">
                   <CardContent className="p-6">
-                    <Users className="w-8 h-8 text-primary mb-4" />
+                    <BookOpen className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
-                      Talent Market
+                      Tips & Guides
                     </h3>
-                    <p className="text-muted-foreground">
-                      List your skills or hire for the next project.
+                    <p className="text-muted-foreground mb-4">
+                      Expert tutorials and best practice guides.
                     </p>
+                    <Button asChild variant="outline" size="sm" className="w-full" data-testid="button-read-guides">
+                      <Link href="/guides">Read</Link>
+                    </Button>
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-marketplace">
+                <Card className="hover:shadow-lg transition-shadow" data-testid="card-industry-news">
                   <CardContent className="p-6">
-                    <ShoppingBag className="w-8 h-8 text-primary mb-4" />
+                    <BarChart3 className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
-                      Marketplace
+                      Industry News
                     </h3>
-                    <p className="text-muted-foreground">
-                      Preview and showcase assets for a ready audience.
+                    <p className="text-muted-foreground mb-4">
+                      Latest updates from virtual world platforms.
                     </p>
+                    <Button asChild variant="outline" size="sm" className="w-full" data-testid="button-read-news">
+                      <Link href="/news">Read</Link>
+                    </Button>
                   </CardContent>
                 </Card>
 
-                <Card className="hover:shadow-lg transition-shadow" data-testid="card-pulse">
+                <Card className="hover:shadow-lg transition-shadow" data-testid="card-trending">
+                  <CardContent className="p-6">
+                    <TrendingUp className="w-8 h-8 text-primary mb-4" />
+                    <h3 className="text-xl font-semibold text-foreground mb-3">
+                      Trending
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      Most popular content across all categories.
+                    </p>
+                    <Button asChild variant="outline" size="sm" className="w-full" data-testid="button-explore-trending">
+                      <Link href="/trending">Explore</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="hover:shadow-lg transition-shadow" data-testid="card-upcoming-events">
+                  <CardContent className="p-6">
+                    <Calendar className="w-8 h-8 text-primary mb-4" />
+                    <h3 className="text-xl font-semibold text-foreground mb-3">
+                      Upcoming Events
+                    </h3>
+                    <p className="text-muted-foreground mb-4">
+                      Community events and workshops calendar.
+                    </p>
+                    <Button asChild variant="outline" size="sm" className="w-full" data-testid="button-view-schedule">
+                      <Link href="/events">View Schedule</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                <Card className="hover:shadow-lg transition-shadow" data-testid="card-pulse-reports">
                   <CardContent className="p-6">
                     <BarChart3 className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
                       Pulse Reports
                     </h3>
-                    <p className="text-muted-foreground">
-                      Polls and focused discussions that give creators a voice with the platforms they build in.
+                    <p className="text-muted-foreground mb-4">
+                      Data insights and community polls analysis.
                     </p>
+                    <Button asChild variant="outline" size="sm" className="w-full" data-testid="button-explore-pulse">
+                      <Link href="/pulse">Explore</Link>
+                    </Button>
                   </CardContent>
                 </Card>
               </div>
