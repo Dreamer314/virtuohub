@@ -435,24 +435,24 @@ const HomePage = () => {
               
               <div className="relative z-10 max-w-7xl mx-auto">
                 {/* Section Header with enhanced typography */}
-                <div className="text-center mb-20">
+                <div className="text-center mb-16">
                   <div className="relative inline-block">
-                    <h1 className="text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold text-foreground mb-10 relative">
+                    <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-8 relative">
                       <span className="bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
                         Build in Public. Level Up Faster.
                       </span>
                     </h1>
                     <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 blur-xl -z-10"></div>
                   </div>
-                  <div className="max-w-5xl mx-auto">
-                    <p className="text-2xl md:text-3xl lg:text-4xl text-muted-foreground font-medium leading-relaxed">
+                  <div className="max-w-4xl mx-auto">
+                    <p className="text-xl md:text-2xl text-muted-foreground font-medium leading-relaxed">
                       VirtuoHub is where immersive creators post WIP, get feedback, and turn threads into collaborations across VR and UGC platforms.
                     </p>
                   </div>
                 </div>
 
                 {/* Enhanced Platform Brand Row */}
-                <div className="mb-24">
+                <div className="mb-20">
                   <div className="relative">
                     <div className="flex flex-wrap justify-center items-center gap-6 md:gap-8 lg:gap-10 xl:gap-12 opacity-70">
                       {[
@@ -462,7 +462,7 @@ const HomePage = () => {
                       ].map((platform, index) => (
                         <span 
                           key={platform} 
-                          className="text-base md:text-lg lg:text-xl font-medium text-muted-foreground tracking-wider px-3 py-2 rounded-lg 
+                          className="text-sm md:text-base font-medium text-muted-foreground tracking-wider px-2 py-1 rounded-md 
                                      transition-all duration-300 hover:text-primary hover:scale-105 hover:opacity-100"
                           style={{ 
                             letterSpacing: '0.1em',
@@ -479,21 +479,21 @@ const HomePage = () => {
                 </div>
 
                 {/* Enhanced Two Column Content */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-24 xl:gap-32 mb-24">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 mb-20">
                   {/* Left Column - Enhanced */}
                   <div className="relative">
                     <div className="sticky top-24">
-                      <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-10 leading-tight">
+                      <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-8 leading-tight">
                         You don't have to be a pro to begin
                       </h2>
-                      <div className="prose prose-lg text-muted-foreground mb-12 leading-relaxed">
-                        <p className="text-xl md:text-2xl lg:text-3xl">
+                      <div className="prose prose-lg text-muted-foreground mb-10 leading-relaxed">
+                        <p className="text-lg">
                           Beginners get unstuck and veterans find collaborators. Share work in progress, ask for help, and learn how the industry actually works.
                         </p>
                       </div>
 
                       {/* Enhanced Progress Images with Arrow */}
-                      <div className="flex items-center gap-8 lg:gap-10 mb-12">
+                      <div className="flex items-center gap-6 mb-8">
                         <div className="flex-1">
                           <Card className="enhanced-card hover-lift group overflow-hidden">
                             <CardContent className="p-0">
@@ -506,15 +506,15 @@ const HomePage = () => {
                               </div>
                             </CardContent>
                           </Card>
-                          <div className="mt-6 text-center">
-                            <h4 className="font-bold text-xl lg:text-2xl text-foreground mb-2">Start here</h4>
-                            <p className="text-base lg:text-lg text-muted-foreground">Your first WIP into 3D and worldbuilding.</p>
+                          <div className="mt-4 text-center">
+                            <h4 className="font-bold text-lg text-foreground mb-1">Start here</h4>
+                            <p className="text-sm text-muted-foreground">Your first WIP into 3D and worldbuilding.</p>
                           </div>
                         </div>
                         
                         {/* Arrow */}
                         <div className="flex-shrink-0 flex items-center justify-center">
-                          <ChevronRight className="w-10 h-10 lg:w-12 lg:h-12 text-primary" />
+                          <ChevronRight className="w-8 h-8 text-primary" />
                         </div>
                         
                         <div className="flex-1">
@@ -529,20 +529,20 @@ const HomePage = () => {
                               </div>
                             </CardContent>
                           </Card>
-                          <div className="mt-6 text-center">
-                            <h4 className="font-bold text-xl lg:text-2xl text-foreground mb-2">Keep growing</h4>
-                            <p className="text-base lg:text-lg text-muted-foreground">Better every week with peer feedback and practical tips.</p>
+                          <div className="mt-4 text-center">
+                            <h4 className="font-bold text-lg text-foreground mb-1">Keep growing</h4>
+                            <p className="text-sm text-muted-foreground">Better every week with peer feedback and practical tips.</p>
                           </div>
                         </div>
                       </div>
 
                       {/* Enhanced What you'll get list */}
-                      <div className="relative mb-10">
-                        <h3 className="text-3xl lg:text-4xl font-bold text-foreground mb-8 flex items-center">
-                          <Sparkles className="w-8 h-8 lg:w-10 lg:h-10 text-primary mr-4" />
+                      <div className="relative mb-8">
+                        <h3 className="text-2xl font-bold text-foreground mb-6 flex items-center">
+                          <Sparkles className="w-6 h-6 text-primary mr-3" />
                           What you'll get:
                         </h3>
-                        <div className="space-y-6 pl-12 lg:pl-14">
+                        <div className="space-y-4 pl-9">
                           <CheckItem>Organized threads with categories like WIP, Help & Feedback, Jobs & Gigs, Assets for Sale, Events, and General</CheckItem>
                           <CheckItem>Editorial you can trust: Interviews, Spotlights, Tips & Guides, Industry News, and Pulse Reports</CheckItem>
                           <CheckItem>Lightweight profiles, simple DMs, and polls that capture the community's voice</CheckItem>
@@ -550,9 +550,9 @@ const HomePage = () => {
                       </div>
 
                       {/* Coming next section */}
-                      <div className="pl-12 lg:pl-14">
-                        <h4 className="text-base lg:text-lg font-semibold text-muted-foreground/70 mb-4">Coming next</h4>
-                        <div className="space-y-3 text-base lg:text-lg text-muted-foreground/70">
+                      <div className="pl-9">
+                        <h4 className="text-sm font-semibold text-muted-foreground/70 mb-3">Coming next</h4>
+                        <div className="space-y-2 text-sm text-muted-foreground/70">
                           <div>• Courses & live workshop library</div>
                           <div>• Smart creator tools</div>
                           <div>• Creator marketplace</div>
