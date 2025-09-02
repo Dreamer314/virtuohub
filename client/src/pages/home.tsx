@@ -670,33 +670,32 @@ const HomePage = () => {
 
                 {/* Enhanced CTA Band */}
                 <div className="text-center relative">
-                  <div className="relative inline-block mb-12">
-                    <div className="max-w-3xl mx-auto">
-                      <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-tight">
-                        The industry is changing fast
-                      </h2>
-                      <p className="text-lg text-muted-foreground leading-relaxed">
-                        UGC platforms evolve monthly. VirtuoHub keeps creators in the loop so you can adapt and grow.
-                      </p>
+                  <div className="max-w-3xl mx-auto mb-12">
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6 leading-tight">
+                      The industry is changing fast
+                    </h2>
+                    <p className="text-lg text-muted-foreground leading-relaxed mb-8">
+                      UGC platforms evolve monthly. VirtuoHub keeps creators in the loop so you can adapt and grow.
+                    </p>
+                    
+                    <div className="relative inline-block">
+                      <Button 
+                        asChild 
+                        size="lg" 
+                        className="px-12 py-6 text-xl font-bold bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-2xl shadow-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-primary/50 rounded-2xl"
+                        data-testid="button-join-community"
+                      >
+                        <Link href="/">
+                          Join the Community 
+                          <ArrowRight className="ml-3 w-6 h-6" />
+                        </Link>
+                      </Button>
+                      <div className="absolute -inset-2 bg-gradient-cosmic opacity-20 blur-xl rounded-2xl -z-10"></div>
                     </div>
-                  </div>
-                  
-                  <div className="relative inline-block">
-                    <Button 
-                      asChild 
-                      size="lg" 
-                      className="px-12 py-6 text-xl font-bold bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-2xl shadow-primary/30 transition-all duration-300 hover:scale-105 hover:shadow-primary/50 rounded-2xl"
-                      data-testid="button-join-community"
-                    >
-                      <Link href="/">
-                        Join the Community 
-                        <ArrowRight className="ml-3 w-6 h-6" />
-                      </Link>
-                    </Button>
+                    
                     <p className="text-sm text-muted-foreground mt-4">
                       Create your free account today
                     </p>
-                    <div className="absolute -inset-2 bg-gradient-cosmic opacity-20 blur-xl rounded-2xl -z-10"></div>
                   </div>
                 </div>
               </div>
