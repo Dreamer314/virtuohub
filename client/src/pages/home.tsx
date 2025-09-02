@@ -623,7 +623,7 @@ const HomePage = () => {
                 </div>
 
                 {/* Enhanced CTA Band */}
-                <div className="text-center relative">
+                <div className="text-center relative mt-24 md:mt-32 lg:mt-40">
                   <div className="max-w-4xl mx-auto mb-16">
                     <h2 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground mb-8 leading-tight">
                       The industry is changing fast
