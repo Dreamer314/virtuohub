@@ -102,10 +102,10 @@ const HomePage = () => {
             {/* Thread Categories Section */}
             <section className="relative px-6 py-16 overflow-hidden">
               {/* Subtle ambient background shapes */}
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-purple-500/20 to-cyan-400/15 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-20 right-10 w-80 h-80 bg-gradient-to-tl from-pink-500/15 to-purple-600/20 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-gradient-to-r from-blue-500/12 to-indigo-500/18 rounded-full blur-2xl"></div>
+              <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute -top-32 -left-32 w-[600px] h-[600px] bg-gradient-radial from-purple-400/8 via-purple-500/4 to-transparent blur-[100px]"></div>
+                <div className="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-gradient-radial from-violet-400/6 via-indigo-500/3 to-transparent blur-[80px]"></div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-gradient-radial from-cyan-400/5 via-blue-500/2 to-transparent blur-[60px]"></div>
               </div>
               
               <div className="relative z-10 text-center mb-12">
@@ -285,10 +285,10 @@ const HomePage = () => {
             {/* Editorial & Data Section */}
             <section className="relative px-6 py-16 bg-muted/30 rounded-2xl mx-6 overflow-hidden">
               {/* Subtle ambient background shapes for Editorial section */}
-              <div className="absolute inset-0 pointer-events-none">
-                <div className="absolute top-10 right-20 w-72 h-72 bg-gradient-to-bl from-violet-400/18 to-purple-500/22 rounded-full blur-3xl"></div>
-                <div className="absolute bottom-10 left-20 w-60 h-60 bg-gradient-to-tr from-indigo-400/15 to-blue-500/20 rounded-full blur-2xl"></div>
-                <div className="absolute top-1/3 right-1/4 w-48 h-48 bg-gradient-to-l from-cyan-400/12 to-teal-500/16 rounded-full blur-xl"></div>
+              <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute -top-24 -right-24 w-[450px] h-[450px] bg-gradient-radial from-violet-400/6 via-purple-500/3 to-transparent blur-[90px]"></div>
+                <div className="absolute -bottom-24 -left-24 w-[400px] h-[400px] bg-gradient-radial from-indigo-400/5 via-blue-500/2 to-transparent blur-[70px]"></div>
+                <div className="absolute top-1/2 right-1/3 w-[300px] h-[300px] bg-gradient-radial from-cyan-400/4 via-teal-500/2 to-transparent blur-[50px]"></div>
               </div>
               
               <div className="relative z-10 text-center mb-12">
@@ -300,107 +300,107 @@ const HomePage = () => {
                 </p>
               </div>
 
-              <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-16">
+              <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
                 <Card className="hover:shadow-lg transition-shadow" data-testid="card-spotlights">
-                  <CardContent className="p-6">
+                  <CardContent className="p-6 flex flex-col h-full">
                     <Users className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
                       Creator Spotlights
                     </h3>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-muted-foreground mb-4 flex-1">
                       Featured creator profiles and success stories.
                     </p>
-                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-purple-50 to-violet-50 hover:from-purple-100 hover:to-violet-100 border-purple-200 text-purple-700 shadow-md hover:shadow-lg transition-all" data-testid="button-read-spotlights">
+                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-purple-50 to-violet-50 hover:from-purple-100 hover:to-violet-100 border-purple-200 text-purple-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-read-spotlights">
                       <Link href="/spotlights">Read</Link>
                     </Button>
                   </CardContent>
                 </Card>
 
                 <Card className="hover:shadow-lg transition-shadow" data-testid="card-interviews">
-                  <CardContent className="p-6">
+                  <CardContent className="p-6 flex flex-col h-full">
                     <MessageSquare className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
                       Interviews
                     </h3>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-muted-foreground mb-4 flex-1">
                       In-depth Q&As with industry leaders and creators.
                     </p>
-                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 border-indigo-200 text-indigo-700 shadow-md hover:shadow-lg transition-all" data-testid="button-read-interviews">
+                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-indigo-50 to-purple-50 hover:from-indigo-100 hover:to-purple-100 border-indigo-200 text-indigo-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-read-interviews">
                       <Link href="/interviews">Read</Link>
                     </Button>
                   </CardContent>
                 </Card>
 
                 <Card className="hover:shadow-lg transition-shadow" data-testid="card-tips-guides">
-                  <CardContent className="p-6">
+                  <CardContent className="p-6 flex flex-col h-full">
                     <BookOpen className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
                       Tips & Guides
                     </h3>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-muted-foreground mb-4 flex-1">
                       Expert tutorials and best practice guides.
                     </p>
-                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-violet-50 to-indigo-50 hover:from-violet-100 hover:to-indigo-100 border-violet-200 text-violet-700 shadow-md hover:shadow-lg transition-all" data-testid="button-read-guides">
+                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-violet-50 to-indigo-50 hover:from-violet-100 hover:to-indigo-100 border-violet-200 text-violet-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-read-guides">
                       <Link href="/guides">Read</Link>
                     </Button>
                   </CardContent>
                 </Card>
 
                 <Card className="hover:shadow-lg transition-shadow" data-testid="card-industry-news">
-                  <CardContent className="p-6">
+                  <CardContent className="p-6 flex flex-col h-full">
                     <BarChart3 className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
                       Industry News
                     </h3>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-muted-foreground mb-4 flex-1">
                       Latest updates from virtual world platforms.
                     </p>
-                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-purple-50 to-indigo-50 hover:from-purple-100 hover:to-indigo-100 border-purple-200 text-purple-700 shadow-md hover:shadow-lg transition-all" data-testid="button-read-news">
+                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-purple-50 to-indigo-50 hover:from-purple-100 hover:to-indigo-100 border-purple-200 text-purple-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-read-news">
                       <Link href="/news">Read</Link>
                     </Button>
                   </CardContent>
                 </Card>
 
                 <Card className="hover:shadow-lg transition-shadow" data-testid="card-trending">
-                  <CardContent className="p-6">
+                  <CardContent className="p-6 flex flex-col h-full">
                     <TrendingUp className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
                       Trending
                     </h3>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-muted-foreground mb-4 flex-1">
                       Most popular content across all categories.
                     </p>
-                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-indigo-50 to-violet-50 hover:from-indigo-100 hover:to-violet-100 border-indigo-200 text-indigo-700 shadow-md hover:shadow-lg transition-all" data-testid="button-explore-trending">
+                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-indigo-50 to-violet-50 hover:from-indigo-100 hover:to-violet-100 border-indigo-200 text-indigo-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-explore-trending">
                       <Link href="/trending">Explore</Link>
                     </Button>
                   </CardContent>
                 </Card>
 
                 <Card className="hover:shadow-lg transition-shadow" data-testid="card-upcoming-events">
-                  <CardContent className="p-6">
+                  <CardContent className="p-6 flex flex-col h-full">
                     <Calendar className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
                       Upcoming Events
                     </h3>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-muted-foreground mb-4 flex-1">
                       Community events and workshops calendar.
                     </p>
-                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-violet-50 to-purple-50 hover:from-violet-100 hover:to-purple-100 border-violet-200 text-violet-700 shadow-md hover:shadow-lg transition-all" data-testid="button-view-schedule">
+                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-violet-50 to-purple-50 hover:from-violet-100 hover:to-purple-100 border-violet-200 text-violet-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-view-schedule">
                       <Link href="/events">View Schedule</Link>
                     </Button>
                   </CardContent>
                 </Card>
 
                 <Card className="hover:shadow-lg transition-shadow" data-testid="card-pulse-reports">
-                  <CardContent className="p-6">
+                  <CardContent className="p-6 flex flex-col h-full">
                     <BarChart3 className="w-8 h-8 text-primary mb-4" />
                     <h3 className="text-xl font-semibold text-foreground mb-3">
                       Pulse Reports
                     </h3>
-                    <p className="text-muted-foreground mb-4">
+                    <p className="text-muted-foreground mb-4 flex-1">
                       Data insights and community polls analysis.
                     </p>
-                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-purple-50 to-violet-50 hover:from-purple-100 hover:to-violet-100 border-purple-200 text-purple-700 shadow-md hover:shadow-lg transition-all" data-testid="button-explore-pulse">
+                    <Button asChild variant="outline" size="sm" className="w-full bg-gradient-to-r from-purple-50 to-violet-50 hover:from-purple-100 hover:to-violet-100 border-purple-200 text-purple-700 shadow-md hover:shadow-lg transition-all mt-auto" data-testid="button-explore-pulse">
                       <Link href="/pulse">Explore</Link>
                     </Button>
                   </CardContent>
