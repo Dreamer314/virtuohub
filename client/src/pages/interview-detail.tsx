@@ -279,7 +279,7 @@ const InterviewDetailPage: React.FC = () => {
                       {interview.questions.map((qa, index) => (
                         <div key={index} className="mb-8">
                           <h3 className="text-xl font-semibold text-foreground mb-4 flex items-start gap-3">
-                            <MessageSquare className="w-5 h-5 text-cyan-500 mt-0.5 flex-shrink-0" />
+                            <MessageSquare className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
                             {qa.question}
                           </h3>
                           <div className="ml-8 text-muted-foreground leading-relaxed text-lg">
@@ -290,15 +290,15 @@ const InterviewDetailPage: React.FC = () => {
                     </div>
 
                     {/* Key Takeaways */}
-                    <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-xl p-6 border border-cyan-500/20 mb-8">
+                    <div className="bg-gradient-to-r from-primary/10 to-accent/10 rounded-xl p-6 border border-primary/20 mb-8">
                       <h3 className="text-xl font-semibold text-foreground mb-4 flex items-center gap-2">
-                        <Users className="w-5 h-5 text-cyan-500" />
+                        <Users className="w-5 h-5 text-primary" />
                         Key Takeaways
                       </h3>
                       <ul className="space-y-3">
                         {interview.keyTakeaways.map((takeaway, index) => (
                           <li key={index} className="flex items-start gap-3 text-muted-foreground">
-                            <div className="w-2 h-2 bg-cyan-500 rounded-full mt-2.5 flex-shrink-0"></div>
+                            <div className="w-2 h-2 bg-primary rounded-full mt-2.5 flex-shrink-0"></div>
                             {takeaway}
                           </li>
                         ))}
@@ -308,7 +308,7 @@ const InterviewDetailPage: React.FC = () => {
                     {/* Tags */}
                     <div className="flex gap-2 mb-8">
                       {interview.tags.map((tag, index) => (
-                        <span key={index} className="px-3 py-1 bg-cyan-500/20 text-cyan-300 rounded-full text-sm">
+                        <span key={index} className="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm border border-primary/30">
                           {tag}
                         </span>
                       ))}

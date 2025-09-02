@@ -190,7 +190,7 @@ const SpotlightsPage: React.FC = () => {
                               </p>
                               <div className="flex gap-2 mb-4">
                                 <span className="px-2 py-1 bg-accent/20 text-accent rounded text-xs">Roblox</span>
-                                <span className="px-2 py-1 bg-red-500/20 text-red-300 rounded text-xs">Game Design</span>
+                                <span className="px-2 py-1 bg-primary/20 text-primary rounded text-xs border border-primary/30">Game Design</span>
                               </div>
                               <div className="mb-4">
                                 <Link href="/spotlight/pixelcraft-studios" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
@@ -222,8 +222,8 @@ const SpotlightsPage: React.FC = () => {
                                 AI-powered world generation tool helping creators build immersive environments 10x faster.
                               </p>
                               <div className="flex gap-2 mb-4">
-                                <span className="px-2 py-1 bg-cyan-500/20 text-cyan-300 rounded text-xs">AI Tools</span>
-                                <span className="px-2 py-1 bg-purple-500/20 text-purple-300 rounded text-xs">Unity</span>
+                                <span className="px-2 py-1 bg-primary/20 text-primary rounded text-xs border border-primary/30">AI Tools</span>
+                                <span className="px-2 py-1 bg-accent/20 text-accent rounded text-xs border border-accent/30">Unity</span>
                               </div>
                               <div className="mb-4">
                                 <Link href="/spotlight/virtualforge-ai-tool" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white text-sm font-medium rounded-lg transition-all duration-300 group">

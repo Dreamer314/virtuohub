@@ -5,23 +5,26 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-// Platform color constants
+// Platform color constants - using VirtuoHub brand colors for consistency
 export const PLATFORM_COLORS: Record<string, string> = {
-  'VRChat': 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200',
-  'Roblox': 'bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200',
-  'Second Life': 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200',
-  'IMVU': 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-200',
-  'GTA RP': 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200',
-  'The Sims': 'bg-pink-100 dark:bg-pink-900/30 text-pink-800 dark:text-pink-200',
-  'Other': 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-200',
+  'VRChat': 'bg-primary/20 text-primary border-primary/30',
+  'Roblox': 'bg-accent/20 text-accent border-accent/30',
+  'Second Life': 'bg-primary/15 text-primary border-primary/25',
+  'IMVU': 'bg-accent/15 text-accent border-accent/25',
+  'GTA RP': 'bg-primary/25 text-primary border-primary/35',
+  'The Sims': 'bg-accent/25 text-accent border-accent/35',
+  'Unity': 'bg-primary/20 text-primary border-primary/30',
+  'Blender': 'bg-accent/20 text-accent border-accent/30',
+  'Unreal Engine': 'bg-primary/15 text-primary border-primary/25',
+  'Other': 'bg-muted/20 text-muted-foreground border-muted/30',
 };
 
-// Category color constants
+// Category color constants - using VirtuoHub brand colors for consistency
 export const CATEGORY_COLORS: Record<string, string> = {
-  'Assets for Sale': 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200',
-  'Jobs & Gigs': 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-200',
-  'Collaboration & WIP': 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200',
-  'General': 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-200',
+  'Assets for Sale': 'bg-primary/20 text-primary border-primary/30',
+  'Jobs & Gigs': 'bg-accent/20 text-accent border-accent/30',
+  'Collaboration & WIP': 'bg-primary/15 text-primary border-primary/25',
+  'General': 'bg-muted/20 text-muted-foreground border-muted/30',
 };
 
 /**

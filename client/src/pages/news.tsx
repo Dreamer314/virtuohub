@@ -127,9 +127,9 @@ const NewsPage: React.FC = () => {
                             </div>
 
                             <div className="flex gap-2 mb-6">
-                              <span className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">Meta</span>
-                              <span className="px-3 py-1 bg-purple-500/20 text-purple-300 rounded-full text-sm">Horizon Worlds</span>
-                              <span className="px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-sm">Creator Fund</span>
+                              <span className="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm border border-primary/30">Meta</span>
+                              <span className="px-3 py-1 bg-accent/20 text-accent rounded-full text-sm border border-accent/30">Horizon Worlds</span>
+                              <span className="px-3 py-1 bg-primary/15 text-primary rounded-full text-sm border border-primary/25">Creator Fund</span>
                             </div>
 
                             <EngagementSection 
