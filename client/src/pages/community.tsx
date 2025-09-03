@@ -239,8 +239,8 @@ const CommunityPage: React.FC = () => {
                           };
                           
                           return (
-                            <article key={poll.id} className="enhanced-card hover-lift group p-6 space-y-4 transition-all duration-200" data-testid={`pulse-card-${poll.id}`}>
-                              <div className="flex space-x-4">
+                            <article key={poll.id} className="enhanced-card hover-lift group p-6 transition-all duration-200 flex flex-col min-h-[280px]" data-testid={`pulse-card-${poll.id}`}>
+                              <div className="flex space-x-4 flex-1">
                                 {/* Avatar */}
                                 <div className="flex-shrink-0">
                                   <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white font-medium text-lg">
@@ -248,7 +248,7 @@ const CommunityPage: React.FC = () => {
                                   </span>
                                 </div>
                                 
-                                <div className="flex-1 min-w-0">
+                                <div className="flex-1 min-w-0 flex flex-col">
                                   {/* Header */}
                                   <div className="flex items-center justify-between mb-4">
                                     <div className="flex items-center space-x-2">
@@ -264,7 +264,7 @@ const CommunityPage: React.FC = () => {
                                   </h3>
                                   
                                   {/* Poll Options */}
-                                  <div className="space-y-3 mb-4">
+                                  <div className="space-y-3 mb-4 flex-1">
                                     {poll.options.map((option, index) => {
                                       const percentage = totalVotes > 0 ? (option.votes / totalVotes) * 100 : 0;
                                       
@@ -294,54 +294,75 @@ const CommunityPage: React.FC = () => {
                                       }
                                     })}
                                   </div>
-                                  
-                                  {/* Poll Meta */}
-                                  <div className="flex items-center justify-between mb-4">
-                                    <span className="text-xs text-muted-foreground">{totalVotes} votes</span>
-                                    {isExpired ? (
-                                      <span className="text-xs text-muted-foreground">Poll ended</span>
-                                    ) : (
-                                      <span className="text-xs text-muted-foreground">
-                                        Poll ends in {daysLeft > 0 ? `${daysLeft} days` : `${hoursLeft} hours`}
-                                      </span>
-                                    )}
+                                </div>
+                              </div>
+                              
+                              {/* Sticky Bottom Section */}
+                              <div className="mt-auto pt-4 border-t border-border/30">
+                                {/* Poll Meta */}
+                                <div className="flex items-center justify-between mb-3">
+                                  <span className="text-xs text-muted-foreground">{totalVotes} votes</span>
+                                  {isExpired ? (
+                                    <span className="text-xs text-muted-foreground">Poll ended</span>
+                                  ) : (
+                                    <span className="text-xs text-muted-foreground">
+                                      Poll ends in {daysLeft > 0 ? `${daysLeft} days` : `${hoursLeft} hours`}
+                                    </span>
+                                  )}
+                                </div>
+                                
+                                {!hasVoted && !isExpired && (
+                                  <div className="text-center text-sm text-muted-foreground mb-3">
+                                    Click an option above to vote
                                   </div>
+                                )}
 
-                                  {/* Engagement Actions */}
-                                  <div className="flex items-center space-x-1">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
-                                      data-testid={`like-button-${poll.id}`}
-                                    >
-                                      <ThumbsUp size={16} />
-                                      <span>0</span>
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
-                                      data-testid={`comment-button-${poll.id}`}
-                                    >
-                                      <MessageCircle size={16} />
-                                      <span>0 comments</span>
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
-                                      data-testid={`share-button-${poll.id}`}
-                                    >
-                                      <Share size={16} />
-                                      <span>Share</span>
-                                    </Button>
-                                  </div>
+                                {/* Engagement Actions */}
+                                <div className="flex items-center space-x-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
+                                    data-testid={`like-button-${poll.id}`}
+                                  >
+                                    <ThumbsUp size={16} />
+                                    <span>0</span>
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
+                                    data-testid={`comment-button-${poll.id}`}
+                                  >
+                                    <MessageCircle size={16} />
+                                    <span>0 comments</span>
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
+                                    data-testid={`share-button-${poll.id}`}
+                                  >
+                                    <Share size={16} />
+                                    <span>Share</span>
+                                  </Button>
                                 </div>
                               </div>
                             </article>
                           );
                         })}
+                      </div>
+                      
+                      {/* CTA Button */}
+                      <div className="mt-8 text-center">
+                        <Button 
+                          onClick={() => window.location.href = '/pulse'}
+                          className="bg-primary/10 hover:bg-primary/20 border border-primary/30 hover:border-primary/50 text-primary font-medium py-3 px-6 rounded-lg transition-all duration-200 flex items-center gap-2 mx-auto"
+                          data-testid="view-all-polls-button"
+                        >
+                          <BarChart3 className="w-5 h-5" />
+                          View All Active Polls
+                        </Button>
                       </div>
                     </div>
                   )}
