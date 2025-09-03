@@ -304,6 +304,50 @@ const NewsPage: React.FC = () => {
                     ) : (
                       <>
                         {/* Featured News */}
+                        <div className="enhanced-card hover-lift rounded-xl border border-primary/30 bg-gradient-to-br from-primary/5 to-background overflow-hidden">
+                          <div className="flex flex-col md:flex-row">
+                            <div className="md:w-1/3 h-48 md:h-auto">
+                              <img 
+                                src={robloxImage} 
+                                alt="Roblox game development showcase"
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <div className="md:w-2/3 p-6">
+                              <div className="flex items-center gap-2 mb-3">
+                                <span className="px-2 py-1 text-xs font-medium bg-primary/20 text-primary rounded-full border border-primary/30">
+                                  Featured Analysis
+                                </span>
+                                <span className="text-sm text-muted-foreground">December 29, 2024</span>
+                              </div>
+                              <h3 className="text-xl font-bold text-foreground mb-2">
+                                The Future of Virtual Commerce
+                              </h3>
+                              <p className="text-muted-foreground mb-4">
+                                Exploring how virtual economies are evolving and creating new opportunities for creators across gaming and metaverse platforms.
+                              </p>
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 rounded-full bg-gradient-mist flex items-center justify-center text-white text-sm font-semibold">
+                                    VH
+                                  </div>
+                                  <div className="text-sm">
+                                    <div className="font-medium text-foreground">VirtuoHub Editorial</div>
+                                    <div className="text-muted-foreground">Industry Analysis</div>
+                                  </div>
+                                </div>
+                                <a 
+                                  href="/news/virtual-commerce-future"
+                                  className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                                >
+                                  Read Analysis
+                                </a>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Breaking News */}
                         <article className="enhanced-card hover-lift rounded-xl overflow-hidden">
                           <div className="w-full h-64 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 relative flex items-center justify-center">
                             <div className="absolute inset-0 bg-black/30"></div>

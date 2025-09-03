@@ -293,22 +293,74 @@ const GuidesPage: React.FC = () => {
                   </div>
 
                   <div className="space-y-6">
+                    {/* Featured Guide */}
+                    <div className="enhanced-card hover-lift rounded-xl border border-primary/30 bg-gradient-to-br from-primary/5 to-background overflow-hidden">
+                      <div className="flex flex-col md:flex-row">
+                        <div className="md:w-1/3 h-48 md:h-auto">
+                          <img 
+                            src={unityImage} 
+                            alt="Unity metaverse development"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="md:w-2/3 p-6">
+                          <div className="flex items-center gap-2 mb-3">
+                            <span className="px-2 py-1 text-xs font-medium bg-primary/20 text-primary rounded-full border border-primary/30">
+                              Featured Guide
+                            </span>
+                            <span className="text-sm text-muted-foreground">December 30, 2024</span>
+                          </div>
+                          <h3 className="text-xl font-bold text-foreground mb-2">
+                            Optimizing Performance in Virtual Worlds
+                          </h3>
+                          <p className="text-muted-foreground mb-4">
+                            Essential tips for creating lag-free experiences that work across all devices and platforms. Learn industry-proven techniques for performance optimization.
+                          </p>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-gradient-mist flex items-center justify-center text-white text-sm font-semibold">
+                                VH
+                              </div>
+                              <div className="text-sm">
+                                <div className="font-medium text-foreground">VirtuoHub Editorial</div>
+                                <div className="text-muted-foreground">Performance Guide</div>
+                              </div>
+                            </div>
+                            <a 
+                              href="/guides/performance-optimization"
+                              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                            >
+                              Read Guide
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Community Guides */}
                     {isLoading ? (
                       <div className="text-center py-12">
                         <div className="text-muted-foreground">Loading guides...</div>
                       </div>
                     ) : guidesPosts.length > 0 ? (
-                      guidesPosts.map((post) => (
-                        <PostCard key={post.id} post={post} />
-                      ))
+                      <>
+                        <div className="flex items-center gap-3 mt-8 mb-4">
+                          <div className="h-px bg-border flex-1"></div>
+                          <h2 className="text-lg font-semibold text-foreground">Community Guides</h2>
+                          <div className="h-px bg-border flex-1"></div>
+                        </div>
+                        {guidesPosts.map((post) => (
+                          <PostCard key={post.id} post={post} />
+                        ))}
+                      </>
                     ) : (
-                      <div className="enhanced-card hover-lift rounded-xl p-12 text-center">
-                        <div className="text-6xl mb-4">📚</div>
-                        <h3 className="text-xl font-display font-semibold mb-2 text-foreground">
-                          No guides yet
+                      <div className="enhanced-card hover-lift rounded-xl p-8 text-center mt-8">
+                        <div className="text-4xl mb-3">📝</div>
+                        <h3 className="text-lg font-semibold mb-2 text-foreground">
+                          Community Guides Coming Soon
                         </h3>
-                        <p className="text-muted-foreground">
-                          Helpful tutorials and guides will be shared here!
+                        <p className="text-muted-foreground text-sm">
+                          Share your own tutorials and guides with the community!
                         </p>
                       </div>
                     )}
