@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Newspaper, ExternalLink, ArrowRight } from 'lucide-react';
+import { Newspaper, ExternalLink, ArrowRight, TrendingUp, DollarSign, Building, Zap } from 'lucide-react';
 import { Link } from 'wouter';
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
@@ -7,14 +7,22 @@ import { RightSidebar } from '@/components/layout/right-sidebar';
 import { PostCard } from '@/components/post-card';
 import { Footer } from '@/components/layout/footer';
 import { EngagementSection } from '@/components/engagement-section';
+import { Card, CardContent } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
+import { useParams } from 'wouter';
 import type { PostWithAuthor } from '@shared/schema';
+import robloxImage from '@assets/generated_images/Roblox_game_development_597c5fdd.png';
 
 const NewsPage: React.FC = () => {
+  const { slug } = useParams();
+  
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Check if we're on a specific news article
+  const isVirtualCommerceNews = slug === 'virtual-commerce-future';
 
   const { data: posts = [], isLoading } = useQuery<PostWithAuthor[]>({
     queryKey: ['/api/posts']
@@ -34,6 +42,208 @@ const NewsPage: React.FC = () => {
       const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
       return bTime - aTime;
     });
+
+  if (isVirtualCommerceNews) {
+    return (
+      <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+        <Header onCreatePost={() => {}} />
+        
+        <div className="community-grid">
+          <div className="grid-left hidden xl:block bg-background/95 backdrop-blur-sm border-r border-border sticky top-[var(--header-height)] h-[calc(100vh-var(--header-height))] z-10 overflow-y-auto">
+            <div className="p-4">
+              <LeftSidebar currentTab="all" onTabChange={() => {}} />
+            </div>
+          </div>
+          
+          <div className="grid-right hidden lg:block bg-background/95 backdrop-blur-sm border-l border-border sticky top-[var(--header-height)] h-[calc(100vh-var(--header-height))] z-10 overflow-y-auto">
+            <div className="p-4">
+              <RightSidebar />
+            </div>
+          </div>
+
+          <div className="grid-main relative z-0">
+            <div className="py-8 relative z-10 px-4 lg:px-8">
+              <div className="w-full">
+                <div className="max-w-4xl mx-auto">
+                  <article className="enhanced-card p-8 mb-8">
+                    {/* Header */}
+                    <div className="mb-8">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="flex items-center gap-2 text-blue-600 font-medium">
+                          <Newspaper className="w-5 h-5" />
+                          <span>Industry Analysis</span>
+                        </div>
+                        <span className="text-muted-foreground">•</span>
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <span>December 29, 2024</span>
+                        </div>
+                      </div>
+                      
+                      <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+                        The Future of Virtual Commerce
+                      </h1>
+                      
+                      <p className="text-lg text-muted-foreground mb-6">
+                        Exploring how virtual economies are evolving and creating new opportunities for creators across gaming and metaverse platforms.
+                      </p>
+                      
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-full bg-gradient-mist flex items-center justify-center text-white font-semibold">
+                          VH
+                        </div>
+                        <div>
+                          <p className="font-medium text-foreground">VirtuoHub Editorial Team</p>
+                          <p className="text-sm text-muted-foreground">Industry Research & Analysis</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Featured Image */}
+                    <div className="mb-8 rounded-lg overflow-hidden">
+                      <img 
+                        src={robloxImage} 
+                        alt="Virtual commerce and digital economy"
+                        className="w-full h-64 md:h-80 object-cover"
+                      />
+                    </div>
+
+                    {/* Article Content */}
+                    <div className="prose prose-lg max-w-none text-foreground">
+                      <p className="text-lg leading-relaxed mb-6">
+                        The virtual commerce landscape is undergoing a dramatic transformation. What started as simple in-game purchases has evolved into a sophisticated digital economy worth over $50 billion annually, with individual creators earning substantial income from virtual goods and experiences.
+                      </p>
+
+                      <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-3">
+                        <TrendingUp className="w-6 h-6 text-green-500" />
+                        Market Growth and Trends
+                      </h2>
+                      
+                      <p className="leading-relaxed mb-6">
+                        Recent data from leading platforms shows explosive growth in virtual commerce. Roblox reported $2.9 billion in bookings in 2023, with over 13 million creators earning Robux. Meanwhile, Second Life's economy generated $650 million in user-to-user transactions, and newer platforms like VRChat and Horizon Worlds are seeing rapid monetization adoption.
+                      </p>
+
+                      <Card className="mb-6 bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800">
+                        <CardContent className="p-6">
+                          <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+                            <DollarSign className="w-5 h-5 text-green-500" />
+                            Key Revenue Streams for Creators
+                          </h3>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                              <h4 className="font-medium text-foreground mb-2">Digital Assets</h4>
+                              <ul className="text-sm text-muted-foreground space-y-1">
+                                <li>• Avatar clothing and accessories</li>
+                                <li>• Virtual furniture and decorations</li>
+                                <li>• Unique collectibles and NFTs</li>
+                                <li>• Custom animations and emotes</li>
+                              </ul>
+                            </div>
+                            <div>
+                              <h4 className="font-medium text-foreground mb-2">Services & Experiences</h4>
+                              <ul className="text-sm text-muted-foreground space-y-1">
+                                <li>• Custom avatar commissions</li>
+                                <li>• World/experience development</li>
+                                <li>• Virtual event hosting</li>
+                                <li>• Educational workshops</li>
+                              </ul>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                        <Building className="w-5 h-5 text-purple-500" />
+                        Platform Evolution and Opportunities
+                      </h3>
+                      
+                      <p className="leading-relaxed mb-4">
+                        <strong>Cross-Platform Commerce:</strong> The biggest opportunity lies in creating assets that work across multiple platforms. Creators who master this approach can multiply their revenue streams significantly. Tools like Ready Player Me and Avaturn are making cross-platform avatar systems more accessible.
+                      </p>
+
+                      <p className="leading-relaxed mb-4">
+                        <strong>Creator Economy Integration:</strong> Platforms are increasingly integrating traditional creator economy features. Live streaming, tipping, subscription models, and merchandise integration are becoming standard, blurring the lines between gaming, social media, and e-commerce.
+                      </p>
+
+                      <p className="leading-relaxed mb-6">
+                        <strong>AI and Automation:</strong> AI tools are democratizing creation while potentially disrupting traditional workflows. Creators who embrace AI for rapid prototyping and asset generation while focusing on unique creative direction are positioning themselves advantageously.
+                      </p>
+
+                      <h3 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+                        <Zap className="w-5 h-5 text-yellow-500" />
+                        Looking Ahead: 2025 Predictions
+                      </h3>
+                      
+                      <div className="space-y-4 mb-6">
+                        <div className="bg-muted/50 border border-border rounded-lg p-4">
+                          <h4 className="font-semibold mb-2">Interoperability Standards</h4>
+                          <p className="text-muted-foreground">
+                            Major platforms will adopt common asset formats, enabling true cross-platform commerce. Creators will build once and sell everywhere.
+                          </p>
+                        </div>
+
+                        <div className="bg-muted/50 border border-border rounded-lg p-4">
+                          <h4 className="font-semibold mb-2">Creator-Owned Storefronts</h4>
+                          <p className="text-muted-foreground">
+                            Platforms will offer white-label commerce solutions, letting top creators build their own branded marketplaces while leveraging platform infrastructure.
+                          </p>
+                        </div>
+
+                        <div className="bg-muted/50 border border-border rounded-lg p-4">
+                          <h4 className="font-semibold mb-2">Subscription Economy</h4>
+                          <p className="text-muted-foreground">
+                            Monthly creator subscriptions will become mainstream, providing stable income for creators and exclusive content for supporters.
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
+                        <h4 className="font-semibold text-foreground mb-2">💼 Business Takeaway</h4>
+                        <p className="text-muted-foreground">
+                          The virtual commerce revolution is just beginning. Creators who diversify across platforms, embrace new technologies, and build direct relationships with their audiences will capture the greatest share of this growing market. The key is to start now and iterate quickly.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Engagement Section */}
+                    <EngagementSection 
+                      contentId="news-virtual-commerce-future"
+                      contentType="news"
+                      initialLikes={89}
+                      initialComments={[
+                        {
+                          id: '1',
+                          author: 'VirtualBusiness_Pro',
+                          content: 'This aligns perfectly with what I\'m seeing in my Roblox store. Cross-platform is definitely the future.',
+                          timestamp: '2 hours ago',
+                          likes: 15
+                        },
+                        {
+                          id: '2', 
+                          author: 'CreatorEconomy_Sarah',
+                          content: 'The subscription model prediction is interesting. I\'ve been considering this for my VRChat world series.',
+                          timestamp: '5 hours ago',
+                          likes: 12
+                        },
+                        {
+                          id: '3',
+                          author: 'MetaverseAnalyst',
+                          content: 'Great breakdown of the market data. The growth numbers are staggering when you really look at them.',
+                          timestamp: '8 hours ago',
+                          likes: 22
+                        }
+                      ]}
+                    />
+                  </article>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
