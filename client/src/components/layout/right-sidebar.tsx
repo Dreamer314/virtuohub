@@ -82,7 +82,7 @@ export function RightSidebar() {
             <div className="p-6 border-b border-border hover:bg-muted/20 transition-colors cursor-pointer">
               <h3 className="text-lg font-display font-semibold mb-3 flex items-center">
                 <Zap className="text-cyan-500 mr-2" size={20} />
-                Pulse Reports
+                VHub Pulse
               </h3>
               <h4 className="font-semibold mb-2 text-foreground">
                 Virtual Real Estate Market Hits Record High

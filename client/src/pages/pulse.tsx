@@ -66,7 +66,7 @@ const PulsePage: React.FC = () => {
                         <div className="flex items-center space-x-4">
                           <Zap className="w-8 h-8 text-transparent bg-gradient-cosmic bg-clip-text" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                           <h1 className="text-3xl md:text-4xl font-bold text-foreground">
-                            Pulse Reports
+                            VHub Pulse
                           </h1>
                         </div>
                         <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
