@@ -16,7 +16,7 @@ export const users = pgTable("users", {
 
 export const posts = pgTable("posts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  authorId: varchar("author_id").notNull(),
+  authorId: varchar("author_id"), // nullable for admin posts
   title: text("title").notNull(),
   content: text("content").notNull(),
   imageUrl: text("image_url").default(''),
@@ -31,6 +31,36 @@ export const posts = pgTable("posts", {
   likes: integer("likes").default(0),
   comments: integer("comments").default(0),
   shares: integer("shares").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// VHub Pulse specific table for admin-generated content
+export const pulsePolls = pgTable("pulse_polls", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  question: text("question").notNull(),
+  options: jsonb("options").notNull(), // Array of { text: string, votes: number, percentage: number }
+  totalVotes: integer("total_votes").default(0),
+  status: text("status").notNull().default('active'), // active, completed, draft
+  endDate: timestamp("end_date"),
+  tags: text("tags").array().default([]),
+  likes: integer("likes").default(0),
+  comments: integer("comments").default(0),
+  shares: integer("shares").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const pulseReports = pgTable("pulse_reports", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  content: text("content").notNull(),
+  excerpt: text("excerpt").notNull(),
+  accessType: text("access_type").notNull().default('free'), // free, paid, private
+  price: text("price").default(''),
+  downloadUrl: text("download_url"),
+  tags: text("tags").array().default([]),
+  publishDate: timestamp("publish_date").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -111,6 +141,25 @@ export const insertCommentSchema = createInsertSchema(comments).pick({
   parentId: true,
 });
 
+export const insertPulsePollSchema = createInsertSchema(pulsePolls).pick({
+  title: true,
+  content: true,
+  question: true,
+  options: true,
+  endDate: true,
+  tags: true,
+});
+
+export const insertPulseReportSchema = createInsertSchema(pulseReports).pick({
+  title: true,
+  content: true,
+  excerpt: true,
+  accessType: true,
+  price: true,
+  downloadUrl: true,
+  tags: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 
@@ -122,6 +171,12 @@ export type SavedPost = typeof savedPosts.$inferSelect;
 
 export type InsertArticle = z.infer<typeof insertArticleSchema>;
 export type Article = typeof articles.$inferSelect;
+
+export type InsertPulsePoll = z.infer<typeof insertPulsePollSchema>;
+export type PulsePoll = typeof pulsePolls.$inferSelect;
+
+export type InsertPulseReport = z.infer<typeof insertPulseReportSchema>;
+export type PulseReport = typeof pulseReports.$inferSelect;
 
 export type InsertComment = z.infer<typeof insertCommentSchema>;
 export type Comment = typeof comments.$inferSelect;

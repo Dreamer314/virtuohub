@@ -1,4 +1,4 @@
-import { type User, type Post, type Article, type Comment } from "@shared/schema";
+import { type User, type Post, type Article, type Comment, type PulsePoll, type PulseReport } from "@shared/schema";
 
 export function getSampleUsers(): User[] {
   return [
@@ -74,66 +74,6 @@ export function getSamplePosts(): Post[] {
       comments: 23,
       shares: 12,
       createdAt: new Date('2024-01-15'),
-    },
-    // VHub Pulse Poll Posts
-    {
-      id: 'pulse1',
-      authorId: 'user2',
-      title: 'Which platform offers the best creator monetization?',
-      content: 'With recent changes to creator programs across platforms, curious to see where the community thinks we can best monetize our work. This will help inform our 2024 strategy.',
-      imageUrl: null,
-      images: [],
-      files: [],
-      links: [],
-      category: 'General',
-      platforms: ['Other'],
-      price: null,
-      type: 'pulse',
-      pollData: {
-        question: 'Which platform offers the best creator monetization?',
-        options: [
-          { text: 'Roblox DevEx Program', votes: 234, percentage: 42 },
-          { text: 'VRChat Creator Economy', votes: 156, percentage: 28 },
-          { text: 'Second Life Marketplace', votes: 89, percentage: 16 },
-          { text: 'Unity Asset Store', votes: 78, percentage: 14 }
-        ],
-        totalVotes: 557,
-        endDate: new Date('2024-02-01')
-      },
-      likes: 89,
-      comments: 45,
-      shares: 67,
-      createdAt: new Date('2024-01-18'),
-    },
-    {
-      id: 'pulse2',
-      authorId: 'user1',
-      title: 'What\'s your preferred platform for virtual world creation?',
-      content: 'Curious to see what platforms our community prefers for creating virtual experiences! This will help us understand the current landscape.',
-      imageUrl: null,
-      images: [],
-      files: [],
-      links: [],
-      category: 'General',
-      platforms: ['Other'],
-      price: null,
-      type: 'pulse',
-      pollData: {
-        question: 'What\'s your preferred platform for virtual world creation?',
-        options: [
-          { text: 'VRChat SDK', votes: 187, percentage: 35 },
-          { text: 'Roblox Studio', votes: 156, percentage: 29 },
-          { text: 'Unity 3D', votes: 98, percentage: 18 },
-          { text: 'Unreal Engine', votes: 67, percentage: 13 },
-          { text: 'Second Life', votes: 26, percentage: 5 }
-        ],
-        totalVotes: 534,
-        endDate: new Date('2024-02-15')
-      },
-      likes: 124,
-      comments: 32,
-      shares: 18,
-      createdAt: new Date('2024-01-20'),
     },
     // Creator Insights Interview Posts
     {
@@ -236,6 +176,115 @@ export function getSampleComments(): Comment[] {
       parentId: 'comment2',
       likes: 15,
       createdAt: new Date('2024-01-12'),
+    }
+  ];
+}
+
+export function getSamplePulsePolls(): PulsePoll[] {
+  return [
+    // Active Poll - appears on both community page and pulse page
+    {
+      id: 'active-poll-1',
+      title: 'What\'s your preferred platform for virtual world creation?',
+      content: 'Help us understand the current landscape of virtual world development by sharing your preferred platform for creation.',
+      question: 'What\'s your preferred platform for virtual world creation?',
+      options: [
+        { text: 'VRChat SDK', votes: 187, percentage: 35 },
+        { text: 'Roblox Studio', votes: 156, percentage: 29 },
+        { text: 'Unity 3D', votes: 98, percentage: 18 },
+        { text: 'Unreal Engine', votes: 67, percentage: 13 },
+        { text: 'Second Life', votes: 26, percentage: 5 }
+      ],
+      totalVotes: 534,
+      status: 'active',
+      endDate: new Date('2024-02-15'),
+      tags: ['Platform', 'Development', 'Tools'],
+      likes: 124,
+      comments: 32,
+      shares: 18,
+      createdAt: new Date('2024-01-20'),
+    },
+    // Completed Polls
+    {
+      id: 'completed-poll-1',
+      title: 'Which platform offers the best creator monetization?',
+      content: 'Results from our community poll about creator monetization opportunities across different virtual world platforms.',
+      question: 'Which platform offers the best creator monetization?',
+      options: [
+        { text: 'Roblox DevEx Program', votes: 234, percentage: 42 },
+        { text: 'VRChat Creator Economy', votes: 156, percentage: 28 },
+        { text: 'Second Life Marketplace', votes: 89, percentage: 16 },
+        { text: 'Unity Asset Store', votes: 78, percentage: 14 }
+      ],
+      totalVotes: 557,
+      status: 'completed',
+      endDate: new Date('2024-01-30'),
+      tags: ['Monetization', 'Economy', 'Revenue'],
+      likes: 89,
+      comments: 45,
+      shares: 67,
+      createdAt: new Date('2024-01-18'),
+    },
+    {
+      id: 'completed-poll-2',
+      title: 'Most challenging aspect of virtual world development?',
+      content: 'Community insights on the biggest challenges facing virtual world creators today.',
+      question: 'What\'s the most challenging aspect of virtual world development?',
+      options: [
+        { text: 'Technical Implementation', votes: 198, percentage: 38 },
+        { text: 'User Acquisition', votes: 167, percentage: 32 },
+        { text: 'Monetization Strategy', votes: 89, percentage: 17 },
+        { text: 'Platform Limitations', votes: 67, percentage: 13 }
+      ],
+      totalVotes: 521,
+      status: 'completed',
+      endDate: new Date('2024-01-25'),
+      tags: ['Development', 'Challenges', 'Community'],
+      likes: 134,
+      comments: 78,
+      shares: 43,
+      createdAt: new Date('2024-01-15'),
+    }
+  ];
+}
+
+export function getSamplePulseReports(): PulseReport[] {
+  return [
+    {
+      id: 'report-free-1',
+      title: 'Q4 2023 Virtual Economy Trends',
+      content: 'Comprehensive analysis of virtual economy trends across major platforms including VRChat, Roblox, and Second Life.',
+      excerpt: 'Key insights from Q4 2023 showing 23% growth in virtual asset trading and emerging trends in creator monetization.',
+      accessType: 'free',
+      price: '',
+      downloadUrl: '/reports/q4-2023-trends.pdf',
+      tags: ['Economy', 'Trends', 'Analytics'],
+      publishDate: new Date('2024-01-10'),
+      createdAt: new Date('2024-01-10'),
+    },
+    {
+      id: 'report-paid-1',
+      title: 'Creator Monetization Strategies 2024',
+      content: 'In-depth guide covering advanced monetization strategies, platform-specific opportunities, and revenue optimization techniques.',
+      excerpt: 'Premium report featuring exclusive interviews with top creators and detailed revenue analytics across 15+ platforms.',
+      accessType: 'paid',
+      price: '$29.99',
+      downloadUrl: '/reports/monetization-strategies-2024.pdf',
+      tags: ['Monetization', 'Strategy', 'Premium'],
+      publishDate: new Date('2024-01-12'),
+      createdAt: new Date('2024-01-12'),
+    },
+    {
+      id: 'report-private-1',
+      title: 'Enterprise Virtual World Adoption Study',
+      content: 'Confidential analysis of enterprise adoption patterns, ROI data, and implementation case studies from Fortune 500 companies.',
+      excerpt: 'Exclusive research available to verified enterprise partners and premium subscribers only.',
+      accessType: 'private',
+      price: 'Enterprise Only',
+      downloadUrl: null,
+      tags: ['Enterprise', 'Research', 'Confidential'],
+      publishDate: new Date('2024-01-08'),
+      createdAt: new Date('2024-01-08'),
     }
   ];
 }

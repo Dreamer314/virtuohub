@@ -1,7 +1,7 @@
-import { type User, type InsertUser, type Post, type InsertPost, type SavedPost, type InsertSavedPost, type PostWithAuthor, type Category, type Platform, type Article, type InsertArticle, type ArticleWithPost, type Comment, type InsertComment, type CommentWithAuthor } from "@shared/schema";
+import { type User, type InsertUser, type Post, type InsertPost, type SavedPost, type InsertSavedPost, type PostWithAuthor, type Category, type Platform, type Article, type InsertArticle, type ArticleWithPost, type Comment, type InsertComment, type CommentWithAuthor, type PulsePoll, type PulseReport, type InsertPulsePoll, type InsertPulseReport } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { IStorage } from "./storage-interface";
-import { getSampleUsers, getSamplePosts, getSampleArticles, getSampleComments } from "./storage-seed-data";
+import { getSampleUsers, getSamplePosts, getSampleArticles, getSampleComments, getSamplePulsePolls, getSamplePulseReports } from "./storage-seed-data";
 
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
@@ -9,6 +9,8 @@ export class MemStorage implements IStorage {
   private savedPosts: Map<string, SavedPost>;
   private articles: Map<string, Article>;
   private comments: Map<string, Comment>;
+  private pulsePolls: Map<string, PulsePoll>;
+  private pulseReports: Map<string, PulseReport>;
 
   constructor() {
     this.users = new Map();
@@ -16,6 +18,8 @@ export class MemStorage implements IStorage {
     this.savedPosts = new Map();
     this.articles = new Map();
     this.comments = new Map();
+    this.pulsePolls = new Map();
+    this.pulseReports = new Map();
     this.seedData();
   }
 
@@ -451,6 +455,18 @@ As the lines between physical and digital continue to blur, virtual fashion stan
     sampleArticles.forEach(article => {
       this.articles.set(article.id, article);
     });
+
+    // Initialize pulse polls
+    const samplePulsePolls = getSamplePulsePolls();
+    samplePulsePolls.forEach(poll => {
+      this.pulsePolls.set(poll.id, poll);
+    });
+
+    // Initialize pulse reports
+    const samplePulseReports = getSamplePulseReports();
+    samplePulseReports.forEach(report => {
+      this.pulseReports.set(report.id, report);
+    });
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -791,6 +807,81 @@ As the lines between physical and digital continue to blur, virtual fashion stan
       comment.likes = (comment.likes || 0) + 1;
       this.comments.set(commentId, comment);
     }
+  }
+
+  // VHub Pulse Methods
+  async getPulsePolls(status?: 'active' | 'completed'): Promise<PulsePoll[]> {
+    const polls = Array.from(this.pulsePolls.values()).sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    );
+    
+    if (status) {
+      return polls.filter(poll => poll.status === status);
+    }
+    
+    return polls;
+  }
+
+  async getPulsePoll(id: string): Promise<PulsePoll | null> {
+    return this.pulsePolls.get(id) || null;
+  }
+
+  async voteOnPulsePoll(pollId: string, optionIndex: number): Promise<PulsePoll | null> {
+    const poll = this.pulsePolls.get(pollId);
+    if (!poll || poll.status !== 'active' || !poll.options[optionIndex]) {
+      return null;
+    }
+
+    // Update the vote count for the selected option
+    const options = [...(poll.options as any)];
+    options[optionIndex].votes += 1;
+    poll.totalVotes += 1;
+
+    // Recalculate percentages for all options
+    options.forEach((option: any) => {
+      option.percentage = Math.round((option.votes / poll.totalVotes) * 100);
+    });
+
+    const updatedPoll = { ...poll, options };
+    this.pulsePolls.set(pollId, updatedPoll);
+    return updatedPoll;
+  }
+
+  async updatePulsePollEngagement(pollId: string, action: 'like' | 'comment' | 'share'): Promise<PulsePoll | null> {
+    const poll = this.pulsePolls.get(pollId);
+    if (!poll) return null;
+
+    const updatedPoll = { ...poll };
+    switch (action) {
+      case 'like':
+        updatedPoll.likes += 1;
+        break;
+      case 'comment':
+        updatedPoll.comments += 1;
+        break;
+      case 'share':
+        updatedPoll.shares += 1;
+        break;
+    }
+
+    this.pulsePolls.set(pollId, updatedPoll);
+    return updatedPoll;
+  }
+
+  async getPulseReports(accessType?: 'free' | 'paid' | 'private'): Promise<PulseReport[]> {
+    const reports = Array.from(this.pulseReports.values()).sort(
+      (a, b) => b.publishDate.getTime() - a.publishDate.getTime()
+    );
+    
+    if (accessType) {
+      return reports.filter(report => report.accessType === accessType);
+    }
+    
+    return reports;
+  }
+
+  async getPulseReport(id: string): Promise<PulseReport | null> {
+    return this.pulseReports.get(id) || null;
   }
 }
 
