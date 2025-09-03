@@ -105,6 +105,36 @@ export function getSamplePosts(): Post[] {
       shares: 67,
       createdAt: new Date('2024-01-18'),
     },
+    {
+      id: 'pulse2',
+      authorId: 'user1',
+      title: 'What\'s your preferred platform for virtual world creation?',
+      content: 'Curious to see what platforms our community prefers for creating virtual experiences! This will help us understand the current landscape.',
+      imageUrl: null,
+      images: [],
+      files: [],
+      links: [],
+      category: 'General',
+      platforms: ['Other'],
+      price: null,
+      type: 'pulse',
+      pollData: {
+        question: 'What\'s your preferred platform for virtual world creation?',
+        options: [
+          { text: 'VRChat SDK', votes: 187, percentage: 35 },
+          { text: 'Roblox Studio', votes: 156, percentage: 29 },
+          { text: 'Unity 3D', votes: 98, percentage: 18 },
+          { text: 'Unreal Engine', votes: 67, percentage: 13 },
+          { text: 'Second Life', votes: 26, percentage: 5 }
+        ],
+        totalVotes: 534,
+        endDate: new Date('2024-02-15')
+      },
+      likes: 124,
+      comments: 32,
+      shares: 18,
+      createdAt: new Date('2024-01-20'),
+    },
     // Creator Insights Interview Posts
     {
       id: 'insight1',
