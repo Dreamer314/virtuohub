@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Star, TrendingUp, Heart, ImageIcon, BarChart3, FileText } from 'lucide-react';
+import { Plus, Star, TrendingUp, Heart, ImageIcon, BarChart3, FileText, Zap } from 'lucide-react';
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
@@ -190,7 +190,7 @@ const CommunityPage: React.FC = () => {
                         <div className="flex items-center space-x-2 w-full">
                           <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
                           <div className="flex items-center space-x-4">
-                            <TrendingUp className="w-8 h-8 text-primary" />
+                            <Zap className="w-8 h-8 text-transparent bg-gradient-cosmic bg-clip-text" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
                             <h2 className="text-5xl font-bold text-foreground tracking-tight font-tech">
                               VHub Pulse
                             </h2>
