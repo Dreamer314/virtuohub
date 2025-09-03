@@ -36,14 +36,14 @@ export function LeftSidebar({
       id: 'spotlights', 
       label: 'Spotlights', 
       icon: Star, 
-      active: location === '/spotlights' || location.startsWith('/spotlights/') || location.startsWith('/spotlight/'), 
+      active: location === '/spotlights' || location.startsWith('/spotlights/'), 
       href: '/spotlights'
     },
     { 
       id: 'interviews', 
       label: 'Interviews', 
       icon: Lightbulb, 
-      active: location === '/interviews' || location.startsWith('/interviews/') || location.startsWith('/interview/'), 
+      active: location === '/interviews' || location.startsWith('/interviews/'), 
       href: '/interviews' 
     },
     { 

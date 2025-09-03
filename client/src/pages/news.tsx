@@ -16,10 +16,6 @@ import robloxImage from '@assets/generated_images/Roblox_game_development_597c5f
 const NewsPage: React.FC = () => {
   const { slug } = useParams();
   
-  // Check if user came from home page
-  const urlParams = new URLSearchParams(window.location.search);
-  const fromHome = urlParams.get('from') === 'home';
-  
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -27,10 +23,6 @@ const NewsPage: React.FC = () => {
 
   // Check if we're on a specific news article
   const isVirtualCommerceNews = slug === 'virtual-commerce-future';
-  const isUnityVRCreatorHub = slug === 'unity-vr-creator-hub';
-  const isRobloxPremiumAssets = slug === 'roblox-premium-assets';
-  const isVRChatCreatorEconomy = slug === 'vrchat-creator-economy-beta';
-  const isVirtualWorldsMarket = slug === 'virtual-worlds-market-report';
 
   const { data: posts = [], isLoading } = useQuery<PostWithAuthor[]>({
     queryKey: ['/api/posts']
@@ -51,63 +43,7 @@ const NewsPage: React.FC = () => {
       return bTime - aTime;
     });
 
-  // Handle specific news articles
-  if (isVirtualCommerceNews || isUnityVRCreatorHub || isRobloxPremiumAssets || isVRChatCreatorEconomy || isVirtualWorldsMarket) {
-    
-    // Article data
-    let articleData;
-    if (isVirtualCommerceNews) {
-      articleData = {
-        type: 'Industry Analysis',
-        title: 'The Future of Virtual Commerce',
-        subtitle: 'Exploring how virtual economies are evolving and creating new opportunities for creators across gaming and metaverse platforms.',
-        date: 'December 29, 2024',
-        image: robloxImage,
-        backLink: fromHome ? '/home' : '/news',
-        backText: fromHome ? 'Home' : 'Industry News'
-      };
-    } else if (isUnityVRCreatorHub) {
-      articleData = {
-        type: 'Industry News',
-        title: 'Unity Launches VR Creator Hub',
-        subtitle: 'New platform consolidates VR development tools, asset marketplace, and community features for creators.',
-        date: 'December 28, 2024',
-        image: robloxImage, // Using same image for now, could be replaced with Unity image
-        backLink: fromHome ? '/home' : '/news',
-        backText: fromHome ? 'Home' : 'Industry News'
-      };
-    } else if (isRobloxPremiumAssets) {
-      articleData = {
-        type: 'Platform Update',
-        title: 'Roblox Introduces Premium Assets',
-        subtitle: 'New marketplace tier allows creators to sell high-quality assets with enhanced revenue sharing.',
-        date: 'December 26, 2024',
-        image: robloxImage,
-        backLink: fromHome ? '/home' : '/news',
-        backText: fromHome ? 'Home' : 'Industry News'
-      };
-    } else if (isVRChatCreatorEconomy) {
-      articleData = {
-        type: 'Feature Release',
-        title: 'VRChat Creator Economy Beta',
-        subtitle: 'Closed beta program launches for world creators to monetize premium experiences and content.',
-        date: 'December 24, 2024',
-        image: robloxImage, // Using same image for now, could be replaced with VRChat image
-        backLink: fromHome ? '/home' : '/news',
-        backText: fromHome ? 'Home' : 'Industry News'
-      };
-    } else if (isVirtualWorldsMarket) {
-      articleData = {
-        type: 'Market Analysis',
-        title: 'Virtual Worlds Market Hits $5.7B',
-        subtitle: 'Q4 2024 growth driven by creator economy expansion and enterprise adoption of virtual collaboration tools.',
-        date: 'December 22, 2024',
-        image: robloxImage,
-        backLink: fromHome ? '/home' : '/news',
-        backText: fromHome ? 'Home' : 'Industry News'
-      };
-    }
-    
+  if (isVirtualCommerceNews) {
     return (
       <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
         <Header onCreatePost={() => {}} />
@@ -129,34 +65,26 @@ const NewsPage: React.FC = () => {
             <div className="py-8 relative z-10 px-4 lg:px-8">
               <div className="w-full">
                 <div className="max-w-4xl mx-auto">
-                  {/* Back Navigation */}
-                  <Link href={articleData?.backLink || '/news'} className="inline-flex items-center text-cyan-500 hover:text-cyan-400 transition-colors mb-8 group">
-                    <svg className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                    Back to {articleData?.backText || 'Industry News'}
-                  </Link>
-                  
                   <article className="enhanced-card p-8 mb-8">
                     {/* Header */}
                     <div className="mb-8">
                       <div className="flex items-center gap-3 mb-4">
                         <div className="flex items-center gap-2 text-blue-600 font-medium">
                           <Newspaper className="w-5 h-5" />
-                          <span>{articleData?.type || 'Industry Analysis'}</span>
+                          <span>Industry Analysis</span>
                         </div>
                         <span className="text-muted-foreground">•</span>
                         <div className="flex items-center gap-2 text-muted-foreground">
-                          <span>{articleData?.date || 'December 29, 2024'}</span>
+                          <span>December 29, 2024</span>
                         </div>
                       </div>
                       
                       <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                        {articleData?.title || 'The Future of Virtual Commerce'}
+                        The Future of Virtual Commerce
                       </h1>
                       
                       <p className="text-lg text-muted-foreground mb-6">
-                        {articleData?.subtitle || 'Exploring how virtual economies are evolving and creating new opportunities for creators across gaming and metaverse platforms.'}
+                        Exploring how virtual economies are evolving and creating new opportunities for creators across gaming and metaverse platforms.
                       </p>
                       
                       <div className="flex items-center gap-3">
@@ -173,7 +101,7 @@ const NewsPage: React.FC = () => {
                     {/* Featured Image */}
                     <div className="mb-8 rounded-lg overflow-hidden">
                       <img 
-                        src={articleData?.image || robloxImage} 
+                        src={robloxImage} 
                         alt="Virtual commerce and digital economy"
                         className="w-full h-64 md:h-80 object-cover"
                       />
@@ -181,15 +109,9 @@ const NewsPage: React.FC = () => {
 
                     {/* Article Content */}
                     <div className="prose prose-lg max-w-none text-foreground">
-                      {isVirtualCommerceNews ? (
-                        <p className="text-lg leading-relaxed mb-6">
-                          The virtual commerce landscape is undergoing a dramatic transformation. What started as simple in-game purchases has evolved into a sophisticated digital economy worth over $50 billion annually, with individual creators earning substantial income from virtual goods and experiences.
-                        </p>
-                      ) : (
-                        <p className="text-lg leading-relaxed mb-6">
-                          {articleData?.subtitle} This article provides comprehensive insights into the latest developments in the virtual world creation and monetization space, exploring the impact on creators and the broader digital economy ecosystem.
-                        </p>
-                      )}
+                      <p className="text-lg leading-relaxed mb-6">
+                        The virtual commerce landscape is undergoing a dramatic transformation. What started as simple in-game purchases has evolved into a sophisticated digital economy worth over $50 billion annually, with individual creators earning substantial income from virtual goods and experiences.
+                      </p>
 
                       <h2 className="text-2xl font-bold text-foreground mb-4 flex items-center gap-3">
                         <TrendingUp className="w-6 h-6 text-green-500" />
@@ -286,8 +208,30 @@ const NewsPage: React.FC = () => {
                     <EngagementSection 
                       contentId="news-virtual-commerce-future"
                       contentType="news"
-                      initialLikes={0}
-                      initialComments={[]}
+                      initialLikes={89}
+                      initialComments={[
+                        {
+                          id: '1',
+                          author: 'VirtualBusiness_Pro',
+                          content: 'This aligns perfectly with what I\'m seeing in my Roblox store. Cross-platform is definitely the future.',
+                          timestamp: '2 hours ago',
+                          likes: 15
+                        },
+                        {
+                          id: '2', 
+                          author: 'CreatorEconomy_Sarah',
+                          content: 'The subscription model prediction is interesting. I\'ve been considering this for my VRChat world series.',
+                          timestamp: '5 hours ago',
+                          likes: 12
+                        },
+                        {
+                          id: '3',
+                          author: 'MetaverseAnalyst',
+                          content: 'Great breakdown of the market data. The growth numbers are staggering when you really look at them.',
+                          timestamp: '8 hours ago',
+                          likes: 22
+                        }
+                      ]}
                     />
                   </article>
                 </div>
@@ -408,8 +352,23 @@ const NewsPage: React.FC = () => {
                             <EngagementSection 
                               contentId="news-meta-horizon-fund"
                               contentType="news"
-                              initialLikes={0}
-                              initialComments={[]}
+                              initialLikes={156}
+                              initialComments={[
+                                {
+                                  id: '1',
+                                  author: 'DevMaster99',
+                                  content: 'Finally! This is exactly what the creator ecosystem needed. $25k grants will make a real difference.',
+                                  timestamp: '30 minutes ago',
+                                  likes: 24
+                                },
+                                {
+                                  id: '2',
+                                  author: 'VRCreator_Sarah',
+                                  content: 'Love the mentorship program addition. Having industry veterans guide new creators is huge.',
+                                  timestamp: '1 hour ago',
+                                  likes: 18
+                                }
+                              ]}
                             />
                           </div>
                         </article>
@@ -442,7 +401,7 @@ const NewsPage: React.FC = () => {
                               <EngagementSection 
                                 contentId="news-unity-vr-hub"
                                 contentType="news"
-                                initialLikes={0}
+                                initialLikes={89}
                                 initialComments={[]}
                               />
                             </div>
@@ -474,7 +433,7 @@ const NewsPage: React.FC = () => {
                               <EngagementSection 
                                 contentId="news-roblox-premium"
                                 contentType="news"
-                                initialLikes={0}
+                                initialLikes={134}
                                 initialComments={[]}
                               />
                             </div>
@@ -506,7 +465,7 @@ const NewsPage: React.FC = () => {
                               <EngagementSection 
                                 contentId="news-vrchat-economy"
                                 contentType="news"
-                                initialLikes={0}
+                                initialLikes={267}
                                 initialComments={[]}
                               />
                             </div>
@@ -538,7 +497,7 @@ const NewsPage: React.FC = () => {
                               <EngagementSection 
                                 contentId="news-market-report"
                                 contentType="news"
-                                initialLikes={0}
+                                initialLikes={98}
                                 initialComments={[]}
                               />
                             </div>

@@ -8,17 +8,13 @@ import { Footer } from '@/components/layout/footer';
 import { EngagementSection } from '@/components/engagement-section';
 import { Card, CardContent } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
-import { useParams, useLocation, Link } from 'wouter';
+import { useParams, useLocation } from 'wouter';
 import type { PostWithAuthor } from '@shared/schema';
 import unityImage from '@assets/generated_images/Unity_metaverse_development_54c43114.png';
 
 const GuidesPage: React.FC = () => {
   const { slug } = useParams();
   const [location] = useLocation();
-  
-  // Check if user came from home page
-  const urlParams = new URLSearchParams(window.location.search);
-  const fromHome = urlParams.get('from') === 'home';
   
   // Scroll to top when component mounts
   useEffect(() => {
@@ -69,14 +65,6 @@ const GuidesPage: React.FC = () => {
             <div className="py-8 relative z-10 px-4 lg:px-8">
               <div className="w-full">
                 <div className="max-w-4xl mx-auto">
-                  {/* Back Navigation */}
-                  <Link href={fromHome ? '/home' : '/guides'} className="inline-flex items-center text-cyan-500 hover:text-cyan-400 transition-colors mb-8 group">
-                    <svg className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                    Back to {fromHome ? 'Home' : 'Tips & Guides'}
-                  </Link>
-                  
                   <article className="enhanced-card p-8 mb-8">
                     {/* Header */}
                     <div className="mb-8">
@@ -216,8 +204,30 @@ const GuidesPage: React.FC = () => {
                     <EngagementSection 
                       contentId="guide-performance-optimization"
                       contentType="news"
-                      initialLikes={0}
-                      initialComments={[]}
+                      initialLikes={156}
+                      initialComments={[
+                        {
+                          id: '1',
+                          author: 'OptimizedDev',
+                          content: 'This saved my project! The texture atlasing tip alone improved my performance by 40%.',
+                          timestamp: '3 hours ago',
+                          likes: 23
+                        },
+                        {
+                          id: '2', 
+                          author: 'VRCreator_Max',
+                          content: 'Great breakdown of platform differences. The VRChat performance ranking info is spot on.',
+                          timestamp: '6 hours ago',
+                          likes: 18
+                        },
+                        {
+                          id: '3',
+                          author: 'MobileFirst_Dev',
+                          content: 'Mobile-first approach has revolutionized how I think about world design. Essential reading.',
+                          timestamp: '1 day ago',
+                          likes: 31
+                        }
+                      ]}
                     />
                   </article>
                 </div>

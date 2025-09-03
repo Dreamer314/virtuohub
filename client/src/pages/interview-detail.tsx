@@ -10,10 +10,6 @@ import vrChatImage from '@assets/generated_images/VRChat_cyberpunk_world_8060768
 
 const InterviewDetailPage: React.FC = () => {
   const { id } = useParams();
-  
-  // Check if user came from home page
-  const urlParams = new URLSearchParams(window.location.search);
-  const fromHome = urlParams.get('from') === 'home';
 
   // For demo purposes, we'll have predefined interview data
   const interviews = {
@@ -56,94 +52,30 @@ const InterviewDetailPage: React.FC = () => {
         "Performance constraints can spark creative solutions",
         "Real-time user feedback is invaluable for iteration"
       ],
-      likes: 0,
-      comments: []
-    },
-    'maya-patel-virtual-fashion': {
-      title: 'Virtual Fashion Empire',
-      subtitle: 'How Maya Patel built a multi-platform virtual fashion business generating six figures annually',
-      author: 'Maya Patel',
-      role: 'Virtual Fashion Designer',
-      date: 'Dec 28, 2024',
-      readTime: '8 min read',
-      heroImage: vrChatImage,
-      heroIcon: '👗',
-      stats: '150K+ items sold • 50K followers',
-      tags: ['Virtual Fashion', 'Business', 'Multi-platform'],
-      questions: [
+      likes: 287,
+      comments: [
         {
-          question: "What sparked your interest in virtual fashion?",
-          answer: "I was a traditional fashion designer struggling to break into the industry when I discovered Second Life in 2020. I saw people spending real money on virtual clothing and realized there was an untapped market. Virtual fashion offered creative freedom without the constraints of physical manufacturing, materials, or sizing limitations."
+          id: '1',
+          author: 'WorldBuilder_Sarah',
+          content: 'This is so insightful! The part about designing emotional experiences first really resonates with me. I\'ve been focusing too much on technical specs.',
+          timestamp: '2 hours ago',
+          likes: 34
         },
         {
-          question: "How do you create fashion that works across different virtual platforms?",
-          answer: "Each platform has unique technical requirements and aesthetic preferences. VRChat favors bold, anime-inspired designs. Second Life allows for more realistic, detailed pieces. Roblox requires simplified designs due to the avatar system. I've learned to adapt my core design concepts to each platform's strengths while maintaining my brand identity."
+          id: '2', 
+          author: 'VR_Mike_Dev',
+          content: 'Alex\'s Neon District world is one of my favorites. The way people naturally gather around the fountain area is brilliant design.',
+          timestamp: '4 hours ago',
+          likes: 28
         },
         {
-          question: "What's your business model and how do you scale?",
-          answer: "I operate on multiple revenue streams: direct sales on platform marketplaces, custom commissions for VTubers and content creators, licensing designs to other creators, and recently, NFT collections. Scaling came through automation - I now have templates and workflows that let me adapt designs quickly across platforms. I also work with a small team of 3D artists."
-        },
-        {
-          question: "What advice would you give to aspiring virtual fashion designers?",
-          answer: "Start with one platform and really understand its community and technical constraints. Build a portfolio showing versatility - cute items, edgy designs, formal wear. Engage with the community, understand trends, but don't just copy what's popular. Your unique voice is what will set you apart. Also, treat it like a real business from day one with proper accounting and customer service."
-        },
-        {
-          question: "Where do you see virtual fashion heading in the next few years?",
-          answer: "Integration with AR will be huge - imagine trying on virtual clothes in real-world contexts. We'll see more collaboration between virtual and physical fashion brands. AI will streamline the design process. And cross-platform compatibility will improve, letting users own items that work everywhere. Virtual fashion will become as important as physical fashion for digital natives."
+          id: '3',
+          author: 'CreativePixie',
+          content: 'Love the emphasis on performance optimization. So many creators ignore this and wonder why their worlds feel empty.',
+          timestamp: '6 hours ago', 
+          likes: 19
         }
-      ],
-      keyTakeaways: [
-        "Virtual fashion offers creative freedom without physical constraints",
-        "Each platform requires adapted design approaches and understanding",
-        "Multiple revenue streams are essential for sustainable growth",
-        "Community engagement and unique voice drive long-term success",
-        "AR integration and cross-platform compatibility are the future"
-      ],
-      likes: 0,
-      comments: []
-    },
-    'tom-richards-hobbyist-studio': {
-      title: 'From Hobbyist to Studio',
-      subtitle: 'How Tom Richards grew his weekend VRChat world project into a full-time virtual experiences studio',
-      author: 'Tom Richards',
-      role: 'Virtual Experience Studio Founder',
-      date: 'Dec 25, 2024',
-      readTime: '12 min read',
-      heroImage: vrChatImage,
-      heroIcon: '🏢',
-      stats: 'Studio: 25 projects • Team: 8 people',
-      tags: ['Entrepreneurship', 'VRChat', 'Studio Management'],
-      questions: [
-        {
-          question: "What started as a hobby project that became your business?",
-          answer: "I was building VRChat worlds on weekends as a stress relief from my day job in software development. One world I created for a friend's virtual birthday party got shared widely and suddenly I had 20+ commission requests. That's when I realized there was real demand for custom virtual experiences."
-        },
-        {
-          question: "How did you scale from solo creator to running a studio?",
-          answer: "It was gradual but intentional. First, I brought on a 3D artist friend to help with modeling. Then we added a sound designer, then a Unity specialist. Each hire allowed us to take on bigger, more complex projects. We went from $500 birthday party worlds to $50K corporate virtual events."
-        },
-        {
-          question: "What are the biggest challenges in running a virtual experiences studio?",
-          answer: "Client education is huge - many don't understand the technical limitations or time requirements. Project scope creep is constant. We've also had to develop entirely new workflows for virtual event management, avatar customization, and cross-platform deployment. It's a new industry with no established best practices."
-        },
-        {
-          question: "What's your advice for creators wanting to monetize their work?",
-          answer: "Start treating every project professionally, even personal ones. Document your process, track your time, and always deliver more than promised. Build a portfolio that shows range and technical skill. Most importantly, learn the business side - contracts, pricing, client management. The technical skills are just the foundation."
-        },
-        {
-          question: "Where do you see the virtual experiences industry heading?",
-          answer: "We're seeing increasing demand from corporate clients for training simulations, product launches, and team building events. The technology is finally reliable enough for professional use. I predict every major company will have some form of virtual presence within 5 years, creating massive opportunities for creators who understand both the tech and business sides."
-        }
-      ],
-      keyTakeaways: [
-        "Start with quality work, even on hobby projects",
-        "Scale gradually by adding complementary skills to your team",
-        "Client education and scope management are critical",
-        "Learn business fundamentals alongside technical skills",
-        "Corporate demand for virtual experiences is exploding"
-      ],
-      likes: 0,
-      comments: []
+      ]
     },
     'maya-patel-virtual-fashion': {
       title: 'Monetizing Virtual Fashion',
@@ -180,8 +112,81 @@ const InterviewDetailPage: React.FC = () => {
         "Community engagement drives sales and brand awareness",
         "Treat virtual fashion as a legitimate business from the start"
       ],
-      likes: 0,
-      comments: []
+      likes: 89,
+      comments: [
+        {
+          id: '1',
+          author: 'DesignEnthusiast',
+          content: 'Maya\'s approach to cross-platform design is brilliant. Her pricing strategy is really helpful for new creators!',
+          timestamp: '1 hour ago',
+          likes: 12
+        },
+        {
+          id: '2',
+          author: 'VirtualBusiness_Pro',
+          content: 'The business insights here are gold. Virtual fashion is definitely the future of digital expression.',
+          timestamp: '3 hours ago',
+          likes: 8
+        }
+      ]
+    },
+    'tom-richards-hobbyist-studio': {
+      title: 'From Hobbyist to Studio',
+      subtitle: 'How Tom Richards grew his weekend VRChat world project into a full-time virtual experiences studio',
+      author: 'Tom Richards',
+      role: 'Virtual Experience Studio Founder',
+      date: 'Dec 25, 2024',
+      readTime: '12 min read',
+      heroImage: 'from-blue-500 to-cyan-600',
+      heroIcon: '🏢',
+      stats: 'Studio: 25 projects • Team: 8 people',
+      tags: ['Entrepreneurship', 'VRChat', 'Studio Management'],
+      questions: [
+        {
+          question: "What started as a hobby project that became your business?",
+          answer: "I was building VRChat worlds on weekends as a stress relief from my day job in software development. One world I created for a friend's virtual birthday party got shared widely and suddenly I had 20+ commission requests. That's when I realized there was real demand for custom virtual experiences."
+        },
+        {
+          question: "How did you scale from solo creator to running a studio?",
+          answer: "It was gradual but intentional. First, I brought on a 3D artist friend to help with modeling. Then we added a sound designer, then a Unity specialist. Each hire allowed us to take on bigger, more complex projects. We went from $500 birthday party worlds to $50K corporate virtual events."
+        },
+        {
+          question: "What are the biggest challenges in running a virtual experiences studio?",
+          answer: "Client education is huge - many don't understand the technical limitations or time requirements. Project scope creep is constant. We've also had to develop entirely new workflows for virtual event management, avatar customization, and cross-platform deployment. It's a new industry with no established best practices."
+        },
+        {
+          question: "What's your advice for creators wanting to monetize their work?",
+          answer: "Start treating every project professionally, even personal ones. Document your process, track your time, and always deliver more than promised. Build a portfolio that shows range and technical skill. Most importantly, learn the business side - contracts, pricing, client management. The technical skills are just the foundation."
+        },
+        {
+          question: "Where do you see the virtual experiences industry heading?",
+          answer: "We're seeing increasing demand from corporate clients for training simulations, product launches, and team building events. The technology is finally reliable enough for professional use. I predict every major company will have some form of virtual presence within 5 years, creating massive opportunities for creators who understand both the tech and business sides."
+        }
+      ],
+      keyTakeaways: [
+        "Start with quality work, even on hobby projects",
+        "Scale gradually by adding complementary skills to your team",
+        "Client education and scope management are critical",
+        "Learn business fundamentals alongside technical skills",
+        "Corporate demand for virtual experiences is exploding"
+      ],
+      likes: 156,
+      comments: [
+        {
+          id: '1',
+          author: 'StartupFounder_VR',
+          content: 'Tom\'s journey from hobby to business is exactly what I needed to see. The scaling advice is incredibly practical.',
+          timestamp: '2 hours ago',
+          likes: 18
+        },
+        {
+          id: '2',
+          author: 'CreativeEntrepreneur',
+          content: 'The corporate market opportunity he mentions is huge. Time to start building those business skills!',
+          timestamp: '5 hours ago',
+          likes: 14
+        }
+      ]
     }
   };
 
@@ -192,8 +197,8 @@ const InterviewDetailPage: React.FC = () => {
       <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Interview not found</h1>
-          <Link href={fromHome ? '/home' : '/interviews'} className="text-cyan-500 hover:underline">
-            ← Back to {fromHome ? 'Home' : 'Interviews'}
+          <Link href="/interviews" className="text-cyan-500 hover:underline">
+            ← Back to Interviews
           </Link>
         </div>
       </div>
@@ -230,9 +235,9 @@ const InterviewDetailPage: React.FC = () => {
               <div className="max-w-4xl mx-auto">
                 
                 {/* Back Navigation */}
-                <Link href={fromHome ? '/home' : '/interviews'} className="inline-flex items-center text-cyan-500 hover:text-cyan-400 transition-colors mb-8 group">
+                <Link href="/interviews" className="inline-flex items-center text-cyan-500 hover:text-cyan-400 transition-colors mb-8 group">
                   <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" />
-                  Back to {fromHome ? 'Home' : 'Interviews'}
+                  Back to Interviews
                 </Link>
 
                 {/* Hero Section */}
