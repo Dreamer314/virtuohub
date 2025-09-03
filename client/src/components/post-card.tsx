@@ -9,6 +9,7 @@ import { type PostWithAuthor } from "@shared/schema";
 import { ThumbsUp, MessageCircle, Share, Heart, Zap, Lightbulb, Clock } from "lucide-react";
 import { Link } from "wouter";
 import { cn, getPlatformColor, getCategoryColor, formatTimeAgo } from "@/lib/utils";
+import { ImageViewerModal } from "./image-viewer-modal";
 
 interface PostCardProps {
   post: PostWithAuthor;
@@ -20,6 +21,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
   const [isSaved, setIsSaved] = useState(post.isSaved || false);
   const [hasVoted, setHasVoted] = useState(false);
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
+  const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -33,400 +35,257 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
   });
 
   const saveMutation = useMutation({
-    mutationFn: () => 
-      isSaved 
-        ? apiRequest('DELETE', `/api/users/${currentUserId}/saved-posts/${post.id}`)
-        : apiRequest('POST', `/api/users/${currentUserId}/saved-posts`, { postId: post.id }),
+    mutationFn: () => {
+      const endpoint = isSaved ? 'delete' : 'post';
+      return apiRequest(endpoint.toUpperCase() as any, `/api/users/${currentUserId}/saved-posts`, 
+        endpoint === 'post' ? { postId: post.id } : undefined);
+    },
     onSuccess: () => {
       setIsSaved(!isSaved);
-      queryClient.invalidateQueries({ queryKey: ['/api/users/user1/saved-posts'] });
-      toast({ 
-        title: isSaved ? "Post removed from saved" : "Post saved!",
-      });
+      queryClient.invalidateQueries({ queryKey: ['/api/users', currentUserId, 'saved-posts'] });
+      toast({ title: isSaved ? "Post unsaved" : "Post saved!" });
     }
   });
 
   const [shareSuccess, setShareSuccess] = useState(false);
 
-  const shareMutation = useMutation({
-    mutationFn: () => apiRequest('POST', `/api/posts/${post.id}/share`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
-      toast({ title: "Post shared!" });
+  const handleLike = () => {
+    if (!likeMutation.isPending) {
+      likeMutation.mutate();
     }
-  });
+  };
+
+  const handleSave = () => {
+    if (!saveMutation.isPending) {
+      saveMutation.mutate();
+    }
+  };
 
   const handleShare = async () => {
-    // For pulse posts, copy link instead of just sharing
-    if (post.type === 'pulse') {
-      try {
-        const url = `${window.location.origin}/thread/${post.id}`;
-        await navigator.clipboard.writeText(url);
+    try {
+      if (navigator.share && post.type !== 'pulse') {
+        await navigator.share({
+          title: post.title,
+          url: `${window.location.origin}/thread/${post.id}`
+        });
+      } else {
+        await navigator.clipboard.writeText(`${window.location.origin}/thread/${post.id}`);
         setShareSuccess(true);
         setTimeout(() => setShareSuccess(false), 2000);
-        toast({ title: "Link copied to clipboard!" });
-      } catch (error) {
-        // Fallback for browsers that don't support clipboard API
-        const url = `${window.location.origin}/thread/${post.id}`;
-        const textArea = document.createElement('textarea');
-        textArea.value = url;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        setShareSuccess(true);
-        setTimeout(() => setShareSuccess(false), 2000);
-        toast({ title: "Link copied to clipboard!" });
       }
-    } else {
-      // Regular posts use normal share mutation
-      shareMutation.mutate();
+    } catch (error) {
+      console.error('Error sharing:', error);
     }
   };
 
-  const voteMutation = useMutation({
-    mutationFn: (optionIndex: number) => 
-      apiRequest('POST', `/api/posts/${post.id}/vote`, { optionIndex }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
-      setHasVoted(true);
-      toast({ title: "Vote submitted!" });
+  const renderTypeIcon = () => {
+    if (post.type === 'pulse') {
+      return <Zap className="w-4 h-4 text-yellow-500" />;
     }
-  });
-
-  const handleVote = (optionIndex: number) => {
-    if (hasVoted) return;
-    setSelectedOption(optionIndex);
-    voteMutation.mutate(optionIndex);
+    if (post.type === 'insight') {
+      return <Lightbulb className="w-4 h-4 text-blue-500" />;
+    }
+    return null;
   };
 
-  // Handle VHub Pulse Posts (Polls)
-  if (post.type === 'pulse') {
-    const pollData = post.pollData || { question: '', options: [], totalVotes: 0 };
-    
-    return (
-      <article className="bg-sidebar enhanced-card glow-border p-4 rounded-lg border border-sidebar-border hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg" data-testid={`pulse-post-${post.id}`}>
-        <div className="flex items-start space-x-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
-            <Zap className="w-4 h-4 text-white" />
+  return (
+    <>
+      <article className="enhanced-card hover-lift group p-6 space-y-4 transition-all duration-200" data-testid={`post-card-${post.id}`}>
+        <div className="flex space-x-4">
+          {/* Avatar */}
+          <div className="flex-shrink-0">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-gradient-cosmic text-white font-medium text-lg">
+              {post.author.displayName.charAt(0)}
+            </span>
           </div>
           
           <div className="flex-1 min-w-0">
             {/* Header */}
-            <div className="flex items-center space-x-2 mb-2">
-              <span className="text-xs font-medium text-purple-600 dark:text-purple-400">VHub Data Pulse</span>
-              <span className="text-xs text-muted-foreground">•</span>
-              <span className="text-xs text-muted-foreground" data-testid={`pulse-time-${post.id}`}>
-                {formatTimeAgo(post.createdAt ? new Date(post.createdAt) : new Date())}
-              </span>
-            </div>
-            
-            {/* Question */}
-            <Link href={`/thread/${post.id}`} className="block group mb-4">
-              <h3 className="text-lg font-semibold text-foreground group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors" data-testid={`pulse-question-${post.id}`}>
-                {(pollData as any).question || 'Poll question'}
-              </h3>
-            </Link>
-            
-            {/* Poll Options */}
-            <div className="space-y-3 mb-4">
-              {((pollData as any).options || []).map((option: any, index: number) => (
-                <button
-                  key={index}
-                  onClick={() => handleVote(index)}
-                  disabled={hasVoted}
-                  className={cn(
-                    "w-full text-left p-3 rounded-lg border transition-all duration-200",
-                    hasVoted 
-                      ? "cursor-not-allowed bg-muted" 
-                      : "cursor-pointer hover:border-accent/50 hover:bg-accent/5 dark:hover:bg-accent/10",
-                    selectedOption === index && "border-purple-500 bg-purple-50 dark:bg-purple-950/30"
-                  )}
-                  data-testid={`pulse-option-${post.id}-${index}`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">{option.text}</span>
-                    {hasVoted && (
-                      <span className="text-xs text-muted-foreground">
-                        {Math.round((option.votes / ((pollData as any).totalVotes || 1)) * 100)}%
-                      </span>
-                    )}
-                  </div>
-                  {hasVoted && (
-                    <div className="mt-2">
-                      <Progress value={(option.votes / ((pollData as any).totalVotes || 1)) * 100} className="h-2" />
-                    </div>
-                  )}
-                </button>
-              ))}
-            </div>
-            
-            {/* Poll Stats */}
-            <div className="flex items-center justify-between text-xs text-muted-foreground mb-4">
-              <span data-testid={`pulse-votes-${post.id}`}>{(pollData as any).totalVotes || 0} votes</span>
-              <span>Poll ends in 2 days</span>
-            </div>
-            
-            {/* Actions */}
-            <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => likeMutation.mutate()}
-                className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
-                data-testid={`like-button-${post.id}`}
-              >
-                <ThumbsUp size={16} />
-                <span>{post.likes}</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
-                data-testid={`comment-button-${post.id}`}
-              >
-                <MessageCircle size={16} />
-                <span>{post.comments} comments</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleShare}
-                className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
-                data-testid={`share-button-${post.id}`}
-              >
-                <Share size={16} />
-                <span>
-                  {shareSuccess ? 'Link Copied!' : 'Share'}
-                </span>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </article>
-    );
-  }
-
-  // Handle Interview Posts
-  if (post.type === 'insight') {
-    return (
-      <article className="bg-sidebar enhanced-card glow-border p-4 rounded-lg border border-sidebar-border hover:border-amber-500/50 transition-all duration-300 hover:shadow-lg" data-testid={`insight-post-${post.id}`}>
-        <div className="flex items-start space-x-3">
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0">
-            <Lightbulb className="w-4 h-4 text-white" />
-          </div>
-          
-          <div className="flex-1 min-w-0">
-            {/* Header */}
-            <div className="flex items-center space-x-2 mb-2">
-              <span className="text-xs font-medium text-amber-600 dark:text-amber-400">Interview</span>
-              <span className="text-xs text-muted-foreground">•</span>
-              <span className="text-xs text-muted-foreground" data-testid={`insight-time-${post.id}`}>
-                {formatTimeAgo(post.createdAt ? new Date(post.createdAt) : new Date())}
-              </span>
-            </div>
-            
-            {/* Content */}
-            <Link href={`/thread/${post.id}`} className="block group">
-              <h3 className="text-lg font-semibold mb-2 text-foreground group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors" data-testid={`insight-title-${post.id}`}>
-                {post.title}
-              </h3>
-              <p className="text-sm text-muted-foreground mb-3 line-clamp-2" data-testid={`insight-content-${post.id}`}>
-                {post.content}
-              </p>
-            </Link>
-            
-            {/* Author Badge */}
-            <div className="flex items-center space-x-2 mb-3">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center">
-                <span className="text-xs font-bold text-white">
-                  {post.author.displayName.charAt(0)}
-                </span>
-              </div>
-              <span className="text-sm font-medium text-foreground" data-testid={`insight-author-${post.id}`}>
+            <div className="flex items-center space-x-2 mb-1">
+              <span className="font-medium text-foreground" data-testid={`author-${post.id}`}>
                 {post.author.displayName}
               </span>
               <Badge variant="secondary" className="text-xs">
                 {post.author.role}
               </Badge>
+              <span className="text-xs text-muted-foreground">•</span>
+              <span className="text-xs text-muted-foreground" data-testid={`time-${post.id}`}>
+                {formatTimeAgo(post.createdAt ? new Date(post.createdAt) : new Date())}
+              </span>
             </div>
             
-            {/* Platforms */}
-            <div className="flex flex-wrap gap-1 mb-3">
+            {/* Content */}
+            {!isDetailView ? (
+              <Link href={`/thread/${post.id}`} className="block group mb-3">
+                <div className="mb-3">
+                  <h3 className="text-base font-semibold mb-1 text-foreground group-hover:text-primary transition-colors" data-testid={`title-${post.id}`}>
+                    {post.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground line-clamp-3" data-testid={`content-${post.id}`}>
+                    {post.content}
+                  </p>
+                </div>
+                
+                {/* Image */}
+                {post.imageUrl && (
+                  <div className="mb-3 rounded-lg overflow-hidden">
+                    <img 
+                      src={post.imageUrl} 
+                      alt={post.title}
+                      className="w-full h-auto max-h-96 object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
+                      data-testid={`image-${post.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setIsImageViewerOpen(true);
+                      }}
+                    />
+                  </div>
+                )}
+              </Link>
+            ) : (
+              <div className="mb-3">
+                <h1 className="text-xl font-bold mb-2 text-foreground" data-testid={`title-${post.id}`}>
+                  {post.title}
+                </h1>
+                <div className="text-sm text-foreground whitespace-pre-wrap" data-testid={`content-${post.id}`}>
+                  {post.content}
+                </div>
+                
+                {/* Image */}
+                {post.imageUrl && (
+                  <div className="mb-3 rounded-lg overflow-hidden">
+                    <img 
+                      src={post.imageUrl} 
+                      alt={post.title}
+                      className="w-full h-auto max-h-96 object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
+                      data-testid={`image-${post.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setIsImageViewerOpen(true);
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {/* Category and Platforms */}
+            <div className="flex flex-wrap gap-2 mb-3">
+              <Badge 
+                variant="secondary" 
+                className={cn("text-xs", getCategoryColor(post.category))}
+                data-testid={`category-${post.id}`}
+              >
+                {post.category}
+              </Badge>
               {post.platforms.map((platform: string) => (
                 <Badge 
                   key={platform} 
                   variant="outline" 
                   className={cn("text-xs", getPlatformColor(platform))}
-                  data-testid={`insight-platform-${post.id}-${platform}`}
+                  data-testid={`platform-${post.id}-${platform}`}
                 >
                   {platform}
                 </Badge>
               ))}
             </div>
-            
-            {/* Actions */}
-            <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => likeMutation.mutate()}
-                className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
-                data-testid={`like-button-${post.id}`}
-              >
-                <ThumbsUp size={16} />
-                <span>{post.likes}</span>
-              </Button>
-              <Link href={`/article/${post.id}`}>
+
+            {/* VHub Data Pulse Poll */}
+            {post.type === 'pulse' && (post as any).pollOptions && (
+              <div className="mb-4">
+                <p className="text-sm font-medium text-muted-foreground mb-3">
+                  Vote on this pulse:
+                </p>
+                <div className="space-y-2">
+                  {(post as any).pollOptions.map((option: string, index: number) => {
+                    const percentage = (post as any).pollResults?.[index] || 0;
+                    const isSelected = selectedOption === index;
+                    
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          if (!hasVoted) {
+                            setSelectedOption(index);
+                            setHasVoted(true);
+                          }
+                        }}
+                        disabled={hasVoted}
+                        className={cn(
+                          "w-full p-3 rounded-lg border text-left transition-all",
+                          hasVoted 
+                            ? isSelected 
+                              ? "border-primary bg-primary/10" 
+                              : "border-border bg-muted/50"
+                            : "border-border hover:border-primary hover:bg-accent/5"
+                        )}
+                        data-testid={`poll-option-${post.id}-${index}`}
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm font-medium">{option}</span>
+                          {hasVoted && (
+                            <span className="text-xs text-muted-foreground">
+                              {percentage}%
+                            </span>
+                          )}
+                        </div>
+                        {hasVoted && (
+                          <Progress 
+                            value={percentage} 
+                            className="h-1.5"
+                            data-testid={`poll-progress-${post.id}-${index}`}
+                          />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+                {hasVoted && (
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Poll results based on {(post as any).pollResults?.reduce((a: number, b: number) => a + b, 0) || 0} votes
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Engagement Actions */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-1">
                 <Button
                   variant="ghost"
                   size="sm"
+                  onClick={handleLike}
                   className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
-                  data-testid={`comment-button-${post.id}`}
+                  data-testid={`like-button-${post.id}`}
                 >
-                  <MessageCircle size={16} />
-                  <span>{post.comments} comments</span>
+                  <ThumbsUp size={16} />
+                  <span>{post.likes}</span>
                 </Button>
-              </Link>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleShare}
-                className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
-                data-testid={`share-button-${post.id}`}
-              >
-                <Share size={16} />
-                <span>{post.shares}</span>
-              </Button>
-            </div>
-          </div>
-        </div>
-      </article>
-    );
-  }
-
-  // Handle Regular Posts (Community Feed)
-  return (
-    <article className="bg-sidebar enhanced-card glow-border p-4 rounded-lg border border-sidebar-border hover:border-primary/30 transition-all duration-300 hover:shadow-md" data-testid={`regular-post-${post.id}`}>
-      <div className="flex items-start space-x-3">
-        {/* Author Avatar */}
-        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center flex-shrink-0">
-          <span className="text-sm font-bold text-white">
-            {post.author.displayName.charAt(0)}
-          </span>
-        </div>
-        
-        <div className="flex-1 min-w-0">
-          {/* Header */}
-          <div className="flex items-center space-x-2 mb-1">
-            <span className="font-medium text-foreground" data-testid={`author-${post.id}`}>
-              {post.author.displayName}
-            </span>
-            <Badge variant="secondary" className="text-xs">
-              {post.author.role}
-            </Badge>
-            <span className="text-xs text-muted-foreground">•</span>
-            <span className="text-xs text-muted-foreground" data-testid={`time-${post.id}`}>
-              {formatTimeAgo(post.createdAt ? new Date(post.createdAt) : new Date())}
-            </span>
-          </div>
-          
-          {/* Content */}
-          {!isDetailView ? (
-            <Link href={`/thread/${post.id}`} className="block group mb-3">
-              <div className="mb-3">
-                <h3 className="text-base font-semibold mb-1 text-foreground group-hover:text-primary transition-colors" data-testid={`title-${post.id}`}>
-                  {post.title}
-                </h3>
-                <p className="text-sm text-muted-foreground line-clamp-3" data-testid={`content-${post.id}`}>
-                  {post.content}
-                </p>
-              </div>
-              
-              {/* Image */}
-              {post.imageUrl && (
-                <div className="mb-3 rounded-lg overflow-hidden">
-                  <img 
-                    src={post.imageUrl} 
-                    alt={post.title}
-                    className="w-full h-auto max-h-96 object-cover"
-                    data-testid={`image-${post.id}`}
-                  />
-                </div>
-              )}
-            </Link>
-          ) : (
-            <div className="mb-3">
-              <h1 className="text-xl font-bold mb-2 text-foreground" data-testid={`title-${post.id}`}>
-                {post.title}
-              </h1>
-              <div className="text-sm text-foreground whitespace-pre-wrap" data-testid={`content-${post.id}`}>
-                {post.content}
-              </div>
-              
-              {/* Image */}
-              {post.imageUrl && (
-                <div className="mb-3 rounded-lg overflow-hidden">
-                  <img 
-                    src={post.imageUrl} 
-                    alt={post.title}
-                    className="w-full h-auto max-h-96 object-cover"
-                    data-testid={`image-${post.id}`}
-                  />
-                </div>
-              )}
-            </div>
-          )}
-          
-          {/* Category and Platforms */}
-          <div className="flex flex-wrap gap-2 mb-3">
-            <Badge 
-              variant="secondary" 
-              className={cn("text-xs", getCategoryColor(post.category))}
-              data-testid={`category-${post.id}`}
-            >
-              {post.category}
-            </Badge>
-            {post.platforms.map((platform: string) => (
-              <Badge 
-                key={platform} 
-                variant="outline" 
-                className={cn("text-xs", getPlatformColor(platform))}
-                data-testid={`platform-${post.id}-${platform}`}
-              >
-                {platform}
-              </Badge>
-            ))}
-          </div>
-          
-          {/* Actions and Metadata */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => likeMutation.mutate()}
-                className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
-                data-testid={`like-button-${post.id}`}
-              >
-                <ThumbsUp size={16} />
-                <span>{post.likes}</span>
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => saveMutation.mutate()}
-                className={cn(
-                  "flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1",
-                  isSaved && "text-red-500"
-                )}
-                data-testid={`save-button-${post.id}`}
-              >
-                <Heart size={16} className={isSaved ? "fill-current" : ""} />
-                <span>{isSaved ? "Saved" : "Save"}</span>
-              </Button>
-              {!isDetailView ? (
-                <Link href={`/thread/${post.id}`}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleSave}
+                  className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
+                  data-testid={`save-button-${post.id}`}
+                >
+                  <Heart size={16} className={isSaved ? "fill-current" : ""} />
+                  <span>{isSaved ? "Saved" : "Save"}</span>
+                </Button>
+                {!isDetailView ? (
+                  <Link href={`/thread/${post.id}`}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
+                      data-testid={`comment-button-${post.id}`}
+                    >
+                      <MessageCircle size={16} />
+                      <span>{post.comments} comments</span>
+                    </Button>
+                  </Link>
+                ) : (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -436,39 +295,39 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                     <MessageCircle size={16} />
                     <span>{post.comments} comments</span>
                   </Button>
-                </Link>
-              ) : (
+                )}
                 <Button
                   variant="ghost"
                   size="sm"
+                  onClick={handleShare}
                   className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
-                  data-testid={`comment-button-${post.id}`}
+                  data-testid={`share-button-${post.id}`}
                 >
-                  <MessageCircle size={16} />
-                  <span>{post.comments} comments</span>
+                  <Share size={16} />
+                  <span>
+                    {post.type === 'pulse' && shareSuccess ? 'Link Copied!' : post.shares}
+                  </span>
                 </Button>
-              )}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleShare}
-                className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
-                data-testid={`share-button-${post.id}`}
-              >
-                <Share size={16} />
-                <span>
-                  {post.type === 'pulse' && shareSuccess ? 'Link Copied!' : post.shares}
+              </div>
+              {post.price && (
+                <span className="text-sm font-medium text-green-600 dark:text-green-400" data-testid={`price-${post.id}`}>
+                  {post.price}
                 </span>
-              </Button>
+              )}
             </div>
-            {post.price && (
-              <span className="text-sm font-medium text-green-600 dark:text-green-400" data-testid={`price-${post.id}`}>
-                {post.price}
-              </span>
-            )}
           </div>
         </div>
-      </div>
-    </article>
+      </article>
+
+      {/* Image Viewer Modal */}
+      {post.imageUrl && (
+        <ImageViewerModal
+          isOpen={isImageViewerOpen}
+          onClose={() => setIsImageViewerOpen(false)}
+          imageUrl={post.imageUrl}
+          imageAlt={post.title || ""}
+        />
+      )}
+    </>
   );
 });
