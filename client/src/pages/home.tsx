@@ -810,56 +810,88 @@ const HomePage = () => {
         </div>
 
         {/* Dark section - Why Creators Get Stuck */}
-        <div className="bg-background border-t border-border px-6 py-20">
-          <div className="max-w-7xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground text-center mb-16">
+        <div className="bg-background border-t border-border px-6 py-20 relative overflow-hidden">
+          {/* Animated background elements */}
+          <div className="absolute inset-0 opacity-5">
+            <div className="absolute top-20 left-10 w-32 h-32 bg-primary rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute bottom-20 right-10 w-40 h-40 bg-purple-400 rounded-full blur-3xl animate-pulse delay-1000"></div>
+            <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-primary rounded-full blur-2xl animate-pulse delay-500"></div>
+          </div>
+          
+          <div className="max-w-7xl mx-auto relative z-10">
+            <h2 className="text-4xl md:text-5xl font-bold text-foreground text-center mb-16 animate-in fade-in slide-in-from-bottom-4 duration-1000">
               Why Creators Get Stuck
             </h2>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
-              <div className="text-center">
-                <div className="w-20 h-20 rounded-2xl bg-card border border-border flex items-center justify-center mx-auto mb-6 enhanced-card">
-                  <Lock className="w-10 h-10 text-muted-foreground" />
+              {/* Problem 1 - Enhanced with hover effects */}
+              <div className="text-center group cursor-pointer transform transition-all duration-500 hover:scale-105 animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
+                <div className="relative">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-red-500/20 to-red-600/30 border border-red-500/30 flex items-center justify-center mx-auto mb-6 enhanced-card group-hover:shadow-2xl group-hover:shadow-red-500/20 transition-all duration-500 group-hover:rotate-3">
+                    <Lock className="w-10 h-10 text-red-400 group-hover:scale-110 transition-all duration-300 group-hover:rotate-12" />
+                    {/* Glowing ring effect */}
+                    <div className="absolute inset-0 rounded-2xl bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm scale-110"></div>
+                  </div>
                 </div>
-                <h3 className="text-2xl font-bold text-foreground mb-4">Too many tools. No Clear System</h3>
-                <p className="text-muted-foreground text-base leading-relaxed">
+                <h3 className="text-2xl font-bold text-foreground mb-4 group-hover:text-red-400 transition-colors duration-300">Too many tools. No Clear System</h3>
+                <p className="text-muted-foreground text-base leading-relaxed group-hover:text-foreground/80 transition-colors duration-300">
                   You bounce between Discord, Reddit, YouTube, and still feel like you're starting from scratch.
                 </p>
+                {/* Interactive highlight bar */}
+                <div className="h-1 w-0 bg-gradient-to-r from-red-400 to-red-600 rounded-full mt-4 mx-auto group-hover:w-full transition-all duration-500"></div>
               </div>
 
-              <div className="text-center">
-                <div className="w-20 h-20 rounded-2xl bg-card border border-border flex items-center justify-center mx-auto mb-6 enhanced-card">
-                  <HelpCircle className="w-10 h-10 text-muted-foreground" />
+              {/* Problem 2 - Enhanced with hover effects */}
+              <div className="text-center group cursor-pointer transform transition-all duration-500 hover:scale-105 animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-400">
+                <div className="relative">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-orange-500/20 to-yellow-600/30 border border-orange-500/30 flex items-center justify-center mx-auto mb-6 enhanced-card group-hover:shadow-2xl group-hover:shadow-orange-500/20 transition-all duration-500 group-hover:-rotate-3">
+                    <HelpCircle className="w-10 h-10 text-orange-400 group-hover:scale-110 transition-all duration-300 group-hover:-rotate-12" />
+                    {/* Glowing ring effect */}
+                    <div className="absolute inset-0 rounded-2xl bg-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm scale-110"></div>
+                  </div>
                 </div>
-                <h3 className="text-2xl font-bold text-foreground mb-4">Didn't realize this could be a career?</h3>
-                <p className="text-muted-foreground text-base leading-relaxed">
+                <h3 className="text-2xl font-bold text-foreground mb-4 group-hover:text-orange-400 transition-colors duration-300">Didn't realize this could be a career?</h3>
+                <p className="text-muted-foreground text-base leading-relaxed group-hover:text-foreground/80 transition-colors duration-300">
                   People keep saying "follow your passion" and "build in public," especially where income feels impossible to new.
                 </p>
+                {/* Interactive highlight bar */}
+                <div className="h-1 w-0 bg-gradient-to-r from-orange-400 to-yellow-600 rounded-full mt-4 mx-auto group-hover:w-full transition-all duration-500"></div>
               </div>
 
-              <div className="text-center">
-                <div className="w-20 h-20 rounded-2xl bg-card border border-border flex items-center justify-center mx-auto mb-6 enhanced-card">
-                  <EyeOff className="w-10 h-10 text-muted-foreground" />
+              {/* Problem 3 - Enhanced with hover effects */}
+              <div className="text-center group cursor-pointer transform transition-all duration-500 hover:scale-105 animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-600">
+                <div className="relative">
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500/20 to-indigo-600/30 border border-blue-500/30 flex items-center justify-center mx-auto mb-6 enhanced-card group-hover:shadow-2xl group-hover:shadow-blue-500/20 transition-all duration-500 group-hover:rotate-3">
+                    <EyeOff className="w-10 h-10 text-blue-400 group-hover:scale-110 transition-all duration-300 group-hover:rotate-12" />
+                    {/* Glowing ring effect */}
+                    <div className="absolute inset-0 rounded-2xl bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm scale-110"></div>
+                  </div>
                 </div>
-                <h3 className="text-2xl font-bold text-foreground mb-4">You're Skilled—but you're Invisible.</h3>
-                <p className="text-muted-foreground text-base leading-relaxed">
+                <h3 className="text-2xl font-bold text-foreground mb-4 group-hover:text-blue-400 transition-colors duration-300">You're Skilled—but you're Invisible.</h3>
+                <p className="text-muted-foreground text-base leading-relaxed group-hover:text-foreground/80 transition-colors duration-300">
                   Skill alone isn't enough to grow an audience, reputation, and real opportunities to rise.
                 </p>
+                {/* Interactive highlight bar */}
+                <div className="h-1 w-0 bg-gradient-to-r from-blue-400 to-indigo-600 rounded-full mt-4 mx-auto group-hover:w-full transition-all duration-500"></div>
               </div>
             </div>
 
-            {/* Arrow pointing right */}
-            <div className="text-center mb-12">
-              <div className="inline-block p-4 bg-primary rounded-full enhanced-card">
-                <ArrowRight className="w-8 h-8 text-white" />
+            {/* Animated Arrow with pulsing effect */}
+            <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-800">
+              <div className="inline-block p-6 bg-gradient-to-r from-primary via-purple-500 to-primary rounded-full enhanced-card group cursor-pointer transform transition-all duration-500 hover:scale-110 hover:rotate-12 shadow-lg hover:shadow-primary/30 animate-bounce">
+                <ArrowRight className="w-8 h-8 text-white group-hover:translate-x-1 transition-transform duration-300" />
+                {/* Pulsing glow ring */}
+                <div className="absolute inset-0 rounded-full bg-primary/20 scale-150 animate-ping opacity-30"></div>
               </div>
             </div>
 
-            {/* Final CTA */}
-            <div className="text-center">
-              <p className="text-3xl md:text-4xl font-bold text-foreground">
+            {/* Final CTA with gradient text effect */}
+            <div className="text-center animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000">
+              <p className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary via-purple-400 to-primary bg-clip-text text-transparent animate-pulse">
                 Stop building in the dark—and start building your future.
               </p>
+              {/* Subtle underline effect */}
+              <div className="h-1 w-32 bg-gradient-to-r from-primary to-purple-400 rounded-full mx-auto mt-4 opacity-50"></div>
             </div>
           </div>
         </div>
