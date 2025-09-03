@@ -12,7 +12,6 @@ import { featuredItems } from '@/components/featured/types';
 import vhubHeaderImage from '@assets/VHub.Header.no.font.Light.Page.png';
 import { useQuery } from '@tanstack/react-query';
 import type { PostWithAuthor, Platform } from '@shared/schema';
-import { VHubPulseCard } from '@/components/vhub-pulse-card';
 
 const FEATURED_V2 = true;
 
@@ -40,12 +39,7 @@ const CommunityPage: React.FC = () => {
   });
 
   // Filter posts by type
-  // Fetch active pulse polls separately (admin-generated polls)
-  const { data: pulsePolls, isLoading: isPulseLoading } = useQuery({
-    queryKey: ['/api/pulse/polls', 'active'],
-    queryFn: () => fetch('/api/pulse/polls?status=active').then(res => res.json()),
-  });
-
+  const pulsePosts = posts.filter(post => post.type === 'pulse');
   const insightPosts = posts.filter(post => post.type === 'insight');
   const regularPosts = posts.filter(post => post.type === 'regular');
   const allPostsData = currentTab === 'saved' ? savedPosts : regularPosts;
@@ -69,7 +63,7 @@ const CommunityPage: React.FC = () => {
     cards.forEach(card => observer.observe(card));
 
     return () => observer.disconnect();
-  }, [pulsePolls, insightPosts, regularPosts]);
+  }, [pulsePosts, insightPosts, regularPosts]);
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
@@ -190,7 +184,7 @@ const CommunityPage: React.FC = () => {
                 <main>
 
                   {/* VHub Pulse */}
-                  {currentTab === 'all' && pulsePolls && pulsePolls.length > 0 && (
+                  {currentTab === 'all' && pulsePosts.length > 0 && (
                     <div className="mb-16 pb-8 border-b border-border/30" data-testid="pulse-posts-feed">
                       <div className="flex flex-col items-center space-y-3 mb-6">
                         <div className="flex items-center space-x-2 w-full">
@@ -209,8 +203,8 @@ const CommunityPage: React.FC = () => {
                         </div>
                       </div>
                       <div className="space-y-6">
-                        {pulsePolls.map((poll: any) => (
-                          <VHubPulseCard key={poll.id} poll={poll} />
+                        {pulsePosts.map((post: any) => (
+                          <PostCard key={post.id} post={post} />
                         ))}
                       </div>
                     </div>

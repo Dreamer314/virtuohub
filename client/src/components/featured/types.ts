@@ -24,7 +24,7 @@ export const featuredItems: FeaturedItem[] = [
     title: 'Building Immersive Worlds with Next-Gen Tech',
     blurb: 'Learn how top creators are leveraging new tools and technologies to build more immersive virtual experiences.',
     ctaLabel: 'Read Interview',
-    ctaHref: '/interview/alex-chen-vrchat-worlds',
+    ctaHref: '/interviews/building-immersive-worlds',
     imageSrc: vrChatImage,
     imageAlt: 'VRChat cyberpunk world showcase'
   },

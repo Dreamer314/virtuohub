@@ -76,7 +76,7 @@ export function LeftSidebar({
     },
     { 
       id: 'pulse', 
-      label: 'VHub Pulse', 
+      label: 'Pulse Reports', 
       icon: Zap, 
       active: location === '/pulse' || location.startsWith('/pulse/'), 
       href: '/pulse'

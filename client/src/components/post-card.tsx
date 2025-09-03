@@ -193,19 +193,14 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
             </div>
 
             {/* VHub Data Pulse Poll */}
-            {post.type === 'pulse' && (post as any).pollData && (
-              <div className="mb-6 p-4 bg-gradient-to-br from-primary/5 to-accent/5 rounded-xl border border-primary/20">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                  <p className="text-sm font-medium text-primary">
-                    VHub Pulse Poll
-                  </p>
-                  <div className="text-xs text-muted-foreground">
-                    • {(post as any).pollData.totalVotes} votes
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  {(post as any).pollData.options.map((option: any, index: number) => {
+            {post.type === 'pulse' && (post as any).pollOptions && (
+              <div className="mb-4">
+                <p className="text-sm font-medium text-muted-foreground mb-3">
+                  Vote on this pulse:
+                </p>
+                <div className="space-y-2">
+                  {(post as any).pollOptions.map((option: string, index: number) => {
+                    const percentage = (post as any).pollResults?.[index] || 0;
                     const isSelected = selectedOption === index;
                     
                     return (
@@ -219,50 +214,38 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                         }}
                         disabled={hasVoted}
                         className={cn(
-                          "w-full p-4 rounded-lg border text-left transition-all group",
+                          "w-full p-3 rounded-lg border text-left transition-all",
                           hasVoted 
                             ? isSelected 
                               ? "border-primary bg-primary/10" 
-                              : "border-border bg-muted/30"
-                            : "border-border hover:border-primary hover:bg-accent/10 hover:shadow-sm"
+                              : "border-border bg-muted/50"
+                            : "border-border hover:border-primary hover:bg-accent/5"
                         )}
                         data-testid={`poll-option-${post.id}-${index}`}
                       >
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-foreground">{option.text}</span>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm font-medium">{option}</span>
                           {hasVoted && (
-                            <span className="text-sm font-semibold text-primary">
-                              {option.percentage}%
+                            <span className="text-xs text-muted-foreground">
+                              {percentage}%
                             </span>
                           )}
                         </div>
                         {hasVoted && (
-                          <div className="space-y-1">
-                            <Progress 
-                              value={option.percentage} 
-                              className="h-2"
-                              data-testid={`poll-progress-${post.id}-${index}`}
-                            />
-                            <div className="flex justify-between text-xs text-muted-foreground">
-                              <span>{option.votes} votes</span>
-                            </div>
-                          </div>
-                        )}
-                        {!hasVoted && (
-                          <div className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                            Click to vote
-                          </div>
+                          <Progress 
+                            value={percentage} 
+                            className="h-1.5"
+                            data-testid={`poll-progress-${post.id}-${index}`}
+                          />
                         )}
                       </button>
                     );
                   })}
                 </div>
                 {hasVoted && (
-                  <div className="mt-4 pt-3 border-t border-border/50">
-                    <p className="text-xs text-muted-foreground text-center">
-                      Poll ends {new Date((post as any).pollData.endDate).toLocaleDateString()}
-                    </p>
-                  </div>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    Poll results based on {(post as any).pollResults?.reduce((a: number, b: number) => a + b, 0) || 0} votes
+                  </p>
                 )}
               </div>
             )}
