@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
-import { Zap } from 'lucide-react';
+import { TrendingUp, BarChart3, FileText, Lock, DollarSign, Eye } from 'lucide-react';
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
-import { PostCard } from '@/components/post-card';
 import { Footer } from '@/components/layout/footer';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
-import type { PostWithAuthor } from '@shared/schema';
+import { VHubPulseCard } from '@/components/vhub-pulse-card';
 
 const PulsePage: React.FC = () => {
   // Scroll to top when component mounts
@@ -14,17 +16,23 @@ const PulsePage: React.FC = () => {
     window.scrollTo(0, 0);
   }, []);
 
-  const { data: posts = [], isLoading } = useQuery<PostWithAuthor[]>({
-    queryKey: ['/api/posts']
+  // Fetch all pulse data using the same API as community page
+  const { data: activePolls = [], isLoading: activeLoading } = useQuery({
+    queryKey: ['/api/pulse/polls', 'active'],
+    queryFn: () => fetch('/api/pulse/polls?status=active').then(res => res.json()),
   });
 
-  const pulsePosts = posts
-    .filter(post => post.type === 'pulse')
-    .sort((a, b) => {
-      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-      return bTime - aTime;
-    });
+  const { data: completedPolls = [], isLoading: completedLoading } = useQuery({
+    queryKey: ['/api/pulse/polls', 'completed'],
+    queryFn: () => fetch('/api/pulse/polls?status=completed').then(res => res.json()),
+  });
+
+  const { data: allReports = [], isLoading: reportsLoading } = useQuery({
+    queryKey: ['/api/pulse/reports'],
+    queryFn: () => fetch('/api/pulse/reports').then(res => res.json()),
+  });
+
+  const isLoading = activeLoading || completedLoading || reportsLoading;
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
@@ -59,12 +67,13 @@ const PulsePage: React.FC = () => {
                 </div>
 
                 <main>
+                  {/* Header */}
                   <div className="mb-8">
                     <div className="flex items-center justify-center mb-6">
                       <div className="flex items-center space-x-2 w-full max-w-4xl mx-auto">
                         <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
                         <div className="flex items-center space-x-4">
-                          <Zap className="w-8 h-8 text-transparent bg-gradient-cosmic bg-clip-text" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
+                          <TrendingUp className="w-8 h-8 text-primary" />
                           <h1 className="text-3xl md:text-4xl font-bold text-foreground">
                             VHub Pulse
                           </h1>
@@ -73,400 +82,122 @@ const PulsePage: React.FC = () => {
                       </div>
                     </div>
                     <p className="text-center text-lg text-muted-foreground mb-8">
-                      Industry data collection center and poll results
+                      Real-time insights into the Immersive Economy through data-driven polls and reports.
                     </p>
                   </div>
 
-                  {/* Active Polls Section */}
-                  <div className="mb-12">
-                    <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center">
-                      <div className="w-3 h-3 bg-green-500 rounded-full mr-3 animate-pulse"></div>
-                      Active Polls
-                    </h2>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-green-500/30">
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="inline-block px-3 py-1 text-xs font-medium bg-green-500/20 text-green-300 border border-green-500/30 rounded-full">Active Poll</span>
-                          <span className="text-sm text-muted-foreground">Ends in 5 days</span>
-                        </div>
-                        <h3 className="text-lg font-semibold text-foreground mb-3">
-                          What's your primary revenue stream in virtual worlds?
-                        </h3>
-                        <div className="space-y-3 mb-4">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">Asset sales</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full bg-cyan-500 rounded-full" style={{width: '45%'}}></div>
-                              </div>
-                              <span className="text-sm text-cyan-400">45%</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">Virtual events</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full bg-purple-500 rounded-full" style={{width: '30%'}}></div>
-                              </div>
-                              <span className="text-sm text-purple-400">30%</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">Commissions</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full bg-yellow-500 rounded-full" style={{width: '25%'}}></div>
-                              </div>
-                              <span className="text-sm text-yellow-400">25%</span>
-                            </div>
-                          </div>
-                        </div>
-                        <p className="text-xs text-muted-foreground mb-3">2,847 responses</p>
-                        <button className="w-full py-2 bg-cyan-500 text-black rounded-lg hover:bg-cyan-400 transition-colors text-sm font-medium">
-                          Participate in Poll
-                        </button>
-                      </article>
-
-                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-green-500/30">
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="inline-block px-3 py-1 text-xs font-medium bg-green-500/20 text-green-300 border border-green-500/30 rounded-full">Active Poll</span>
-                          <span className="text-sm text-muted-foreground">Ends in 12 days</span>
-                        </div>
-                        <h3 className="text-lg font-semibold text-foreground mb-3">
-                          Which platform do you prioritize for new projects?
-                        </h3>
-                        <div className="space-y-3 mb-4">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">VRChat</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full bg-cyan-500 rounded-full" style={{width: '38%'}}></div>
-                              </div>
-                              <span className="text-sm text-cyan-400">38%</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">Roblox</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full bg-orange-500 rounded-full" style={{width: '35%'}}></div>
-                              </div>
-                              <span className="text-sm text-orange-400">35%</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">Horizon Worlds</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full bg-blue-500 rounded-full" style={{width: '27%'}}></div>
-                              </div>
-                              <span className="text-sm text-blue-400">27%</span>
-                            </div>
-                          </div>
-                        </div>
-                        <p className="text-xs text-muted-foreground mb-3">1,924 responses</p>
-                        <button className="w-full py-2 bg-cyan-500 text-black rounded-lg hover:bg-cyan-400 transition-colors text-sm font-medium">
-                          Participate in Poll
-                        </button>
-                      </article>
+                  {isLoading ? (
+                    <div className="flex justify-center py-12">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="space-y-12">
+                      {/* Active Polls */}
+                      {activePolls.length > 0 && (
+                        <section>
+                          <div className="flex items-center gap-3 mb-6">
+                            <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+                            <h2 className="text-2xl font-bold text-foreground">Active Polls</h2>
+                            <Badge variant="secondary" className="bg-primary/10 text-primary">
+                              {activePolls.length} active
+                            </Badge>
+                          </div>
+                          <div className="space-y-6">
+                            {activePolls.map((poll: any) => (
+                              <VHubPulseCard key={poll.id} poll={poll} />
+                            ))}
+                          </div>
+                        </section>
+                      )}
 
-                  {/* Completed Polls Section */}
-                  <div className="mb-12">
-                    <h2 className="text-2xl font-bold text-foreground mb-6">Completed Polls</h2>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="inline-block px-3 py-1 text-xs font-medium bg-gray-500/20 text-gray-300 border border-gray-500/30 rounded-full">Completed</span>
-                          <span className="text-sm text-muted-foreground">Ended Dec 20</span>
-                        </div>
-                        <h3 className="text-lg font-semibold text-foreground mb-3">
-                          Which creation tool do you use most?
-                        </h3>
-                        <div className="space-y-3 mb-4">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">Unity</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full bg-blue-500 rounded-full" style={{width: '52%'}}></div>
-                              </div>
-                              <span className="text-sm text-blue-400">52%</span>
-                            </div>
+                      {/* Completed Polls */}
+                      {completedPolls.length > 0 && (
+                        <section>
+                          <div className="flex items-center gap-3 mb-6">
+                            <BarChart3 className="w-5 h-5 text-muted-foreground" />
+                            <h2 className="text-2xl font-bold text-foreground">Recent Results</h2>
+                            <Badge variant="outline">
+                              {completedPolls.length} completed
+                            </Badge>
                           </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">Blender</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full bg-orange-500 rounded-full" style={{width: '28%'}}></div>
-                              </div>
-                              <span className="text-sm text-orange-400">28%</span>
-                            </div>
+                          <div className="space-y-6">
+                            {completedPolls.map((poll: any) => (
+                              <VHubPulseCard key={poll.id} poll={poll} />
+                            ))}
                           </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">Unreal Engine</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full bg-purple-500 rounded-full" style={{width: '20%'}}></div>
-                              </div>
-                              <span className="text-sm text-purple-400">20%</span>
-                            </div>
-                          </div>
-                        </div>
-                        <p className="text-xs text-muted-foreground">4,562 responses</p>
-                      </article>
+                        </section>
+                      )}
 
-                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="inline-block px-3 py-1 text-xs font-medium bg-gray-500/20 text-gray-300 border border-gray-500/30 rounded-full">Completed</span>
-                          <span className="text-sm text-muted-foreground">Ended Dec 15</span>
-                        </div>
-                        <h3 className="text-lg font-semibold text-foreground mb-3">
-                          How many hours per week do you spend creating?
-                        </h3>
-                        <div className="space-y-3 mb-4">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">20+ hours (Full-time)</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full bg-green-500 rounded-full" style={{width: '34%'}}></div>
-                              </div>
-                              <span className="text-sm text-green-400">34%</span>
-                            </div>
+                      {/* Reports */}
+                      {allReports.length > 0 && (
+                        <section>
+                          <div className="flex items-center gap-3 mb-6">
+                            <FileText className="w-5 h-5 text-muted-foreground" />
+                            <h2 className="text-2xl font-bold text-foreground">Published Reports</h2>
+                            <Badge variant="outline">
+                              {allReports.length} reports
+                            </Badge>
                           </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">10-20 hours</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full bg-yellow-500 rounded-full" style={{width: '31%'}}></div>
-                              </div>
-                              <span className="text-sm text-yellow-400">31%</span>
-                            </div>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {allReports.map((report: any) => (
+                              <Card key={report.id} className="p-6 hover:shadow-lg transition-all">
+                                <div className="flex items-start justify-between mb-4">
+                                  <div className="flex-1">
+                                    <h3 className="font-semibold text-foreground mb-2">{report.title}</h3>
+                                    <p className="text-sm text-muted-foreground mb-4">{report.description}</p>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    {report.accessType === 'free' && (
+                                      <Badge variant="secondary" className="bg-green-100 text-green-800">
+                                        <Eye className="w-3 h-3 mr-1" />
+                                        Free
+                                      </Badge>
+                                    )}
+                                    {report.accessType === 'paid' && (
+                                      <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                                        <DollarSign className="w-3 h-3 mr-1" />
+                                        Paid
+                                      </Badge>
+                                    )}
+                                    {report.accessType === 'private' && (
+                                      <Badge variant="secondary" className="bg-red-100 text-red-800">
+                                        <Lock className="w-3 h-3 mr-1" />
+                                        Private
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <div className="text-sm text-muted-foreground">
+                                    {new Date(report.publishDate).toLocaleDateString()}
+                                  </div>
+                                  <Button size="sm" variant="outline">
+                                    View Report
+                                  </Button>
+                                </div>
+                              </Card>
+                            ))}
                           </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">5-10 hours</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full bg-cyan-500 rounded-full" style={{width: '35%'}}></div>
-                              </div>
-                              <span className="text-sm text-cyan-400">35%</span>
-                            </div>
-                          </div>
-                        </div>
-                        <p className="text-xs text-muted-foreground">3,891 responses</p>
-                      </article>
+                        </section>
+                      )}
 
-                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="inline-block px-3 py-1 text-xs font-medium bg-gray-500/20 text-gray-300 border border-gray-500/30 rounded-full">Completed</span>
-                          <span className="text-sm text-muted-foreground">Ended Dec 10</span>
+                      {/* Empty State */}
+                      {activePolls.length === 0 && completedPolls.length === 0 && allReports.length === 0 && (
+                        <div className="text-center py-12">
+                          <TrendingUp className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+                          <h3 className="text-xl font-semibold text-foreground mb-2">No Pulse Data Available</h3>
+                          <p className="text-muted-foreground">Check back later for new polls and reports.</p>
                         </div>
-                        <h3 className="text-lg font-semibold text-foreground mb-3">
-                          What's your biggest creation challenge?
-                        </h3>
-                        <div className="space-y-3 mb-4">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">Learning new tools</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full bg-red-500 rounded-full" style={{width: '42%'}}></div>
-                              </div>
-                              <span className="text-sm text-red-400">42%</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">Finding time</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full bg-blue-500 rounded-full" style={{width: '33%'}}></div>
-                              </div>
-                              <span className="text-sm text-blue-400">33%</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">Technical limitations</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full bg-purple-500 rounded-full" style={{width: '25%'}}></div>
-                              </div>
-                              <span className="text-sm text-purple-400">25%</span>
-                            </div>
-                          </div>
-                        </div>
-                        <p className="text-xs text-muted-foreground">5,234 responses</p>
-                      </article>
-
-                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
-                        <div className="flex items-center justify-between mb-4">
-                          <span className="inline-block px-3 py-1 text-xs font-medium bg-gray-500/20 text-gray-300 border border-gray-500/30 rounded-full">Completed</span>
-                          <span className="text-sm text-muted-foreground">Ended Dec 5</span>
-                        </div>
-                        <h3 className="text-lg font-semibold text-foreground mb-3">
-                          Which monetization model works best?
-                        </h3>
-                        <div className="space-y-3 mb-4">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">One-time purchases</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full bg-green-500 rounded-full" style={{width: '39%'}}></div>
-                              </div>
-                              <span className="text-sm text-green-400">39%</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">Subscriptions</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full bg-orange-500 rounded-full" style={{width: '32%'}}></div>
-                              </div>
-                              <span className="text-sm text-orange-400">32%</span>
-                            </div>
-                          </div>
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-muted-foreground">Commission-based</span>
-                            <div className="flex items-center gap-2">
-                              <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full bg-cyan-500 rounded-full" style={{width: '29%'}}></div>
-                              </div>
-                              <span className="text-sm text-cyan-400">29%</span>
-                            </div>
-                          </div>
-                        </div>
-                        <p className="text-xs text-muted-foreground">2,678 responses</p>
-                      </article>
+                      )}
                     </div>
-                  </div>
-
-                  {/* Published Reports */}
-                  <div>
-                    <h2 className="text-2xl font-bold text-foreground mb-6">Published Reports</h2>
-                    <div className="space-y-6">
-                      {/* Free Report */}
-                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
-                        <div className="flex items-start justify-between mb-4">
-                          <div>
-                            <span className="inline-block px-3 py-1 text-xs font-medium bg-primary/20 text-primary border border-primary/30 rounded-full mb-3">Free Report</span>
-                            <h3 className="text-xl font-semibold text-foreground mb-2">
-                              Q4 2024 Platform Usage Trends
-                            </h3>
-                            <p className="text-sm text-muted-foreground mb-3">
-                              Analysis of user engagement patterns across major virtual world platforms. Based on 15,000+ creator responses.
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-primary">FREE</div>
-                            <div className="text-xs text-muted-foreground">Released Dec 30</div>
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex gap-2">
-                            <span className="px-2 py-1 bg-primary/20 text-primary rounded text-xs">Platform Data</span>
-                            <span className="px-2 py-1 bg-accent/20 text-accent rounded text-xs">Usage Analytics</span>
-                          </div>
-                          <button className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium">
-                            Download PDF
-                          </button>
-                        </div>
-                      </article>
-
-                      {/* Premium Report */}
-                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
-                        <div className="flex items-start justify-between mb-4">
-                          <div>
-                            <span className="inline-block px-3 py-1 text-xs font-medium bg-accent/20 text-accent border border-accent/30 rounded-full mb-3">Premium Report</span>
-                            <h3 className="text-xl font-semibold text-foreground mb-2">
-                              Virtual Economy Revenue Analysis 2024
-                            </h3>
-                            <p className="text-sm text-muted-foreground mb-3">
-                              Comprehensive revenue breakdown by platform, creator type, and monetization strategy. Includes forecasting models.
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-accent">$49</div>
-                            <div className="text-xs text-muted-foreground">Released Dec 28</div>
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex gap-2">
-                            <span className="px-2 py-1 bg-primary/20 text-primary rounded text-xs">Revenue Data</span>
-                            <span className="px-2 py-1 bg-accent/20 text-accent rounded text-xs">Forecasting</span>
-                          </div>
-                          <button className="px-4 py-2 bg-gradient-to-r from-primary to-accent text-white rounded-lg hover:from-primary/90 hover:to-accent/90 transition-colors text-sm font-medium">
-                            Purchase Report
-                          </button>
-                        </div>
-                      </article>
-
-                      {/* Private Report */}
-                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-sidebar-border hover:border-cyan-500/30 transition-all opacity-60">
-                        <div className="flex items-start justify-between mb-4">
-                          <div>
-                            <span className="inline-block px-3 py-1 text-xs font-medium bg-muted/20 text-muted-foreground border border-muted/30 rounded-full mb-3">Private Report</span>
-                            <h3 className="text-xl font-semibold text-foreground mb-2">
-                              Enterprise Virtual Workspace Adoption
-                            </h3>
-                            <p className="text-sm text-muted-foreground mb-3">
-                              Detailed analysis of enterprise VR/AR workspace implementations. Access restricted to enterprise subscribers.
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-muted-foreground">PRIVATE</div>
-                            <div className="text-xs text-muted-foreground">Dec 26</div>
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex gap-2">
-                            <span className="px-2 py-1 bg-muted/20 text-muted-foreground rounded text-xs">Enterprise</span>
-                            <span className="px-2 py-1 bg-muted/20 text-muted-foreground rounded text-xs">Restricted</span>
-                          </div>
-                          <button className="px-4 py-2 bg-muted text-muted-foreground rounded-lg cursor-not-allowed text-sm font-medium" disabled>
-                            Access Required
-                          </button>
-                        </div>
-                      </article>
-
-                      {/* Completed Poll Results */}
-                      <article className="enhanced-card hover-lift rounded-xl p-6 border border-sidebar-border hover:border-primary/30 transition-all">
-                        <div className="flex items-start justify-between mb-4">
-                          <div>
-                            <span className="inline-block px-3 py-1 text-xs font-medium bg-primary/20 text-primary border border-primary/30 rounded-full mb-3">Poll Results</span>
-                            <h3 className="text-xl font-semibold text-foreground mb-2">
-                              Creator Tool Preferences Survey
-                            </h3>
-                            <p className="text-sm text-muted-foreground mb-3">
-                              Results from our survey on preferred creation tools and workflows. 8,500+ responses collected.
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-2xl font-bold text-primary">FREE</div>
-                            <div className="text-xs text-muted-foreground">Completed Dec 22</div>
-                          </div>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <div className="flex gap-2">
-                            <span className="px-2 py-1 bg-primary/20 text-primary rounded text-xs">Survey Data</span>
-                            <span className="px-2 py-1 bg-accent/20 text-accent rounded text-xs">Tools</span>
-                          </div>
-                          <button className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium">
-                            View Results
-                          </button>
-                        </div>
-                      </article>
-                    </div>
-                  </div>
+                  )}
                 </main>
-
-                <div className="lg:hidden mt-8">
-                  <RightSidebar />
-                </div>
               </div>
             </div>
           </div>
+          <Footer />
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 };
