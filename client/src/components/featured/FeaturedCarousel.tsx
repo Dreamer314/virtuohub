@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { Link } from "wouter";
 import type { FeaturedItem } from "./types";
 
 interface FeaturedCarouselProps {
@@ -140,12 +141,12 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
             {noWidow(currentItem.title)}
           </h2>
           <p className="mt-5 text-lg text-foreground/80">{currentItem.blurb}</p>
-          <a 
-            href={currentItem.ctaHref} 
+          <Link 
+            href={`${currentItem.ctaHref}?from=home`}
             className="mt-6 inline-flex items-center justify-center rounded-xl px-5 py-3 bg-[#6E4BFF] hover:bg-[#825FFF] text-white font-medium transition-colors"
           >
             {currentItem.ctaLabel}
-          </a>
+          </Link>
         </div>
       </div>
 
