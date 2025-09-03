@@ -92,103 +92,131 @@ const PulsePage: React.FC = () => {
                     </div>
                   ) : (
                     <div className="space-y-12">
-                      {/* Active Polls */}
-                      {activePolls.length > 0 && (
-                        <section>
-                          <div className="flex items-center gap-3 mb-6">
-                            <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                            <h2 className="text-2xl font-bold text-foreground">Active Polls</h2>
-                            <Badge variant="secondary" className="bg-primary/10 text-primary">
-                              {activePolls.length} active
-                            </Badge>
-                          </div>
-                          <div className="space-y-6">
+                      {/* Active Polls Section */}
+                      <section className="mb-12">
+                        <div className="flex items-center gap-3 mb-8">
+                          <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                          <h2 className="text-2xl font-bold text-foreground">Active Polls</h2>
+                        </div>
+                        {activePolls.length > 0 ? (
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {activePolls.map((poll: any) => (
-                              <VHubPulseCard key={poll.id} poll={poll} />
+                              <article key={poll.id} className="enhanced-card hover-lift rounded-xl p-6 border border-green-500/30">
+                                <div className="flex items-center justify-between mb-4">
+                                  <span className="inline-block px-3 py-1 text-xs font-medium bg-green-500/20 text-green-300 border border-green-500/30 rounded-full">Active Poll</span>
+                                  <span className="text-sm text-muted-foreground">
+                                    Ends in {Math.ceil((new Date(poll.endDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} days
+                                  </span>
+                                </div>
+                                <h3 className="text-lg font-semibold text-foreground mb-3">
+                                  {poll.title}
+                                </h3>
+                                <div className="space-y-3 mb-4">
+                                  {poll.options.map((option: any, index: number) => (
+                                    <div key={index} className="flex justify-between items-center">
+                                      <span className="text-sm text-muted-foreground">{option.text}</span>
+                                      <div className="flex items-center gap-2">
+                                        <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+                                          <div 
+                                            className="h-full rounded-full" 
+                                            style={{
+                                              width: `${option.percentage}%`,
+                                              backgroundColor: index === 0 ? '#06b6d4' : index === 1 ? '#8b5cf6' : '#eab308'
+                                            }}
+                                          ></div>
+                                        </div>
+                                        <span className="text-sm" style={{
+                                          color: index === 0 ? '#06b6d4' : index === 1 ? '#8b5cf6' : '#eab308'
+                                        }}>
+                                          {option.percentage}%
+                                        </span>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                                <p className="text-xs text-muted-foreground mb-3">{poll.totalVotes} responses</p>
+                                <button 
+                                  onClick={() => {/* Handle vote */}}
+                                  className="w-full py-2 bg-cyan-500 text-black rounded-lg hover:bg-cyan-400 transition-colors text-sm font-medium"
+                                >
+                                  Participate in Poll
+                                </button>
+                              </article>
                             ))}
                           </div>
-                        </section>
-                      )}
-
-                      {/* Completed Polls */}
-                      {completedPolls.length > 0 && (
-                        <section>
-                          <div className="flex items-center gap-3 mb-6">
-                            <BarChart3 className="w-5 h-5 text-muted-foreground" />
-                            <h2 className="text-2xl font-bold text-foreground">Recent Results</h2>
-                            <Badge variant="outline">
-                              {completedPolls.length} completed
-                            </Badge>
+                        ) : (
+                          <div className="text-center py-8 text-muted-foreground">
+                            No active polls at the moment.
                           </div>
+                        )}
+                      </section>
+
+                      {/* Published Reports Section */}
+                      <section>
+                        <div className="flex items-center gap-3 mb-8">
+                          <FileText className="w-5 h-5 text-muted-foreground" />
+                          <h2 className="text-2xl font-bold text-foreground">Published Reports</h2>
+                        </div>
+                        {allReports.length > 0 ? (
                           <div className="space-y-6">
-                            {completedPolls.map((poll: any) => (
-                              <VHubPulseCard key={poll.id} poll={poll} />
-                            ))}
-                          </div>
-                        </section>
-                      )}
-
-                      {/* Reports */}
-                      {allReports.length > 0 && (
-                        <section>
-                          <div className="flex items-center gap-3 mb-6">
-                            <FileText className="w-5 h-5 text-muted-foreground" />
-                            <h2 className="text-2xl font-bold text-foreground">Published Reports</h2>
-                            <Badge variant="outline">
-                              {allReports.length} reports
-                            </Badge>
-                          </div>
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {allReports.map((report: any) => (
-                              <Card key={report.id} className="p-6 hover:shadow-lg transition-all">
+                              <article key={report.id} className="enhanced-card hover-lift rounded-xl p-6 border border-border/50">
                                 <div className="flex items-start justify-between mb-4">
                                   <div className="flex-1">
-                                    <h3 className="font-semibold text-foreground mb-2">{report.title}</h3>
+                                    <div className="flex items-center gap-3 mb-2">
+                                      {report.accessType === 'free' && (
+                                        <span className="inline-block px-3 py-1 text-xs font-medium bg-green-500/20 text-green-300 border border-green-500/30 rounded-full">Free Report</span>
+                                      )}
+                                      {report.accessType === 'paid' && (
+                                        <span className="inline-block px-3 py-1 text-xs font-medium bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-full">Premium Report</span>
+                                      )}
+                                      {report.accessType === 'private' && (
+                                        <span className="inline-block px-3 py-1 text-xs font-medium bg-red-500/20 text-red-300 border border-red-500/30 rounded-full">Private Report</span>
+                                      )}
+                                      <span className="text-sm text-muted-foreground">
+                                        Released {new Date(report.publishDate).toLocaleDateString()}
+                                      </span>
+                                    </div>
+                                    <h3 className="text-lg font-semibold text-foreground mb-2">{report.title}</h3>
                                     <p className="text-sm text-muted-foreground mb-4">{report.description}</p>
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                      <span className="inline-block px-2 py-1 text-xs bg-primary/10 text-primary border border-primary/20 rounded">Platform Data</span>
+                                      <span className="inline-block px-2 py-1 text-xs bg-primary/10 text-primary border border-primary/20 rounded">Usage Analytics</span>
+                                    </div>
                                   </div>
-                                  <div className="flex items-center gap-2">
+                                  <div className="text-right">
                                     {report.accessType === 'free' && (
-                                      <Badge variant="secondary" className="bg-green-100 text-green-800">
-                                        <Eye className="w-3 h-3 mr-1" />
-                                        Free
-                                      </Badge>
+                                      <div className="text-2xl font-bold text-green-400 mb-2">FREE</div>
                                     )}
                                     {report.accessType === 'paid' && (
-                                      <Badge variant="secondary" className="bg-blue-100 text-blue-800">
-                                        <DollarSign className="w-3 h-3 mr-1" />
-                                        Paid
-                                      </Badge>
+                                      <div className="text-2xl font-bold text-blue-400 mb-2">${report.price || '49'}</div>
                                     )}
                                     {report.accessType === 'private' && (
-                                      <Badge variant="secondary" className="bg-red-100 text-red-800">
-                                        <Lock className="w-3 h-3 mr-1" />
-                                        Private
-                                      </Badge>
+                                      <div className="text-2xl font-bold text-red-400 mb-2">PRIVATE</div>
                                     )}
+                                    <Button 
+                                      size="sm" 
+                                      className={`${
+                                        report.accessType === 'free' 
+                                          ? 'bg-green-600 hover:bg-green-500' 
+                                          : report.accessType === 'paid'
+                                          ? 'bg-blue-600 hover:bg-blue-500'
+                                          : 'bg-red-600 hover:bg-red-500'
+                                      }`}
+                                    >
+                                      {report.accessType === 'free' ? 'Download PDF' : 'View Report'}
+                                    </Button>
                                   </div>
                                 </div>
-                                <div className="flex items-center justify-between">
-                                  <div className="text-sm text-muted-foreground">
-                                    {new Date(report.publishDate).toLocaleDateString()}
-                                  </div>
-                                  <Button size="sm" variant="outline">
-                                    View Report
-                                  </Button>
-                                </div>
-                              </Card>
+                              </article>
                             ))}
                           </div>
-                        </section>
-                      )}
-
-                      {/* Empty State */}
-                      {activePolls.length === 0 && completedPolls.length === 0 && allReports.length === 0 && (
-                        <div className="text-center py-12">
-                          <TrendingUp className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-                          <h3 className="text-xl font-semibold text-foreground mb-2">No Pulse Data Available</h3>
-                          <p className="text-muted-foreground">Check back later for new polls and reports.</p>
-                        </div>
-                      )}
+                        ) : (
+                          <div className="text-center py-8 text-muted-foreground">
+                            No published reports available.
+                          </div>
+                        )}
+                      </section>
                     </div>
                   )}
                 </main>
