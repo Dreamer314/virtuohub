@@ -6,6 +6,7 @@ import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
 import { Footer } from '@/components/layout/footer';
 import { EngagementSection } from '@/components/engagement-section';
+import vrChatImage from '@assets/generated_images/VRChat_cyberpunk_world_80607687.png';
 
 const InterviewDetailPage: React.FC = () => {
   const { id } = useParams();
@@ -19,7 +20,7 @@ const InterviewDetailPage: React.FC = () => {
       role: 'VRChat World Creator',
       date: 'Dec 28, 2024',
       readTime: '8 min read',
-      heroImage: 'from-purple-600 via-blue-600 to-indigo-700',
+      heroImage: vrChatImage,
       heroIcon: '🌍',
       stats: '2.5M world visits • 15K followers',
       tags: ['VRChat', 'World Building', 'Community'],
@@ -83,7 +84,7 @@ const InterviewDetailPage: React.FC = () => {
       role: 'Virtual Fashion Designer',
       date: 'Dec 28, 2024',
       readTime: '8 min read',
-      heroImage: 'from-pink-500 to-rose-600',
+      heroImage: vrChatImage,
       heroIcon: '👗',
       stats: '150K+ items sold • 50K followers',
       tags: ['Virtual Fashion', 'Business', 'Multi-platform'],
@@ -241,8 +242,13 @@ const InterviewDetailPage: React.FC = () => {
 
                 {/* Hero Section */}
                 <article className="glass-card rounded-xl overflow-hidden border border-cyan-500/30 mb-8">
-                  <div className={`w-full h-80 bg-gradient-to-br ${interview.heroImage} relative flex items-center justify-center`}>
-                    <div className="absolute inset-0 bg-black/40"></div>
+                  <div className="w-full h-80 relative flex items-center justify-center overflow-hidden">
+                    <img 
+                      src={interview.heroImage} 
+                      alt={`${interview.author} interview`}
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/50"></div>
                     <div className="relative z-10 text-center px-8">
                       <span className="text-6xl mb-4 block">{interview.heroIcon}</span>
                       <span className="inline-block px-3 py-1 text-xs font-medium bg-cyan-500/30 text-cyan-200 border border-cyan-400/30 rounded-full mb-4">Interview</span>
