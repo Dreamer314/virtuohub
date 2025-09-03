@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Zap } from 'lucide-react';
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
@@ -7,24 +7,28 @@ import { PostCard } from '@/components/post-card';
 import { Footer } from '@/components/layout/footer';
 import { useQuery } from '@tanstack/react-query';
 import type { PostWithAuthor } from '@shared/schema';
+import { pulseApi, subscribe, type Poll, type Report } from '@/data/pulseApi';
 
 const PulsePage: React.FC = () => {
+  const [pulseRefresh, setPulseRefresh] = useState(0);
+  
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const { data: posts = [], isLoading } = useQuery<PostWithAuthor[]>({
-    queryKey: ['/api/posts']
-  });
-
-  const pulsePosts = posts
-    .filter(post => post.type === 'pulse')
-    .sort((a, b) => {
-      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-      return bTime - aTime;
+  // Subscribe to pulse updates
+  useEffect(() => {
+    const unsubscribe = subscribe(() => {
+      setPulseRefresh(prev => prev + 1);
     });
+    return unsubscribe;
+  }, []);
+
+  // Get data from pulse API
+  const activePolls = pulseApi.listActivePolls();
+  const completedPolls = pulseApi.listCompletedPolls();
+  const reports = pulseApi.listReports();
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
