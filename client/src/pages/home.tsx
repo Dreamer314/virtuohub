@@ -828,7 +828,7 @@ const HomePage = () => {
               <div className="text-center group cursor-pointer transform transition-all duration-500 hover:scale-105 animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
                 <div className="relative">
                   <div className="w-20 h-20 rounded-2xl bg-gradient-cosmic/20 border border-primary/30 flex items-center justify-center mx-auto mb-6 enhanced-card group-hover:shadow-2xl group-hover:shadow-primary/20 transition-all duration-500 group-hover:rotate-3">
-                    <Lock className="w-10 h-10 text-transparent bg-gradient-cosmic bg-clip-text group-hover:scale-110 transition-all duration-300 group-hover:rotate-12" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
+                    <Lock className="w-10 h-10 text-primary group-hover:scale-110 transition-all duration-300 group-hover:rotate-12" />
                     {/* Glowing ring effect */}
                     <div className="absolute inset-0 rounded-2xl bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm scale-110"></div>
                   </div>
@@ -845,7 +845,7 @@ const HomePage = () => {
               <div className="text-center group cursor-pointer transform transition-all duration-500 hover:scale-105 animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-400">
                 <div className="relative">
                   <div className="w-20 h-20 rounded-2xl bg-gradient-nebula/20 border border-primary/30 flex items-center justify-center mx-auto mb-6 enhanced-card group-hover:shadow-2xl group-hover:shadow-primary/20 transition-all duration-500 group-hover:-rotate-3">
-                    <HelpCircle className="w-10 h-10 text-transparent bg-gradient-nebula bg-clip-text group-hover:scale-110 transition-all duration-300 group-hover:-rotate-12" style={{backgroundImage: 'var(--gradient-nebula)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
+                    <HelpCircle className="w-10 h-10 text-primary group-hover:scale-110 transition-all duration-300 group-hover:-rotate-12" />
                     {/* Glowing ring effect */}
                     <div className="absolute inset-0 rounded-2xl bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm scale-110"></div>
                   </div>
@@ -862,7 +862,7 @@ const HomePage = () => {
               <div className="text-center group cursor-pointer transform transition-all duration-500 hover:scale-105 animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-600">
                 <div className="relative">
                   <div className="w-20 h-20 rounded-2xl bg-gradient-aurora/20 border border-primary/30 flex items-center justify-center mx-auto mb-6 enhanced-card group-hover:shadow-2xl group-hover:shadow-primary/20 transition-all duration-500 group-hover:rotate-3">
-                    <EyeOff className="w-10 h-10 text-transparent bg-gradient-aurora bg-clip-text group-hover:scale-110 transition-all duration-300 group-hover:rotate-12" style={{backgroundImage: 'var(--gradient-aurora)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
+                    <EyeOff className="w-10 h-10 text-primary group-hover:scale-110 transition-all duration-300 group-hover:rotate-12" />
                     {/* Glowing ring effect */}
                     <div className="absolute inset-0 rounded-2xl bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-sm scale-110"></div>
                   </div>
