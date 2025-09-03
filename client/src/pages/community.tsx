@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Star, TrendingUp, Heart, ImageIcon, BarChart3, FileText, Zap } from 'lucide-react';
+import { Plus, Star, TrendingUp, Heart, ImageIcon, BarChart3, FileText, Zap, ThumbsUp, MessageCircle, Share } from 'lucide-react';
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
@@ -204,7 +204,84 @@ const CommunityPage: React.FC = () => {
                       </div>
                       <div className="space-y-6">
                         {pulsePosts.map((post: any) => (
-                          <PostCard key={post.id} post={post} />
+                          <article key={post.id} className="enhanced-card hover-lift group p-6 space-y-4 transition-all duration-200" data-testid={`pulse-card-${post.id}`}>
+                            <div className="flex space-x-4">
+                              {/* Avatar */}
+                              <div className="flex-shrink-0">
+                                <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white font-medium text-lg">
+                                  <Zap className="w-6 h-6" />
+                                </span>
+                              </div>
+                              
+                              <div className="flex-1 min-w-0">
+                                {/* Header */}
+                                <div className="flex items-center justify-between mb-4">
+                                  <div className="flex items-center space-x-2">
+                                    <span className="font-medium text-foreground">VHub Data Pulse</span>
+                                    <span className="text-xs text-muted-foreground">•</span>
+                                    <span className="text-xs text-muted-foreground">8 hours ago</span>
+                                  </div>
+                                </div>
+                                
+                                {/* Poll Question */}
+                                <h3 className="text-lg font-semibold text-foreground mb-4">
+                                  {post.title}
+                                </h3>
+                                
+                                {/* Poll Options */}
+                                {(post as any).pollData && (
+                                  <div className="space-y-3 mb-4">
+                                    {(post as any).pollData.options.map((option: any, index: number) => (
+                                      <button
+                                        key={index}
+                                        className="w-full p-3 text-left border border-border rounded-lg hover:border-primary/50 transition-colors"
+                                        data-testid={`poll-option-${post.id}-${index}`}
+                                      >
+                                        <span className="text-sm font-medium text-foreground">{option.text}</span>
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                                
+                                {/* Poll Meta */}
+                                <div className="flex items-center justify-between mb-4">
+                                  <span className="text-xs text-muted-foreground">0 votes</span>
+                                  <span className="text-xs text-muted-foreground">Poll ends in 2 days</span>
+                                </div>
+
+                                {/* Engagement Actions */}
+                                <div className="flex items-center space-x-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
+                                    data-testid={`like-button-${post.id}`}
+                                  >
+                                    <ThumbsUp size={16} />
+                                    <span>0</span>
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
+                                    data-testid={`comment-button-${post.id}`}
+                                  >
+                                    <MessageCircle size={16} />
+                                    <span>0 comments</span>
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
+                                    data-testid={`share-button-${post.id}`}
+                                  >
+                                    <Share size={16} />
+                                    <span>Share</span>
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </article>
                         ))}
                       </div>
                     </div>
