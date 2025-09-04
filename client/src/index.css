@@ -266,6 +266,22 @@
     border: 1px solid hsl(var(--border));
   }
 
+  /* Fix select dropdown options for all themes */
+  select option {
+    background-color: hsl(var(--surface));
+    color: hsl(var(--foreground));
+  }
+
+  .dark select option {
+    background-color: hsl(var(--surface));
+    color: hsl(var(--foreground));
+  }
+
+  .charcoal select option {
+    background-color: hsl(var(--surface));
+    color: hsl(var(--foreground));
+  }
+
   /* Enhanced dark theme card styling with ambient effects */
   .dark .enhanced-card {
     box-shadow: 
