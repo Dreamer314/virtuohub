@@ -87,7 +87,7 @@ export function ChartTable({
   // Show signup/upgrade card if there are more than 5 entries and user doesn't have full access
   const hasMoreEntries = entries.length > 5 && (!isLoggedIn || (isLoggedIn && !isProUser));
   
-  // For Top 25 charts, show entries 1-5 for anonymous users, then signup card, then grayed out entries 6-25
+  // For Top 25 charts, show entries 1-5 for anonymous users, then Load Full Chart button
   const freeEntries = displayEntries.slice(0, 5);
   const proEntries = displayEntries.slice(5, 25);
   
@@ -201,46 +201,39 @@ export function ChartTable({
           </motion.div>
         ))}
         
-        {/* Lock card after entry 5 - signup for anonymous users, pro upgrade for logged-in users */}
-        {hasMoreEntries && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 5 * 0.03 }}
-          >
-            {!isLoggedIn ? (
-              <SignupLockCard onSignup={() => setShowSignupModal(true)} />
-            ) : (
-              <ProLockCard onUpgrade={onUpgrade} />
-            )}
-          </motion.div>
-        )}
-        
-        {/* Show entries 6-25 - only if they exist */}
-        {proEntries.length > 0 && proEntries.map((entry, index) => (
-          <motion.div
-            key={entry.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: (index + 6) * 0.03 }}
-            className={!isLoggedIn || !isProUser ? "opacity-30 pointer-events-none grayscale" : ""}
-          >
-            {renderRankedCard(entry, index + 5)}
-          </motion.div>
-        ))}
-        
-        {/* Show placeholder entries if we don't have enough data */}
-        {(!isLoggedIn || !isProUser) && proEntries.length < 20 && (
-          <div className="text-center py-8 text-muted-foreground">
-            <p className="text-sm">
-              {!isLoggedIn 
-                ? "Entries 6-25 available with free account"
-                : "Entries 6-25 available with VHUB Pro"
-              }
-            </p>
-          </div>
-        )}
       </ul>
+
+      {/* Load Full Chart Button - show for anonymous users only */}
+      {hasMoreEntries && !isLoggedIn && (
+        <div className="text-center py-6">
+          <Button 
+            onClick={() => setShowSignupModal(true)}
+            className="btn-primary"
+            data-testid="load-full-chart-button"
+          >
+            Load Full Chart
+          </Button>
+          <p className="text-sm text-muted-foreground mt-2">
+            See all 25 entries with a free account
+          </p>
+        </div>
+      )}
+
+      {/* Load Full Chart Button - show for logged-in non-pro users */}
+      {hasMoreEntries && isLoggedIn && !isProUser && (
+        <div className="text-center py-6">
+          <Button 
+            onClick={onUpgrade}
+            className="btn-primary"
+            data-testid="upgrade-to-pro-button"
+          >
+            Load Full Chart
+          </Button>
+          <p className="text-sm text-muted-foreground mt-2">
+            See all 25 entries with VHUB Pro
+          </p>
+        </div>
+      )}
 
       {/* Signup Modal */}
       <SignupModal
