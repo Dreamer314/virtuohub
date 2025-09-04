@@ -47,6 +47,18 @@ export default function FeaturedLists() {
   const [sort, setSort] = useState<'recent' | 'views' | 'rating'>('recent');
   const [items, setItems] = useState<FeaturedList[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isDark, setIsDark] = useState(false);
+
+  // Theme detection
+  useEffect(() => {
+    const checkTheme = () => {
+      setIsDark(document.documentElement.classList.contains('dark') || document.documentElement.classList.contains('charcoal'));
+    };
+    checkTheme();
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -126,15 +138,15 @@ export default function FeaturedLists() {
             onChange={e => setSort(e.target.value as any)}
             className="rounded-lg ring-1 ring-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
             style={{
-              backgroundColor: '#1a1a2e',
-              color: '#ffffff',
-              border: '1px solid #374151'
+              backgroundColor: isDark ? '#1a1a2e' : '#ffffff',
+              color: isDark ? '#ffffff' : '#000000',
+              border: `1px solid ${isDark ? '#374151' : '#d1d5db'}`
             }}
             data-testid="sort-select"
           >
-            <option value="recent" style={{ backgroundColor: '#1a1a2e', color: '#ffffff' }}>Most Recent</option>
-            <option value="views" style={{ backgroundColor: '#1a1a2e', color: '#ffffff' }}>Most Viewed</option>
-            <option value="rating" style={{ backgroundColor: '#1a1a2e', color: '#ffffff' }}>Highest Rated</option>
+            <option value="recent" style={{ backgroundColor: isDark ? '#1a1a2e' : '#ffffff', color: isDark ? '#ffffff' : '#000000' }}>Most Recent</option>
+            <option value="views" style={{ backgroundColor: isDark ? '#1a1a2e' : '#ffffff', color: isDark ? '#ffffff' : '#000000' }}>Most Viewed</option>
+            <option value="rating" style={{ backgroundColor: isDark ? '#1a1a2e' : '#ffffff', color: isDark ? '#ffffff' : '#000000' }}>Highest Rated</option>
           </select>
         </div>
       </div>
