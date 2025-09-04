@@ -3,12 +3,10 @@ import { useSearch } from "wouter";
 import { ChartTabs } from "@/components/charts/ChartTabs";
 import { ChartTable } from "@/components/charts/ChartTable";
 import { VoiceSwitcher } from "@/components/charts/VoiceSwitcher";
-import { getChartById, filterChartEntries, ChartType, VoiceFilter, SortOption } from "@/lib/data/charts";
+import { getChartById, ChartType } from "@/lib/data/charts";
 import { useToast } from "@/hooks/use-toast";
 import { ExternalLink, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
-import { SuggestUpdateModal } from "@/components/charts/SuggestUpdateModal";
 
 interface VHubChartsSectionProps {
   onFiltersChange?: (params: URLSearchParams) => void;
@@ -35,9 +33,7 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
   );
   // Removed platform and sort filters - charts are pre-ordered
   
-  // Modal states
-  const [showMethodology, setShowMethodology] = useState(false);
-  const [showSuggestUpdate, setShowSuggestUpdate] = useState(false);
+  // Modal states handled by ChartsHero component
 
   // Mock Pro user state - in real app this would come from auth context
   const [isProUser] = useState(false);
@@ -68,9 +64,7 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
     });
   };
 
-  const handleSuggestUpdate = () => {
-    setShowSuggestUpdate(true);
-  };
+  // Suggest update handled by ChartsHero component
 
   if (!chartData) {
     return null;
@@ -101,35 +95,7 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
           </div>
         )}
 
-        {/* Remove duplicate header - already in hero section */}
-
-        {/* Meta Info */}
-        <div className="flex flex-wrap items-center justify-between">
-          <div className="flex items-center gap-4 vh-meta">
-            <span>Last updated {format(new Date(chartData.updatedAt), 'MMM d, yyyy • h:mm a')}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => setShowMethodology(true)}
-              className="flex items-center gap-1 hover:text-primary"
-              data-testid="methodology-button"
-            >
-              <HelpCircle className="w-4 h-4" />
-              Methodology
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={handleSuggestUpdate}
-              className="hover:text-primary"
-              data-testid="suggest-update-button"
-            >
-              Suggest Update
-            </Button>
-          </div>
-        </div>
+        {/* Header content is handled by ChartsHero component */}
       </div>
 
       {/* Chart Navigation Tabs */}
@@ -188,26 +154,7 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
         </>
       )}
       
-      {/* Methodology Modal */}
-      {showMethodology && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowMethodology(false)}>
-          <div className="bg-background p-6 rounded-lg max-w-md mx-4 border" onClick={e => e.stopPropagation()}>
-            <h3 className="font-bold text-lg mb-4">Methodology</h3>
-            <p className="text-muted-foreground mb-4">
-              Our rankings are calculated using a combination of metrics including engagement, 
-              growth rate, community impact, and platform-specific data points. Rankings are 
-              updated regularly based on the latest available data.
-            </p>
-            <Button onClick={() => setShowMethodology(false)}>Close</Button>
-          </div>
-        </div>
-      )}
-
-      {/* Suggest Update Modal */}
-      <SuggestUpdateModal 
-        isOpen={showSuggestUpdate}
-        onClose={() => setShowSuggestUpdate(false)}
-      />
+      {/* Modals are handled by ChartsHero component */}
     </div>
   );
 }

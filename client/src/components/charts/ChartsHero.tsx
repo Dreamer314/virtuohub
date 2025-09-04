@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, Play, Pause } from "lucide-react";
+import { MethodologyModal } from "@/components/modals/MethodologyModal";
+import { SuggestUpdateModal } from "@/components/modals/SuggestUpdateModal";
 
 export interface ChartsHeroProps {
   backgroundImageUrl?: string;
@@ -18,6 +20,8 @@ export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroM
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [showMethodology, setShowMethodology] = useState(false);
+  const [showSuggestUpdate, setShowSuggestUpdate] = useState(false);
 
   // Check for reduced motion preference
   useEffect(() => {
@@ -63,12 +67,31 @@ export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroM
   };
 
   const handleMethodology = () => {
-    // This will trigger the existing methodology modal
-    const methodologyButton = document.querySelector('[data-testid="methodology-button"]') as HTMLButtonElement;
-    if (methodologyButton) {
-      methodologyButton.click();
-    }
+    setShowMethodology(true);
   };
+
+  const handleSuggestUpdate = () => {
+    setShowSuggestUpdate(true);
+  };
+
+  const getMethodologyData = () => {
+    // Default methodology data for VHUB Charts
+    return {
+      signals: [
+        "Follower/subscriber count across platforms",
+        "Content engagement rates (likes, comments, shares)",
+        "Community growth velocity",
+        "Cross-platform presence",
+        "Creator earnings and monetization",
+        "Industry recognition and awards",
+        "Collaboration network strength"
+      ],
+      window: "Rolling 30-day window with weighted emphasis on recent activity",
+      normalization: "Scores normalized to 0-100 scale with platform-specific adjustments for creator economy differences"
+    };
+  };
+
+  const methodologyData = getMethodologyData();
 
   const renderMediaSlot = () => {
     if (!HERO_MEDIA_ENABLED || !heroMedia) return null;
@@ -250,6 +273,23 @@ export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroM
         </div>
       </div>
       </div>
+      
+      {/* Modals */}
+      <MethodologyModal
+        isOpen={showMethodology}
+        onClose={() => setShowMethodology(false)}
+        chartTitle="VHUB Charts"
+        signals={methodologyData.signals}
+        window={methodologyData.window}
+        normalization={methodologyData.normalization}
+        disputesUrl="https://virtuohub.com/support/chart-disputes"
+      />
+
+      <SuggestUpdateModal
+        isOpen={showSuggestUpdate}
+        onClose={() => setShowSuggestUpdate(false)}
+        chartTitle="VHUB Charts"
+      />
     </div>
   );
 }
