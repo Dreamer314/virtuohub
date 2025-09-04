@@ -84,7 +84,8 @@ export function ChartTable({
 }: ChartTableProps) {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const displayEntries = getProGatedEntries(entries, isProUser);
-  const hasMoreEntries = chart.isPro && !isProUser && entries.length > 10;
+  // Show signup/upgrade card if there are more than 10 entries and user doesn't have full access
+  const hasMoreEntries = entries.length > 10 && (!isLoggedIn || (isLoggedIn && !isProUser));
   
   // For Top 25 charts, show entries 1-10 for free users, then Pro lock card, then grayed out entries 11-25
   const freeEntries = displayEntries.slice(0, 10);
