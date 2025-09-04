@@ -95,7 +95,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
           {/* Avatar */}
           <div className="flex-shrink-0">
             <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-gradient-cosmic text-white font-medium text-lg">
-              {post.author.displayName.charAt(0)}
+              {(post.author.displayName || post.author.name || 'U').charAt(0)}
             </span>
           </div>
           
@@ -103,11 +103,13 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
             {/* Header */}
             <div className="flex items-center space-x-2 mb-1">
               <span className="font-medium text-foreground" data-testid={`author-${post.id}`}>
-                {post.author.displayName}
+                {post.author.displayName || post.author.name || 'Anonymous'}
               </span>
-              <Badge variant="secondary" className="text-xs">
-                {post.author.role}
-              </Badge>
+              {post.author.role && (
+                <Badge variant="secondary" className="text-xs">
+                  {post.author.role}
+                </Badge>
+              )}
               <span className="text-xs text-muted-foreground">•</span>
               <span className="text-xs text-muted-foreground" data-testid={`time-${post.id}`}>
                 {formatTimeAgo(post.createdAt ? new Date(post.createdAt) : new Date())}
@@ -122,7 +124,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                     {post.title}
                   </h3>
                   <p className="text-sm text-muted-foreground line-clamp-3" data-testid={`content-${post.id}`}>
-                    {post.content}
+                    {post.content || post.body}
                   </p>
                 </div>
                 

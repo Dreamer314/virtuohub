@@ -6,6 +6,8 @@ import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
 import { PostCard } from '@/components/post-card';
 import { CreatePostModal } from '@/components/create-post-modal';
+import { CreatePostModal as NewCreatePostModal } from '@/components/composer/CreatePostModal';
+import { CreatePollModal } from '@/components/composer/CreatePollModal';
 import { Footer } from '@/components/layout/footer';
 import { FeaturedCarousel } from '@/components/featured/FeaturedCarousel';
 import { featuredItems } from '@/components/featured/types';
@@ -13,29 +15,41 @@ import vhubHeaderImage from '@assets/VHub.Header.no.font.Light.Page.png';
 import { useQuery } from '@tanstack/react-query';
 import type { PostWithAuthor, Platform } from '@shared/schema';
 import { pulseApi, subscribe, type Poll } from '@/data/pulseApi';
+import { listFeed } from '@/data/mockApi';
+import { PollCard } from '@/components/polls/PollCard';
+import type { FeedItem } from '@/types/content';
 
 const FEATURED_V2 = true;
 
 const CommunityPage: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<'all' | 'saved'>('all');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
+  const [isCreatePollModalOpen, setIsCreatePollModalOpen] = useState(false);
   const [createModalType, setCreateModalType] = useState<'regular' | 'pulse' | 'insight'>('regular');
   const [pulsePollsRefresh, setPulsePollsRefresh] = useState(0);
+  const [feedRefresh, setFeedRefresh] = useState(0);
 
-  // Fetch posts data from API with platform filtering
-  const { data: posts = [], isLoading: postsLoading } = useQuery<PostWithAuthor[]>({
-    queryKey: ['/api/posts', selectedPlatforms],
-    queryFn: () => {
-      const params = new URLSearchParams();
-      if (selectedPlatforms.length > 0) {
-        selectedPlatforms.forEach(platform => params.append('platforms', platform));
-      }
-      const url = `/api/posts${params.toString() ? `?${params.toString()}` : ''}`;
-      return fetch(url).then(res => res.json());
+  // Fetch unified feed data (posts + polls)
+  const [feedData, setFeedData] = useState<FeedItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const refreshFeed = useCallback(() => {
+    try {
+      const feed = listFeed();
+      setFeedData(feed);
+    } catch (error) {
+      console.error('Failed to load feed:', error);
+    } finally {
+      setIsLoading(false);
     }
-  });
+  }, [feedRefresh]);
 
+  useEffect(() => {
+    refreshFeed();
+  }, [refreshFeed]);
+
+  // Legacy saved posts query (keeping for compatibility)
   const { data: savedPosts = [], isLoading: savedLoading } = useQuery<PostWithAuthor[]>({
     queryKey: ['/api/users/user1/saved-posts']
   });
@@ -56,10 +70,8 @@ const CommunityPage: React.FC = () => {
     return unsubscribe;
   }, []);
 
-  // Filter posts by type (keeping for regular posts)
-  const insightPosts = posts.filter(post => post.type === 'insight');
-  const regularPosts = posts.filter(post => post.type === 'regular');
-  const allPostsData = currentTab === 'saved' ? savedPosts : regularPosts;
+  // Filter feed items
+  const allFeedItems = currentTab === 'saved' ? savedPosts.map(p => ({ ...p, type: 'post' as const })) : feedData;
 
   // Add scroll animation observer
   useEffect(() => {
@@ -76,11 +88,11 @@ const CommunityPage: React.FC = () => {
       });
     }, observerOptions);
 
-    const cards = document.querySelectorAll('[data-testid^="post-card-"]');
+    const cards = document.querySelectorAll('[data-testid^="post-card-"], [data-testid^="poll-card-"]');
     cards.forEach(card => observer.observe(card));
 
     return () => observer.disconnect();
-  }, [featuredPolls, insightPosts, regularPosts]);
+  }, [featuredPolls, allFeedItems]);
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
@@ -92,8 +104,7 @@ const CommunityPage: React.FC = () => {
       </div>
 
       <Header onCreatePost={() => {
-        setCreateModalType('regular');
-        setIsCreateModalOpen(true);
+        setIsCreatePostModalOpen(true);
       }} />
       
       <div className="community-grid">
@@ -395,10 +406,7 @@ const CommunityPage: React.FC = () => {
                           </div>
                           <div className="flex-1">
                             <button
-                              onClick={() => {
-                                setCreateModalType('regular');
-                                setIsCreateModalOpen(true);
-                              }}
+                              onClick={() => setIsCreatePostModalOpen(true)}
                               className="w-full text-left px-4 py-3 bg-muted/50 hover:bg-muted/70 rounded-xl border border-border/50 hover:border-primary/30 transition-all duration-200 text-muted-foreground hover:text-foreground"
                               data-testid="create-post-input"
                             >
@@ -410,10 +418,7 @@ const CommunityPage: React.FC = () => {
                             <div className="flex items-center justify-between mt-4">
                               <div className="flex items-center gap-3">
                                 <Button
-                                  onClick={() => {
-                                    setCreateModalType('regular');
-                                    setIsCreateModalOpen(true);
-                                  }}
+                                  onClick={() => setIsCreatePostModalOpen(true)}
                                   variant="outline"
                                   className="flex items-center gap-2 px-4 py-2 text-sm border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-all"
                                   data-testid="create-post-button"
@@ -422,10 +427,7 @@ const CommunityPage: React.FC = () => {
                                   Create Post
                                 </Button>
                                 <Button
-                                  onClick={() => {
-                                    setCreateModalType('pulse');
-                                    setIsCreateModalOpen(true);
-                                  }}
+                                  onClick={() => setIsCreatePollModalOpen(true)}
                                   variant="outline"
                                   className="flex items-center gap-2 px-4 py-2 text-sm border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-all"
                                   data-testid="create-poll-button"
@@ -442,10 +444,25 @@ const CommunityPage: React.FC = () => {
 
                     {/* Posts */}
                     <div className="space-y-6">
-                      {currentTab === 'saved' ? (
-                        allPostsData.length > 0 ? (
-                          allPostsData.map((post: any) => (
-                            <PostCard key={post.id} post={post} />
+                      {isLoading ? (
+                        <div className="space-y-6">
+                          {[1, 2, 3].map(i => (
+                            <div key={i} className="glass-card rounded-xl p-6 animate-pulse">
+                              <div className="flex space-x-4">
+                                <div className="w-12 h-12 bg-muted rounded-full"></div>
+                                <div className="flex-1 space-y-3">
+                                  <div className="h-4 bg-muted rounded w-1/3"></div>
+                                  <div className="h-6 bg-muted rounded w-2/3"></div>
+                                  <div className="h-20 bg-muted rounded"></div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : currentTab === 'saved' ? (
+                        allFeedItems.length > 0 ? (
+                          allFeedItems.map((item: any) => (
+                            <PostCard key={item.id} post={item} />
                           ))
                         ) : (
                           <div className="glass-card rounded-xl p-12 text-center" data-testid="empty-state">
@@ -458,30 +475,48 @@ const CommunityPage: React.FC = () => {
                             </p>
                           </div>
                         )
-                      ) : regularPosts.length > 0 ? (
-                        regularPosts.map((post: any) => (
-                          <PostCard key={post.id} post={post} />
-                        ))
+                      ) : allFeedItems.length > 0 ? (
+                        allFeedItems.map((item: FeedItem) => {
+                          if (item.type === 'poll') {
+                            return (
+                              <PollCard 
+                                key={item.id} 
+                                poll={item} 
+                                context="feed" 
+                                onUpdate={() => setFeedRefresh(prev => prev + 1)}
+                              />
+                            );
+                          } else {
+                            return (
+                              <PostCard key={item.id} post={item as any} />
+                            );
+                          }
+                        })
                       ) : (
                         <div className="glass-card rounded-xl p-12 text-center" data-testid="empty-state">
                           <div className="text-6xl mb-4">🌟</div>
                           <h3 className="text-xl font-display font-semibold mb-2 text-foreground">
-                            No posts found
+                            No posts or polls found
                           </h3>
                           <p className="text-muted-foreground mb-4">
-                            Try adjusting your filters or be the first to create a post!
+                            Be the first to create a post or poll for the community!
                           </p>
-                          <Button
-                            onClick={() => {
-                              setCreateModalType('regular');
-                              setIsCreateModalOpen(true);
-                            }}
-                            className="transition-all hover:border-2 hover:border-gray-300 dark:hover:border-gray-600 border border-transparent"
-                            data-testid="create-first-post-button"
-                          >
-                            <Plus className="w-4 h-4 mr-2" />
-                            Create First Post
-                          </Button>
+                          <div className="flex gap-3 justify-center">
+                            <Button
+                              onClick={() => setIsCreatePostModalOpen(true)}
+                              className="bg-primary hover:bg-primary/90"
+                            >
+                              <FileText className="w-4 h-4 mr-2" />
+                              Create Post
+                            </Button>
+                            <Button
+                              onClick={() => setIsCreatePollModalOpen(true)}
+                              variant="outline"
+                            >
+                              <BarChart3 className="w-4 h-4 mr-2" />
+                              Create Poll
+                            </Button>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -503,10 +538,7 @@ const CommunityPage: React.FC = () => {
 
       {/* Floating Action Button */}
       <Button
-        onClick={() => {
-          setCreateModalType('regular');
-          setIsCreateModalOpen(true);
-        }}
+        onClick={() => setIsCreatePostModalOpen(true)}
         className="fixed bottom-8 right-8 w-14 h-14 bg-transparent text-primary rounded-full border border-primary/30 hover:border-primary hover:border-2 transition-all z-40 p-0"
         data-testid="floating-action-button"
       >
@@ -514,10 +546,20 @@ const CommunityPage: React.FC = () => {
       </Button>
 
       {/* Create Post Modal */}
-      <CreatePostModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        initialType={createModalType}
+      <NewCreatePostModal
+        open={isCreatePostModalOpen}
+        onOpenChange={setIsCreatePostModalOpen}
+        onPostCreated={() => setFeedRefresh(prev => prev + 1)}
+      />
+      
+      {/* Create Poll Modal */}
+      <CreatePollModal
+        open={isCreatePollModalOpen}
+        onOpenChange={setIsCreatePollModalOpen}
+        onPollCreated={() => {
+          setFeedRefresh(prev => prev + 1);
+          setPulsePollsRefresh(prev => prev + 1);
+        }}
       />
     </div>
   );
