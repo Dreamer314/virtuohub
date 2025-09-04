@@ -169,7 +169,8 @@ export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroM
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl p-8 md:p-16 lg:p-20 bg-surface/70 ring-1 ring-border/50 mb-8 min-h-[600px] md:min-h-[700px] hero-glow-container">
+    <div className="relative hero-outer-glow-wrapper mb-8">
+      <div className="relative overflow-hidden rounded-2xl p-8 md:p-16 lg:p-20 bg-surface/70 ring-1 ring-border/50 min-h-[600px] md:min-h-[700px] hero-glow-container">
       {/* Background image with glow effect */}
       <div
         className="absolute inset-0 -z-20 bg-cover bg-center hero-background-glow"
@@ -247,6 +248,7 @@ export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroM
             {HERO_MEDIA_ENABLED && renderMediaSlot()}
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
