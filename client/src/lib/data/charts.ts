@@ -39,7 +39,16 @@ export type VoiceFilter = 'VHub Picks' | 'User Choice';
 export type SortOption = 'Most Recent' | 'Most Viewed';
 
 export function getChartById(chartId: ChartType, voice?: 'editorial' | 'community'): ChartConfig | null {
-  const chart = chartsData.charts[chartId] as ChartConfig;
+  // Map new chart IDs to existing data keys
+  const chartKeyMap = {
+    'vhub-25': 'vhub-25',
+    'momentum-25': 'momentum-25',
+    'platforms-index': 'platforms-index',
+    'studios-watchlist': 'studios-watchlist'
+  };
+  
+  const dataKey = chartKeyMap[chartId] || chartId;
+  const chart = chartsData.charts[dataKey] as ChartConfig;
   if (!chart) return null;
   
   let entries = [...chart.entries].slice(0, CHART_LIMIT);
