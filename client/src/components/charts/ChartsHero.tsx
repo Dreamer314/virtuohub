@@ -73,12 +73,12 @@ export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroM
   const renderMediaSlot = () => {
     if (!HERO_MEDIA_ENABLED || !heroMedia) return null;
 
-    const mediaFrame = "relative aspect-video rounded-xl overflow-hidden ring-1 ring-border/30 shadow-lg";
+    const mediaFrame = "relative aspect-video rounded-2xl overflow-hidden ring-2 ring-white/20 shadow-2xl";
 
     switch (heroMedia.type) {
       case 'image':
         return (
-          <div className={mediaFrame}>
+          <div className={`${mediaFrame} hero-image-glow`}>
             <img
               src={heroMedia.imageUrl}
               alt={heroMedia.caption || "Hero image"}
@@ -132,7 +132,7 @@ export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroM
 
       case 'video':
         return (
-          <div className={mediaFrame}>
+          <div className={`${mediaFrame} hero-video-enhanced`}>
             <video
               id="hero-video"
               src={heroMedia.src}
@@ -169,16 +169,16 @@ export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroM
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl p-8 md:p-16 lg:p-20 bg-surface/70 ring-1 ring-border/50 mb-8 min-h-[600px] md:min-h-[700px]">
-      {/* Background image */}
+    <div className="relative overflow-hidden rounded-2xl p-8 md:p-16 lg:p-20 bg-surface/70 ring-1 ring-border/50 mb-8 min-h-[600px] md:min-h-[700px] hero-glow-container">
+      {/* Background image with glow effect */}
       <div
-        className="absolute inset-0 -z-10 bg-cover bg-center"
+        className="absolute inset-0 -z-20 bg-cover bg-center hero-background-glow"
         style={{ backgroundImage: `url(${backgroundImageUrl ?? '/hero/vhub-charts-placeholder.jpg'})` }}
         aria-hidden="true"
       />
       
-      {/* Dark overlay for text readability */}
-      <div className="absolute inset-0 -z-10 bg-black/30 md:bg-black/25" aria-hidden="true" />
+      {/* Ambient light effect that extends beyond the container */}
+      <div className="absolute inset-0 -z-10 bg-black/30 md:bg-black/25 hero-ambient-light" aria-hidden="true" />
       
       {/* Faded #1 watermark - positioned to not overlap text */}
       <div 
@@ -214,31 +214,23 @@ export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroM
             <p className="vh-eyebrow text-white/90">VHUB Charts</p>
             
             {/* Main headline */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-white">
-              The scoreboards of the immersive creator economy.
+            <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-tight text-white hero-title-glow">
+              VHUB Charts
             </h1>
             
-            {/* Subline */}
-            <p className="vh-meta text-lg max-w-xl text-white/80">
+            {/* Subline - enhanced visibility */}
+            <p className="text-xl font-medium max-w-xl text-white bg-black/20 backdrop-blur-sm px-4 py-2 rounded-lg border border-white/10 shadow-lg hero-subtitle-enhanced">
               Updated weekly with data on creators, platforms, and momentum.
             </p>
             
-            {/* CTAs */}
+            {/* CTAs - removed methodology button */}
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 onClick={handleExploreCharts}
-                className="btn-primary"
+                className="btn-primary hero-cta-glow"
                 data-testid="explore-charts-cta"
               >
                 Explore all charts
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleMethodology}
-                className="btn-secondary bg-white/10 text-white border-white/20 hover:bg-white/20"
-                data-testid="methodology-cta"
-              >
-                Methodology
               </Button>
             </div>
           </div>
