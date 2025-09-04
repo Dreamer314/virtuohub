@@ -20,8 +20,8 @@ function generateId(): string {
 // Initialize with seed data if empty  
 function initializeData() {
   // Force reset to load new data with images
-  if (!localStorage.getItem(POSTS_KEY) || localStorage.getItem('vhub.version') !== '1.2') {
-    localStorage.setItem('vhub.version', '1.2');
+  if (!localStorage.getItem(POSTS_KEY) || localStorage.getItem('vhub.version') !== '1.3') {
+    localStorage.setItem('vhub.version', '1.3');
     const seedPosts: Post[] = [
       {
         id: 'post1',
@@ -31,7 +31,7 @@ function initializeData() {
         links: ['https://vrchat.com/home/world/wrld_example'],
         images: [],
         files: [],
-        imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop&crop=center',
+        imageUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=600&fit=crop&crop=center',
         category: 'General',
         platforms: ['vrchat'],
         createdAt: Date.now() - 2 * 60 * 60 * 1000, // 2 hours ago
@@ -46,12 +46,12 @@ function initializeData() {
         links: [],
         images: [],
         files: [],
-        imageUrl: 'https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=800&h=600&fit=crop&crop=center',
+        imageUrl: 'https://images.unsplash.com/photo-1536431311719-398b6704d4cc?w=800&h=600&fit=crop&crop=center',
         price: '$25-75',
         category: 'Jobs & Gigs',
         platforms: ['secondlife', 'vrchat'],
         createdAt: Date.now() - 4 * 60 * 60 * 1000, // 4 hours ago
-        author: { id: 'user2', name: 'Maya Rodriguez' },
+        author: { id: 'user2', name: 'Maya Rodriguez', displayName: 'Maya Rodriguez' },
         stats: { likes: 25, saves: 18, comments: 7 }
       },
       {
@@ -62,12 +62,12 @@ function initializeData() {
         links: ['https://unity.com/asset-store/example'],
         images: [],
         files: [],
-        imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop&crop=center',
+        imageUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&h=600&fit=crop&crop=center',
         price: 'Free',
         category: 'Assets for Sale',
         platforms: ['unity', 'vrchat'],
         createdAt: Date.now() - 6 * 60 * 60 * 1000, // 6 hours ago
-        author: { id: 'user5', name: 'Chris Wilson' },
+        author: { id: 'user5', name: 'Chris Wilson', displayName: 'Chris Wilson' },
         stats: { likes: 89, saves: 156, comments: 23 }
       }
     ];
@@ -93,7 +93,7 @@ function initializeData() {
         category: 'General',
         platforms: ['vrchat', 'secondlife', 'roblox'],
         createdAt: now - 1 * 60 * 60 * 1000, // 1 hour ago
-        author: { id: 'user3', name: 'Jordan Kim' },
+        author: { id: 'user3', name: 'Jordan Kim', displayName: 'Jordan Kim' },
         status: 'active'
       },
       {
@@ -112,7 +112,7 @@ function initializeData() {
         category: 'General',
         platforms: ['roblox', 'secondlife', 'vrchat', 'horizon'],
         createdAt: now - 3 * 60 * 60 * 1000, // 3 hours ago
-        author: { id: 'user4', name: 'Sam Rivera' },
+        author: { id: 'user4', name: 'Sam Rivera', displayName: 'Sam Rivera' },
         status: 'active'
       }
     ];
