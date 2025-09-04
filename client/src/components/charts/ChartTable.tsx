@@ -93,17 +93,6 @@ export function ChartTable({
   const freeEntries = displayEntries.slice(0, 5);
   const proEntries = displayEntries.slice(5, 25);
   
-  // Debug: Log actual entry count and button visibility
-  console.log(`Chart ${chart.id}:`, {
-    originalEntriesCount,
-    displayEntries: displayEntries.length,
-    freeEntries: freeEntries.length,
-    proEntries: proEntries.length,
-    isLoggedIn,
-    isProUser,
-    hasMoreEntries,
-    willShowButton: hasMoreEntries && !isLoggedIn
-  });
 
   // Only render NEW chips for Momentum 25 first-timers
   const renderNewChip = (entry: ChartEntry) => {
