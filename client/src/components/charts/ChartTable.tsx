@@ -2,17 +2,50 @@ import { Badge } from "@/components/common/Badge";
 import { Button } from "@/components/ui/button";
 import { ChartEntry, ChartConfig, getProGatedEntries, CHART_LIMIT } from "@/lib/data/charts";
 import { motion } from "framer-motion";
-import { Lock, Crown } from "lucide-react";
+import { Lock, Crown, User } from "lucide-react";
 import { Platform } from "@/types/lists";
+import { SignupModal } from "@/components/modals/SignupModal";
+import { useState } from "react";
 
 interface ChartTableProps {
   chart: ChartConfig;
   entries: ChartEntry[];
   isProUser?: boolean;
+  isLoggedIn?: boolean;
   onUpgrade?: () => void;
+  onSignup?: () => void;
 }
 
-// Pro lock card component
+// Signup lock card component for anonymous users
+function SignupLockCard({ onSignup }: { onSignup?: () => void }) {
+  return (
+    <div className="vh-row bg-gradient-to-r from-primary/5 to-primary/10 border-primary/30 border-2 border-dashed">
+      <div className="flex items-center justify-center w-full col-span-3 py-12">
+        <div className="text-center space-y-4 max-w-md">
+          <div className="w-16 h-16 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
+            <User className="w-8 h-8 text-primary" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-foreground mb-2">Sign up to view full rankings</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              You're seeing ranks 1-10. Create a free account to unlock the complete Top 25 rankings and detailed creator insights.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button onClick={onSignup} className="btn-primary">
+              Create Free Account
+            </Button>
+            <Button variant="outline" size="sm" className="text-xs">
+              Already have an account? Log in
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Pro lock card component for logged-in users
 function ProLockCard({ onUpgrade }: { onUpgrade?: () => void }) {
   return (
     <div className="vh-row bg-gradient-to-r from-accent/5 to-accent/10 border-accent/30 border-2 border-dashed">
@@ -45,8 +78,11 @@ export function ChartTable({
   chart,
   entries, 
   isProUser = false,
-  onUpgrade 
+  isLoggedIn = false,
+  onUpgrade,
+  onSignup
 }: ChartTableProps) {
+  const [showSignupModal, setShowSignupModal] = useState(false);
   const displayEntries = getProGatedEntries(entries, isProUser);
   const hasMoreEntries = chart.isPro && !isProUser && entries.length > 10;
   
@@ -164,14 +200,18 @@ export function ChartTable({
           </motion.div>
         ))}
         
-        {/* Pro lock card after entry 10 for non-Pro users */}
+        {/* Lock card after entry 10 - signup for anonymous users, pro upgrade for logged-in users */}
         {hasMoreEntries && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 10 * 0.03 }}
           >
-            <ProLockCard onUpgrade={onUpgrade} />
+            {!isLoggedIn ? (
+              <SignupLockCard onSignup={() => setShowSignupModal(true)} />
+            ) : (
+              <ProLockCard onUpgrade={onUpgrade} />
+            )}
           </motion.div>
         )}
         
@@ -191,10 +231,22 @@ export function ChartTable({
         {/* Show placeholder entries if we don't have enough data */}
         {!isProUser && proEntries.length < 15 && (
           <div className="text-center py-8 text-muted-foreground">
-            <p className="text-sm">Entries 11-25 available with VHUB Pro</p>
+            <p className="text-sm">
+              {!isLoggedIn 
+                ? "Entries 11-25 available with free account"
+                : "Entries 11-25 available with VHUB Pro"
+              }
+            </p>
           </div>
         )}
       </ul>
+
+      {/* Signup Modal */}
+      <SignupModal
+        isOpen={showSignupModal}
+        onClose={() => setShowSignupModal(false)}
+        title={chart.title}
+      />
     </div>
   );
 }

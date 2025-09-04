@@ -35,8 +35,9 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
   
   // Modal states handled by ChartsHero component
 
-  // Mock Pro user state - in real app this would come from auth context
+  // Mock authentication state - in real app this would come from auth context
   const [isProUser] = useState(false);
+  const [isLoggedIn] = useState(false); // Set to false to simulate anonymous user
   const { toast } = useToast();
 
   // Get chart data
@@ -61,6 +62,13 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
     toast({
       title: "Upgrade to Pro",
       description: "Pro features coming soon! Get access to full charts and advanced analytics.",
+    });
+  };
+
+  const handleSignup = () => {
+    toast({
+      title: "Sign up",
+      description: "Signup flow coming soon! Create a free account to access full charts.",
     });
   };
 
@@ -149,7 +157,9 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
             chart={chartData}
             entries={chartData.entries}
             isProUser={isProUser}
+            isLoggedIn={isLoggedIn}
             onUpgrade={handleUpgrade}
+            onSignup={handleSignup}
           />
         </>
       )}
