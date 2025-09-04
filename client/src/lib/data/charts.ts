@@ -39,16 +39,17 @@ export type VoiceFilter = 'VHub Picks' | 'User Choice';
 export type SortOption = 'Most Recent' | 'Most Viewed';
 
 export function getChartById(chartId: ChartType, voice?: 'editorial' | 'community'): ChartConfig | null {
-  // Map new chart IDs to existing data keys
+  // Map new chart IDs to existing data keys in JSON
   const chartKeyMap = {
-    'vhub-25': 'vhub-25',
-    'momentum-25': 'momentum-25',
+    'vhub-25': 'vhub-100',  // Map to existing data key
+    'momentum-25': 'momentum-25', // This should work since momentum-25 exists
     'platforms-index': 'platforms-index',
     'studios-watchlist': 'studios-watchlist'
-  };
+  } as const;
   
-  const dataKey = chartKeyMap[chartId] || chartId;
-  const chart = chartsData.charts[dataKey] as ChartConfig;
+  const dataKey = chartKeyMap[chartId];
+  const chart = (chartsData.charts as any)[dataKey] as ChartConfig;
+  
   if (!chart) return null;
   
   let entries = [...chart.entries].slice(0, CHART_LIMIT);
