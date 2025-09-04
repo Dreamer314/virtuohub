@@ -108,7 +108,12 @@ export function ChartTable({
              data-testid={`chart-entry-${entry.id}`}>
           {/* Rank */}
           <div className="col-span-2 flex items-center">
-            <div className="vh-rank text-foreground">
+            <div className={`vh-rank ${entry.rank === 1 ? 'text-yellow-500 relative' : 'text-foreground'}`}>
+              {entry.rank === 1 && (
+                <span className="absolute -top-1 -right-1 text-yellow-400">
+                  👑
+                </span>
+              )}
               {entry.rank}
             </div>
           </div>
@@ -147,7 +152,12 @@ export function ChartTable({
            data-testid={`chart-entry-${entry.id}`}>
         {/* Rank */}
         <div className="col-span-2 flex items-center">
-          <div className="vh-rank text-foreground">
+          <div className={`vh-rank ${entry.rank === 1 ? 'text-yellow-500 relative' : 'text-foreground'}`}>
+            {entry.rank === 1 && (
+              <span className="absolute -top-1 -right-1 text-yellow-400">
+                👑
+              </span>
+            )}
             {entry.rank}
           </div>
         </div>

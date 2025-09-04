@@ -51,10 +51,17 @@ export function getChartById(chartId: ChartType, voice?: 'editorial' | 'communit
         return entry.voices.includes('User Choice');
       }
     });
+    
+    // Re-rank filtered entries starting from 1
+    entries.sort((a, b) => a.rank - b.rank);
+    entries = entries.map((entry, index) => ({
+      ...entry,
+      rank: index + 1
+    }));
+  } else {
+    // Always sort by rank numerically (ascending: 1, 2, 3...)
+    entries.sort((a, b) => a.rank - b.rank);
   }
-  
-  // Always sort by rank numerically (ascending: 1, 2, 3...)
-  entries.sort((a, b) => a.rank - b.rank);
   
   return {
     ...chart,
