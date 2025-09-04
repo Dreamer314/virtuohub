@@ -84,12 +84,12 @@ export function ChartTable({
 }: ChartTableProps) {
   const [showSignupModal, setShowSignupModal] = useState(false);
   const displayEntries = getProGatedEntries(entries, isProUser);
-  // Show signup/upgrade card if there are more than 10 entries and user doesn't have full access
-  const hasMoreEntries = entries.length > 10 && (!isLoggedIn || (isLoggedIn && !isProUser));
+  // Show signup/upgrade card if there are more than 5 entries and user doesn't have full access
+  const hasMoreEntries = entries.length > 5 && (!isLoggedIn || (isLoggedIn && !isProUser));
   
-  // For Top 25 charts, show entries 1-10 for free users, then Pro lock card, then grayed out entries 11-25
-  const freeEntries = displayEntries.slice(0, 10);
-  const proEntries = displayEntries.slice(10, 25);
+  // For Top 25 charts, show entries 1-5 for anonymous users, then signup card, then grayed out entries 6-25
+  const freeEntries = displayEntries.slice(0, 5);
+  const proEntries = displayEntries.slice(5, 25);
   
   // Debug: Log actual entry count
   console.log(`Chart ${chart.id} has ${displayEntries.length} entries, showing ${freeEntries.length} free + ${proEntries.length} pro`);
@@ -201,12 +201,12 @@ export function ChartTable({
           </motion.div>
         ))}
         
-        {/* Lock card after entry 10 - signup for anonymous users, pro upgrade for logged-in users */}
+        {/* Lock card after entry 5 - signup for anonymous users, pro upgrade for logged-in users */}
         {hasMoreEntries && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 10 * 0.03 }}
+            transition={{ delay: 5 * 0.03 }}
           >
             {!isLoggedIn ? (
               <SignupLockCard onSignup={() => setShowSignupModal(true)} />
@@ -216,26 +216,26 @@ export function ChartTable({
           </motion.div>
         )}
         
-        {/* Show entries 11-25 - only if they exist */}
+        {/* Show entries 6-25 - only if they exist */}
         {proEntries.length > 0 && proEntries.map((entry, index) => (
           <motion.div
             key={entry.id}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: (index + 11) * 0.03 }}
-            className={!isProUser ? "opacity-30 pointer-events-none grayscale" : ""}
+            transition={{ delay: (index + 6) * 0.03 }}
+            className={!isLoggedIn || !isProUser ? "opacity-30 pointer-events-none grayscale" : ""}
           >
-            {renderRankedCard(entry, index + 10)}
+            {renderRankedCard(entry, index + 5)}
           </motion.div>
         ))}
         
         {/* Show placeholder entries if we don't have enough data */}
-        {!isProUser && proEntries.length < 15 && (
+        {(!isLoggedIn || !isProUser) && proEntries.length < 20 && (
           <div className="text-center py-8 text-muted-foreground">
             <p className="text-sm">
               {!isLoggedIn 
-                ? "Entries 11-25 available with free account"
-                : "Entries 11-25 available with VHUB Pro"
+                ? "Entries 6-25 available with free account"
+                : "Entries 6-25 available with VHUB Pro"
               }
             </p>
           </div>
