@@ -9,6 +9,7 @@ import { RightSidebar } from '@/components/layout/right-sidebar';
 import { BillboardHero } from '@/components/lists/BillboardHero';
 import { ListFilters } from '@/components/lists/ListFilters';
 import { ListGrid } from '@/components/lists/ListGrid';
+import { VHubChartsSection } from '@/components/charts/VHubChartsSection';
 import { Button } from '@/components/ui/button';
 
 // URL param utilities
@@ -120,7 +121,7 @@ const ListsPage: React.FC = () => {
               onTabChange={() => {}}
               selectedPlatforms={[]}
               onPlatformChange={() => {}}
-              currentSection="lists"
+              currentSection="feed"
             />
           </div>
         </div>
@@ -134,9 +135,21 @@ const ListsPage: React.FC = () => {
 
         {/* Main Content Area */}
         <div className="grid-main relative z-0">
-          <div className="py-8 relative z-10 px-4 lg:px-8">
+          <div className="py-8 relative z-10 px-4 lg:px-8 max-w-7xl mx-auto">
             
-            {/* Billboard Hero */}
+            {/* VHUB Charts Section */}
+            <VHubChartsSection 
+              onFiltersChange={(params) => {
+                const newSearch = params.toString();
+                const newPath = `/community/lists${newSearch ? `?${newSearch}` : ''}`;
+                window.history.replaceState({}, '', newPath);
+              }}
+            />
+            
+            {/* Section Separator */}
+            <div className="my-16 border-t border-border/50"></div>
+            
+            {/* Billboard Hero (for Lists) */}
             {!billboardLoading && billboardTabs.length > 0 && (
               <BillboardHero 
                 tabs={billboardTabs}
@@ -145,7 +158,7 @@ const ListsPage: React.FC = () => {
               />
             )}
             
-            {/* Filter Bar */}
+            {/* Filter Bar (for Lists) */}
             <ListFilters
               selectedType={currentParams.type}
               selectedVoices={currentParams.voices}
@@ -158,14 +171,15 @@ const ListsPage: React.FC = () => {
               onClearFilters={handleClearFilters}
             />
             
-            {/* Main Content */}
-            <div className="max-w-7xl mx-auto mt-8">
+            {/* Community Lists Section */}
+            <div className="mt-8">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h1 className="text-2xl font-bold text-foreground">
-                    Community Lists
-                  </h1>
-                  <p className="text-muted-foreground mt-1">
+                  <p className="vh-eyebrow mb-2">Community Lists</p>
+                  <h2 className="vh-title">
+                    Curated collections from the community
+                  </h2>
+                  <p className="vh-meta mt-1">
                     {listsData?.total ? `${listsData.total} lists found` : 'Discovering lists...'}
                   </p>
                 </div>
@@ -197,7 +211,7 @@ const ListsPage: React.FC = () => {
                 <div className="text-center mt-12">
                   <Button 
                     variant="outline" 
-                    onClick={() => updateParams({ page: currentParams.page + 1 })}
+                    onClick={() => updateParams({ page: (currentParams.page + 1).toString() })}
                     data-testid="load-more-lists"
                   >
                     Load More Lists
@@ -225,7 +239,7 @@ const ListsPage: React.FC = () => {
       
       {showSuggestUpdate && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowSuggestUpdate(false)}>
-          <div className="bg-background p-6 rounded-lg max-w-md mx-4" onClick={e => e.stopPropagagation()}>
+          <div className="bg-background p-6 rounded-lg max-w-md mx-4" onClick={e => e.stopPropagation()}>
             <h3 className="font-bold text-lg mb-4">Suggest an Update</h3>
             <p className="text-muted-foreground mb-4">
               Have feedback on our rankings? Send us your suggestions and we'll review them 
