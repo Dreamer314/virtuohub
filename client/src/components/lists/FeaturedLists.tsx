@@ -47,12 +47,18 @@ export default function FeaturedLists() {
   const [sort, setSort] = useState<'recent' | 'views' | 'rating'>('recent');
   const [items, setItems] = useState<FeaturedList[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isDark, setIsDark] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark' | 'charcoal'>('light');
 
   // Theme detection
   useEffect(() => {
     const checkTheme = () => {
-      setIsDark(document.documentElement.classList.contains('dark') || document.documentElement.classList.contains('charcoal'));
+      if (document.documentElement.classList.contains('charcoal')) {
+        setTheme('charcoal');
+      } else if (document.documentElement.classList.contains('dark')) {
+        setTheme('dark');
+      } else {
+        setTheme('light');
+      }
     };
     checkTheme();
     const observer = new MutationObserver(checkTheme);
@@ -138,15 +144,24 @@ export default function FeaturedLists() {
             onChange={e => setSort(e.target.value as any)}
             className="rounded-lg ring-1 ring-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
             style={{
-              backgroundColor: isDark ? '#1a1a2e' : '#ffffff',
-              color: isDark ? '#ffffff' : '#000000',
-              border: `1px solid ${isDark ? '#374151' : '#d1d5db'}`
+              backgroundColor: theme === 'light' ? '#ffffff' : theme === 'dark' ? '#1a1a2e' : '#262626',
+              color: theme === 'light' ? '#000000' : '#ffffff',
+              border: `1px solid ${theme === 'light' ? '#d1d5db' : theme === 'dark' ? '#374151' : '#404040'}`
             }}
             data-testid="sort-select"
           >
-            <option value="recent" style={{ backgroundColor: isDark ? '#1a1a2e' : '#ffffff', color: isDark ? '#ffffff' : '#000000' }}>Most Recent</option>
-            <option value="views" style={{ backgroundColor: isDark ? '#1a1a2e' : '#ffffff', color: isDark ? '#ffffff' : '#000000' }}>Most Viewed</option>
-            <option value="rating" style={{ backgroundColor: isDark ? '#1a1a2e' : '#ffffff', color: isDark ? '#ffffff' : '#000000' }}>Highest Rated</option>
+            <option value="recent" style={{ 
+              backgroundColor: theme === 'light' ? '#ffffff' : theme === 'dark' ? '#1a1a2e' : '#262626', 
+              color: theme === 'light' ? '#000000' : '#ffffff' 
+            }}>Most Recent</option>
+            <option value="views" style={{ 
+              backgroundColor: theme === 'light' ? '#ffffff' : theme === 'dark' ? '#1a1a2e' : '#262626', 
+              color: theme === 'light' ? '#000000' : '#ffffff' 
+            }}>Most Viewed</option>
+            <option value="rating" style={{ 
+              backgroundColor: theme === 'light' ? '#ffffff' : theme === 'dark' ? '#1a1a2e' : '#262626', 
+              color: theme === 'light' ? '#000000' : '#ffffff' 
+            }}>Highest Rated</option>
           </select>
         </div>
       </div>
