@@ -12,6 +12,10 @@ export interface ChartEntry {
   isNew?: boolean;
   streakWeeks?: number;
   voices: string[];  // VHub Picks, User Choice
+  href?: string;
+  logo?: string;
+  category?: string;
+  tagline?: string;
 }
 
 export interface ChartConfig {

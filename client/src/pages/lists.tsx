@@ -144,19 +144,6 @@ const ListsPage: React.FC = () => {
             <div className="my-16 border-t border-border/50"></div>
             
             
-            {/* Filter Bar (for Lists) */}
-            <ListFilters
-              selectedType={currentParams.type}
-              selectedVoices={currentParams.voices}
-              selectedPlatforms={currentParams.platforms}
-              selectedSort={currentParams.sort}
-              onTypeChange={handleTypeChange}
-              onVoicesChange={handleVoicesChange}
-              onPlatformsChange={handlePlatformsChange}
-              onSortChange={handleSortChange}
-              onClearFilters={handleClearFilters}
-            />
-            
             {/* Community Lists Section */}
             <div className="mt-8">
               <div className="flex items-center justify-between mb-6">
@@ -181,6 +168,19 @@ const ListsPage: React.FC = () => {
                   Back to Community
                 </Button>
               </div>
+              
+              {/* Filter Bar (for Lists) - moved below section heading */}
+              <ListFilters
+                selectedType={currentParams.type}
+                selectedVoices={[]} // Remove non-functional voice chips
+                selectedPlatforms={currentParams.platforms}
+                selectedSort={currentParams.sort}
+                onTypeChange={handleTypeChange}
+                onVoicesChange={() => {}} // Disabled until wired
+                onPlatformsChange={handlePlatformsChange}
+                onSortChange={handleSortChange}
+                onClearFilters={handleClearFilters}
+              />
               
               {/* Error State */}
               {error && (

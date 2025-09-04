@@ -588,6 +588,10 @@
   @apply inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full border;
 }
 
+.vh-platform-label {
+  @apply text-sm opacity-80;
+}
+
 /* Text hygiene inside Featured only */
 #featuredV2 h1, #featuredV2 h2, #featuredV2 h3 {
   word-break: normal; 
