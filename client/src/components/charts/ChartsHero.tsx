@@ -263,6 +263,14 @@ export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroM
               >
                 Methodology
               </Button>
+              <Button
+                variant="outline"
+                onClick={handleSuggestUpdate}
+                className="btn-secondary bg-white/10 text-white border-white/20 hover:bg-white/20"
+                data-testid="suggest-update-cta"
+              >
+                Suggest Update
+              </Button>
             </div>
           </div>
           
