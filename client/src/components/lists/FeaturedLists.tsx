@@ -124,7 +124,7 @@ export default function FeaturedLists() {
             id="list-sort"
             value={sort}
             onChange={e => setSort(e.target.value as any)}
-            className="rounded-lg bg-surface text-foreground ring-1 ring-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
+            className="rounded-lg bg-surface text-foreground ring-1 ring-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 [&>option]:bg-surface [&>option]:text-foreground"
             data-testid="sort-select"
           >
             <option value="recent">Most Recent</option>
