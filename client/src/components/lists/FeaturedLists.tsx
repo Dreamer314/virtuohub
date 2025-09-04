@@ -69,7 +69,7 @@ export default function FeaturedLists() {
   }
 
   return (
-    <section className="mt-12">
+    <section className="mt-12" style={{ color: 'white' }}>
       {/* Section header */}
       <div className="mb-6">
         <div className="text-xs tracking-wide text-foreground/70 uppercase">COMMUNITY LISTS</div>
@@ -82,6 +82,10 @@ export default function FeaturedLists() {
         <p className="text-sm text-foreground/70 mt-1">
           {items.length} lists found
         </p>
+        {/* DEV: remove after verification */}
+        <span data-dev-id="featured-lists-verified" className="mt-2 inline-block text-xs px-2 py-0.5 rounded bg-accent/15 text-accent ring-1 ring-accent/30">
+          FeaturedLists verified
+        </span>
       </div>
 
       {/* Controls */}
