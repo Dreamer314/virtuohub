@@ -115,7 +115,7 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
         {/* Media */}
         <div className="relative md:-ml-6 xl:-ml-12">
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(closest-side,rgba(120,100,255,.18),transparent_70%)]" />
-          <div className="w-full aspect-[16/9] min-h-[360px] xl:min-h-[440px] rounded-2xl overflow-hidden shadow-[0_0_90px_rgba(120,100,255,.16)] ring-1 ring-white/8">
+          <div className="w-full aspect-[16/9] min-h-[300px] xl:min-h-[360px] rounded-2xl overflow-hidden shadow-[0_0_90px_rgba(120,100,255,.16)] ring-1 ring-white/8">
             <img 
               src={currentItem.imageSrc} 
               alt={currentItem.imageAlt} 

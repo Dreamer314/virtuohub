@@ -137,7 +137,7 @@ const CommunityPage: React.FC = () => {
           
           <div className="py-8 relative z-10 px-4 lg:px-8">
             {/* Hero Section */}
-            <div className="mb-72">
+            <div className="mb-48">
               <div className="glass-card rounded-2xl overflow-hidden hover-lift relative" data-testid="hero-section">
                 <div className="relative min-h-[576px] flex items-center justify-center hero-glow-container">
                   <img 
