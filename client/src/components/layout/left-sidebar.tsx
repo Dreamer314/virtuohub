@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Home, TrendingUp, Newspaper, Star, Lightbulb, Monitor, BookOpen, Gamepad2, Hammer, Zap, Mountain, Sword, Target, Palette, Users, Blocks, Globe, ChevronDown, ChevronUp } from "lucide-react";
+import { Home, TrendingUp, Newspaper, Star, Lightbulb, Monitor, BookOpen, Gamepad2, Hammer, Zap, Mountain, Sword, Target, Palette, Users, Blocks, Globe, ChevronDown, ChevronUp, Settings } from "lucide-react";
 import { SiRoblox, SiUnity, SiUnrealengine } from "react-icons/si";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
@@ -84,24 +84,33 @@ export function LeftSidebar({
   ];
 
   const platformFilters = [
+    // Core Virtual Worlds
     { id: 'roblox', label: 'Roblox', icon: SiRoblox },
-    { id: 'imvu', label: 'IMVU', icon: Users },
-    { id: 'secondlife', label: 'Second Life', icon: Monitor },
-    { id: 'fortnite', label: 'Fortnite', icon: Target },
-    { id: 'minecraft', label: 'Minecraft', icon: Blocks },
-    { id: 'gtafivem', label: 'GTA FiveM', icon: Gamepad2 },
-    { id: 'metahorizon', label: 'Meta Horizon Worlds', icon: Globe },
     { id: 'vrchat', label: 'VRChat', icon: Monitor },
+    { id: 'secondlife', label: 'Second Life', icon: Monitor },
+    { id: 'imvu', label: 'IMVU', icon: Users },
+    { id: 'horizon', label: 'Meta Horizon Worlds', icon: Globe },
+    
+    // Game Development Engines
     { id: 'unity', label: 'Unity', icon: SiUnity },
     { id: 'unreal', label: 'Unreal Engine', icon: SiUnrealengine },
-    { id: 'elderscrolls', label: 'Elder Scrolls', icon: Sword },
+    { id: 'core', label: 'Core', icon: Mountain },
+    { id: 'dreams', label: 'Dreams', icon: Palette },
+    
+    // Gaming Platforms
+    { id: 'fortnite', label: 'Fortnite Creative', icon: Target },
+    { id: 'minecraft', label: 'Minecraft', icon: Blocks },
+    { id: 'gtafivem', label: 'GTA FiveM', icon: Gamepad2 },
+    { id: 'simscc', label: 'The Sims', icon: Home },
+    { id: 'inzoi', label: 'inZOI', icon: Users },
+    
+    // Game Mods & Communities
+    { id: 'elderscrolls', label: 'Elder Scrolls Online', icon: Sword },
     { id: 'fallout', label: 'Fallout', icon: Zap },
     { id: 'counterstrike', label: 'Counter-Strike', icon: Target },
     { id: 'teamfortress', label: 'Team Fortress 2', icon: Hammer },
-    { id: 'dreams', label: 'Dreams', icon: Palette },
-    { id: 'core', label: 'Core', icon: Mountain },
-    { id: 'simscc', label: 'The Sims CC', icon: Home },
-    { id: 'inzoi', label: 'inZOI', icon: Users },
+    
+    { id: 'other', label: 'Other Platform', icon: Globe },
   ];
 
   const togglePlatform = (platformId: string) => {

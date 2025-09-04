@@ -29,8 +29,8 @@ Preferred communication style: Simple, everyday language.
 - Users: ID, username, password, display name, avatar, bio, role, timestamps
 - Posts: ID, author, title, content, images, category, platforms, pricing, type (regular/pulse/insight), poll data, engagement metrics
 - Saved Posts: User-post relationships with timestamps
-- Categories: All, General, Assets for Sale, Jobs & Gigs, Collaboration & WIP
-- Platforms: Second Life, Roblox, IMVU, VRChat, GTA RP, The Sims, Other
+- Categories: General, Assets for Sale, Jobs & Gigs, Collaboration & WIP, Industry News, Events & Meetups, Tips & Tutorials
+- Platforms: Core Virtual Worlds (Roblox, VRChat, Second Life, IMVU, Meta Horizon Worlds), Game Development (Unity, Unreal Engine, Core, Dreams), Gaming Platforms (Fortnite Creative, Minecraft, GTA FiveM, The Sims, inZOI), Game Communities (Elder Scrolls Online, Fallout, Counter-Strike, Team Fortress 2), and Other Platform
 
 **UI/UX Design Philosophy**
 - Modern glass-morphism design with subtle shadows and transparency
