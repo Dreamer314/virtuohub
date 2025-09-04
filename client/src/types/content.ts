@@ -39,3 +39,26 @@ export interface Poll {
 }
 
 export type FeedItem = Post | Poll;
+
+// Categories for posts and polls
+export const CATEGORIES = [
+  'General',
+  'Assets for Sale', 
+  'Jobs & Gigs',
+  'Collaboration & WIP',
+  'Events',
+  'Technical Help',
+  'Showcase'
+] as const;
+
+// Platform display names
+export const PLATFORM_LABELS: Record<PlatformKey, string> = {
+  'roblox': 'Roblox',
+  'vrchat': 'VRChat',
+  'secondlife': 'Second Life',
+  'unity': 'Unity',
+  'unreal': 'Unreal Engine',
+  'imvu': 'IMVU',
+  'horizon': 'Horizon Worlds',
+  'other': 'Other'
+};

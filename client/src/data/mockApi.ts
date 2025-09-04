@@ -1,259 +1,297 @@
-import { nanoid } from 'nanoid';
-import type { Post, Poll, PollOption, FeedItem } from '@/types/content';
+import type { Post, Poll, FeedItem, PollOption, PlatformKey } from '@/types/content';
 
-const STORAGE_KEYS = {
-  POLLS: 'vhub.polls',
-  POSTS: 'vhub.posts',
-  POLL_VOTES: 'vhub.pollVotes'
-};
+// Helper to generate unique IDs
+function generateId(): string {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+}
 
 // Current user stub
-const currentUser = {
+const CURRENT_USER = {
   id: 'user1',
-  name: 'Alex Chen',
-  avatar: ''
+  name: 'VirtualCreator',
+  avatar: undefined
 };
 
-class MockAPI {
-  // Poll functions
-  listPolls(): Poll[] {
-    const polls = this.getStoredData<Poll[]>(STORAGE_KEYS.POLLS, []);
-    return polls.map(this.derivePollStatus);
+// Storage keys
+const STORAGE_KEYS = {
+  posts: 'vhub.posts',
+  polls: 'vhub.polls',
+  pollVotes: 'vhub.pollVotes'
+};
+
+// Get data from localStorage with fallback
+function getStorageData<T>(key: string, fallback: T): T {
+  try {
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : fallback;
+  } catch {
+    return fallback;
   }
+}
 
-  listActivePolls(): Poll[] {
-    return this.listPolls().filter(poll => poll.status === 'active');
+// Save data to localStorage
+function setStorageData(key: string, data: any): void {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    console.error('Failed to save to localStorage:', error);
   }
+}
 
-  listCompletedPolls(): Poll[] {
-    return this.listPolls().filter(poll => poll.status === 'completed');
-  }
-
-  createPoll(input: Omit<Poll, 'id' | 'createdAt' | 'status'>): Poll {
-    const poll: Poll = {
-      ...input,
-      id: nanoid(),
-      createdAt: Date.now(),
-      status: Date.now() < input.closesAt ? 'active' : 'completed'
-    };
-
-    const polls = this.getStoredData<Poll[]>(STORAGE_KEYS.POLLS, []);
-    polls.unshift(poll);
-    this.setStoredData(STORAGE_KEYS.POLLS, polls);
-
-    return poll;
-  }
-
-  votePoll(pollId: string, optionIds: string[]): Poll {
-    const polls = this.getStoredData<Poll[]>(STORAGE_KEYS.POLLS, []);
-    const pollIndex = polls.findIndex(p => p.id === pollId);
-    
-    if (pollIndex === -1) {
-      throw new Error('Poll not found');
-    }
-
-    const poll = polls[pollIndex];
-    
-    // Check if already voted
-    const votes = this.getStoredData<Record<string, string[]>>(STORAGE_KEYS.POLL_VOTES, {});
-    const userKey = `${pollId}_${currentUser.id}`;
-    
-    if (votes[userKey]) {
-      throw new Error('You have already voted on this poll');
-    }
-
-    // Update vote counts
-    optionIds.forEach(optionId => {
-      const option = poll.options.find(o => o.id === optionId);
-      if (option) {
-        option.votes += 1;
+// Initialize with seed data
+function initializeSeedData(): void {
+  const existingPosts = getStorageData(STORAGE_KEYS.posts, []);
+  const existingPolls = getStorageData(STORAGE_KEYS.polls, []);
+  
+  if (existingPosts.length === 0) {
+    const seedPosts: Post[] = [
+      {
+        id: 'post1',
+        type: 'post',
+        title: 'New VRChat Avatar Commission Service',
+        body: 'Offering custom avatar creation services for VRChat! Specializing in anime-style characters with full body tracking support. Check out my portfolio and get in touch!',
+        links: ['https://portfolio.example.com'],
+        images: [],
+        files: [],
+        price: '$50-150',
+        category: 'Assets for Sale',
+        platforms: ['vrchat'],
+        createdAt: Date.now() - 2 * 60 * 60 * 1000, // 2 hours ago
+        author: CURRENT_USER,
+        stats: { likes: 12, saves: 8, comments: 3 }
+      },
+      {
+        id: 'post2', 
+        type: 'post',
+        title: 'Looking for Unity Developer - Game Project',
+        body: 'Seeking an experienced Unity developer for a virtual world project. Must have experience with networking and multiplayer systems. Remote work, competitive pay.',
+        links: [],
+        images: [],
+        files: [],
+        category: 'Jobs & Gigs',
+        platforms: ['unity'],
+        createdAt: Date.now() - 6 * 60 * 60 * 1000, // 6 hours ago
+        author: { id: 'user2', name: 'MetaStudio', avatar: undefined },
+        stats: { likes: 23, saves: 15, comments: 7 }
       }
-    });
-
-    // Record the vote
-    votes[userKey] = optionIds;
-    this.setStoredData(STORAGE_KEYS.POLL_VOTES, votes);
-    this.setStoredData(STORAGE_KEYS.POLLS, polls);
-
-    return this.derivePollStatus(poll);
+    ];
+    setStorageData(STORAGE_KEYS.posts, seedPosts);
   }
-
-  hasVoted(pollId: string): boolean {
-    const votes = this.getStoredData<Record<string, string[]>>(STORAGE_KEYS.POLL_VOTES, {});
-    const userKey = `${pollId}_${currentUser.id}`;
-    return !!votes[userKey];
+  
+  if (existingPolls.length === 0) {
+    const now = Date.now();
+    const seedPolls: Poll[] = [
+      {
+        id: 'poll1',
+        type: 'poll', 
+        question: 'Which platform do you spend most of your creative time on?',
+        options: [
+          { id: 'opt1', label: 'VRChat', votes: 45 },
+          { id: 'opt2', label: 'Roblox', votes: 32 },
+          { id: 'opt3', label: 'Unity', votes: 28 },
+          { id: 'opt4', label: 'Unreal Engine', votes: 15 }
+        ],
+        allowMultiple: false,
+        showResults: 'after-vote',
+        closesAt: now + 3 * 24 * 60 * 60 * 1000, // 3 days from now
+        category: 'General',
+        platforms: ['vrchat', 'roblox', 'unity', 'unreal'],
+        createdAt: now - 5 * 60 * 60 * 1000, // 5 hours ago
+        author: { id: 'vhub', name: 'VHub Data Pulse', avatar: undefined },
+        status: 'active'
+      },
+      {
+        id: 'poll2',
+        type: 'poll',
+        question: 'What\'s your biggest challenge in virtual world creation?',
+        options: [
+          { id: 'opt5', label: 'Technical limitations', votes: 67 },
+          { id: 'opt6', label: 'Finding collaborators', votes: 43 },
+          { id: 'opt7', label: 'Monetization', votes: 38 },
+          { id: 'opt8', label: 'Time management', votes: 52 }
+        ],
+        allowMultiple: false,
+        showResults: 'after-vote',
+        closesAt: now + 5 * 24 * 60 * 60 * 1000, // 5 days from now
+        category: 'General',
+        createdAt: now - 12 * 60 * 60 * 1000, // 12 hours ago
+        author: { id: 'vhub', name: 'VHub Data Pulse', avatar: undefined },
+        status: 'active'
+      },
+      {
+        id: 'poll3',
+        type: 'poll',
+        question: 'Which creation tool do you use most often?',
+        options: [
+          { id: 'opt9', label: 'Blender', votes: 89 },
+          { id: 'opt10', label: 'Maya', votes: 34 },
+          { id: 'opt11', label: 'Unity', votes: 76 },
+          { id: 'opt12', label: 'Unreal Engine', votes: 45 }
+        ],
+        allowMultiple: false,
+        showResults: 'after-vote',
+        closesAt: now - 2 * 24 * 60 * 60 * 1000, // 2 days ago (completed)
+        category: 'Technical Help',
+        createdAt: now - 7 * 24 * 60 * 60 * 1000, // 7 days ago
+        author: { id: 'vhub', name: 'VHub Data Pulse', avatar: undefined },
+        status: 'completed'
+      }
+    ];
+    setStorageData(STORAGE_KEYS.polls, seedPolls);
   }
+}
 
-  getUserVote(pollId: string): string[] | null {
-    const votes = this.getStoredData<Record<string, string[]>>(STORAGE_KEYS.POLL_VOTES, {});
-    const userKey = `${pollId}_${currentUser.id}`;
-    return votes[userKey] || null;
-  }
-
-  closePoll(pollId: string): Poll {
-    const polls = this.getStoredData<Poll[]>(STORAGE_KEYS.POLLS, []);
-    const pollIndex = polls.findIndex(p => p.id === pollId);
-    
-    if (pollIndex === -1) {
-      throw new Error('Poll not found');
+// Auto-update poll status based on closesAt time
+function updatePollStatuses(): void {
+  const polls: Poll[] = getStorageData(STORAGE_KEYS.polls, []);
+  const now = Date.now();
+  let updated = false;
+  
+  polls.forEach(poll => {
+    const shouldBeCompleted = now >= poll.closesAt;
+    if (shouldBeCompleted && poll.status === 'active') {
+      poll.status = 'completed';
+      updated = true;
+    } else if (!shouldBeCompleted && poll.status === 'completed') {
+      poll.status = 'active';
+      updated = true;
     }
-
-    polls[pollIndex].status = 'completed';
-    this.setStoredData(STORAGE_KEYS.POLLS, polls);
-
-    return polls[pollIndex];
+  });
+  
+  if (updated) {
+    setStorageData(STORAGE_KEYS.polls, polls);
   }
+}
 
-  // Post functions
+// Check if user has voted on a poll
+function hasVoted(pollId: string): boolean {
+  const votes: Record<string, string[]> = getStorageData(STORAGE_KEYS.pollVotes, {});
+  const userKey = CURRENT_USER.id;
+  const voteKey = `${pollId}_${userKey}`;
+  return voteKey in votes;
+}
+
+// Get user's vote for a poll
+function getUserVote(pollId: string): string[] {
+  const votes: Record<string, string[]> = getStorageData(STORAGE_KEYS.pollVotes, {});
+  const userKey = CURRENT_USER.id;
+  const voteKey = `${pollId}_${userKey}`;
+  return votes[voteKey] || [];
+}
+
+// Mock API implementation
+export const mockApi = {
+  // Posts
   listPosts(): Post[] {
-    return this.getStoredData<Post[]>(STORAGE_KEYS.POSTS, []);
-  }
-
+    return getStorageData(STORAGE_KEYS.posts, []);
+  },
+  
   createFeedPost(input: Omit<Post, 'id' | 'createdAt' | 'stats'>): Post {
     const post: Post = {
       ...input,
-      id: nanoid(),
+      id: generateId(),
       createdAt: Date.now(),
       stats: { likes: 0, saves: 0, comments: 0 }
     };
-
-    const posts = this.getStoredData<Post[]>(STORAGE_KEYS.POSTS, []);
-    posts.unshift(post);
-    this.setStoredData(STORAGE_KEYS.POSTS, posts);
-
+    
+    const posts = this.listPosts();
+    posts.unshift(post); // Add to beginning
+    setStorageData(STORAGE_KEYS.posts, posts);
     return post;
-  }
-
+  },
+  
+  // Polls
+  listPolls(): Poll[] {
+    updatePollStatuses();
+    return getStorageData(STORAGE_KEYS.polls, []);
+  },
+  
+  listActivePolls(): Poll[] {
+    return this.listPolls().filter(poll => poll.status === 'active');
+  },
+  
+  listCompletedPolls(): Poll[] {
+    return this.listPolls().filter(poll => poll.status === 'completed');
+  },
+  
+  createPoll(input: Omit<Poll, 'id' | 'createdAt' | 'status'>): Poll {
+    const poll: Poll = {
+      ...input,
+      id: generateId(),
+      createdAt: Date.now(),
+      status: Date.now() < input.closesAt ? 'active' : 'completed'
+    };
+    
+    const polls = this.listPolls();
+    polls.unshift(poll); // Add to beginning
+    setStorageData(STORAGE_KEYS.polls, polls);
+    return poll;
+  },
+  
+  votePoll(pollId: string, optionIds: string[]): Poll {
+    if (hasVoted(pollId)) {
+      throw new Error('You have already voted on this poll');
+    }
+    
+    const polls = this.listPolls();
+    const poll = polls.find(p => p.id === pollId);
+    
+    if (!poll) {
+      throw new Error('Poll not found');
+    }
+    
+    if (poll.status === 'completed') {
+      throw new Error('This poll has already closed');
+    }
+    
+    // Update vote counts
+    optionIds.forEach(optionId => {
+      const option = poll.options.find(opt => opt.id === optionId);
+      if (option) {
+        option.votes++;
+      }
+    });
+    
+    // Record user's vote
+    const votes: Record<string, string[]> = getStorageData(STORAGE_KEYS.pollVotes, {});
+    const userKey = CURRENT_USER.id;
+    const voteKey = `${pollId}_${userKey}`;
+    votes[voteKey] = optionIds;
+    setStorageData(STORAGE_KEYS.pollVotes, votes);
+    
+    // Save updated polls
+    setStorageData(STORAGE_KEYS.polls, polls);
+    return poll;
+  },
+  
+  closePoll(pollId: string): Poll {
+    const polls = this.listPolls();
+    const poll = polls.find(p => p.id === pollId);
+    
+    if (!poll) {
+      throw new Error('Poll not found');
+    }
+    
+    poll.status = 'completed';
+    setStorageData(STORAGE_KEYS.polls, polls);
+    return poll;
+  },
+  
+  hasVoted,
+  getUserVote,
+  
   // Unified feed
   listFeed(): FeedItem[] {
     const posts = this.listPosts();
     const polls = this.listPolls();
-    
     const allItems: FeedItem[] = [...posts, ...polls];
+    
+    // Sort by creation time, newest first
     return allItems.sort((a, b) => b.createdAt - a.createdAt);
   }
+};
 
-  // Initialize with seed data
-  initializeSeedData(): void {
-    // Only seed if no data exists
-    if (this.listPolls().length === 0 && this.listPosts().length === 0) {
-      this.seedPolls();
-      this.seedPosts();
-    }
-  }
+// Initialize seed data on load
+initializeSeedData();
 
-  private seedPolls(): void {
-    const now = Date.now();
-    const day = 24 * 60 * 60 * 1000;
-
-    // Active polls
-    this.createPoll({
-      type: 'poll',
-      question: 'What is your primary development platform for virtual worlds?',
-      options: [
-        { id: nanoid(), label: 'Unity 3D', votes: 42 },
-        { id: nanoid(), label: 'Unreal Engine', votes: 28 },
-        { id: nanoid(), label: 'Roblox Studio', votes: 35 },
-        { id: nanoid(), label: 'VRChat SDK', votes: 18 }
-      ],
-      allowMultiple: false,
-      showResults: 'after-vote',
-      closesAt: now + (3 * day),
-      category: 'General',
-      platforms: ['unity', 'unreal', 'roblox', 'vrchat'],
-      author: currentUser
-    });
-
-    this.createPoll({
-      type: 'poll',
-      question: 'Which monetization strategy works best for your virtual content?',
-      options: [
-        { id: nanoid(), label: 'Direct asset sales', votes: 67 },
-        { id: nanoid(), label: 'Subscription model', votes: 23 },
-        { id: nanoid(), label: 'Commission work', votes: 45 },
-        { id: nanoid(), label: 'Event hosting', votes: 12 }
-      ],
-      allowMultiple: true,
-      showResults: 'after-vote',
-      closesAt: now + (5 * day),
-      category: 'Jobs & Gigs',
-      platforms: ['other'],
-      author: currentUser
-    });
-
-    // Completed polls
-    this.createPoll({
-      type: 'poll',
-      question: 'How many hours per week do you spend on virtual world development?',
-      options: [
-        { id: nanoid(), label: 'Less than 5 hours', votes: 156 },
-        { id: nanoid(), label: '5-15 hours', votes: 234 },
-        { id: nanoid(), label: '15-30 hours', votes: 189 },
-        { id: nanoid(), label: 'More than 30 hours', votes: 98 }
-      ],
-      allowMultiple: false,
-      showResults: 'after-vote',
-      closesAt: now - (2 * day),
-      category: 'General',
-      platforms: ['other'],
-      author: currentUser
-    });
-  }
-
-  private seedPosts(): void {
-    this.createFeedPost({
-      type: 'post',
-      title: 'New VRChat world template available',
-      body: 'Just released a comprehensive world template for VRChat creators. Includes advanced lighting setup, interactive elements, and optimization tips.',
-      links: ['https://github.com/example/vrchat-template'],
-      images: [],
-      files: [],
-      price: 'Free',
-      category: 'Assets for Sale',
-      platforms: ['vrchat'],
-      author: currentUser
-    });
-
-    this.createFeedPost({
-      type: 'post',
-      title: 'Looking for Unity developers for metaverse project',
-      body: 'We are building an educational metaverse platform and need experienced Unity developers. Remote work available.',
-      links: [],
-      images: [],
-      files: [],
-      category: 'Jobs & Gigs',
-      platforms: ['unity'],
-      author: currentUser
-    });
-  }
-
-  // Helper methods
-  private derivePollStatus(poll: Poll): Poll {
-    return {
-      ...poll,
-      status: Date.now() < poll.closesAt ? 'active' : 'completed'
-    };
-  }
-
-  private getStoredData<T>(key: string, defaultValue: T): T {
-    try {
-      const stored = localStorage.getItem(key);
-      return stored ? JSON.parse(stored) : defaultValue;
-    } catch {
-      return defaultValue;
-    }
-  }
-
-  private setStoredData(key: string, data: any): void {
-    try {
-      localStorage.setItem(key, JSON.stringify(data));
-    } catch (error) {
-      console.error('Failed to save to localStorage:', error);
-    }
-  }
-}
-
-export const mockApi = new MockAPI();
-
-// Initialize seed data on first import
-mockApi.initializeSeedData();
+export default mockApi;

@@ -1,233 +1,324 @@
 import React, { useState } from 'react';
+import { X, Plus, Upload, Link as LinkIcon, ImageIcon, FileIcon } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { X, Plus, Upload, Link as LinkIcon, DollarSign } from 'lucide-react';
-import { mockApi } from '@/data/mockApi';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import type { PlatformKey } from '@/types/content';
+import type { Post, PlatformKey } from '@/types/content';
+import { CATEGORIES, PLATFORM_LABELS } from '@/types/content';
+import { mockApi } from '@/data/mockApi';
 
 interface CreatePostModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSuccess?: () => void;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onSuccess?: (post: Post) => void;
 }
 
-const PLATFORMS: { key: PlatformKey; label: string }[] = [
-  { key: 'roblox', label: 'Roblox' },
-  { key: 'vrchat', label: 'VRChat' },
-  { key: 'secondlife', label: 'Second Life' },
-  { key: 'unity', label: 'Unity' },
-  { key: 'unreal', label: 'Unreal Engine' },
-  { key: 'imvu', label: 'IMVU' },
-  { key: 'horizon', label: 'Horizon Worlds' },
-  { key: 'other', label: 'Other' }
-];
+interface FilePreview {
+  name: string;
+  size: number;
+  b64: string;
+  preview?: string;
+}
 
-const CATEGORIES = [
-  'General',
-  'Assets for Sale',
-  'Jobs & Gigs',
-  'Collaboration & WIP'
-];
+const MAX_IMAGES = 5;
+const MAX_FILES = 10;
+const MAX_IMAGE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
 
-export const CreatePostModal: React.FC<CreatePostModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  onSuccess 
-}) => {
-  const [formData, setFormData] = useState({
-    title: '',
-    body: '',
-    links: [''],
-    price: '',
-    category: 'General',
-    platforms: [] as PlatformKey[]
-  });
-  const [images, setImages] = useState<string[]>([]);
-  const [files, setFiles] = useState<{ name: string; b64: string }[]>([]);
+export function CreatePostModal({ open, onOpenChange, onSuccess }: CreatePostModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [price, setPrice] = useState('');
+  const [category, setCategory] = useState('General');
+  const [platforms, setPlatforms] = useState<PlatformKey[]>([]);
+  const [links, setLinks] = useState<string[]>(['']);
+  const [images, setImages] = useState<FilePreview[]>([]);
+  const [files, setFiles] = useState<FilePreview[]>([]);
+  
   const { toast } = useToast();
-
-  const handleInputChange = (field: string, value: any) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  
+  const resetForm = () => {
+    setTitle('');
+    setBody('');
+    setPrice('');
+    setCategory('General');
+    setPlatforms([]);
+    setLinks(['']);
+    setImages([]);
+    setFiles([]);
   };
-
-  const handleLinkChange = (index: number, value: string) => {
-    const newLinks = [...formData.links];
-    newLinks[index] = value;
-    setFormData(prev => ({ ...prev, links: newLinks }));
+  
+  const handleClose = () => {
+    resetForm();
+    onOpenChange(false);
   };
-
-  const addLink = () => {
-    setFormData(prev => ({ ...prev, links: [...prev.links, ''] }));
-  };
-
-  const removeLink = (index: number) => {
-    setFormData(prev => ({ 
-      ...prev, 
-      links: prev.links.filter((_, i) => i !== index) 
-    }));
-  };
-
-  const togglePlatform = (platform: PlatformKey) => {
-    setFormData(prev => ({
-      ...prev,
-      platforms: prev.platforms.includes(platform)
-        ? prev.platforms.filter(p => p !== platform)
-        : [...prev.platforms, platform]
-    }));
-  };
-
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (!files) return;
-
-    Array.from(files).forEach(file => {
-      if (file.size > 10 * 1024 * 1024) {
-        toast({ title: 'Image too large', description: 'Images must be under 10MB', variant: 'destructive' });
-        return;
-      }
-
+  
+  const handleFileRead = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target?.result && images.length < 5) {
-          setImages(prev => [...prev, e.target!.result as string]);
-        }
-      };
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
       reader.readAsDataURL(file);
     });
   };
-
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const uploadedFiles = event.target.files;
-    if (!uploadedFiles) return;
-
-    Array.from(uploadedFiles).forEach(file => {
-      if (file.size > 50 * 1024 * 1024) {
-        toast({ title: 'File too large', description: 'Files must be under 50MB', variant: 'destructive' });
-        return;
+  
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const uploadedFiles = Array.from(event.target.files || []);
+    
+    if (images.length + uploadedFiles.length > MAX_IMAGES) {
+      toast({
+        title: 'Too many images',
+        description: `Maximum ${MAX_IMAGES} images allowed`,
+        variant: 'destructive'
+      });
+      return;
+    }
+    
+    const validFiles = uploadedFiles.filter(file => {
+      if (file.size > MAX_IMAGE_SIZE) {
+        toast({
+          title: 'File too large',
+          description: `${file.name} is larger than 10MB`,
+          variant: 'destructive'
+        });
+        return false;
       }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target?.result && files.length < 10) {
-          setFiles(prev => [...prev, { 
-            name: file.name, 
-            b64: e.target!.result as string 
-          }]);
-        }
-      };
-      reader.readAsDataURL(file);
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: 'Invalid file type',
+          description: `${file.name} is not an image`,
+          variant: 'destructive'
+        });
+        return false;
+      }
+      return true;
     });
+    
+    try {
+      const newImages = await Promise.all(
+        validFiles.map(async (file) => {
+          const b64 = await handleFileRead(file);
+          return {
+            name: file.name,
+            size: file.size,
+            b64,
+            preview: b64
+          };
+        })
+      );
+      
+      setImages(prev => [...prev, ...newImages]);
+    } catch (error) {
+      toast({
+        title: 'Upload failed',
+        description: 'Failed to process images',
+        variant: 'destructive'
+      });
+    }
   };
-
+  
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const uploadedFiles = Array.from(event.target.files || []);
+    
+    if (files.length + uploadedFiles.length > MAX_FILES) {
+      toast({
+        title: 'Too many files',
+        description: `Maximum ${MAX_FILES} files allowed`,
+        variant: 'destructive'
+      });
+      return;
+    }
+    
+    const validFiles = uploadedFiles.filter(file => {
+      if (file.size > MAX_FILE_SIZE) {
+        toast({
+          title: 'File too large',
+          description: `${file.name} is larger than 50MB`,
+          variant: 'destructive'
+        });
+        return false;
+      }
+      return true;
+    });
+    
+    try {
+      const newFiles = await Promise.all(
+        validFiles.map(async (file) => {
+          const b64 = await handleFileRead(file);
+          return {
+            name: file.name,
+            size: file.size,
+            b64
+          };
+        })
+      );
+      
+      setFiles(prev => [...prev, ...newFiles]);
+    } catch (error) {
+      toast({
+        title: 'Upload failed',
+        description: 'Failed to process files',
+        variant: 'destructive'
+      });
+    }
+  };
+  
   const removeImage = (index: number) => {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
-
+  
   const removeFile = (index: number) => {
     setFiles(prev => prev.filter((_, i) => i !== index));
   };
-
+  
+  const addLink = () => {
+    setLinks(prev => [...prev, '']);
+  };
+  
+  const updateLink = (index: number, value: string) => {
+    setLinks(prev => prev.map((link, i) => i === index ? value : link));
+  };
+  
+  const removeLink = (index: number) => {
+    setLinks(prev => prev.filter((_, i) => i !== index));
+  };
+  
+  const togglePlatform = (platform: PlatformKey) => {
+    setPlatforms(prev => 
+      prev.includes(platform)
+        ? prev.filter(p => p !== platform)
+        : [...prev, platform]
+    );
+  };
+  
   const validateForm = () => {
-    if (!formData.title.trim()) {
-      toast({ title: 'Title required', variant: 'destructive' });
+    if (!title.trim()) {
+      toast({
+        title: 'Title required',
+        description: 'Please enter a title for your post',
+        variant: 'destructive'
+      });
       return false;
     }
-    if (!formData.body.trim()) {
-      toast({ title: 'Content required', variant: 'destructive' });
+    
+    if (!body.trim()) {
+      toast({
+        title: 'Content required',
+        description: 'Please enter content for your post',
+        variant: 'destructive'
+      });
       return false;
     }
+    
+    // Validate URLs
+    const validLinks = links.filter(link => link.trim());
+    for (const link of validLinks) {
+      try {
+        new URL(link);
+      } catch {
+        toast({
+          title: 'Invalid URL',
+          description: `"${link}" is not a valid URL`,
+          variant: 'destructive'
+        });
+        return false;
+      }
+    }
+    
     return true;
   };
-
+  
   const handleSubmit = async () => {
-    if (!validateForm()) return;
-
+    if (!validateForm() || isSubmitting) return;
+    
     setIsSubmitting(true);
+    
     try {
-      const validLinks = formData.links.filter(link => link.trim());
+      const postData = {
+        type: 'post' as const,
+        title: title.trim(),
+        body: body.trim(),
+        links: links.filter(link => link.trim()),
+        images: images.map(img => img.b64),
+        files: files.map(f => ({ name: f.name, b64: f.b64 })),
+        price: price.trim() || undefined,
+        category,
+        platforms,
+        author: {
+          id: 'user1',
+          name: 'VirtualCreator',
+          avatar: undefined
+        }
+      };
       
-      mockApi.createFeedPost({
-        type: 'post',
-        title: formData.title.trim(),
-        body: formData.body.trim(),
-        links: validLinks,
-        images,
-        files,
-        price: formData.price || undefined,
-        category: formData.category,
-        platforms: formData.platforms,
-        author: { id: 'user1', name: 'Alex Chen', avatar: '' }
-      });
-
-      toast({ title: 'Post published successfully!' });
-      onSuccess?.();
-      onClose();
+      const post = mockApi.createFeedPost(postData);
       
-      // Reset form
-      setFormData({
-        title: '',
-        body: '',
-        links: [''],
-        price: '',
-        category: 'General',
-        platforms: []
+      toast({
+        title: 'Post published',
+        description: 'Your post has been published successfully'
       });
-      setImages([]);
-      setFiles([]);
+      
+      onSuccess?.(post);
+      handleClose();
     } catch (error) {
-      toast({ 
-        title: 'Failed to publish post', 
-        description: error instanceof Error ? error.message : 'Unknown error',
-        variant: 'destructive' 
+      console.error('Failed to create post:', error);
+      toast({
+        title: 'Failed to publish',
+        description: 'Something went wrong. Please try again.',
+        variant: 'destructive'
       });
     } finally {
       setIsSubmitting(false);
     }
   };
-
+  
+  const formatFileSize = (bytes: number) => {
+    const mb = bytes / (1024 * 1024);
+    return `${mb.toFixed(1)}MB`;
+  };
+  
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Create a Post</DialogTitle>
         </DialogHeader>
-
+        
         <div className="space-y-6">
           {/* Title */}
           <div className="space-y-2">
             <Label htmlFor="title">Title *</Label>
             <Input
               id="title"
-              value={formData.title}
-              onChange={(e) => handleInputChange('title', e.target.value)}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               placeholder="What's your post about?"
               data-testid="post-title-input"
             />
           </div>
-
+          
           {/* Content */}
           <div className="space-y-2">
             <Label htmlFor="content">Content *</Label>
             <Textarea
               id="content"
-              value={formData.body}
-              onChange={(e) => handleInputChange('body', e.target.value)}
-              placeholder="Share your thoughts, ideas, or updates..."
-              rows={4}
-              data-testid="post-content-textarea"
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              placeholder="Share your thoughts, project updates, or ask for feedback..."
+              rows={6}
+              data-testid="post-content-input"
             />
           </div>
-
+          
           {/* Images */}
           <div className="space-y-2">
-            <Label>Images (max 5, 10MB each)</Label>
+            <Label>Images (max {MAX_IMAGES})</Label>
             <div className="flex items-center gap-2">
               <input
                 type="file"
@@ -236,41 +327,47 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 onChange={handleImageUpload}
                 className="hidden"
                 id="image-upload"
+                data-testid="image-upload"
               />
-              <Button variant="outline" size="sm" asChild>
-                <label htmlFor="image-upload" className="cursor-pointer">
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload Images
-                </label>
-              </Button>
-              <span className="text-sm text-muted-foreground">
-                {images.length}/5 uploaded
-              </span>
+              <Label htmlFor="image-upload" className="cursor-pointer">
+                <Button type="button" variant="outline" className="flex items-center gap-2" asChild>
+                  <span>
+                    <ImageIcon className="w-4 h-4" />
+                    Upload Images
+                  </span>
+                </Button>
+              </Label>
+              <span className="text-sm text-muted-foreground">10MB max each</span>
             </div>
+            
             {images.length > 0 && (
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {images.map((image, index) => (
-                  <div key={index} className="relative">
-                    <img 
-                      src={image} 
-                      alt={`Upload ${index + 1}`}
-                      className="w-16 h-16 object-cover rounded border"
+                  <div key={index} className="relative group">
+                    <img
+                      src={image.preview}
+                      alt={image.name}
+                      className="w-full h-24 object-cover rounded-lg border"
                     />
                     <button
                       onClick={() => removeImage(index)}
-                      className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs"
+                      className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      data-testid={`remove-image-${index}`}
                     >
                       <X className="w-3 h-3" />
                     </button>
+                    <div className="text-xs text-muted-foreground mt-1 truncate">
+                      {image.name}
+                    </div>
                   </div>
                 ))}
               </div>
             )}
           </div>
-
+          
           {/* Files */}
           <div className="space-y-2">
-            <Label>Files (max 10, 50MB each)</Label>
+            <Label>Files (max {MAX_FILES})</Label>
             <div className="flex items-center gap-2">
               <input
                 type="file"
@@ -278,25 +375,32 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
                 onChange={handleFileUpload}
                 className="hidden"
                 id="file-upload"
+                data-testid="file-upload"
               />
-              <Button variant="outline" size="sm" asChild>
-                <label htmlFor="file-upload" className="cursor-pointer">
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload Files
-                </label>
-              </Button>
-              <span className="text-sm text-muted-foreground">
-                {files.length}/10 uploaded
-              </span>
+              <Label htmlFor="file-upload" className="cursor-pointer">
+                <Button type="button" variant="outline" className="flex items-center gap-2" asChild>
+                  <span>
+                    <FileIcon className="w-4 h-4" />
+                    Upload Files
+                  </span>
+                </Button>
+              </Label>
+              <span className="text-sm text-muted-foreground">50MB max each</span>
             </div>
+            
             {files.length > 0 && (
-              <div className="space-y-1">
+              <div className="space-y-2">
                 {files.map((file, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 border rounded">
-                    <span className="text-sm">{file.name}</span>
+                  <div key={index} className="flex items-center justify-between p-2 border rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <FileIcon className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm font-medium">{file.name}</span>
+                      <span className="text-xs text-muted-foreground">({formatFileSize(file.size)})</span>
+                    </div>
                     <button
                       onClick={() => removeFile(index)}
-                      className="text-red-500 hover:text-red-700"
+                      className="text-destructive hover:text-destructive/80"
+                      data-testid={`remove-file-${index}`}
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -305,102 +409,115 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({
               </div>
             )}
           </div>
-
+          
           {/* Links */}
           <div className="space-y-2">
-            <Label>Links</Label>
-            {formData.links.map((link, index) => (
-              <div key={index} className="flex gap-2">
-                <div className="flex-1 relative">
-                  <LinkIcon className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    value={link}
-                    onChange={(e) => handleLinkChange(index, e.target.value)}
-                    placeholder="https://example.com"
-                    className="pl-10"
-                  />
-                </div>
-                {formData.links.length > 1 && (
-                  <Button
-                    variant="outline"
-                    size="sm"
+            <div className="flex items-center justify-between">
+              <Label>Links</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addLink}
+                className="flex items-center gap-1"
+                data-testid="add-link-button"
+              >
+                <Plus className="w-3 h-3" />
+                Add Link
+              </Button>
+            </div>
+            
+            {links.map((link, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <LinkIcon className="w-4 h-4 text-muted-foreground" />
+                <Input
+                  value={link}
+                  onChange={(e) => updateLink(index, e.target.value)}
+                  placeholder="https://example.com"
+                  data-testid={`link-input-${index}`}
+                />
+                {links.length > 1 && (
+                  <button
                     onClick={() => removeLink(index)}
+                    className="text-destructive hover:text-destructive/80"
+                    data-testid={`remove-link-${index}`}
                   >
                     <X className="w-4 h-4" />
-                  </Button>
+                  </button>
                 )}
               </div>
             ))}
-            <Button variant="outline" size="sm" onClick={addLink}>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Link
-            </Button>
           </div>
-
-          {/* Category */}
-          <div className="space-y-2">
-            <Label>Category</Label>
-            <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {CATEGORIES.map(category => (
-                  <SelectItem key={category} value={category}>
-                    {category}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Price */}
-          <div className="space-y-2">
-            <Label htmlFor="price">Price (optional)</Label>
-            <div className="relative">
-              <DollarSign className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+          
+          {/* Category and Price */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Category</Label>
+              <Select value={category} onValueChange={setCategory}>
+                <SelectTrigger data-testid="category-select">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {CATEGORIES.map(cat => (
+                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="price">Price (optional)</Label>
               <Input
                 id="price"
-                value={formData.price}
-                onChange={(e) => handleInputChange('price', e.target.value)}
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
                 placeholder="Free or $50"
-                className="pl-10"
+                data-testid="price-input"
               />
             </div>
           </div>
-
+          
           {/* Platforms */}
           <div className="space-y-2">
             <Label>Platforms</Label>
             <div className="flex flex-wrap gap-2">
-              {PLATFORMS.map(platform => (
-                <Badge
-                  key={platform.key}
-                  variant={formData.platforms.includes(platform.key) ? "default" : "outline"}
-                  className="cursor-pointer"
-                  onClick={() => togglePlatform(platform.key)}
-                >
-                  {platform.label}
-                </Badge>
-              ))}
+              {Object.entries(PLATFORM_LABELS).map(([key, label]) => {
+                const isSelected = platforms.includes(key as PlatformKey);
+                return (
+                  <Badge
+                    key={key}
+                    variant={isSelected ? 'default' : 'outline'}
+                    className="cursor-pointer"
+                    onClick={() => togglePlatform(key as PlatformKey)}
+                    data-testid={`platform-${key}`}
+                  >
+                    {label}
+                  </Badge>
+                );
+              })}
             </div>
           </div>
-
-          {/* Actions */}
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button 
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              data-testid="publish-post-button"
-            >
-              {isSubmitting ? 'Publishing...' : 'Publish Post'}
-            </Button>
-          </div>
+        </div>
+        
+        {/* Footer */}
+        <div className="flex items-center justify-end gap-3 pt-6">
+          <Button
+            variant="outline"
+            onClick={handleClose}
+            disabled={isSubmitting}
+            data-testid="cancel-post-button"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting || !title.trim() || !body.trim()}
+            data-testid="publish-post-button"
+          >
+            {isSubmitting ? 'Publishing...' : 'Publish Post'}
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
   );
-};
+}

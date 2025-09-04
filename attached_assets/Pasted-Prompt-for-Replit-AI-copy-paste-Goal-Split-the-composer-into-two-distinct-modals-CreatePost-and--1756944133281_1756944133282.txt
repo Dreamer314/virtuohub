@@ -1,3 +1,5 @@
+Prompt for Replit AI (copy/paste)
+
 Goal: Split the composer into two distinct modals—CreatePost and CreatePoll—with different fields and validation. Polls created from the feed are stored in the same data source used by /pulse-reports. The poll shown in the Community feed and the one shown in Pulse Reports must be the exact same object (shared id), and voting on either view updates both.
 
 1) Data contracts (TypeScript)

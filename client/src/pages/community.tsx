@@ -1,66 +1,34 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Button } from '@/components/ui/button';
-import { Plus, Star, TrendingUp, Heart, ImageIcon, BarChart3, FileText, Zap, ThumbsUp, MessageCircle, Share } from 'lucide-react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { Plus, Star, TrendingUp, Heart, ImageIcon, BarChart3, FileText, Zap, MessageCircle, Share, PenTool } from 'lucide-react';
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
+import { Footer } from '@/components/layout/footer';
 import { PostCard } from '@/components/post-card';
+import { PollCard } from '@/components/polls/PollCard';
 import { CreatePostModal } from '@/components/composer/CreatePostModal';
 import { CreatePollModal } from '@/components/composer/CreatePollModal';
-import { PollCard } from '@/components/polls/PollCard';
-import { Footer } from '@/components/layout/footer';
-import { FeaturedCarousel } from '@/components/featured/FeaturedCarousel';
-import { featuredItems } from '@/components/featured/types';
-import vhubHeaderImage from '@assets/VHub.Header.no.font.Light.Page.png';
-import { useQuery } from '@tanstack/react-query';
-import type { PostWithAuthor, Platform } from '@shared/schema';
-import { pulseApi, subscribe, type Poll } from '@/data/pulseApi';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { ImageViewerModal } from '@/components/image-viewer-modal';
+import { pulseApi, subscribe } from '@/data/pulseApi';
 import { mockApi } from '@/data/mockApi';
-import type { FeedItem } from '@/types/content';
+import type { FeedItem, Post, Poll } from '@/types/content';
 
-const FEATURED_V2 = true;
+type TabType = 'all' | 'general' | 'assets' | 'jobs' | 'collaboration';
 
 const CommunityPage: React.FC = () => {
-  const [currentTab, setCurrentTab] = useState<'all' | 'saved'>('all');
-  const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
-  const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
-  const [isCreatePollModalOpen, setIsCreatePollModalOpen] = useState(false);
+  const [currentTab, setCurrentTab] = useState<TabType>('all');
   const [pulsePollsRefresh, setPulsePollsRefresh] = useState(0);
   const [feedRefresh, setFeedRefresh] = useState(0);
+  const [showCreatePost, setShowCreatePost] = useState(false);
+  const [showCreatePoll, setShowCreatePoll] = useState(false);
+  const [imageViewerOpen, setImageViewerOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentImages, setCurrentImages] = useState<string[]>([]);
 
-  // Fetch posts data from API with platform filtering
-  const { data: posts = [], isLoading: postsLoading } = useQuery<PostWithAuthor[]>({
-    queryKey: ['/api/posts', selectedPlatforms],
-    queryFn: () => {
-      const params = new URLSearchParams();
-      if (selectedPlatforms.length > 0) {
-        selectedPlatforms.forEach(platform => params.append('platforms', platform));
-      }
-      const url = `/api/posts${params.toString() ? `?${params.toString()}` : ''}`;
-      return fetch(url).then(res => res.json());
-    }
-  });
-
-  const { data: savedPosts = [], isLoading: savedLoading } = useQuery<PostWithAuthor[]>({
-    queryKey: ['/api/users/user1/saved-posts']
-  });
-
-  // Get pulse polls from existing API (for VHub Pulse section only)
-  const getFeaturedPolls = useCallback(() => {
-    const featured = pulseApi.listFeaturedPolls();
-    return featured.slice(0, 3);
-  }, [pulsePollsRefresh]);
-
-  const activePolls = getFeaturedPolls();
-
-  // Get feed data from new mock API (for community feed section)
-  const getFeedData = useCallback(() => {
-    return mockApi.listFeed();
-  }, [feedRefresh]);
-
-  const feedItems = getFeedData();
-
-  // Subscribe to pulse updates for VHub Pulse section
+  // Subscribe to pulse updates
   useEffect(() => {
     const unsubscribe = subscribe(() => {
       setPulsePollsRefresh(prev => prev + 1);
@@ -68,40 +36,89 @@ const CommunityPage: React.FC = () => {
     return unsubscribe;
   }, []);
 
-  // Scroll to top when component mounts
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  // Get featured polls for VHub Pulse section (adapter function to convert old pulse API to new format)
+  const getFeaturedPolls = useCallback(() => {
+    const featured = pulseApi.listFeaturedPolls();
+    const pollsToShow = featured.length > 0 ? featured : pulseApi.listActivePolls().slice(0, 1);
+    
+    // Convert old pulse API format to new unified format
+    return pollsToShow.map(oldPoll => ({
+      id: oldPoll.id,
+      type: 'poll' as const,
+      question: oldPoll.question,
+      options: oldPoll.options.map((opt, index) => ({
+        id: `${oldPoll.id}-opt-${index}`,
+        label: opt.label,
+        votes: opt.votes
+      })),
+      allowMultiple: false, // legacy polls are single-choice
+      showResults: 'after-vote' as const,
+      closesAt: oldPoll.endsAt, // convert endsAt to closesAt
+      category: 'General',
+      platforms: [],
+      createdAt: oldPoll.createdAt,
+      author: {
+        id: 'vhub-pulse',
+        name: 'VHub Data Pulse',
+        avatar: undefined
+      },
+      status: oldPoll.endsAt > Date.now() ? 'active' : 'completed' as 'active' | 'completed'
+    }));
+  }, [pulsePollsRefresh]);
 
-  const handleCreatePost = () => {
-    setIsCreatePostModalOpen(true);
-  };
+  const featuredPolls = getFeaturedPolls();
 
-  const handleCreatePoll = () => {
-    setIsCreatePollModalOpen(true);
-  };
+  // Get unified feed data
+  const feedItems = mockApi.listFeed();
 
-  const handlePostSuccess = () => {
+  // Filter feed based on current tab
+  const getFilteredItems = useCallback(() => {
+    if (currentTab === 'all') return feedItems;
+    
+    return feedItems.filter(item => {
+      if (!item.category) return false;
+      
+      switch (currentTab) {
+        case 'general':
+          return item.category === 'General';
+        case 'assets':
+          return item.category === 'Assets for Sale';
+        case 'jobs':
+          return item.category === 'Jobs & Gigs';
+        case 'collaboration':
+          return item.category === 'Collaboration & WIP';
+        default:
+          return true;
+      }
+    });
+  }, [feedItems, currentTab]);
+
+  const filteredItems = getFilteredItems();
+
+  const { data: posts } = useQuery({
+    queryKey: ['/api/posts'],
+    refetchInterval: 30000
+  });
+
+  const handleCreatePost = (newPost: Post) => {
     setFeedRefresh(prev => prev + 1);
   };
 
-  const handlePollSuccess = () => {
+  const handleCreatePoll = (newPoll: Poll) => {
     setFeedRefresh(prev => prev + 1);
-    // Also update pulse data since polls are shared
     setPulsePollsRefresh(prev => prev + 1);
   };
 
-  const handleVoteFromPulse = (pollId: string, optionIndex: number) => {
-    try {
-      pulseApi.vote(pollId, optionIndex);
-      setPulsePollsRefresh(prev => prev + 1);
-    } catch (error) {
-      console.error('Vote failed:', error);
-    }
+  const openImageViewer = (images: string[], startIndex: number = 0) => {
+    setCurrentImages(images);
+    setCurrentImageIndex(startIndex);
+    setImageViewerOpen(true);
   };
 
-  const displayedPosts = currentTab === 'all' ? posts : savedPosts;
-  const isLoading = currentTab === 'all' ? postsLoading : savedLoading;
+  // Handle tab change
+  const handleTabChange = (tab: string) => {
+    setCurrentTab(tab as TabType);
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
@@ -112,17 +129,12 @@ const CommunityPage: React.FC = () => {
         <div className="floating-element absolute bottom-20 left-1/4 w-20 h-20 bg-primary/15 rounded-full blur-xl" style={{ animationDelay: '-4s' }}></div>
       </div>
 
-      <Header onCreatePost={handleCreatePost} />
+      <Header onCreatePost={() => setShowCreatePost(true)} />
       
       <div className="community-grid">
         <div className="grid-left hidden xl:block bg-background/95 backdrop-blur-sm border-r border-border sticky top-[var(--header-height)] h-[calc(100vh-var(--header-height))] z-10 overflow-y-auto">
           <div className="p-4">
-            <LeftSidebar 
-              currentTab={currentTab} 
-              onTabChange={setCurrentTab} 
-              selectedPlatforms={selectedPlatforms}
-              onPlatformChange={setSelectedPlatforms}
-            />
+            <LeftSidebar currentTab={currentTab} onTabChange={handleTabChange} />
           </div>
         </div>
         
@@ -137,193 +149,71 @@ const CommunityPage: React.FC = () => {
             <div className="w-full">
               <div className="max-w-4xl mx-auto grid grid-cols-1 gap-8">
                 <div className="xl:hidden">
-                  <LeftSidebar 
-                    currentTab={currentTab} 
-                    onTabChange={setCurrentTab} 
-                    selectedPlatforms={selectedPlatforms}
-                    onPlatformChange={setSelectedPlatforms}
-                  />
+                  <LeftSidebar currentTab={currentTab} onTabChange={handleTabChange} />
                 </div>
 
                 <main>
-                  {/* VHub Header with Image and Effects */}
-                  <div className="relative mb-16 text-center">
-                    <div className="relative h-48 lg:h-64 mx-auto mb-8 overflow-hidden rounded-2xl shadow-2xl">
-                      <img 
-                        src={vhubHeaderImage} 
-                        alt="VirtuoHub - Virtual World Creator Community" 
-                        className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-                      <div className="absolute bottom-6 left-6 right-6">
-                        <h1 className="text-3xl lg:text-5xl font-bold text-white mb-2 drop-shadow-lg">
-                          VirtuoHub
-                        </h1>
-                        <p className="text-lg lg:text-xl text-white/90 drop-shadow-md">
-                          Virtual World Creator Community
-                        </p>
+                  {/* Create Actions Header */}
+                  <div className="mb-8">
+                    <div className="enhanced-card p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-xl font-semibold text-foreground">Share with the community</h2>
                       </div>
-                    </div>
-                    
-                    {/* Floating particles effect */}
-                    <div className="absolute inset-0 pointer-events-none">
-                      <div className="particle absolute top-10 left-20 w-2 h-2 bg-primary/30 rounded-full animate-float"></div>
-                      <div className="particle absolute top-20 right-32 w-1 h-1 bg-accent/40 rounded-full animate-float" style={{animationDelay: '2s'}}></div>
-                      <div className="particle absolute bottom-20 left-1/3 w-1.5 h-1.5 bg-primary/20 rounded-full animate-float" style={{animationDelay: '4s'}}></div>
+                      <div className="flex gap-3">
+                        <Button 
+                          onClick={() => setShowCreatePost(true)}
+                          className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
+                          data-testid="create-post-button"
+                        >
+                          <PenTool className="w-4 h-4 mr-2" />
+                          Create Post
+                        </Button>
+                        <Button 
+                          onClick={() => setShowCreatePoll(true)}
+                          variant="outline"
+                          className="flex-1"
+                          data-testid="create-poll-button"
+                        >
+                          <BarChart3 className="w-4 h-4 mr-2" />
+                          Create Poll
+                        </Button>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Featured Section */}
-                  {FEATURED_V2 && (
-                    <div className="mb-12">
-                      <FeaturedCarousel items={featuredItems} />
-                    </div>
-                  )}
-
-                  {/* VHub Pulse Section - DO NOT MODIFY */}
-                  {activePolls.length > 0 && (
-                    <div className="mb-12">
-                      <div className="flex items-center justify-center mb-6">
-                        <div className="flex items-center space-x-2 w-full max-w-4xl mx-auto">
+                  {/* VHub Pulse Section - Only show on 'all' tab */}
+                  {currentTab === 'all' && featuredPolls.length > 0 && (
+                    <div className="mb-16 pb-8 border-b border-border/30" data-testid="pulse-posts-feed">
+                      <div className="flex flex-col items-center space-y-3 mb-6">
+                        <div className="flex items-center space-x-2 w-full">
                           <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
                           <div className="flex items-center space-x-4">
                             <Zap className="w-8 h-8 text-transparent bg-gradient-cosmic bg-clip-text" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
-                            <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+                            <h2 className="text-5xl font-bold text-foreground tracking-tight font-tech">
                               VHub Pulse
                             </h2>
                           </div>
                           <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                         </div>
+                        <div className="text-center space-y-1">
+                          <p className="text-lg font-semibold text-accent">Quick polls on Immersive Economy topics.</p>
+                          <p className="text-sm text-muted-foreground">Cast your vote. See results.</p>
+                        </div>
                       </div>
-                      <p className="text-center text-lg text-muted-foreground mb-8">
-                        Industry data collection and insights
-                      </p>
-
                       <div className="space-y-6">
-                        {activePolls.map((poll, index) => {
-                          const hasVoted = pulseApi.hasVoted(poll.id);
-                          const totalVotes = poll.options.reduce((sum, opt) => sum + opt.votes, 0);
-                          const timeLeft = Math.max(0, poll.endsAt - Date.now());
-                          const daysLeft = Math.ceil(timeLeft / (1000 * 60 * 60 * 24));
-                          const hoursLeft = Math.ceil(timeLeft / (1000 * 60 * 60));
-                          const createdAgo = Math.floor((Date.now() - poll.createdAt) / (1000 * 60 * 60));
-                          const isExpired = poll.endsAt <= Date.now();
-
-                          const handleVote = (optionIndex: number) => {
-                            handleVoteFromPulse(poll.id, optionIndex);
+                        {featuredPolls.map((poll) => {
+                          // Create a custom voting handler that works with the old pulse API
+                          const handlePollUpdate = () => {
+                            setPulsePollsRefresh(prev => prev + 1);
                           };
-
+                          
                           return (
-                            <article key={poll.id} className="enhanced-card hover-lift group p-6 transition-all duration-200 flex flex-col min-h-[280px]" data-testid={`pulse-card-${poll.id}`}>
-                              <div className="flex space-x-4 flex-1">
-                                {/* Avatar */}
-                                <div className="flex-shrink-0">
-                                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white font-medium text-lg">
-                                    <Zap className="w-6 h-6" />
-                                  </span>
-                                </div>
-                                
-                                <div className="flex-1 min-w-0 flex flex-col">
-                                  {/* Header */}
-                                  <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center space-x-2">
-                                      <span className="font-medium text-foreground">VHub Data Pulse</span>
-                                      <span className="text-xs text-muted-foreground">•</span>
-                                      <span className="text-xs text-muted-foreground">{createdAgo}h ago</span>
-                                    </div>
-                                  </div>
-                                  
-                                  {/* Poll Question */}
-                                  <h3 className="text-lg font-semibold text-foreground mb-4">
-                                    {poll.question}
-                                  </h3>
-                                  
-                                  {/* Poll Options */}
-                                  <div className="space-y-3 mb-4 flex-1">
-                                    {poll.options.map((option, index) => {
-                                      const percentage = totalVotes > 0 ? (option.votes / totalVotes) * 100 : 0;
-                                      
-                                      if (hasVoted || isExpired) {
-                                        // Show results
-                                        return (
-                                          <div key={index} className="relative w-full p-3 border border-border rounded-lg bg-muted/20">
-                                            <div className="flex justify-between items-center relative z-10">
-                                              <span className="text-sm font-medium text-foreground">{option.label}</span>
-                                              <span className="text-xs text-muted-foreground">{option.votes} votes ({percentage.toFixed(0)}%)</span>
-                                            </div>
-                                            <div className="absolute inset-0 bg-primary/10 rounded-lg" style={{ width: `${percentage}%` }}></div>
-                                          </div>
-                                        );
-                                      } else {
-                                        // Show voting buttons
-                                        return (
-                                          <button
-                                            key={index}
-                                            onClick={() => handleVote(index)}
-                                            className="w-full p-3 text-left border border-border rounded-lg hover:border-primary/50 transition-colors"
-                                            data-testid={`poll-option-${poll.id}-${index}`}
-                                          >
-                                            <span className="text-sm font-medium text-foreground">{option.label}</span>
-                                          </button>
-                                        );
-                                      }
-                                    })}
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              {/* Sticky Bottom Section */}
-                              <div className="mt-auto pt-4 border-t border-border/30">
-                                {/* Poll Meta */}
-                                <div className="flex items-center justify-between mb-3">
-                                  <span className="text-xs text-muted-foreground">{totalVotes} votes</span>
-                                  {isExpired ? (
-                                    <span className="text-xs text-muted-foreground">Poll ended</span>
-                                  ) : (
-                                    <span className="text-xs text-muted-foreground">
-                                      Poll ends in {daysLeft > 0 ? `${daysLeft} days` : `${hoursLeft} hours`}
-                                    </span>
-                                  )}
-                                </div>
-                                
-                                {!hasVoted && !isExpired && (
-                                  <div className="text-center text-sm text-muted-foreground mb-3">
-                                    Click an option above to vote
-                                  </div>
-                                )}
-
-                                {/* Engagement Actions */}
-                                <div className="flex items-center space-x-1">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
-                                    data-testid={`like-button-${poll.id}`}
-                                  >
-                                    <ThumbsUp size={16} />
-                                    <span>0</span>
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
-                                    data-testid={`comment-button-${poll.id}`}
-                                  >
-                                    <MessageCircle size={16} />
-                                    <span>0 comments</span>
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
-                                    data-testid={`share-button-${poll.id}`}
-                                  >
-                                    <Share size={16} />
-                                    <span>Share</span>
-                                  </Button>
-                                </div>
-                              </div>
-                            </article>
+                            <PollCard 
+                              key={poll.id}
+                              poll={poll}
+                              context="feed"
+                              onUpdate={handlePollUpdate}
+                            />
                           );
                         })}
                       </div>
@@ -342,116 +232,45 @@ const CommunityPage: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Community Feed Section */}
-                  <div className="mb-12">
-                    <div className="flex items-center justify-center mb-6">
-                      <div className="flex items-center space-x-2 w-full max-w-4xl mx-auto">
-                        <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
-                        <div className="flex items-center space-x-4">
-                          <h2 className="text-3xl md:text-4xl font-bold text-foreground">
-                            Community Feed
-                          </h2>
+                  {/* Community Feed */}
+                  <div className="space-y-6" data-testid="community-feed">
+                    {filteredItems.length === 0 ? (
+                      <div className="text-center py-12">
+                        <div className="text-muted-foreground mb-4">
+                          <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                          <p className="text-lg font-medium">No posts yet</p>
+                          <p className="text-sm">Be the first to share something with the community!</p>
                         </div>
-                        <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
+                        <Button 
+                          onClick={() => setShowCreatePost(true)}
+                          className="mt-4"
+                        >
+                          Create First Post
+                        </Button>
                       </div>
-                    </div>
-                    
-                    {/* Composer Buttons */}
-                    <div className="mb-8 flex justify-center gap-4">
-                      <Button
-                        onClick={handleCreatePost}
-                        className="flex items-center gap-2"
-                        data-testid="create-post-button"
-                      >
-                        <FileText className="w-4 h-4" />
-                        Create Post
-                      </Button>
-                      <Button
-                        onClick={handleCreatePoll}
-                        variant="outline"
-                        className="flex items-center gap-2"
-                        data-testid="create-poll-button"
-                      >
-                        <BarChart3 className="w-4 h-4" />
-                        Create Poll
-                      </Button>
-                    </div>
-
-                    {/* Feed Items */}
-                    <div className="space-y-6">
-                      {isLoading ? (
-                        <div className="space-y-6">
-                          {[1, 2, 3].map(i => (
-                            <div key={i} className="enhanced-card hover-lift p-6 animate-pulse">
-                              <div className="h-4 bg-muted rounded w-3/4 mb-4"></div>
-                              <div className="h-20 bg-muted rounded mb-4"></div>
-                              <div className="h-4 bg-muted rounded w-1/2"></div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <>
-                          {/* Feed from Mock API */}
-                          {feedItems.map(item => (
-                            item.type === 'post' ? (
-                              <PostCard 
-                                key={item.id} 
-                                post={{
-                                  ...item,
-                                  authorId: item.author.id,
-                                  author: {
-                                    id: item.author.id,
-                                    username: item.author.name,
-                                    displayName: item.author.name,
-                                    avatar: item.author.avatar || '',
-                                    role: 'Member'
-                                  },
-                                  saves: item.stats.saves,
-                                  likes: item.stats.likes,
-                                  comments: item.stats.comments,
-                                  isSaved: false,
-                                  isLiked: false
-                                } as any} 
-                                currentUserId="user1" 
-                              />
-                            ) : (
-                              <PollCard
-                                key={item.id}
-                                poll={item}
-                                context="feed"
-                                onUpdate={() => setFeedRefresh(prev => prev + 1)}
-                              />
-                            )
-                          ))}
-                          
-                          {/* Existing Posts from API */}
-                          {displayedPosts.map(post => (
+                    ) : (
+                      filteredItems.map((item) => {
+                        if (item.type === 'post') {
+                          return (
                             <PostCard 
-                              key={post.id} 
-                              post={post} 
-                              currentUserId="user1" 
+                              key={item.id}
+                              post={item}
+                              onImageClick={openImageViewer}
                             />
-                          ))}
-                          
-                          {feedItems.length === 0 && displayedPosts.length === 0 && (
-                            <div className="text-center py-12">
-                              <p className="text-muted-foreground mb-4">
-                                {currentTab === 'all' 
-                                  ? 'No posts yet. Be the first to share something!'
-                                  : 'No saved posts yet. Save posts by clicking the bookmark icon.'
-                                }
-                              </p>
-                              {currentTab === 'all' && (
-                                <Button onClick={handleCreatePost}>
-                                  <Plus className="w-4 h-4 mr-2" />
-                                  Create Your First Post
-                                </Button>
-                              )}
-                            </div>
-                          )}
-                        </>
-                      )}
-                    </div>
+                          );
+                        } else if (item.type === 'poll') {
+                          return (
+                            <PollCard 
+                              key={item.id}
+                              poll={item}
+                              context="feed"
+                              onUpdate={() => setFeedRefresh(prev => prev + 1)}
+                            />
+                          );
+                        }
+                        return null;
+                      })
+                    )}
                   </div>
                 </main>
               </div>
@@ -463,16 +282,24 @@ const CommunityPage: React.FC = () => {
       <Footer />
 
       {/* Modals */}
-      <CreatePostModal
-        isOpen={isCreatePostModalOpen}
-        onClose={() => setIsCreatePostModalOpen(false)}
-        onSuccess={handlePostSuccess}
+      <CreatePostModal 
+        open={showCreatePost}
+        onOpenChange={setShowCreatePost}
+        onSuccess={handleCreatePost}
       />
       
-      <CreatePollModal
-        isOpen={isCreatePollModalOpen}
-        onClose={() => setIsCreatePollModalOpen(false)}
-        onSuccess={handlePollSuccess}
+      <CreatePollModal 
+        open={showCreatePoll}
+        onOpenChange={setShowCreatePoll}
+        onSuccess={handleCreatePoll}
+      />
+
+      <ImageViewerModal
+        images={currentImages}
+        currentIndex={currentImageIndex}
+        open={imageViewerOpen}
+        onOpenChange={setImageViewerOpen}
+        onIndexChange={setCurrentImageIndex}
       />
     </div>
   );
