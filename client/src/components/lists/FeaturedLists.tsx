@@ -69,7 +69,7 @@ export default function FeaturedLists() {
   }
 
   return (
-    <section className="mt-12" style={{ color: 'white' }}>
+    <section className="mt-12">
       {/* Section header */}
       <div className="mb-6">
         <div className="text-xs tracking-wide text-foreground/70 uppercase">COMMUNITY LISTS</div>
@@ -128,12 +128,13 @@ export default function FeaturedLists() {
             id="list-sort"
             value={sort}
             onChange={e => setSort(e.target.value as any)}
-            className={selectClass}
+            className="rounded-lg bg-surface/80 text-foreground ring-1 ring-border/50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
+            style={{ color: 'white', backgroundColor: 'rgba(255,255,255,0.1)' }}
             data-testid="sort-select"
           >
-            <option value="recent">Most Recent</option>
-            <option value="views">Most Viewed</option>
-            <option value="rating">Highest Rated</option>
+            <option value="recent" style={{ color: 'black', backgroundColor: 'white' }}>Most Recent</option>
+            <option value="views" style={{ color: 'black', backgroundColor: 'white' }}>Most Viewed</option>
+            <option value="rating" style={{ color: 'black', backgroundColor: 'white' }}>Highest Rated</option>
           </select>
         </div>
       </div>
