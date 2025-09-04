@@ -54,8 +54,6 @@ const useURLParams = () => {
 
 const ListsPage: React.FC = () => {
   const { updateParams, getParams } = useURLParams();
-  const [showMethodology, setShowMethodology] = useState(false);
-  const [showSuggestUpdate, setShowSuggestUpdate] = useState(false);
   
   // Get current filters from URL
   const currentParams = getParams();
@@ -142,20 +140,8 @@ const ListsPage: React.FC = () => {
               }}
             />
             
-            {/* Section Masthead */}
+            {/* Section Masthead - buttons moved to hero */}
             <section className="mt-10">
-              <div className="flex items-center gap-4 flex-wrap mb-6">
-                <span className="vh-meta">Last updated Jan 15, 2024</span>
-                <button 
-                  className="text-sm text-accent hover:text-accent/80 transition-colors underline"
-                  data-testid="methodology-button"
-                >
-                  Methodology
-                </button>
-                <button className="text-sm text-accent hover:text-accent/80 transition-colors underline">
-                  Suggest Update
-                </button>
-              </div>
               
               {/* Framed charts block */}
               <div className="relative mt-6 rounded-2xl ring-1 ring-border/50 bg-surface/60 p-4 md:p-6">
