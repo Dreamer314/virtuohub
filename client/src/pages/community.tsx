@@ -137,7 +137,7 @@ const CommunityPage: React.FC = () => {
           
           <div className="py-8 relative z-10 px-4 lg:px-8">
             {/* Hero Section */}
-            <div className="mb-8">
+            <div className="mb-72">
               <div className="glass-card rounded-2xl overflow-hidden hover-lift relative" data-testid="hero-section">
                 <div className="relative min-h-[576px] flex items-center justify-center hero-glow-container">
                   <img 
@@ -213,7 +213,7 @@ const CommunityPage: React.FC = () => {
 
                   {/* VHub Pulse */}
                   {currentTab === 'all' && featuredPolls.length > 0 && (
-                    <div className="mb-16 pb-8 border-b border-border/30" data-testid="pulse-posts-feed">
+                    <div className="mb-48 pb-8 border-b border-border/30" data-testid="pulse-posts-feed">
                       <div className="flex flex-col items-center space-y-3 mb-6">
                         <div className="flex items-center space-x-2 w-full">
                           <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
