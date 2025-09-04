@@ -1,6 +1,4 @@
 import React from 'react';
-import { useLocation } from 'wouter';
-import { useQuery } from '@tanstack/react-query';
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
@@ -8,46 +6,6 @@ import { VHubChartsSection } from '@/components/charts/VHubChartsSection';
 import { ChartsHero } from '@/components/charts/ChartsHero';
 import FeaturedLists from '@/components/lists/FeaturedLists';
 import { Button } from '@/components/ui/button';
-
-// URL param utilities
-const useURLParams = () => {
-  const [location, navigate] = useLocation();
-  
-  const updateParams = useCallback((updates: Record<string, string | string[] | undefined>) => {
-    const url = new URL(window.location.href);
-    const params = new URLSearchParams(url.search);
-    
-    Object.entries(updates).forEach(([key, value]) => {
-      if (value === undefined || (Array.isArray(value) && value.length === 0)) {
-        params.delete(key);
-      } else if (Array.isArray(value)) {
-        params.delete(key);
-        value.forEach(v => params.append(key, v));
-      } else {
-        params.set(key, value);
-      }
-    });
-    
-    const newSearch = params.toString();
-    const newPath = `/community/lists${newSearch ? `?${newSearch}` : ''}`;
-    navigate(newPath);
-  }, [navigate]);
-  
-  const getParams = useCallback(() => {
-    const url = new URL(window.location.href);
-    const params = new URLSearchParams(url.search);
-    
-    return {
-      type: params.get('type') as ListType | undefined,
-      voices: params.getAll('voices') as VoiceTag[],
-      platforms: params.getAll('platforms') as Platform[],
-      sort: params.get('sort') || 'recent',
-      page: parseInt(params.get('page') || '1')
-    };
-  }, [location]);
-  
-  return { updateParams, getParams };
-};
 
 const ListsPage: React.FC = () => {
 

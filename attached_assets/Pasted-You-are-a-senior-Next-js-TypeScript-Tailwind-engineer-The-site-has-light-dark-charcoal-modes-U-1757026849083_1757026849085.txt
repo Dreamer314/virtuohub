@@ -1,0 +1,127 @@
+You are a senior Next.js + TypeScript + Tailwind engineer. The site has light/dark/charcoal modes. Use existing design tokens:
+
+bg-surface, ring-border, text-foreground, text-muted, accent
+
+Don’t introduce new colors or inline hexes.
+
+1) Normalize control styles (no white-on-white)
+
+Update the chips and the Sort <select> so text and backgrounds are token-driven and readable in all modes.
+
+Replace the chipClass and select styles:
+
+function chipClass(active: boolean) {
+  return [
+    'px-3 py-1.5 rounded-full text-sm',
+    'ring-1 ring-border/50',
+    active
+      ? 'bg-accent/15 text-accent ring-accent/40'
+      : 'bg-surface/80 text-foreground/80 hover:bg-surface/90'
+  ].join(' ');
+}
+
+// for the sort <select> element
+const selectClass =
+  'rounded-lg bg-surface/80 text-foreground ring-1 ring-border/50 ' +
+  'px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 ' +
+  'placeholder:text-foreground/60';
+
+
+Apply className={selectClass} to the Sort select.
+Make sure all chips and badges use text-foreground or text-foreground/80 (not text-white).
+
+2) Make images robust (and visible)
+
+Cards must show a cover image when provided, and a branded placeholder when not. Use either next/image or <img>. Ensure the wrapper has a background so white text is not laid on white.
+
+In FeaturedLists.tsx card image area, replace with:
+
+import Image from 'next/image';
+
+function Cover({ src, alt }: { src?: string; alt: string }) {
+  return (
+    <div className="relative aspect-[16/9] overflow-hidden bg-surface/80">
+      {src ? (
+        <Image
+          src={src}
+          alt={alt}
+          fill
+          sizes="(min-width: 1024px) 33vw, 100vw"
+          className="object-cover"
+          // If you’re not using next/image remote patterns yet, temporarily:
+          // unoptimized
+          // priority={false}
+        />
+      ) : (
+        // Branded placeholder (subtle grid/gradient)
+        <div className="absolute inset-0 bg-[radial-gradient(transparent,transparent),linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0))]">
+          <div className="absolute inset-0 grid [grid-template-columns:repeat(24,1fr)] opacity-[0.06]">
+            <div className="col-span-24 border-t border-border/30 mt-auto"></div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+Then in each card:
+
+<a ... className="group block rounded-2xl overflow-hidden ring-1 ring-border/50 bg-surface/80 hover:bg-surface/90 transition">
+  <Cover src={item.coverUrl} alt={item.title} />
+  <div className="p-4 text-foreground">
+    ...
+  </div>
+</a>
+
+
+If next/image remote covers are blocked (no domain in next.config):
+
+Add the remotePatterns for your cover host, or temporarily pass unoptimized to <Image />.
+
+If you stick with <img>, still keep the same wrapper and object-cover classes.
+
+3) Title hierarchy & Orbitron
+
+Ensure the section title is large, Orbitron, and readable on dark/charcoal.
+
+<div className="mb-4">
+  <div className="text-xs tracking-wide text-foreground/70">COMMUNITY LISTS</div>
+  <h2 className="font-orbitron text-4xl md:text-5xl font-extrabold tracking-tight text-foreground mt-1">
+    Featured Industry Lists
+  </h2>
+  <p className="mt-2 text-foreground/80">
+    Editor-led and data-driven rankings, roundups, and best-of lists.
+  </p>
+</div>
+
+
+Make sure font-orbitron is wired to the Orbitron variable you already registered. No hardcoded white.
+
+4) Badge + pill palette alignment
+
+Update the small badges so they don’t look like off-brand rainbow pills:
+
+function typeBadgeClass() {
+  return 'px-2 py-0.5 rounded-full text-xs bg-surface/90 text-foreground/80 ring-1 ring-border/50';
+}
+function voiceBadgeClass(v: Voice) {
+  return v === 'editorial'
+    ? 'px-2 py-0.5 rounded-full text-xs bg-accent/15 text-accent ring-1 ring-accent/30'
+    : 'px-2 py-0.5 rounded-full text-xs bg-surface/90 text-foreground/80 ring-1 ring-border/50';
+}
+
+
+And use text-foreground on all labels, not text-white.
+
+5) QA / Acceptance
+
+Sort dropdown has visible text in dark/charcoal and a clear focus ring.
+
+All cards either show the provided cover or a branded placeholder (no empty white boxes).
+
+No control or badge uses hard-coded white; they honor text-foreground.
+
+Title uses Orbitron and is larger; copy below is readable (text-foreground/80).
+
+No visual regressions in light mode.
