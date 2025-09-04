@@ -62,6 +62,13 @@ export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroM
     }
   };
 
+  const handleMethodology = () => {
+    // This will trigger the existing methodology modal
+    const methodologyButton = document.querySelector('[data-testid="methodology-button"]') as HTMLButtonElement;
+    if (methodologyButton) {
+      methodologyButton.click();
+    }
+  };
 
   const renderMediaSlot = () => {
     if (!HERO_MEDIA_ENABLED || !heroMedia) return null;
@@ -224,6 +231,14 @@ export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroM
                 data-testid="explore-charts-cta"
               >
                 Explore all charts
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleMethodology}
+                className="btn-secondary bg-white/10 text-white border-white/20 hover:bg-white/20"
+                data-testid="methodology-cta"
+              >
+                Methodology
               </Button>
             </div>
           </div>
