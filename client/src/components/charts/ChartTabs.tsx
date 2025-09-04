@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ChartType } from "@/lib/data/charts";
-import { BarChart3, TrendingUp, Zap, Building2 } from "lucide-react";
+import { BarChart3, TrendingUp, Zap } from "lucide-react";
 
 interface ChartTabsProps {
   activeChart: ChartType;
@@ -14,31 +14,21 @@ const chartTabs = [
     id: 'vhub-100' as ChartType,
     label: 'VHUB 100',
     description: 'Top 100 creators',
-    icon: BarChart3,
-    isPro: true
+    icon: BarChart3
   },
   {
     id: 'platforms-index' as ChartType,
     label: 'Platforms Index',
     description: 'Where creators thrive',
-    icon: TrendingUp,
-    isPro: false
+    icon: TrendingUp
   },
   {
     id: 'momentum-50' as ChartType,
     label: 'Momentum 50',
     description: 'Fastest rising creators',
-    icon: Zap,
-    isPro: false
-  },
-  {
-    id: 'studios-watchlist' as ChartType,
-    label: 'Studios Watchlist',
-    description: 'Coming soon',
-    icon: Building2,
-    isPro: false,
-    isComingSoon: true
+    icon: Zap
   }
+  // Studios Watchlist removed until feature is live
 ];
 
 export function ChartTabs({ activeChart, onChartChange, className }: ChartTabsProps) {
@@ -53,11 +43,9 @@ export function ChartTabs({ activeChart, onChartChange, className }: ChartTabsPr
             key={tab.id}
             variant={isActive ? "default" : "outline"}
             onClick={() => onChartChange(tab.id)}
-            disabled={tab.isComingSoon}
             className={cn(
               "flex items-center gap-2 h-auto p-4 text-left",
-              isActive && "ring-2 ring-primary/20",
-              tab.isComingSoon && "opacity-60"
+              isActive && "ring-2 ring-primary/20"
             )}
             data-testid={`chart-tab-${tab.id}`}
           >
@@ -71,23 +59,10 @@ export function ChartTabs({ activeChart, onChartChange, className }: ChartTabsPr
                 <Icon className="h-4 w-4" />
               </div>
               <div>
-                <div className={cn(
-                  "font-semibold text-sm",
-                  tab.isPro && "flex items-center gap-1"
-                )}>
+                <div className="font-semibold text-sm">
                   {tab.label}
-                  {tab.isPro && !tab.isComingSoon && (
-                    <span className="text-xs bg-primary text-primary-foreground px-1.5 py-0.5 rounded">
-                      PRO
-                    </span>
-                  )}
                 </div>
-                <div className={cn(
-                  "text-xs",
-                  isActive 
-                    ? "text-primary-foreground/70" 
-                    : "text-muted-foreground"
-                )}>
+                <div className="text-xs text-muted-foreground">
                   {tab.description}
                 </div>
               </div>

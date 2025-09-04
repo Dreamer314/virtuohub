@@ -145,16 +145,7 @@ export function ChartTable({
                   <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
                     {entry.name}
                   </h3>
-                  {config.showBadges && (
-                    <div className="flex flex-wrap gap-1">
-                      {entry.voices.includes('VHub Picks') && (
-                        <span className="vh-chip bg-purple-500/20 text-purple-700 border-purple-500/30 dark:text-purple-400">VHub Picks</span>
-                      )}
-                      {entry.voices.includes('User Choice') && (
-                        <span className="vh-chip bg-blue-500/20 text-blue-700 border-blue-500/30 dark:text-blue-400">User Choice</span>
-                      )}
-                    </div>
-                  )}
+                  {/* Voice badges removed per requirements - voice is now chart-level */}
                   {renderStreakInfo(entry)}
                 </div>
               </div>

@@ -8,17 +8,17 @@ import { useToast } from "@/hooks/use-toast";
 import { ExternalLink, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
+import { SuggestUpdateModal } from "@/components/charts/SuggestUpdateModal";
 
 interface VHubChartsSectionProps {
   onFiltersChange?: (params: URLSearchParams) => void;
 }
 
 // Chart definitions per requirements
-const CHART_DEFINITIONS: Record<ChartType, string> = {
+const CHART_DEFINITIONS: Record<Exclude<ChartType, 'studios-watchlist'>, string> = {
   'vhub-100': "The top 100 creators across immersive platforms ranked by multi-signal reach and impact over the last 30 days.",
   'platforms-index': "Where creators are thriving most, based on earnings potential, engagement, and activity.",
-  'momentum-50': "The fastest rising creators, streamers, and studios over the past 30 days.", 
-  'studios-watchlist': "A curated radar of teams to watch."
+  'momentum-50': "The fastest rising creators, streamers, and studios over the past 30 days."
 };
 
 export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
@@ -30,8 +30,8 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
   const [activeChart, setActiveChart] = useState<ChartType>(
     (searchParams.get('chart') as ChartType) || 'vhub-100'
   );
-  const [voices, setVoices] = useState<VoiceFilter[]>(
-    searchParams.get('voices')?.split(',').filter(Boolean) as VoiceFilter[] || []
+  const [voice, setVoice] = useState<'editorial' | 'community'>(
+    (searchParams.get('voice') as 'editorial' | 'community') || 'editorial'
   );
   const [platforms, setPlatforms] = useState<string[]>(
     searchParams.get('platforms')?.split(',').filter(Boolean) || []
@@ -42,17 +42,17 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
   
   // Modal states
   const [showMethodology, setShowMethodology] = useState(false);
+  const [showSuggestUpdate, setShowSuggestUpdate] = useState(false);
 
   // Mock Pro user state - in real app this would come from auth context
   const [isProUser] = useState(false);
   const { toast } = useToast();
 
   // Get chart data
-  const chartData = getChartById(activeChart);
+  const chartData = getChartById(activeChart, voice);
 
   // Filter entries based on current filters
   const filteredEntries = chartData ? filterChartEntries(chartData.entries, {
-    voices: voices.length > 0 ? voices : undefined,
     platforms: platforms.length > 0 ? platforms : undefined
   }) : [];
 
@@ -60,17 +60,17 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
     if (activeChart !== 'vhub-100') params.set('chart', activeChart);
-    if (voices.length > 0) params.set('voices', voices.join(','));
+    if (voice !== 'editorial') params.set('voice', voice);
     if (platforms.length > 0) params.set('platforms', platforms.join(','));
     if (sort !== 'Most Recent') params.set('sort', sort);
     
     onFiltersChange?.(params);
-  }, [activeChart, voices, platforms, sort, onFiltersChange, searchParams]);
+  }, [activeChart, voice, platforms, sort, onFiltersChange, searchParams]);
 
   const handleChartChange = (chart: ChartType) => {
     setActiveChart(chart);
     // Reset filters when switching charts for better UX
-    setVoices([]);
+    setVoice('editorial');
     setPlatforms([]);
     setSort('Most Recent');
   };
@@ -83,21 +83,18 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
   };
 
   const handleSuggestUpdate = () => {
-    toast({
-      title: "Thanks for the suggestion!",
-      description: "We'll review your feedback for future updates.",
-    });
+    setShowSuggestUpdate(true);
   };
 
   if (!chartData) {
     return null;
   }
 
-  // Contextual filters: Hide Voice filter for Platforms Index
-  const showVoiceFilter = activeChart !== 'platforms-index';
+  // Contextual filters: Show Voice switcher for creator charts only
+  const showVoiceSwitcher = activeChart === 'vhub-100' || activeChart === 'momentum-50';
   
-  // Special handling for Studios Watchlist
-  const isComingSoon = activeChart === 'studios-watchlist' && chartData.entries.length === 0;
+  // Skip Studios Watchlist - removed from tabs
+  const isComingSoon = false;
 
   return (
     <div className="space-y-8">
@@ -160,8 +157,19 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
       />
 
       {/* Chart Definition - immediately under active tab */}
-      <div className="text-muted-foreground">
-        {CHART_DEFINITIONS[activeChart]}
+      <div className="space-y-2">
+        <div className="text-muted-foreground">
+          {CHART_DEFINITIONS[activeChart as keyof typeof CHART_DEFINITIONS]}
+        </div>
+        {/* Voice indicator chip for creator charts */}
+        {showVoiceSwitcher && (
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">Voice:</span>
+            <span className="vh-chip bg-primary/10 text-primary border-primary/20">
+              {voice === 'editorial' ? 'Editorial (VHub Picks)' : 'Community Choice'}
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Coming Soon for Studios Watchlist */}
@@ -181,13 +189,13 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
           {/* Contextual Filters */}
           <ChartFilters
             activeChart={activeChart}
-            voices={showVoiceFilter ? voices : []}
+            voice={voice}
             platforms={platforms}
             sort={sort}
-            onVoicesChange={showVoiceFilter ? setVoices : () => {}}
+            onVoiceChange={setVoice}
             onPlatformsChange={setPlatforms}
             onSortChange={setSort}
-            showVoiceFilter={showVoiceFilter}
+            showVoiceSwitcher={showVoiceSwitcher}
           />
 
           {/* Chart Table */}
@@ -214,6 +222,12 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
           </div>
         </div>
       )}
+
+      {/* Suggest Update Modal */}
+      <SuggestUpdateModal 
+        isOpen={showSuggestUpdate}
+        onClose={() => setShowSuggestUpdate(false)}
+      />
     </div>
   );
 }

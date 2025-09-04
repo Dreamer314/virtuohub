@@ -1,0 +1,162 @@
+Charts cleanup, voice logic, titles, and detail-page polish”
+
+You are a senior Next.js + TypeScript + Tailwind engineer. Use the site’s existing design tokens and the three modes (light, dark, charcoal). Do not invent new theme variables. Maintain accessibility.
+
+Context: what’s wrong right now
+
+VHUB 100 shows mixed “VHub Picks / User Choice” badges per row, which makes the authoritative chart feel arbitrary.
+
+“Pro” label appears on the VHUB 100 tab button without a gating context.
+
+The Platforms Index chart shows voice badges and filters that only make sense for creator charts.
+
+“Curated Collections from the Community” mislabels the lists section; these are editorial + data-driven industry lists, not community-submitted.
+
+Suggest Update only fires a toast; there’s no modal to actually submit a suggestion.
+
+Some lists (e.g., “Fastest Growing Studios in 2024”) reference Studios before that feature is live.
+
+The List Detail page is visually flat; no hierarchy for Top 3, no sponsor slot, and weak typography.
+
+Goal
+
+Keep one charts section at the top of /community/lists, then the lists grid below. Make charts feel like scoreboards, clarify “voice” logic, correct titles, and add a real Suggest Update flow. Improve the list detail page for hierarchy and excitement.
+
+Do this, in order
+0) Safety
+
+Create a branch: fix/charts-cleanup-voice-detail.
+
+1) Voice logic (critical)
+
+Do not show VHub Picks / User Choice badges per-row on VHUB 100 and Momentum 50.
+
+Instead implement a Chart Voice switcher for creator charts:
+
+Toggle component with two modes: Editorial (VHub Picks) | Community Choice.
+
+When “Editorial” is active, show only entries from the editorial dataset; when “Community Choice” is active, show only entries ranked by community poll data.
+
+Persist the voice in the URL search params: ?voice=editorial or ?voice=community.
+
+Remove voice badges from each row for creator charts; keep a small voice chip near the chart header showing the current mode.
+
+Platforms Index: never shows voice switcher or badges.
+
+2) Tabs and definitions
+
+Tabs (pill group): VHUB 100, Platforms Index, Momentum 50.
+
+Remove Studios Watchlist tab until Studios is live.
+
+Directly under the active tab, render:
+
+VHUB 100: “The top 100 creators across immersive platforms ranked by multi-signal reach and impact over the last 30 days.”
+
+Platforms Index: “Where creators are thriving most, based on earnings potential, engagement, and activity.”
+
+Momentum 50: “The fastest rising creators, streamers, and studios over the past 30 days.”
+
+3) Filters (contextual)
+
+VHUB 100 and Momentum 50: show Voice switcher (from step 1), Platform multi-select, Sort (Most Recent, Most Viewed).
+
+Platforms Index: show Platform multi-select and Sort only.
+
+All filter state syncs to URL params; do not render irrelevant chips.
+
+4) Remove confusing labels
+
+Remove the “PRO” label from the VHUB 100 tab button.
+
+Keep Pro gating behavior for VHUB 100: non-Pro users see Top 10, then a frosted overlay with an “Unlock full VHUB 100” CTA card. Make the gating copy clear and premium.
+
+5) Table schemas (per chart)
+
+VHUB 100 (creators only): columns = Rank, Avatar, Creator, Platforms (pills), Impact Score (label + value), Movement (▲ +N / ▼ −N / NEW), optional Streak (“#1 for N weeks”).
+
+Platforms Index (platforms only): columns = Rank, Platform logo, Platform, Category, Creator Earnings Index (label + value), Movement, Streak. Add an info tooltip on the metric header: “Composite score using earnings potential, creator activity, and engagement trend over the last 30 days.”
+
+Momentum 50 (creators only): columns = Rank, Avatar, Creator, Platforms, 30-day Growth, Movement, NEW badge for first-timers.
+
+Do not mix entities within a chart. Remove column title “Creator/Platform”.
+
+6) Lists grid naming & hygiene
+
+Rename section header from “Curated Collections from the Community” to “Featured Industry Lists” (H1) and a subline “Editor-led and data-driven rankings, roundups, and best-of lists.”
+
+Hide or rename any Studios list cards until Studios is live.
+
+Keep chips: Charting / Upcoming / Best Of / Entertainment. Keep platform pills as metadata only.
+
+7) Suggest Update (real flow)
+
+Replace the toast with a modal form:
+
+Fields: Name (optional), Email (optional), “What should we update?” (textarea, required), optional URL field.
+
+On submit: write to mock queue or JSON store and show success state in the modal.
+
+Keep a small note: “Thank you—submissions are reviewed and may take up to X days to reflect.”
+
+8) List Detail page (visual hierarchy)
+
+Add hero banner with cover image, chips (list type + voice), large title, dek, platform pills, and a sponsor slot under the header (“Presented by <sponsor>”).
+
+Top 3 entries get a highlight row with gold/silver/bronze accents and larger avatars.
+
+Remaining entries use compact ranked rows.
+
+Right under the header add a small methodology inline link that jumps to “How we built this list.”
+
+Keep “How we built this list” section but format it as a well-styled card.
+
+9) Utilities (reuse only—no new tokens)
+
+Use Tailwind @apply to keep typography consistent:
+
+.vh-eyebrow = uppercase, tracking-wide, text-accent, text-xs, font-bold
+
+.vh-hero = display-xl, font-extrabold, tight leading
+
+.vh-meta = text-sm, opacity-80
+
+.vh-rank = text-3xl, font-bold, tabular-nums
+
+.vh-chip = shared chip for NEW, up, down, streak
+
+Apply to ChartHeader, ChartTabs, ChartTable, and List Detail header.
+
+10) Data layer and tests
+
+Charts read from lib/data/charts.ts with helpers: getChartById(id), getChartsList().
+
+Creator charts accept a voice param (editorial | community) to switch datasets.
+
+Unit tests:
+
+Voice switcher toggles datasets and URL param.
+
+Platforms Index never renders voice UI.
+
+VHUB 100 gating triggers after Top 10 for non-Pro.
+
+Column configs per chart render correct headers.
+
+Acceptance criteria
+
+On /community/lists, there is one charts section at top; tabs = VHUB 100, Platforms Index, Momentum 50.
+
+Voice is a top-level toggle for creator charts only; no per-row voice badges.
+
+Pro label is removed from the tab; gating for VHUB 100 is clear after Top 10.
+
+Lists grid title reads “Featured Industry Lists” with the new subline; no Studios items appear.
+
+Suggest Update opens a modal form and persists to the mock store.
+
+List Detail page has a hero banner, Top-3 highlight, compact remainder, and a sponsor slot.
+
+Layout, spacing, and modes (light/dark/charcoal) are consistent with the rest of Community.
+
+If file paths differ, adapt while preserving these behaviors and strings. Document any deviations in the README.

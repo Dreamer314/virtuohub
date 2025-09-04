@@ -32,9 +32,27 @@ export type ChartType = 'vhub-100' | 'platforms-index' | 'momentum-50' | 'studio
 export type VoiceFilter = 'VHub Picks' | 'User Choice';
 export type SortOption = 'Most Recent' | 'Most Viewed';
 
-export function getChartById(chartId: ChartType): ChartConfig | null {
+export function getChartById(chartId: ChartType, voice?: 'editorial' | 'community'): ChartConfig | null {
   const chart = chartsData.charts[chartId] as ChartConfig;
-  return chart || null;
+  if (!chart) return null;
+  
+  // For creator charts, filter entries based on voice
+  if (voice && (chartId === 'vhub-100' || chartId === 'momentum-50')) {
+    const filteredEntries = chart.entries.filter(entry => {
+      if (voice === 'editorial') {
+        return entry.voices.includes('VHub Picks');
+      } else {
+        return entry.voices.includes('User Choice');
+      }
+    });
+    
+    return {
+      ...chart,
+      entries: filteredEntries
+    };
+  }
+  
+  return chart;
 }
 
 export function getChartsList(): ChartConfig[] {
@@ -44,17 +62,10 @@ export function getChartsList(): ChartConfig[] {
 export function filterChartEntries(
   entries: ChartEntry[], 
   filters: {
-    voices?: VoiceFilter[];
     platforms?: string[];
   }
 ): ChartEntry[] {
   let filtered = [...entries];
-
-  if (filters.voices && filters.voices.length > 0) {
-    filtered = filtered.filter(entry => 
-      filters.voices!.some(voice => entry.voices.includes(voice))
-    );
-  }
 
   if (filters.platforms && filters.platforms.length > 0) {
     filtered = filtered.filter(entry =>

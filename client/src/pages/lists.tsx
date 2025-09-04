@@ -162,9 +162,12 @@ const ListsPage: React.FC = () => {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <p className="vh-eyebrow mb-2">Community Lists</p>
-                  <h2 className="vh-title">
-                    Curated collections from the community
-                  </h2>
+                  <h1 className="vh-title">
+                    Featured Industry Lists
+                  </h1>
+                  <p className="text-muted-foreground mt-1">
+                    Editor-led and data-driven rankings, roundups, and best-of lists.
+                  </p>
                   <p className="vh-meta mt-1">
                     {listsData?.total ? `${listsData.total} lists found` : 'Discovering lists...'}
                   </p>

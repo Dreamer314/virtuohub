@@ -2,20 +2,21 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { X, Filter } from "lucide-react";
-import { VoiceFilter, SortOption, ChartType } from "@/lib/data/charts";
+import { SortOption, ChartType } from "@/lib/data/charts";
 import { useState } from "react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import { VoiceSwitcher } from "@/components/charts/VoiceSwitcher";
 
 interface ChartFiltersProps {
   activeChart: ChartType;
-  voices: VoiceFilter[];
+  voice: 'editorial' | 'community';
   platforms: string[];
   sort: SortOption;
-  onVoicesChange: (voices: VoiceFilter[]) => void;
+  onVoiceChange: (voice: 'editorial' | 'community') => void;
   onPlatformsChange: (platforms: string[]) => void;
   onSortChange: (sort: SortOption) => void;
-  showVoiceFilter?: boolean;
+  showVoiceSwitcher?: boolean;
 }
 
 const availablePlatforms = [
@@ -23,28 +24,20 @@ const availablePlatforms = [
   'Core', 'Minecraft', 'Dreams', 'Fortnite Creative', 'Cross-Platform'
 ];
 
-const voiceOptions: VoiceFilter[] = ['VHub Picks', 'User Choice'];
 const sortOptions: SortOption[] = ['Most Recent', 'Most Viewed'];
 
 export function ChartFilters({
   activeChart,
-  voices,
+  voice,
   platforms,
   sort,
-  onVoicesChange,
+  onVoiceChange,
   onPlatformsChange,
   onSortChange,
-  showVoiceFilter = true
+  showVoiceSwitcher = false
 }: ChartFiltersProps) {
   const [isPlatformFiltersCollapsed, setIsPlatformFiltersCollapsed] = useState(true);
 
-  const toggleVoice = (voice: VoiceFilter) => {
-    if (voices.includes(voice)) {
-      onVoicesChange(voices.filter(v => v !== voice));
-    } else {
-      onVoicesChange([...voices, voice]);
-    }
-  };
 
   const togglePlatform = (platform: string) => {
     if (platforms.includes(platform)) {
@@ -55,12 +48,12 @@ export function ChartFilters({
   };
 
   const clearAllFilters = () => {
-    if (showVoiceFilter) onVoicesChange([]);
+    if (showVoiceSwitcher) onVoiceChange('editorial');
     onPlatformsChange([]);
     onSortChange('Most Recent');
   };
 
-  const hasActiveFilters = (showVoiceFilter && voices.length > 0) || platforms.length > 0 || sort !== 'Most Recent';
+  const hasActiveFilters = (showVoiceSwitcher && voice !== 'editorial') || platforms.length > 0 || sort !== 'Most Recent';
 
   return (
     <div className="space-y-4 bg-card/30 rounded-lg p-4 border">
@@ -83,26 +76,14 @@ export function ChartFilters({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {/* Voice Filter - Hidden for Platforms Index */}
-        {showVoiceFilter && (
+        {/* Voice Switcher - Only for creator charts */}
+        {showVoiceSwitcher && (
           <div className="space-y-2">
             <label className="text-sm font-medium">Voice</label>
-            <div className="flex flex-wrap gap-1">
-              {voiceOptions.map((voice) => (
-                <Badge
-                  key={voice}
-                  variant={voices.includes(voice) ? "default" : "outline"}
-                  className="cursor-pointer hover:bg-primary/20"
-                  onClick={() => toggleVoice(voice)}
-                  data-testid={`voice-filter-${voice.toLowerCase().replace(' ', '-')}`}
-                >
-                  {voice}
-                  {voices.includes(voice) && (
-                    <X className="h-3 w-3 ml-1" />
-                  )}
-                </Badge>
-              ))}
-            </div>
+            <VoiceSwitcher
+              voice={voice}
+              onVoiceChange={onVoiceChange}
+            />
           </div>
         )}
 
@@ -170,10 +151,10 @@ export function ChartFilters({
       {hasActiveFilters && (
         <div className="pt-2 border-t">
           <div className="text-xs text-muted-foreground">
-            Showing results for {activeChart} • {voices.length > 0 && `${voices.length} voice${voices.length > 1 ? 's' : ''}`}
-            {voices.length > 0 && platforms.length > 0 && ' • '}
+            Showing results for {activeChart} • {showVoiceSwitcher && voice !== 'editorial' && `${voice} voice`}
+            {showVoiceSwitcher && voice !== 'editorial' && platforms.length > 0 && ' • '}
             {platforms.length > 0 && `${platforms.length} platform${platforms.length > 1 ? 's' : ''}`}
-            {(voices.length > 0 || platforms.length > 0) && ` • Sorted by ${sort}`}
+            {((showVoiceSwitcher && voice !== 'editorial') || platforms.length > 0) && ` • Sorted by ${sort}`}
           </div>
         </div>
       )}

@@ -10,7 +10,7 @@ import { PlatformPill } from '@/components/common/PlatformPill';
 import { VoiceBadge } from '@/components/common/VoiceBadge';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Eye, Clock, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Eye, Clock, ExternalLink, Heart } from 'lucide-react';
 import { Link } from 'wouter';
 
 const ListDetailPage: React.FC = () => {
