@@ -233,7 +233,7 @@
 
 @layer utilities {
   .glass-card {
-    @apply bg-white/10 backdrop-blur-md border border-white/20;
+    @apply bg-white/80 backdrop-blur-md border border-gray-200/50 shadow-lg;
   }
   
   .dark .glass-card {
@@ -242,6 +242,28 @@
 
   .charcoal .glass-card {
     @apply bg-neutral-800/30 border-neutral-700/30;
+  }
+
+  /* Light mode enhanced-card styling */
+  .enhanced-card {
+    box-shadow: 
+      0 2px 12px rgba(0, 0, 0, 0.08),
+      0 1px 3px rgba(0, 0, 0, 0.12);
+    background: linear-gradient(135deg, 
+      color-mix(in srgb, hsl(var(--card)), rgba(255, 255, 255, 0.8)) 0%,
+      color-mix(in srgb, hsl(var(--card)), rgba(0, 0, 0, 0.02)) 100%);
+    border: 1px solid hsl(var(--border));
+  }
+
+  .enhanced-card:hover {
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.12),
+      0 2px 8px rgba(0, 0, 0, 0.16);
+    transform: translateY(-1px);
+    background: linear-gradient(135deg, 
+      color-mix(in srgb, hsl(var(--card)), rgba(255, 255, 255, 0.9)) 0%,
+      color-mix(in srgb, hsl(var(--card)), rgba(0, 0, 0, 0.01)) 100%);
+    border: 1px solid hsl(var(--border));
   }
 
   /* Enhanced dark theme card styling with ambient effects */

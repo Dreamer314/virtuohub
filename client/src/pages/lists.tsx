@@ -52,15 +52,15 @@ const ListsPage: React.FC = () => {
             <section className="mt-10">
               <div className="relative mb-6">
                 {/* CHARTS header banner */}
-                <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-purple-600/20 border border-purple-500/30">
+                <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-purple-600/20 dark:from-purple-600/20 dark:via-blue-600/20 dark:to-purple-600/20 border border-purple-500/30 shadow-lg">
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10" />
                   <div className="relative px-6 py-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h2 className="text-3xl font-bold text-white mb-1">CHARTS</h2>
-                        <p className="text-purple-200 text-sm">TOP CHARTS</p>
+                        <h2 className="text-3xl font-bold text-purple-900 dark:text-white mb-1">CHARTS</h2>
+                        <p className="text-purple-700 dark:text-purple-200 text-sm">TOP CHARTS</p>
                       </div>
-                      <div className="text-purple-300/60 font-mono text-xs">
+                      <div className="text-purple-600/80 dark:text-purple-300/60 font-mono text-xs">
                         Updated weekly
                       </div>
                     </div>
@@ -69,7 +69,7 @@ const ListsPage: React.FC = () => {
               </div>
               
               {/* Framed charts block */}
-              <div className="relative mt-6 rounded-2xl ring-1 ring-border/50 bg-surface/60 p-4 md:p-6">
+              <div className="relative mt-6 rounded-2xl ring-1 ring-border/50 bg-surface/60 p-4 md:p-6 shadow-xl shadow-black/5 dark:shadow-black/20">
                 {/* Ambient overlay */}
                 <div 
                   aria-hidden="true" 
