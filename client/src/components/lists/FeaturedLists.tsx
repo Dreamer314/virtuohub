@@ -124,12 +124,17 @@ export default function FeaturedLists() {
             id="list-sort"
             value={sort}
             onChange={e => setSort(e.target.value as any)}
-            className="rounded-lg bg-surface text-foreground ring-1 ring-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
+            className="rounded-lg ring-1 ring-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
+            style={{
+              backgroundColor: 'var(--surface)',
+              color: 'var(--foreground)',
+              border: '1px solid var(--border)'
+            }}
             data-testid="sort-select"
           >
-            <option value="recent">Most Recent</option>
-            <option value="views">Most Viewed</option>
-            <option value="rating">Highest Rated</option>
+            <option value="recent" style={{ backgroundColor: 'var(--surface)', color: 'var(--foreground)' }}>Most Recent</option>
+            <option value="views" style={{ backgroundColor: 'var(--surface)', color: 'var(--foreground)' }}>Most Viewed</option>
+            <option value="rating" style={{ backgroundColor: 'var(--surface)', color: 'var(--foreground)' }}>Highest Rated</option>
           </select>
         </div>
       </div>
