@@ -20,8 +20,8 @@ function generateId(): string {
 // Initialize with seed data if empty  
 function initializeData() {
   // Force reset to load new data with images
-  if (!localStorage.getItem(POSTS_KEY) || localStorage.getItem('vhub.version') !== '1.3') {
-    localStorage.setItem('vhub.version', '1.3');
+  if (!localStorage.getItem(POSTS_KEY) || localStorage.getItem('vhub.version') !== '1.4') {
+    localStorage.setItem('vhub.version', '1.4');
     const seedPosts: Post[] = [
       {
         id: 'post1',
@@ -69,6 +69,22 @@ function initializeData() {
         createdAt: Date.now() - 6 * 60 * 60 * 1000, // 6 hours ago
         author: { id: 'user5', name: 'Chris Wilson', displayName: 'Chris Wilson' },
         stats: { likes: 89, saves: 156, comments: 23 }
+      },
+      {
+        id: 'post4',
+        type: 'post',
+        title: 'New VRChat Avatar Pack - Cyberpunk Collection',
+        body: 'Created a stunning cyberpunk-themed avatar collection for VRChat! Each avatar features neon accents, holographic details, and custom particle effects. Perfect for futuristic roleplay worlds!',
+        links: [],
+        images: [],
+        files: [],
+        imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop&crop=center',
+        price: '$180',
+        category: 'Assets for Sale',
+        platforms: ['vrchat'],
+        createdAt: Date.now() - 3 * 60 * 60 * 1000, // 3 hours ago
+        author: { id: 'user6', name: 'Sarah Chen', displayName: 'Sarah Chen' },
+        stats: { likes: 45, saves: 32, comments: 8 }
       }
     ];
     localStorage.setItem(POSTS_KEY, JSON.stringify(seedPosts));
