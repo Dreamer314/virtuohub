@@ -82,10 +82,6 @@ export default function FeaturedLists() {
         <p className="text-sm text-foreground/70 mt-1">
           {items.length} lists found
         </p>
-        {/* DEV: remove after verification */}
-        <span data-dev-id="featured-lists-verified" className="mt-2 inline-block text-xs px-2 py-0.5 rounded bg-accent/15 text-accent ring-1 ring-accent/30">
-          FeaturedLists verified
-        </span>
       </div>
 
       {/* Controls */}
@@ -128,13 +124,12 @@ export default function FeaturedLists() {
             id="list-sort"
             value={sort}
             onChange={e => setSort(e.target.value as any)}
-            className="rounded-lg bg-surface/80 text-foreground ring-1 ring-border/50 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
-            style={{ color: 'white', backgroundColor: 'rgba(255,255,255,0.1)' }}
+            className="rounded-lg bg-surface text-foreground ring-1 ring-border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-accent/40"
             data-testid="sort-select"
           >
-            <option value="recent" style={{ color: 'black', backgroundColor: 'white' }}>Most Recent</option>
-            <option value="views" style={{ color: 'black', backgroundColor: 'white' }}>Most Viewed</option>
-            <option value="rating" style={{ color: 'black', backgroundColor: 'white' }}>Highest Rated</option>
+            <option value="recent">Most Recent</option>
+            <option value="views">Most Viewed</option>
+            <option value="rating">Highest Rated</option>
           </select>
         </div>
       </div>
