@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Poll } from '@/types/content';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Clock, Users, CheckCircle, BarChart3 } from 'lucide-react';
+import { Clock, Users, CheckCircle, BarChart3, Heart, Bookmark, Share } from 'lucide-react';
 import { votePoll, hasVoted, getUserVote } from '@/data/mockApi';
 
 interface PollCardProps {
@@ -319,6 +319,33 @@ function PollFooter({
           Thanks for voting. Results will be visible when the poll closes.
         </div>
       )}
+      
+      {/* Engagement actions */}
+      <div className="flex items-center justify-between pt-3 border-t border-border mt-4">
+        <div className="flex items-center space-x-4">
+          <button 
+            className="flex items-center space-x-1 text-sm text-muted-foreground hover:text-red-500 transition-colors"
+            data-testid={`poll-like-${poll.id}`}
+          >
+            <Heart className="w-4 h-4" />
+            <span>Like</span>
+          </button>
+          <button 
+            className="flex items-center space-x-1 text-sm text-muted-foreground hover:text-blue-500 transition-colors"
+            data-testid={`poll-save-${poll.id}`}
+          >
+            <Bookmark className="w-4 h-4" />
+            <span>Save</span>
+          </button>
+          <button 
+            className="flex items-center space-x-1 text-sm text-muted-foreground hover:text-green-500 transition-colors"
+            data-testid={`poll-share-${poll.id}`}
+          >
+            <Share className="w-4 h-4" />
+            <span>Share</span>
+          </button>
+        </div>
+      </div>
     </>
   );
 }

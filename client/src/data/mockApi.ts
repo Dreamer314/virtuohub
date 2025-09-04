@@ -29,11 +29,12 @@ function initializeData() {
         links: ['https://vrchat.com/home/world/wrld_example'],
         images: [],
         files: [],
+        imageUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=800&h=600&fit=crop&crop=center',
         category: 'General',
         platforms: ['vrchat'],
         createdAt: Date.now() - 2 * 60 * 60 * 1000, // 2 hours ago
         author: currentUser,
-        stats: { likes: 0, saves: 0, comments: 0 }
+        stats: { likes: 12, saves: 8, comments: 3 }
       },
       {
         id: 'post2',
@@ -43,12 +44,29 @@ function initializeData() {
         links: [],
         images: [],
         files: [],
+        imageUrl: 'https://images.unsplash.com/photo-1596854407944-bf87f6fdd49e?w=800&h=600&fit=crop&crop=center',
         price: '$25-75',
         category: 'Jobs & Gigs',
         platforms: ['secondlife', 'vrchat'],
         createdAt: Date.now() - 4 * 60 * 60 * 1000, // 4 hours ago
         author: { id: 'user2', name: 'Maya Rodriguez' },
-        stats: { likes: 0, saves: 0, comments: 0 }
+        stats: { likes: 25, saves: 18, comments: 7 }
+      },
+      {
+        id: 'post3',
+        type: 'post',
+        title: 'Free Unity Assets Pack - Medieval Fantasy Collection',
+        body: 'Released my complete medieval fantasy asset pack for Unity creators! Includes 50+ prefabs: weapons, armor, buildings, props, and materials. All optimized for VR and mobile. Download link in comments.',
+        links: ['https://unity.com/asset-store/example'],
+        images: [],
+        files: [],
+        imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800&h=600&fit=crop&crop=center',
+        price: 'Free',
+        category: 'Assets for Sale',
+        platforms: ['unity', 'vrchat'],
+        createdAt: Date.now() - 6 * 60 * 60 * 1000, // 6 hours ago
+        author: { id: 'user5', name: 'Chris Wilson' },
+        stats: { likes: 89, saves: 156, comments: 23 }
       }
     ];
     localStorage.setItem(POSTS_KEY, JSON.stringify(seedPosts));
@@ -62,10 +80,10 @@ function initializeData() {
         type: 'poll',
         question: 'What type of virtual world content do you create most often?',
         options: [
-          { id: 'opt1', label: 'Avatar accessories & clothing', votes: 12 },
-          { id: 'opt2', label: 'World environments & buildings', votes: 8 },
-          { id: 'opt3', label: 'Interactive objects & scripts', votes: 5 },
-          { id: 'opt4', label: 'Art galleries & exhibitions', votes: 3 }
+          { id: 'opt1', label: 'Avatar accessories & clothing', votes: 42 },
+          { id: 'opt2', label: 'World environments & buildings', votes: 38 },
+          { id: 'opt3', label: 'Interactive objects & scripts', votes: 25 },
+          { id: 'opt4', label: 'Art galleries & exhibitions', votes: 18 }
         ],
         allowMultiple: false,
         showResults: 'after-vote',
@@ -79,21 +97,21 @@ function initializeData() {
       {
         id: 'poll2',
         type: 'poll',
-        question: 'Which platform has the best creation tools in 2024?',
+        question: 'Which platform offers the best monetization for creators?',
         options: [
-          { id: 'opt1', label: 'Unity (for VRChat/Horizon)', votes: 45 },
-          { id: 'opt2', label: 'Roblox Studio', votes: 38 },
-          { id: 'opt3', label: 'Second Life Builder', votes: 22 },
-          { id: 'opt4', label: 'Unreal Engine', votes: 15 }
+          { id: 'opt1', label: 'Roblox (Robux system)', votes: 67 },
+          { id: 'opt2', label: 'Second Life (Linden Dollars)', votes: 45 },
+          { id: 'opt3', label: 'VRChat (Creator Economy)', votes: 28 },
+          { id: 'opt4', label: 'Horizon Worlds (Meta)', votes: 12 }
         ],
         allowMultiple: false,
         showResults: 'after-vote',
-        closesAt: now - 1 * 24 * 60 * 60 * 1000, // 1 day ago (completed)
+        closesAt: now + 5 * 24 * 60 * 60 * 1000, // 5 days from now
         category: 'General',
-        platforms: ['unity', 'roblox', 'secondlife', 'unreal'],
-        createdAt: now - 8 * 24 * 60 * 60 * 1000, // 8 days ago
+        platforms: ['roblox', 'secondlife', 'vrchat', 'horizon'],
+        createdAt: now - 3 * 60 * 60 * 1000, // 3 hours ago
         author: { id: 'user4', name: 'Sam Rivera' },
-        status: 'completed'
+        status: 'active'
       }
     ];
     localStorage.setItem(POLLS_KEY, JSON.stringify(seedPolls));

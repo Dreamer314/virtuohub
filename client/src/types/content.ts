@@ -12,6 +12,7 @@ export interface Post {
   links: string[];
   images: string[];          // base64 previews for now
   files: { name: string; b64: string }[];
+  imageUrl?: string;         // Main display image URL
   price?: string;            // "Free" | "$50" etc.
   category: string;          // "General" | "Jobs & Gigs" | ...
   platforms: PlatformKey[];
