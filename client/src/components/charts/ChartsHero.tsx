@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ExternalLink, Play, Pause } from "lucide-react";
 
 export interface ChartsHeroProps {
+  backgroundImageUrl?: string;
   sponsorName?: string;
   sponsorHref?: string;
   heroMedia?:
@@ -11,7 +12,9 @@ export interface ChartsHeroProps {
     | { type: "video"; src: string; poster?: string; caption?: string };
 }
 
-export function ChartsHero({ sponsorName, sponsorHref, heroMedia }: ChartsHeroProps) {
+const HERO_MEDIA_ENABLED = false;
+
+export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroMedia }: ChartsHeroProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
@@ -68,7 +71,7 @@ export function ChartsHero({ sponsorName, sponsorHref, heroMedia }: ChartsHeroPr
   };
 
   const renderMediaSlot = () => {
-    if (!heroMedia) return null;
+    if (!HERO_MEDIA_ENABLED || !heroMedia) return null;
 
     const mediaFrame = "relative aspect-video rounded-xl overflow-hidden ring-1 ring-border/30 shadow-lg";
 
@@ -166,23 +169,20 @@ export function ChartsHero({ sponsorName, sponsorHref, heroMedia }: ChartsHeroPr
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl p-6 md:p-10 bg-card/80 ring-1 ring-border/50 mb-8">
-      {/* Grid overlay */}
-      <div 
-        className="absolute inset-0 opacity-[0.02] pointer-events-none"
-        style={{
-          backgroundImage: `
-            linear-gradient(hsl(var(--border)) 1px, transparent 1px),
-            linear-gradient(90deg, hsl(var(--border)) 1px, transparent 1px)
-          `,
-          backgroundSize: '20px 20px'
-        }}
+    <div className="relative overflow-hidden rounded-2xl p-6 md:p-10 bg-surface/70 ring-1 ring-border/50 mb-8">
+      {/* Background image */}
+      <div
+        className="absolute inset-0 -z-10 bg-cover bg-center"
+        style={{ backgroundImage: `url(${backgroundImageUrl ?? '/hero/vhub-charts-placeholder.jpg'})` }}
         aria-hidden="true"
       />
       
-      {/* Large #1 watermark */}
+      {/* Dark overlay for text readability */}
+      <div className="absolute inset-0 -z-10 bg-black/30 md:bg-black/25" aria-hidden="true" />
+      
+      {/* Faded #1 watermark - positioned to not overlap text */}
       <div 
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[20rem] font-black text-foreground/[0.03] pointer-events-none select-none z-0"
+        className="absolute right-6 bottom-2 text-[18rem] md:text-[22rem] font-extrabold leading-none opacity-[0.06] select-none pointer-events-none"
         aria-hidden="true"
       >
         #1
@@ -207,43 +207,36 @@ export function ChartsHero({ sponsorName, sponsorHref, heroMedia }: ChartsHeroPr
       )}
 
       <div className="relative z-10">
-        <div className="grid gap-8 lg:grid-cols-2 lg:gap-12 items-center">
-          {/* Left content */}
-          <div className="space-y-6">
-            <div className="space-y-4">
-              <p className="vh-eyebrow">VHUB Charts</p>
-              <h1 className="vh-hero">
-                The scoreboards of the immersive creator economy.
-              </h1>
-              <p className="vh-meta text-lg">
-                Updated weekly with data on creators, platforms, and momentum.
-              </p>
-            </div>
-
-            {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button
-                onClick={handleExploreCharts}
-                className="btn-primary"
-                data-testid="explore-charts-cta"
-              >
-                Explore all charts
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleMethodology}
-                className="btn-secondary"
-                data-testid="methodology-cta"
-              >
-                Methodology
-              </Button>
-            </div>
+        <div className="space-y-6">
+          {/* Eyebrow */}
+          <p className="vh-eyebrow text-white/90">VHUB Charts</p>
+          
+          {/* Subline */}
+          <p className="vh-meta text-lg max-w-xl text-white/80">
+            Updated weekly with data on creators, platforms, and momentum.
+          </p>
+          
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button
+              onClick={handleExploreCharts}
+              className="btn-primary"
+              data-testid="explore-charts-cta"
+            >
+              Explore all charts
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleMethodology}
+              className="btn-secondary bg-white/10 text-white border-white/20 hover:bg-white/20"
+              data-testid="methodology-cta"
+            >
+              Methodology
+            </Button>
           </div>
-
-          {/* Right media slot */}
-          <div className="order-first lg:order-last">
-            {renderMediaSlot()}
-          </div>
+          
+          {/* Media slot (commented out for future) */}
+          {HERO_MEDIA_ENABLED && renderMediaSlot()}
         </div>
       </div>
     </div>

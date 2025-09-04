@@ -147,18 +147,28 @@ export function ChartTable({
 
     // For creator charts (VHUB 100, Momentum 50)
     return (
-      <div className="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-primary/5 transition-all duration-200 cursor-pointer group"
+      <div className={`grid grid-cols-12 gap-4 px-6 py-4 hover:bg-primary/5 transition-all duration-200 cursor-pointer group ${
+        entry.rank === 1 ? 'vh-row-top1 ring-accent ring-opacity-50 bg-accent bg-opacity-5' :
+        entry.rank === 2 ? 'vh-row-top2 ring-accent ring-opacity-30' :
+        entry.rank === 3 ? 'vh-row-top3 ring-accent ring-opacity-20' :
+        ''
+      }`}
            onClick={() => entry.href && window.open(entry.href, '_blank')}
-           data-testid={`chart-entry-${entry.id}`}>
+           data-testid={`chart-entry-${entry.id}`}
+           tabIndex={0}
+           role="button"
+           aria-label={`View details for ${entry.name}, ranked #${entry.rank}`}>
         {/* Rank */}
         <div className="col-span-2 flex items-center">
-          <div className={`vh-rank ${entry.rank === 1 ? 'text-yellow-500 relative' : 'text-foreground'}`}>
-            {entry.rank === 1 && (
-              <span className="absolute -top-1 -right-1 text-yellow-400">
-                👑
-              </span>
+          <div className="vh-rank">
+            {entry.rank === 1 ? (
+              <>
+                <span className="text-2xl">👑</span>
+                <span className="text-3xl font-extrabold tabular-nums text-yellow-500">1</span>
+              </>
+            ) : (
+              <span className="text-3xl font-extrabold tabular-nums">{entry.rank}</span>
             )}
-            {entry.rank}
           </div>
         </div>
 

@@ -135,16 +135,48 @@ const ListsPage: React.FC = () => {
             {/* Charts Hero */}
             <ChartsHero />
             
-            {/* VHUB Charts Section */}
-            <div id="charts-start">
-              <VHubChartsSection 
-                onFiltersChange={(params) => {
-                  const newSearch = params.toString();
-                  const newPath = `/community/lists${newSearch ? `?${newSearch}` : ''}`;
-                  window.history.replaceState({}, '', newPath);
-                }}
-              />
-            </div>
+            {/* Section Masthead */}
+            <section className="mt-10">
+              <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight">VHUB Charts</h1>
+              <p className="vh-meta mt-2">The scoreboards of the immersive creator economy.</p>
+              
+              <div className="mt-3 flex items-center gap-4 flex-wrap">
+                <span className="vh-meta">Last updated Jan 15, 2024</span>
+                <button 
+                  className="text-sm text-accent hover:text-accent/80 transition-colors underline"
+                  data-testid="methodology-button"
+                >
+                  Methodology
+                </button>
+                <button className="text-sm text-accent hover:text-accent/80 transition-colors underline">
+                  Suggest Update
+                </button>
+              </div>
+              
+              {/* Framed charts block */}
+              <div className="relative mt-6 rounded-2xl ring-1 ring-border/50 bg-surface/60 p-4 md:p-6">
+                {/* Ambient overlay */}
+                <div 
+                  aria-hidden="true" 
+                  className="pointer-events-none absolute inset-0 opacity-[0.04]"
+                  style={{
+                    backgroundImage: `radial-gradient(circle at 20% 10%, hsl(var(--accent) / 0.1), transparent 25%), linear-gradient(to right, hsl(var(--border) / 0.3) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--border) / 0.3) 1px, transparent 1px)`,
+                    backgroundSize: '160px 160px, 24px 24px, 24px 24px'
+                  }}
+                />
+                
+                <div id="charts-start" />
+                
+                {/* VHUB Charts Section */}
+                <VHubChartsSection 
+                  onFiltersChange={(params) => {
+                    const newSearch = params.toString();
+                    const newPath = `/community/lists${newSearch ? `?${newSearch}` : ''}`;
+                    window.history.replaceState({}, '', newPath);
+                  }}
+                />
+              </div>
+            </section>
             
             {/* Section Separator */}
             <div className="my-16 border-t border-border/50"></div>

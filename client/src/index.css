@@ -612,6 +612,35 @@
   @apply inline-flex items-center justify-center rounded-full px-4 py-2 font-medium ring-1 ring-border hover:bg-muted hover:bg-opacity-50 transition;
 }
 
+/* Chart table row styles */
+.vh-row {
+  @apply grid grid-cols-[72px_1fr_auto] items-center gap-4 rounded-xl px-4 py-3 ring-1 ring-border bg-card bg-opacity-70 hover:bg-card hover:bg-opacity-80 transition cursor-pointer;
+}
+
+.vh-row:focus {
+  @apply outline-none ring-2 ring-accent ring-offset-2;
+}
+
+.vh-row-top1 {
+  @apply ring-accent ring-opacity-50 bg-accent bg-opacity-5;
+}
+
+.vh-row-top2 {
+  @apply ring-accent ring-opacity-30;
+}
+
+.vh-row-top3 {
+  @apply ring-accent ring-opacity-20;
+}
+
+.vh-rank {
+  @apply flex items-center gap-2 text-3xl font-extrabold tabular-nums;
+}
+
+.vh-platform {
+  @apply text-sm opacity-80;
+}
+
 /* Text hygiene inside Featured only */
 #featuredV2 h1, #featuredV2 h2, #featuredV2 h3 {
   word-break: normal; 
