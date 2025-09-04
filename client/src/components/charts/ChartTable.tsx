@@ -70,7 +70,7 @@ export function ChartTable({
   const renderTableHeader = () => {
     if (chart.id === 'platforms-index') {
       return (
-        <div className="grid grid-cols-12 gap-4 px-4 py-3 border-b border-border bg-muted/30">
+        <div className="grid grid-cols-12 gap-4 px-6 py-4 bg-gradient-to-r from-muted/50 to-muted/30 border-b border-border/50">
           <div className="col-span-2 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
             Rank
           </div>
@@ -86,7 +86,7 @@ export function ChartTable({
 
     // For creator charts (VHUB 100, Momentum 50)
     return (
-      <div className="grid grid-cols-12 gap-4 px-4 py-3 border-b border-border bg-muted/30">
+      <div className="grid grid-cols-12 gap-4 px-6 py-4 bg-gradient-to-r from-muted/50 to-muted/30 border-b border-border/50">
         <div className="col-span-2 text-sm font-semibold text-muted-foreground uppercase tracking-wide">
           Rank
         </div>
@@ -103,59 +103,7 @@ export function ChartTable({
   const renderTableRow = (entry: ChartEntry, index: number) => {
     if (chart.id === 'platforms-index') {
       return (
-        <motion.div
-          key={entry.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.05 }}
-        >
-          <div className="grid grid-cols-12 gap-4 px-4 py-4 bg-card hover:bg-card/80 transition-colors cursor-pointer border-b border-border last:border-none group"
-               onClick={() => entry.href && window.open(entry.href, '_blank')}
-               data-testid={`chart-entry-${entry.id}`}>
-            {/* Rank */}
-            <div className="col-span-2 flex items-center">
-              <div className="vh-rank text-foreground">
-                {entry.rank}
-              </div>
-            </div>
-
-            {/* Platform */}
-            <div className="col-span-7 flex items-center gap-3">
-              {entry.logo && (
-                <img
-                  src={entry.logo}
-                  alt={entry.name}
-                  className="w-8 h-8 object-contain"
-                  data-testid={`platform-logo-${entry.id}`}
-                />
-              )}
-              <div>
-                <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
-                  {entry.name}
-                </h3>
-              </div>
-            </div>
-
-            {/* Category */}
-            <div className="col-span-3 flex items-center">
-              <span className="vh-platform-label">
-                {entry.category || 'Platform'}
-              </span>
-            </div>
-          </div>
-        </motion.div>
-      );
-    }
-
-    // For creator charts (VHUB 100, Momentum 50)
-    return (
-      <motion.div
-        key={entry.id}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: index * 0.05 }}
-      >
-        <div className="grid grid-cols-12 gap-4 px-4 py-4 bg-card hover:bg-card/80 transition-colors cursor-pointer border-b border-border last:border-none group"
+        <div className="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-primary/5 transition-all duration-200 cursor-pointer group"
              onClick={() => entry.href && window.open(entry.href, '_blank')}
              data-testid={`chart-entry-${entry.id}`}>
           {/* Rank */}
@@ -165,51 +113,102 @@ export function ChartTable({
             </div>
           </div>
 
-          {/* Creator */}
+          {/* Platform */}
           <div className="col-span-7 flex items-center gap-3">
-            {entry.avatarUrl && (
+            {entry.logo && (
               <img
-                src={entry.avatarUrl}
+                src={entry.logo}
                 alt={entry.name}
-                className="w-10 h-10 rounded-full object-cover"
-                data-testid={`avatar-${entry.id}`}
+                className="w-8 h-8 object-contain"
+                data-testid={`platform-logo-${entry.id}`}
               />
             )}
-            <div className="space-y-1">
+            <div>
               <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
                 {entry.name}
               </h3>
-              {entry.tagline && (
-                <p className="text-sm text-muted-foreground">{entry.tagline}</p>
-              )}
             </div>
           </div>
 
-          {/* Platform (minimal) */}
+          {/* Category */}
           <div className="col-span-3 flex items-center">
             <span className="vh-platform-label">
-              {getPlatformLabel(entry.platforms as Platform[])}
+              {entry.category || 'Platform'}
             </span>
-            {renderNewChip(entry)}
           </div>
         </div>
-      </motion.div>
+      );
+    }
+
+    // For creator charts (VHUB 100, Momentum 50)
+    return (
+      <div className="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-primary/5 transition-all duration-200 cursor-pointer group"
+           onClick={() => entry.href && window.open(entry.href, '_blank')}
+           data-testid={`chart-entry-${entry.id}`}>
+        {/* Rank */}
+        <div className="col-span-2 flex items-center">
+          <div className="vh-rank text-foreground">
+            {entry.rank}
+          </div>
+        </div>
+
+        {/* Creator */}
+        <div className="col-span-7 flex items-center gap-3">
+          {entry.avatarUrl && (
+            <img
+              src={entry.avatarUrl}
+              alt={entry.name}
+              className="w-10 h-10 rounded-full object-cover"
+              data-testid={`avatar-${entry.id}`}
+            />
+          )}
+          <div className="space-y-1">
+            <h3 className="font-semibold text-foreground group-hover:text-primary transition-colors">
+              {entry.name}
+            </h3>
+            {entry.tagline && (
+              <p className="text-sm text-muted-foreground">{entry.tagline}</p>
+            )}
+          </div>
+        </div>
+
+        {/* Platform (minimal) */}
+        <div className="col-span-3 flex items-center">
+          <span className="vh-platform-label">
+            {getPlatformLabel(entry.platforms as Platform[])}
+          </span>
+          {renderNewChip(entry)}
+        </div>
+      </div>
     );
   };
 
   return (
     <div className="space-y-0" data-testid={`chart-table-${chart.id}`}>
-      {/* Table Header */}
-      {renderTableHeader()}
-
-      {/* Table Body */}
-      <div className="bg-card border border-border rounded-b-lg overflow-hidden">
-        {displayEntries.map((entry, index) => renderTableRow(entry, index))}
+      {/* Table with proper grid styling and ambient lighting */}
+      <div className="bg-card border border-border rounded-lg overflow-hidden shadow-sm">
+        {/* Table Header */}
+        {renderTableHeader()}
+        
+        {/* Table Body with alternating rows and defined lighting */}
+        <div className="divide-y divide-border/30">
+          {displayEntries.map((entry, index) => (
+            <motion.div 
+              key={entry.id} 
+              className={`${index % 2 === 0 ? 'bg-background' : 'bg-muted/20'} hover:bg-muted/40 transition-all duration-200 shadow-inner`}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.03 }}
+            >
+              {renderTableRow(entry, index)}
+            </motion.div>
+          ))}
+        </div>
       </div>
 
       {/* Pro Gating */}
       {hasMoreEntries && (
-        <div className="relative">
+        <div className="relative mt-4">
           {/* Frosted overlay */}
           <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background rounded-lg z-10 flex items-center justify-center">
             <div className="text-center space-y-4 p-6">
@@ -227,9 +226,9 @@ export function ChartTable({
           </div>
           
           {/* Placeholder content showing partial entries */}
-          <div className="space-y-2 opacity-30">
+          <div className="space-y-0 opacity-30 border border-border rounded-lg overflow-hidden">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="grid grid-cols-12 gap-4 px-4 py-4 bg-card/50 rounded-lg border">
+              <div key={i} className={`grid grid-cols-12 gap-4 px-6 py-4 ${i % 2 === 0 ? 'bg-background' : 'bg-muted/20'} border-b border-border/30 last:border-none`}>
                 <div className="col-span-2 flex items-center">
                   <div className="vh-rank">{11 + i}</div>
                 </div>

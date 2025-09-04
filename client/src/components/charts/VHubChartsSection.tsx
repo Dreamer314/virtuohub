@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useSearch } from "wouter";
 import { ChartTabs } from "@/components/charts/ChartTabs";
 import { ChartTable } from "@/components/charts/ChartTable";
-import { ChartFilters } from "@/components/charts/ChartFilters";
+import { VoiceSwitcher } from "@/components/charts/VoiceSwitcher";
 import { getChartById, filterChartEntries, ChartType, VoiceFilter, SortOption } from "@/lib/data/charts";
 import { useToast } from "@/hooks/use-toast";
 import { ExternalLink, HelpCircle } from "lucide-react";
@@ -33,12 +33,7 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
   const [voice, setVoice] = useState<'editorial' | 'community'>(
     (searchParams.get('voice') as 'editorial' | 'community') || 'editorial'
   );
-  const [platforms, setPlatforms] = useState<string[]>(
-    searchParams.get('platforms')?.split(',').filter(Boolean) || []
-  );
-  const [sort, setSort] = useState<SortOption>(
-    (searchParams.get('sort') as SortOption) || 'Most Recent'
-  );
+  // Removed platform and sort filters - charts are pre-ordered
   
   // Modal states
   const [showMethodology, setShowMethodology] = useState(false);
@@ -51,28 +46,19 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
   // Get chart data
   const chartData = getChartById(activeChart, voice);
 
-  // Filter entries based on current filters
-  const filteredEntries = chartData ? filterChartEntries(chartData.entries, {
-    platforms: platforms.length > 0 ? platforms : undefined
-  }) : [];
-
   // Update URL when filters change
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
     if (activeChart !== 'vhub-100') params.set('chart', activeChart);
     if (voice !== 'editorial') params.set('voice', voice);
-    if (platforms.length > 0) params.set('platforms', platforms.join(','));
-    if (sort !== 'Most Recent') params.set('sort', sort);
     
     onFiltersChange?.(params);
-  }, [activeChart, voice, platforms, sort, onFiltersChange, searchParams]);
+  }, [activeChart, voice, onFiltersChange, searchParams]);
 
   const handleChartChange = (chart: ChartType) => {
     setActiveChart(chart);
-    // Reset filters when switching charts for better UX
+    // Reset voice when switching charts for better UX
     setVoice('editorial');
-    setPlatforms([]);
-    setSort('Most Recent');
   };
 
   const handleUpgrade = () => {
@@ -186,22 +172,20 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
         </div>
       ) : (
         <>
-          {/* Contextual Filters */}
-          <ChartFilters
-            activeChart={activeChart}
-            voice={voice}
-            platforms={platforms}
-            sort={sort}
-            onVoiceChange={setVoice}
-            onPlatformsChange={setPlatforms}
-            onSortChange={setSort}
-            showVoiceSwitcher={showVoiceSwitcher}
-          />
+          {/* Voice Switcher - Only for creator charts */}
+          {showVoiceSwitcher && (
+            <div className="flex items-center justify-center py-4">
+              <VoiceSwitcher
+                voice={voice}
+                onVoiceChange={setVoice}
+              />
+            </div>
+          )}
 
           {/* Chart Table */}
           <ChartTable
             chart={chartData}
-            entries={filteredEntries}
+            entries={chartData.entries}
             isProUser={isProUser}
             onUpgrade={handleUpgrade}
           />

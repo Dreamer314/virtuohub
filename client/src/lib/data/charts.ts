@@ -40,23 +40,26 @@ export function getChartById(chartId: ChartType, voice?: 'editorial' | 'communit
   const chart = chartsData.charts[chartId] as ChartConfig;
   if (!chart) return null;
   
+  let entries = [...chart.entries];
+  
   // For creator charts, filter entries based on voice
   if (voice && (chartId === 'vhub-100' || chartId === 'momentum-50')) {
-    const filteredEntries = chart.entries.filter(entry => {
+    entries = entries.filter(entry => {
       if (voice === 'editorial') {
         return entry.voices.includes('VHub Picks');
       } else {
         return entry.voices.includes('User Choice');
       }
     });
-    
-    return {
-      ...chart,
-      entries: filteredEntries
-    };
   }
   
-  return chart;
+  // Always sort by rank numerically (ascending: 1, 2, 3...)
+  entries.sort((a, b) => a.rank - b.rank);
+  
+  return {
+    ...chart,
+    entries
+  };
 }
 
 export function getChartsList(): ChartConfig[] {
