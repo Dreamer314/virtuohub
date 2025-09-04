@@ -18,6 +18,8 @@ import GuidesPage from "@/pages/guides";
 import NewsPage from "@/pages/news";
 import EventsPage from "@/pages/events";
 import PulsePage from "@/pages/pulse";
+import ListsPage from "@/pages/lists";
+import ListDetailPage from "@/pages/list-detail";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -39,6 +41,8 @@ function Router() {
       <Route path="/events/:slug" component={EventsPage} />
       <Route path="/pulse" component={PulsePage} />
       <Route path="/pulse/:slug" component={PulsePage} />
+      <Route path="/community/lists" component={ListsPage} />
+      <Route path="/community/lists/:slug" component={ListDetailPage} />
       <Route path="/article/:slug" component={ArticlePage} />
       <Route path="/insights" component={InsightsPage} />
       <Route path="/thread/:postId" component={ThreadPage} />
