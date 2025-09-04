@@ -1,0 +1,232 @@
+Goal: Split the composer into two distinct modals—CreatePost and CreatePoll—with different fields and validation. Polls created from the feed are stored in the same data source used by /pulse-reports. The poll shown in the Community feed and the one shown in Pulse Reports must be the exact same object (shared id), and voting on either view updates both.
+
+1) Data contracts (TypeScript)
+
+Create/update these types in src/types/content.ts:
+
+export type PlatformKey = 'roblox' | 'vrchat' | 'secondlife' | 'unity' | 'unreal' | 'imvu' | 'horizon' | 'other';
+
+export interface Post {
+  id: string;
+  type: 'post';
+  title: string;
+  body: string;
+  links: string[];
+  images: string[];          // base64 previews for now
+  files: { name: string; b64: string }[];
+  price?: string;            // "Free" | "$50" etc.
+  category: string;          // "General" | "Jobs & Gigs" | ...
+  platforms: PlatformKey[];
+  createdAt: number;
+  author: { id: string; name: string; avatar?: string };
+  stats: { likes: number; saves: number; comments: number };
+}
+
+export interface PollOption {
+  id: string;
+  label: string;
+  votes: number;
+}
+
+export interface Poll {
+  id: string;
+  type: 'poll';
+  question: string;
+  options: PollOption[];
+  allowMultiple: boolean;
+  showResults: 'after-vote' | 'after-close';
+  closesAt: number;          // epoch ms
+  category?: string;
+  platforms?: PlatformKey[];
+  createdAt: number;
+  author: { id: string; name: string; avatar?: string };
+  // derived
+  status: 'active' | 'completed';
+}
+
+export type FeedItem = Post | Poll;
+
+2) Mock API additions (same file you made earlier, e.g. src/data/mockApi.ts)
+
+Add these functions and persist to localStorage under vhub.polls:
+
+listPolls(): Poll[]                       // active + completed
+listActivePolls(): Poll[]
+listCompletedPolls(): Poll[]
+createPoll(input: Omit<Poll, 'id' | 'createdAt' | 'status'>): Poll
+votePoll(pollId: string, optionIds: string[]): Poll
+closePoll(pollId: string): Poll           // sets status => completed
+
+// keep the feed unified:
+listFeed(): FeedItem[]                    // posts + polls, newest first
+createFeedPost(input: Omit<Post, 'id'|'createdAt'|'stats'>): Post
+
+
+Implementation notes:
+
+On createPoll, derive status = Date.now() < closesAt ? 'active' : 'completed'.
+
+Store a vhub.pollVotes map { [pollId_userKey]: string[] } to prevent duplicate voting per browser.
+
+listActivePolls/listCompletedPolls filter by status and auto-flip to completed when closesAt < Date.now().
+
+3) Composer UI split (two separate modals)
+
+Create two components:
+
+src/components/composer/CreatePostModal.tsx
+
+src/components/composer/CreatePollModal.tsx
+
+Update the feed header to show two primary actions:
+
+Post → opens CreatePostModal
+
+Poll → opens CreatePollModal
+
+CreatePostModal (fields)
+
+Title (required)
+
+Content (required multiline)
+
+Upload Images (max 5, 10MB each → base64 preview)
+
+Upload Files (max 10, 50MB each → base64)
+
+Links (multi, URL validation)
+
+Category (dropdown; default “General”)
+
+Price (optional text: “Free” or “$50”)
+
+Platforms (multi-select chips)
+
+On submit:
+
+api.createFeedPost(formValues);
+
+
+Show a toast “Post published” and inject the new item at the top of the feed.
+
+CreatePollModal (fields)
+
+No images, files, links, or price here. Keep it simple.
+
+Poll Question (required)
+
+Options (min 2, max 6). Add/Remove rows. Auto focus. Prevent empties.
+
+Allow multiple selections (toggle, default false)
+
+Show results: radio after-vote (default) or after-close
+
+Ends in: quick picks (24h, 3d, 7d, custom date/time)
+
+Optional:
+
+Category (dropdown)
+
+Platforms (multi-select)
+
+Right side (or bottom on mobile): Live poll card preview reflecting the question and current options.
+
+On submit:
+
+api.createPoll({
+  question, options: options.map((t) => ({ id: uid(), label: t, votes: 0 })),
+  allowMultiple, showResults, closesAt, category, platforms,
+  author: currentUserStub
+});
+
+
+Toast “Poll published” and insert into:
+
+Feed (as a poll card).
+
+Pulse Reports → Active Polls (same object).
+
+4) Poll card rendering (shared component)
+
+Create src/components/polls/PollCard.tsx that accepts a Poll and a context: 'feed'|'pulse' prop.
+
+Behavior:
+
+If not voted (check api.hasVoted(pollId)), show selectable options:
+
+Radio if allowMultiple === false
+
+Checkbox if true
+
+Primary button “Vote”
+
+After voting: show results bars with % and totals. Respect showResults:
+
+if after-vote, show immediately
+
+if after-close, show “Thanks for voting—results available when the poll closes”
+
+Footer shows “Ends in Xd • total votes N” (or “Closed on <date>”)
+
+Disable choices if status === 'completed'.
+
+Clicking “Vote” calls:
+
+api.votePoll(poll.id, selectedOptionIds);
+
+
+Then re-render in place. Because both pages read from the same API, the results appear updated in Community and Pulse Reports instantly.
+
+5) Community feed & Pulse pages
+
+Feed page: map api.listFeed() and render posts and PollCard intermixed by date.
+
+/pulse-reports:
+
+Active Polls: api.listActivePolls().map(p => <PollCard poll={p} context="pulse" />)
+
+Completed Polls: same with listCompletedPolls(), but card is read-only.
+
+Published Reports: keep your current static list for now; stub out buttons. (You can later hook to a reports collection.)
+
+6) Validation & UX polish
+
+Poll: prevent submit unless question.length ≥ 10 and options has ≥ 2 non-empty unique labels.
+
+If a user tries to vote twice from same browser, show a small note: “You’ve already voted on this poll.”
+
+Add tiny skeleton states while data loads.
+
+Use the same card styling as existing feed items; polls should visually stand out (small badge “Poll”).
+
+7) Seed data
+
+On first run of mockApi, seed with:
+
+1–2 active polls (closes in 3–5 days)
+
+2 completed polls (closed in the past)
+
+A few posts
+
+1 free report + 1 premium report (static for now)
+
+8) Don’t change the look—only the behavior
+
+Keep spacing, typography, and colors exactly as they are. Only adjust the poll composer fields/logic and wire everything to the shared mockApi.
+
+Microcopy (to drop into the UI)
+
+CreatePollModal title: “Create a Poll”
+
+Question placeholder: “What do you want to ask the community?”
+
+Option placeholder: “Add an option…”
+
+Ends in label: “Poll duration”
+
+Vote button: “Vote”
+
+After vote (showResults=after-close): “Thanks for voting. Results will be visible when the poll closes.”
+
+Footer meta: “Ends in {timeLeft} • {totalVotes} votes”
