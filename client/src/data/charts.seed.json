@@ -1,0 +1,374 @@
+{
+  "charts": {
+    "vhub-100": {
+      "id": "vhub-100",
+      "title": "VHUB 100",
+      "description": "The top 100 creators across immersive platforms ranked by multi-signal reach and impact over the last 30 days.",
+      "sponsorName": "MetaVerse Studios",
+      "sponsorHref": "https://metaversestudios.com",
+      "updatedAt": "2024-01-15T10:00:00Z",
+      "isPro": true,
+      "entries": [
+        {
+          "id": "creator-1",
+          "rank": 1,
+          "name": "VirtualMaven",
+          "avatarUrl": "https://images.unsplash.com/photo-1535303311164-664fc9ec6532?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["VRChat", "Horizon Worlds"],
+          "metricLabel": "Multi-Signal Score",
+          "metricValue": 95.8,
+          "movement": 2,
+          "streakWeeks": 3,
+          "voices": ["VHub Picks"]
+        },
+        {
+          "id": "creator-2",
+          "rank": 2,
+          "name": "MetaBuilder Studios",
+          "avatarUrl": "https://images.unsplash.com/photo-1611996575749-79a3a250f79e?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["VRChat", "Cross-Platform"],
+          "metricLabel": "Multi-Signal Score",
+          "metricValue": 92.4,
+          "movement": -1,
+          "voices": ["User Choice"]
+        },
+        {
+          "id": "creator-3",
+          "rank": 3,
+          "name": "CyberArch Collective",
+          "avatarUrl": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Roblox", "Unity"],
+          "metricLabel": "Multi-Signal Score",
+          "metricValue": 89.7,
+          "isNew": true,
+          "voices": ["VHub Picks"]
+        },
+        {
+          "id": "creator-4",
+          "rank": 4,
+          "name": "NeonWave Interactive",
+          "avatarUrl": "https://images.unsplash.com/photo-1536431311719-398b6704d4cc?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["VRChat", "Roblox"],
+          "metricLabel": "Multi-Signal Score",
+          "metricValue": 86.3,
+          "movement": 5,
+          "voices": ["User Choice"]
+        },
+        {
+          "id": "creator-5",
+          "rank": 5,
+          "name": "QuantumDesign Labs",
+          "avatarUrl": "https://images.unsplash.com/photo-1511512578047-dfb367feb3ab?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Horizon Worlds", "Unity"],
+          "metricLabel": "Multi-Signal Score",
+          "metricValue": 84.1,
+          "movement": -2,
+          "streakWeeks": 1,
+          "voices": ["VHub Picks", "User Choice"]
+        },
+        {
+          "id": "creator-6",
+          "rank": 6,
+          "name": "ImmersiveWorlds Co",
+          "avatarUrl": "https://images.unsplash.com/photo-1551434678-e076c223a692?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["VRChat", "IMVU"],
+          "metricLabel": "Multi-Signal Score",
+          "metricValue": 82.9,
+          "movement": 3,
+          "voices": ["User Choice"]
+        },
+        {
+          "id": "creator-7",
+          "rank": 7,
+          "name": "VirtualReality Plus",
+          "avatarUrl": "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Cross-Platform"],
+          "metricLabel": "Multi-Signal Score",
+          "metricValue": 81.2,
+          "movement": -4,
+          "voices": ["VHub Picks"]
+        },
+        {
+          "id": "creator-8",
+          "rank": 8,
+          "name": "MetaCreative Studio",
+          "avatarUrl": "https://images.unsplash.com/photo-1535303311164-664fc9ec6532?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Roblox", "Unity"],
+          "metricLabel": "Multi-Signal Score",
+          "metricValue": 79.5,
+          "isNew": true,
+          "voices": ["User Choice"]
+        },
+        {
+          "id": "creator-9",
+          "rank": 9,
+          "name": "VRWorld Architects",
+          "avatarUrl": "https://images.unsplash.com/photo-1611996575749-79a3a250f79e?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["VRChat", "Horizon Worlds"],
+          "metricLabel": "Multi-Signal Score",
+          "metricValue": 77.8,
+          "movement": 1,
+          "voices": ["VHub Picks"]
+        },
+        {
+          "id": "creator-10",
+          "rank": 10,
+          "name": "Digital Frontiers",
+          "avatarUrl": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Unity", "Unreal"],
+          "metricLabel": "Multi-Signal Score",
+          "metricValue": 76.3,
+          "movement": -3,
+          "voices": ["User Choice"]
+        }
+      ]
+    },
+    "platforms-index": {
+      "id": "platforms-index",
+      "title": "Platforms Index",
+      "description": "Where creators are thriving most, based on earnings potential, engagement, and activity.",
+      "updatedAt": "2024-01-15T09:30:00Z",
+      "isPro": false,
+      "entries": [
+        {
+          "id": "platform-1",
+          "rank": 1,
+          "name": "Roblox Creator Economy",
+          "avatarUrl": "https://images.unsplash.com/photo-1551434678-e076c223a692?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Roblox"],
+          "metricLabel": "Creator Earnings Index",
+          "metricValue": 94.2,
+          "movement": 0,
+          "streakWeeks": 8,
+          "voices": ["VHub Picks", "User Choice"]
+        },
+        {
+          "id": "platform-2",
+          "rank": 2,
+          "name": "VRChat Worlds & Avatars",
+          "avatarUrl": "https://images.unsplash.com/photo-1536431311719-398b6704d4cc?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["VRChat"],
+          "metricLabel": "Creator Earnings Index",
+          "metricValue": 89.7,
+          "movement": 1,
+          "voices": ["VHub Picks"]
+        },
+        {
+          "id": "platform-3",
+          "rank": 3,
+          "name": "Unity Asset Store",
+          "avatarUrl": "https://images.unsplash.com/photo-1611996575749-79a3a250f79e?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Unity"],
+          "metricLabel": "Creator Earnings Index",
+          "metricValue": 85.3,
+          "movement": -1,
+          "voices": ["User Choice"]
+        },
+        {
+          "id": "platform-4",
+          "rank": 4,
+          "name": "Meta Horizon Worlds",
+          "avatarUrl": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Horizon Worlds"],
+          "metricLabel": "Creator Earnings Index",
+          "metricValue": 82.1,
+          "movement": 2,
+          "voices": ["VHub Picks"]
+        },
+        {
+          "id": "platform-5",
+          "rank": 5,
+          "name": "Unreal Marketplace",
+          "avatarUrl": "https://images.unsplash.com/photo-1511512578047-dfb367feb3ab?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Unreal"],
+          "metricLabel": "Creator Earnings Index",
+          "metricValue": 79.8,
+          "isNew": true,
+          "voices": ["User Choice"]
+        },
+        {
+          "id": "platform-6",
+          "rank": 6,
+          "name": "IMVU Creator Program",
+          "avatarUrl": "https://images.unsplash.com/photo-1535303311164-664fc9ec6532?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["IMVU"],
+          "metricLabel": "Creator Earnings Index",
+          "metricValue": 76.4,
+          "movement": -2,
+          "voices": ["User Choice"]
+        },
+        {
+          "id": "platform-7",
+          "rank": 7,
+          "name": "Core Creator Payouts",
+          "avatarUrl": "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Core"],
+          "metricLabel": "Creator Earnings Index",
+          "metricValue": 74.2,
+          "movement": 3,
+          "voices": ["VHub Picks"]
+        },
+        {
+          "id": "platform-8",
+          "rank": 8,
+          "name": "Minecraft Marketplace",
+          "avatarUrl": "https://images.unsplash.com/photo-1611996575749-79a3a250f79e?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Minecraft"],
+          "metricLabel": "Creator Earnings Index",
+          "metricValue": 71.9,
+          "movement": -1,
+          "voices": ["User Choice"]
+        },
+        {
+          "id": "platform-9",
+          "rank": 9,
+          "name": "Dreams Community",
+          "avatarUrl": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Dreams"],
+          "metricLabel": "Creator Earnings Index",
+          "metricValue": 69.7,
+          "isNew": true,
+          "voices": ["VHub Picks"]
+        },
+        {
+          "id": "platform-10",
+          "rank": 10,
+          "name": "Fortnite Creative",
+          "avatarUrl": "https://images.unsplash.com/photo-1536431311719-398b6704d4cc?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Fortnite Creative"],
+          "metricLabel": "Creator Earnings Index",
+          "metricValue": 67.5,
+          "movement": -3,
+          "voices": ["User Choice"]
+        }
+      ]
+    },
+    "momentum-50": {
+      "id": "momentum-50",
+      "title": "Momentum 50",
+      "description": "The fastest rising creators, streamers, and studios over the past 30 days.",
+      "updatedAt": "2024-01-15T08:45:00Z",
+      "isPro": false,
+      "entries": [
+        {
+          "id": "momentum-1",
+          "rank": 1,
+          "name": "RisingVR Studios",
+          "avatarUrl": "https://images.unsplash.com/photo-1551434678-e076c223a692?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["VRChat", "Unity"],
+          "metricLabel": "Growth %",
+          "metricValue": 485.2,
+          "isNew": true,
+          "voices": ["VHub Picks"]
+        },
+        {
+          "id": "momentum-2",
+          "rank": 2,
+          "name": "NextGen Builders",
+          "avatarUrl": "https://images.unsplash.com/photo-1536431311719-398b6704d4cc?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Roblox"],
+          "metricLabel": "Growth %",
+          "metricValue": 432.7,
+          "movement": 5,
+          "voices": ["User Choice"]
+        },
+        {
+          "id": "momentum-3",
+          "rank": 3,
+          "name": "VirtualStream Co",
+          "avatarUrl": "https://images.unsplash.com/photo-1611996575749-79a3a250f79e?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Cross-Platform"],
+          "metricLabel": "Growth %",
+          "metricValue": 398.4,
+          "isNew": true,
+          "voices": ["VHub Picks"]
+        },
+        {
+          "id": "momentum-4",
+          "rank": 4,
+          "name": "MetaCreators Hub",
+          "avatarUrl": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Horizon Worlds"],
+          "metricLabel": "Growth %",
+          "metricValue": 367.1,
+          "movement": -1,
+          "voices": ["User Choice"]
+        },
+        {
+          "id": "momentum-5",
+          "rank": 5,
+          "name": "QuantumLeap Games",
+          "avatarUrl": "https://images.unsplash.com/photo-1511512578047-dfb367feb3ab?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Unity", "Unreal"],
+          "metricLabel": "Growth %",
+          "metricValue": 334.8,
+          "movement": 2,
+          "voices": ["VHub Picks"]
+        },
+        {
+          "id": "momentum-6",
+          "rank": 6,
+          "name": "VR Storytellers",
+          "avatarUrl": "https://images.unsplash.com/photo-1535303311164-664fc9ec6532?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["VRChat"],
+          "metricLabel": "Growth %",
+          "metricValue": 312.5,
+          "isNew": true,
+          "voices": ["User Choice"]
+        },
+        {
+          "id": "momentum-7",
+          "rank": 7,
+          "name": "ImmersiveTech Labs",
+          "avatarUrl": "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Cross-Platform"],
+          "metricLabel": "Growth %",
+          "metricValue": 289.7,
+          "movement": -2,
+          "voices": ["VHub Picks"]
+        },
+        {
+          "id": "momentum-8",
+          "rank": 8,
+          "name": "PixelPioneers",
+          "avatarUrl": "https://images.unsplash.com/photo-1611996575749-79a3a250f79e?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Roblox", "Minecraft"],
+          "metricLabel": "Growth %",
+          "metricValue": 267.3,
+          "movement": 4,
+          "voices": ["User Choice"]
+        },
+        {
+          "id": "momentum-9",
+          "rank": 9,
+          "name": "VirtualVanguard",
+          "avatarUrl": "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["VRChat", "Horizon Worlds"],
+          "metricLabel": "Growth %",
+          "metricValue": 245.9,
+          "movement": -3,
+          "voices": ["VHub Picks"]
+        },
+        {
+          "id": "momentum-10",
+          "rank": 10,
+          "name": "DigitalDreamers",
+          "avatarUrl": "https://images.unsplash.com/photo-1536431311719-398b6704d4cc?w=150&h=150&fit=crop&crop=center",
+          "platforms": ["Unity"],
+          "metricLabel": "Growth %",
+          "metricValue": 223.4,
+          "isNew": true,
+          "voices": ["User Choice"]
+        }
+      ]
+    },
+    "studios-watchlist": {
+      "id": "studios-watchlist",
+      "title": "Studios Watchlist",
+      "description": "Coming soon - Track the most promising virtual world studios and their upcoming releases.",
+      "updatedAt": "2024-01-15T08:00:00Z",
+      "isPro": false,
+      "entries": []
+    }
+  }
+}

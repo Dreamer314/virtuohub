@@ -1,0 +1,150 @@
+You are a senior Next.js + TypeScript + Tailwind engineer. Refactor the current Lists/Charts system into a branded VHUB Charts feature, modeled after Billboard-style charts. Use existing design tokens, components, and the site’s three display modes (light, dark, charcoal). Do not invent new theme styles. Keep logic reusable so the same system can power future chart expansions.
+
+Charting System Requirements
+
+Route + Page Shell
+
+Route: /community/charts.
+
+Use Community layout shell. If missing, provide a placeholder shell with left nav, main content, right rail for sponsor + events.
+
+Page title: VHUB Charts.
+
+Tagline: “The scoreboards of the immersive creator economy.”
+
+Main Chart Tabs
+Replace current tabs with:
+
+VHUB 100 – “The top 100 creators across immersive platforms ranked by multi-signal reach and impact over the last 30 days.”
+
+Platforms Index – “Where creators are thriving most, based on earnings potential, engagement, and activity.”
+
+Momentum 50 – “The fastest rising creators, streamers, and studios over the past 30 days.”
+
+Studios Watchlist (stub for now, display placeholder content until Studios are live).
+
+Chart Table Design
+
+Show ranking number, creator/studio name, avatar image, platform pills, stat metric (followers, engagement, etc.), and badges.
+
+Add movement indicators: ▲ +N (rise), ▼ –N (drop), “NEW” tag for first appearance.
+
+Add optional sponsor label at the top: “Presented by [SponsorName]”.
+
+Include: Last updated [timestamp], Methodology modal, Suggest Update link.
+
+Aspirational Signals
+
+Display streaks: e.g., “#1 for 3 Weeks”.
+
+Highlight “First Timer” entries with a badge.
+
+Allow optional “Featured” highlight for VHub Picks.
+
+Filters
+Keep filters minimal and clear:
+
+Chart type: VHUB 100 | Platforms Index | Momentum 50 | Watchlist
+
+Voice: VHub Picks, User Choice
+
+Platform multi-select
+
+Sort: Most Recent, Most Viewed
+
+Sync all to URL search params.
+
+List Cards (Community Lists Grid)
+
+When browsing lists (outside charts), keep current grid but show only relevant chips: Charting, Upcoming, Best Of, Entertainment.
+
+Platform pills remain metadata for filterability. Do not show extra decorative chips.
+
+Data Models
+Update mock data layer to include fields for:
+
+interface ChartEntry {
+  id: string;
+  rank: number;
+  name: string;
+  avatarUrl?: string;
+  platforms: Platform[];
+  metricLabel: string;
+  metricValue: number;
+  movement?: number;   // positive for rise, negative for drop
+  isNew?: boolean;
+  streakWeeks?: number;
+  voices: VoiceTag[];  // VHub Picks, User Choice
+}
+
+
+Each chart config includes:
+
+interface ChartConfig {
+  id: string;
+  title: string;
+  description: string;
+  sponsorName?: string;
+  sponsorHref?: string;
+  entries: ChartEntry[];
+  updatedAt: string;
+}
+
+
+Provide seed JSON for VHUB 100, Platforms Index, Momentum 50 with at least 10 entries each. Studios Watchlist can be placeholder.
+
+Components
+
+components/charts/ChartTabs.tsx
+
+components/charts/ChartTable.tsx (renders ranks, avatars, stats, badges, movement)
+
+components/charts/ChartHeader.tsx (title, description, sponsor, methodology, last updated)
+
+components/common/Badge.tsx (NEW, ▲/▼ movement, streaks, VHub Picks/User Choice)
+
+components/ads/SponsorBanner.tsx
+
+components/modals/MethodologyModal.tsx
+
+Interactivity
+
+Methodology modal props: {signals: string[], window: string, normalization: string, disputesUrl: string}.
+
+“Suggest Update” opens feedback form (mock handler).
+
+Animate rank changes with small Framer Motion transitions (slide in/out).
+
+Right Rail
+
+Keep sponsor slot + upcoming events.
+
+Add space for “Trending Tags” or “Pulse Reports” consistent with Community layout.
+
+Pro Access
+
+Gate full VHUB 100 list: non-Pro users see top 10, then an upgrade CTA.
+
+Other charts show full list.
+
+Testing + Docs
+
+Update lib/data/charts.ts with query helpers (getChartById, getChartsList).
+
+Add Vitest unit tests for rank sorting, movement calculations, and Pro gating.
+
+Extend README.md with:
+
+Charting system overview
+
+How to add a new chart
+
+Data model notes
+
+How Pro gating works
+
+Where to later connect Supabase
+
+Goal: Visiting /community/charts shows Billboard-style branded charts (VHUB 100, Platforms Index, Momentum 50, Studios Watchlist). Each chart feels aspirational, dynamic, and cultural—not just data. Users see rankings, movement, badges, and sponsorships, with optional Pro gating for VHUB 100. All visuals automatically match the site’s established modes (light, dark, charcoal).
+
+If anything is unclear, make sensible choices, match the site’s established design system, and document decisions in README.

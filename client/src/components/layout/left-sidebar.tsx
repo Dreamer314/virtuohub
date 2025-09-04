@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Home, TrendingUp, Newspaper, Star, Lightbulb, Monitor, BookOpen, Gamepad2, Hammer, Zap, Mountain, Sword, Target, Palette, Users, Blocks, Globe, ChevronDown, ChevronUp, Settings, List } from "lucide-react";
+import { Home, TrendingUp, Newspaper, Star, Lightbulb, Monitor, BookOpen, Gamepad2, Hammer, Zap, Mountain, Sword, Target, Palette, Users, Blocks, Globe, ChevronDown, ChevronUp, Settings, List, BarChart3 } from "lucide-react";
 import { SiRoblox, SiUnity, SiUnrealengine } from "react-icons/si";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
@@ -87,6 +87,13 @@ export function LeftSidebar({
       icon: List, 
       active: location === '/community/lists' || location.startsWith('/community/lists/'), 
       href: '/community/lists'
+    },
+    { 
+      id: 'charts', 
+      label: 'Charts', 
+      icon: BarChart3, 
+      active: location === '/community/charts' || location.startsWith('/community/charts/'), 
+      href: '/community/charts'
     },
   ];
 
