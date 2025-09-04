@@ -16,9 +16,9 @@ interface VHubChartsSectionProps {
 
 // Chart definitions per requirements
 const CHART_DEFINITIONS: Record<Exclude<ChartType, 'studios-watchlist'>, string> = {
-  'vhub-100': "The top 100 creators across immersive platforms ranked by multi-signal reach and impact over the last 30 days.",
-  'platforms-index': "Where creators are thriving most, based on earnings potential, engagement, and activity.",
-  'momentum-50': "The fastest rising creators, streamers, and studios over the past 30 days."
+  'vhub-25': "The top 25 creators across immersive platforms ranked by multi-signal reach and impact over the last 30 days.",
+  'platforms-index': "Top 25 platforms where creators are thriving most, based on earnings potential, engagement, and activity.",
+  'momentum-25': "Top 25 rising creators, streamers, and studios over the past 30 days."
 };
 
 export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
@@ -28,7 +28,7 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
   
   // Chart state
   const [activeChart, setActiveChart] = useState<ChartType>(
-    (searchParams.get('chart') as ChartType) || 'vhub-100'
+    (searchParams.get('chart') as ChartType) || 'vhub-25'
   );
   const [voice, setVoice] = useState<'editorial' | 'community'>(
     (searchParams.get('voice') as 'editorial' | 'community') || 'editorial'
@@ -49,7 +49,7 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
   // Update URL when filters change
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
-    if (activeChart !== 'vhub-100') params.set('chart', activeChart);
+    if (activeChart !== 'vhub-25') params.set('chart', activeChart);
     if (voice !== 'editorial') params.set('voice', voice);
     
     onFiltersChange?.(params);
@@ -77,7 +77,7 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
   }
 
   // Contextual filters: Show Voice switcher for creator charts only
-  const showVoiceSwitcher = activeChart === 'vhub-100' || activeChart === 'momentum-50';
+  const showVoiceSwitcher = activeChart === 'vhub-25' || activeChart === 'momentum-25';
   
   // Skip Studios Watchlist - removed from tabs
   const isComingSoon = false;

@@ -1,5 +1,7 @@
 import chartsData from '@/data/charts.seed.json';
 
+export const CHART_LIMIT = 25;
+
 export interface ChartEntry {
   id: string;
   rank: number;
@@ -32,7 +34,7 @@ export interface ChartConfig {
   metricTooltip?: string;
 }
 
-export type ChartType = 'vhub-100' | 'platforms-index' | 'momentum-50' | 'studios-watchlist';
+export type ChartType = 'vhub-25' | 'platforms-index' | 'momentum-25' | 'studios-watchlist';
 export type VoiceFilter = 'VHub Picks' | 'User Choice';
 export type SortOption = 'Most Recent' | 'Most Viewed';
 
@@ -40,10 +42,10 @@ export function getChartById(chartId: ChartType, voice?: 'editorial' | 'communit
   const chart = chartsData.charts[chartId] as ChartConfig;
   if (!chart) return null;
   
-  let entries = [...chart.entries];
+  let entries = [...chart.entries].slice(0, CHART_LIMIT);
   
   // For creator charts, filter entries based on voice
-  if (voice && (chartId === 'vhub-100' || chartId === 'momentum-50')) {
+  if (voice && (chartId === 'vhub-25' || chartId === 'momentum-25')) {
     entries = entries.filter(entry => {
       if (voice === 'editorial') {
         return entry.voices.includes('VHub Picks');
@@ -92,7 +94,7 @@ export function filterChartEntries(
 
 export function getProGatedEntries(entries: ChartEntry[], isProUser: boolean = false): ChartEntry[] {
   if (isProUser) {
-    return entries;
+    return entries.slice(0, CHART_LIMIT);
   }
   return entries.slice(0, 10); // Show only top 10 for non-pro users
 }

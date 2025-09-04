@@ -11,9 +11,9 @@ interface ChartTabsProps {
 
 const chartTabs = [
   {
-    id: 'vhub-100' as ChartType,
-    label: 'VHUB 100',
-    description: 'Top 100 creators',
+    id: 'vhub-25' as ChartType,
+    label: 'VHUB 25',
+    description: 'Top 25 creators',
     icon: BarChart3
   },
   {
@@ -23,9 +23,9 @@ const chartTabs = [
     icon: TrendingUp
   },
   {
-    id: 'momentum-50' as ChartType,
-    label: 'Momentum 50',
-    description: 'Fastest rising creators',
+    id: 'momentum-25' as ChartType,
+    label: 'Momentum 25',
+    description: 'Top 25 rising creators',
     icon: Zap
   }
   // Studios Watchlist removed until feature is live

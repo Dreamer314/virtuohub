@@ -126,7 +126,7 @@
     "platforms-index": {
       "id": "platforms-index",
       "title": "Platforms Index",
-      "description": "Where creators are thriving most, based on earnings potential, engagement, and activity.",
+      "description": "Top 25 platforms where creators are thriving most, based on earnings potential, engagement, and activity.",
       "updatedAt": "2024-01-15T09:30:00Z",
       "isPro": false,
       "entityType": "platform",
@@ -246,10 +246,10 @@
         }
       ]
     },
-    "momentum-50": {
-      "id": "momentum-50",
-      "title": "Momentum 50",
-      "description": "The fastest rising creators, streamers, and studios over the past 30 days.",
+    "momentum-25": {
+      "id": "momentum-25",
+      "title": "Momentum 25",
+      "description": "Top 25 rising creators, streamers, and studios over the past 30 days.",
       "updatedAt": "2024-01-15T08:45:00Z",
       "isPro": false,
       "entityType": "creator",
