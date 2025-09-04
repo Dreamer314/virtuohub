@@ -223,7 +223,7 @@ export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroM
               Updated weekly with data on creators, platforms, and momentum.
             </p>
             
-            {/* CTAs - removed methodology button */}
+            {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 onClick={handleExploreCharts}
@@ -231,6 +231,14 @@ export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroM
                 data-testid="explore-charts-cta"
               >
                 Explore all charts
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleMethodology}
+                className="btn-secondary bg-white/10 text-white border-white/20 hover:bg-white/20"
+                data-testid="methodology-cta"
+              >
+                Methodology
               </Button>
             </div>
           </div>
