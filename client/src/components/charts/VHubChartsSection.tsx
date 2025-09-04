@@ -101,7 +101,10 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
           </div>
         )}
 
-        {/* Remove duplicate header - already in hero section */}
+        {/* Main Header */}
+        <div className="space-y-2">
+          <h1 className="vh-hero">The scoreboards of the immersive creator economy.</h1>
+        </div>
 
         {/* Meta Info */}
         <div className="flex flex-wrap items-center justify-between">
