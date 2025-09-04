@@ -40,6 +40,10 @@ export function ChartTable({
 }: ChartTableProps) {
   const displayEntries = getProGatedEntries(entries, isProUser);
   const hasMoreEntries = chart.isPro && !isProUser && entries.length > 10;
+  
+  // For Top 25 charts, show entries 1-10 for free users, then Pro lock card, then grayed out entries 11-25
+  const freeEntries = displayEntries.slice(0, 10);
+  const proEntries = displayEntries.slice(10, 25);
 
   // Only render NEW chips for Momentum 25 first-timers
   const renderNewChip = (entry: ChartEntry) => {
@@ -136,7 +140,8 @@ export function ChartTable({
     <div className="space-y-0" data-testid={`chart-table-${chart.id}`}>
       {/* Ranked cards list */}
       <ul className="space-y-2">
-        {displayEntries.map((entry, index) => (
+        {/* Show entries 1-10 for everyone */}
+        {freeEntries.map((entry, index) => (
           <motion.div
             key={entry.id}
             initial={{ opacity: 0, y: 10 }}
@@ -147,16 +152,29 @@ export function ChartTable({
           </motion.div>
         ))}
         
-        {/* Pro lock card */}
+        {/* Pro lock card after entry 10 for non-Pro users */}
         {hasMoreEntries && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: displayEntries.length * 0.03 }}
+            transition={{ delay: 10 * 0.03 }}
           >
             <ProLockCard onUpgrade={onUpgrade} />
           </motion.div>
         )}
+        
+        {/* Show entries 11-25 */}
+        {proEntries.map((entry, index) => (
+          <motion.div
+            key={entry.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: (index + 11) * 0.03 }}
+            className={!isProUser ? "opacity-40 pointer-events-none" : ""}
+          >
+            {renderRankedCard(entry, index + 10)}
+          </motion.div>
+        ))}
       </ul>
     </div>
   );

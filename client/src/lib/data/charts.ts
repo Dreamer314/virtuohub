@@ -103,10 +103,8 @@ export function filterChartEntries(
 }
 
 export function getProGatedEntries(entries: ChartEntry[], isProUser: boolean = false): ChartEntry[] {
-  if (isProUser) {
-    return entries.slice(0, CHART_LIMIT);
-  }
-  return entries.slice(0, 10); // Show only top 10 for non-pro users
+  // Always return the full 25 entries for Top 25 charts - Pro gating is handled in the UI
+  return entries.slice(0, CHART_LIMIT);
 }
 
 export function calculateMovement(currentRank: number, previousRank: number): number {
