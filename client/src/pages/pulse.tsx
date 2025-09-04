@@ -6,6 +6,8 @@ import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
 import { Footer } from '@/components/layout/footer';
 import { pulseApi, subscribe, type Poll, type Report } from '@/data/pulseApi';
+import { mockApi } from '@/data/mockApi';
+import { PollCard } from '@/components/polls/PollCard';
 
 const PulsePage: React.FC = () => {
   const [pulseRefresh, setPulseRefresh] = useState(0);
@@ -23,14 +25,26 @@ const PulsePage: React.FC = () => {
     return unsubscribe;
   }, []);
 
-  // Get data from pulse API (refresh when pulseRefresh changes)
-  const activePolls = pulseApi.listActivePolls();
-  const completedPolls = pulseApi.listCompletedPolls();
+  // Get data from both APIs - combine VHub Pulse and user-created polls
+  const vhubActivePolls = pulseApi.listActivePolls();
+  const userActivePolls = mockApi.listActivePolls();
+  const activePolls = [...vhubActivePolls, ...userActivePolls];
+  
+  const vhubCompletedPolls = pulseApi.listCompletedPolls();
+  const userCompletedPolls = mockApi.listCompletedPolls();
+  const completedPolls = [...vhubCompletedPolls, ...userCompletedPolls];
+  
   const reports = pulseApi.listReports();
 
   const handleVote = (pollId: string, optionIndex: number) => {
     try {
-      pulseApi.vote(pollId, optionIndex);
+      // Try VHub Pulse API first, then mock API
+      try {
+        pulseApi.vote(pollId, optionIndex);
+      } catch {
+        // If VHub poll fails, try mock API
+        mockApi.votePoll(pollId, [pollId + '-' + optionIndex]);
+      }
       setPulseRefresh(prev => prev + 1);
     } catch (error) {
       console.error('Vote failed:', error);
