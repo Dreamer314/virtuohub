@@ -8,6 +8,8 @@
       "sponsorHref": "https://metaversestudios.com",
       "updatedAt": "2024-01-15T10:00:00Z",
       "isPro": true,
+      "entityType": "creator",
+      "metricLabel": "Impact Score",
       "entries": [
         {
           "id": "creator-1",
@@ -129,6 +131,9 @@
       "description": "Where creators are thriving most, based on earnings potential, engagement, and activity.",
       "updatedAt": "2024-01-15T09:30:00Z",
       "isPro": false,
+      "entityType": "platform",
+      "metricLabel": "Creator Earnings Index",
+      "metricTooltip": "Composite score using earnings potential, creator activity, and engagement trend over the last 30 days.",
       "entries": [
         {
           "id": "platform-1",
@@ -249,6 +254,8 @@
       "description": "The fastest rising creators, streamers, and studios over the past 30 days.",
       "updatedAt": "2024-01-15T08:45:00Z",
       "isPro": false,
+      "entityType": "creator",
+      "metricLabel": "30 day growth",
       "entries": [
         {
           "id": "momentum-1",
@@ -365,9 +372,11 @@
     "studios-watchlist": {
       "id": "studios-watchlist",
       "title": "Studios Watchlist",
-      "description": "Coming soon - Track the most promising virtual world studios and their upcoming releases.",
+      "description": "A curated radar of teams to watch.",
       "updatedAt": "2024-01-15T08:00:00Z",
       "isPro": false,
+      "entityType": "creator",
+      "metricLabel": "Watch Score",
       "entries": []
     }
   }

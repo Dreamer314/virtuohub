@@ -16,6 +16,12 @@ class ListsAPI {
   async getLists(filters: ListFilters = {}): Promise<{ lists: ListMeta[]; total: number }> {
     let filtered = [...this.lists];
 
+    // Hide Studios content until feature is live
+    filtered = filtered.filter(list => 
+      !list.title.toLowerCase().includes('studio') && 
+      !list.summary?.toLowerCase().includes('studio')
+    );
+
     // Apply filters
     if (filters.type) {
       filtered = filtered.filter(list => list.type === filters.type);

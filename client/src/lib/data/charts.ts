@@ -23,6 +23,9 @@ export interface ChartConfig {
   entries: ChartEntry[];
   updatedAt: string;
   isPro: boolean;
+  entityType: 'creator' | 'platform';
+  metricLabel: string;
+  metricTooltip?: string;
 }
 
 export type ChartType = 'vhub-100' | 'platforms-index' | 'momentum-50' | 'studios-watchlist';
@@ -30,12 +33,12 @@ export type VoiceFilter = 'VHub Picks' | 'User Choice';
 export type SortOption = 'Most Recent' | 'Most Viewed';
 
 export function getChartById(chartId: ChartType): ChartConfig | null {
-  const chart = chartsData.charts[chartId];
+  const chart = chartsData.charts[chartId] as ChartConfig;
   return chart || null;
 }
 
 export function getChartsList(): ChartConfig[] {
-  return Object.values(chartsData.charts);
+  return Object.values(chartsData.charts) as ChartConfig[];
 }
 
 export function filterChartEntries(

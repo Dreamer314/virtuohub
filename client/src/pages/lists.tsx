@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
-import { type ListType, type VoiceTag, type Platform, type ListMeta, type BillboardTab } from '@/types/lists';
-import { getLists, getBillboardData } from '@/lib/data/lists';
+import { type ListType, type VoiceTag, type Platform, type ListMeta } from '@/types/lists';
+import { getLists } from '@/lib/data/lists';
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
-import { BillboardHero } from '@/components/lists/BillboardHero';
 import { ListFilters } from '@/components/lists/ListFilters';
 import { ListGrid } from '@/components/lists/ListGrid';
 import { VHubChartsSection } from '@/components/charts/VHubChartsSection';
@@ -60,11 +59,6 @@ const ListsPage: React.FC = () => {
   // Get current filters from URL
   const currentParams = getParams();
   
-  // Fetch billboard data
-  const { data: billboardTabs = [], isLoading: billboardLoading } = useQuery<BillboardTab[]>({
-    queryKey: ['billboard-data'],
-    queryFn: getBillboardData
-  });
   
   // Fetch lists with current filters
   const { data: listsData, isLoading: listsLoading, error } = useQuery({
@@ -149,14 +143,6 @@ const ListsPage: React.FC = () => {
             {/* Section Separator */}
             <div className="my-16 border-t border-border/50"></div>
             
-            {/* Billboard Hero (for Lists) */}
-            {!billboardLoading && billboardTabs.length > 0 && (
-              <BillboardHero 
-                tabs={billboardTabs}
-                onMethodologyClick={() => setShowMethodology(true)}
-                onSuggestUpdate={() => setShowSuggestUpdate(true)}
-              />
-            )}
             
             {/* Filter Bar (for Lists) */}
             <ListFilters

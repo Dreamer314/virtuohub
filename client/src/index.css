@@ -564,45 +564,28 @@
 }
 
 /* Visual hierarchy utilities */
+.vh-eyebrow {
+  @apply uppercase tracking-wide text-primary text-xs font-bold;
+}
+
 .vh-hero {
-  font-size: 3rem;
-  font-weight: 800;
-  line-height: 1.1;
+  @apply text-5xl font-extrabold leading-tight;
 }
 
 .vh-title {
-  font-size: 2.25rem;
-  font-weight: 800;
-}
-
-.vh-eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: hsl(var(--primary));
-  font-size: 0.75rem;
-  font-weight: 700;
+  @apply text-4xl font-extrabold;
 }
 
 .vh-meta {
-  font-size: 0.875rem;
-  opacity: 0.8;
+  @apply text-sm opacity-80;
 }
 
 .vh-rank {
-  font-size: 1.875rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
+  @apply text-3xl font-bold tabular-nums;
 }
 
 .vh-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  border-radius: 9999px;
-  border: 1px solid;
+  @apply inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full border;
 }
 
 /* Text hygiene inside Featured only */

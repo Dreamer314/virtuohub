@@ -15,6 +15,7 @@ interface ChartFiltersProps {
   onVoicesChange: (voices: VoiceFilter[]) => void;
   onPlatformsChange: (platforms: string[]) => void;
   onSortChange: (sort: SortOption) => void;
+  showVoiceFilter?: boolean;
 }
 
 const availablePlatforms = [
@@ -32,7 +33,8 @@ export function ChartFilters({
   sort,
   onVoicesChange,
   onPlatformsChange,
-  onSortChange
+  onSortChange,
+  showVoiceFilter = true
 }: ChartFiltersProps) {
   const [isPlatformFiltersCollapsed, setIsPlatformFiltersCollapsed] = useState(true);
 
@@ -53,12 +55,12 @@ export function ChartFilters({
   };
 
   const clearAllFilters = () => {
-    onVoicesChange([]);
+    if (showVoiceFilter) onVoicesChange([]);
     onPlatformsChange([]);
     onSortChange('Most Recent');
   };
 
-  const hasActiveFilters = voices.length > 0 || platforms.length > 0 || sort !== 'Most Recent';
+  const hasActiveFilters = (showVoiceFilter && voices.length > 0) || platforms.length > 0 || sort !== 'Most Recent';
 
   return (
     <div className="space-y-4 bg-card/30 rounded-lg p-4 border">
@@ -81,26 +83,28 @@ export function ChartFilters({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {/* Voice Filter */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium">Voice</label>
-          <div className="flex flex-wrap gap-1">
-            {voiceOptions.map((voice) => (
-              <Badge
-                key={voice}
-                variant={voices.includes(voice) ? "default" : "outline"}
-                className="cursor-pointer hover:bg-primary/20"
-                onClick={() => toggleVoice(voice)}
-                data-testid={`voice-filter-${voice.toLowerCase().replace(' ', '-')}`}
-              >
-                {voice}
-                {voices.includes(voice) && (
-                  <X className="h-3 w-3 ml-1" />
-                )}
-              </Badge>
-            ))}
+        {/* Voice Filter - Hidden for Platforms Index */}
+        {showVoiceFilter && (
+          <div className="space-y-2">
+            <label className="text-sm font-medium">Voice</label>
+            <div className="flex flex-wrap gap-1">
+              {voiceOptions.map((voice) => (
+                <Badge
+                  key={voice}
+                  variant={voices.includes(voice) ? "default" : "outline"}
+                  className="cursor-pointer hover:bg-primary/20"
+                  onClick={() => toggleVoice(voice)}
+                  data-testid={`voice-filter-${voice.toLowerCase().replace(' ', '-')}`}
+                >
+                  {voice}
+                  {voices.includes(voice) && (
+                    <X className="h-3 w-3 ml-1" />
+                  )}
+                </Badge>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Sort Filter */}
         <div className="space-y-2">
