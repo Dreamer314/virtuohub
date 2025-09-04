@@ -140,28 +140,11 @@ const ListsPage: React.FC = () => {
               }}
             />
             
-            {/* Charts Section Header */}
+            {/* Charts Section */}
             <section className="mt-10">
-              <div className="relative mb-6">
-                {/* CHARTS header banner */}
-                <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-purple-600/20 via-blue-600/20 to-purple-600/20 border border-purple-500/30">
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-blue-500/10" />
-                  <div className="relative px-6 py-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h2 className="text-3xl font-bold text-white mb-1">CHARTS</h2>
-                        <p className="text-purple-200 text-sm">TOP CHARTS</p>
-                      </div>
-                      <div className="text-purple-300/60 font-mono text-xs">
-                        Updated weekly
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
               
               {/* Framed charts block */}
-              <div className="relative mt-6 rounded-2xl ring-1 ring-border/50 bg-surface/60 p-4 md:p-6">
+              <div className="relative rounded-2xl ring-1 ring-border/50 bg-surface/60 p-4 md:p-6">
                 {/* Ambient overlay */}
                 <div 
                   aria-hidden="true" 

@@ -86,6 +86,19 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
 
   return (
     <div className="space-y-8">
+      {/* CHARTS Section Header */}
+      <div className="rounded-t-xl bg-white/5 backdrop-blur-sm border border-white/10 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-white tracking-wider">CHARTS</h2>
+            <p className="text-sm text-white/70 font-medium">TOP CHARTS</p>
+          </div>
+          <div className="text-white/50 text-xs font-mono">
+            Updated weekly
+          </div>
+        </div>
+      </div>
+      
       {/* Charts Header */}
       <div className="space-y-4">
         {/* Sponsor Banner */}
