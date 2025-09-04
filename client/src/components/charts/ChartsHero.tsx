@@ -12,7 +12,7 @@ export interface ChartsHeroProps {
     | { type: "video"; src: string; poster?: string; caption?: string };
 }
 
-const HERO_MEDIA_ENABLED = false;
+const HERO_MEDIA_ENABLED = true;
 
 export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroMedia }: ChartsHeroProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -169,7 +169,7 @@ export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroM
   };
 
   return (
-    <div className="relative overflow-hidden rounded-2xl p-6 md:p-10 bg-surface/70 ring-1 ring-border/50 mb-8">
+    <div className="relative overflow-hidden rounded-2xl p-8 md:p-16 lg:p-20 bg-surface/70 ring-1 ring-border/50 mb-8 min-h-[600px] md:min-h-[700px]">
       {/* Background image */}
       <div
         className="absolute inset-0 -z-10 bg-cover bg-center"
@@ -207,36 +207,46 @@ export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroM
       )}
 
       <div className="relative z-10">
-        <div className="space-y-6">
-          {/* Eyebrow */}
-          <p className="vh-eyebrow text-white/90">VHUB Charts</p>
-          
-          {/* Subline */}
-          <p className="vh-meta text-lg max-w-xl text-white/80">
-            Updated weekly with data on creators, platforms, and momentum.
-          </p>
-          
-          {/* CTAs */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <Button
-              onClick={handleExploreCharts}
-              className="btn-primary"
-              data-testid="explore-charts-cta"
-            >
-              Explore all charts
-            </Button>
-            <Button
-              variant="outline"
-              onClick={handleMethodology}
-              className="btn-secondary bg-white/10 text-white border-white/20 hover:bg-white/20"
-              data-testid="methodology-cta"
-            >
-              Methodology
-            </Button>
+        <div className="grid gap-8 lg:grid-cols-2 lg:gap-12 items-center">
+          {/* Left content */}
+          <div className="space-y-6">
+            {/* Eyebrow */}
+            <p className="vh-eyebrow text-white/90">VHUB Charts</p>
+            
+            {/* Main headline */}
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-white">
+              The scoreboards of the immersive creator economy.
+            </h1>
+            
+            {/* Subline */}
+            <p className="vh-meta text-lg max-w-xl text-white/80">
+              Updated weekly with data on creators, platforms, and momentum.
+            </p>
+            
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Button
+                onClick={handleExploreCharts}
+                className="btn-primary"
+                data-testid="explore-charts-cta"
+              >
+                Explore all charts
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleMethodology}
+                className="btn-secondary bg-white/10 text-white border-white/20 hover:bg-white/20"
+                data-testid="methodology-cta"
+              >
+                Methodology
+              </Button>
+            </div>
           </div>
           
-          {/* Media slot (commented out for future) */}
-          {HERO_MEDIA_ENABLED && renderMediaSlot()}
+          {/* Right media slot */}
+          <div className="order-first lg:order-last">
+            {HERO_MEDIA_ENABLED && renderMediaSlot()}
+          </div>
         </div>
       </div>
     </div>

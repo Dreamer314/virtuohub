@@ -133,14 +133,18 @@ const ListsPage: React.FC = () => {
           <div className="py-8 relative z-10 px-4 lg:px-8 max-w-7xl mx-auto">
             
             {/* Charts Hero */}
-            <ChartsHero />
+            <ChartsHero 
+              heroMedia={{
+                type: "video",
+                src: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                poster: "/hero/vhub-charts-placeholder.jpg",
+                caption: "Video / Slideshow Preview"
+              }}
+            />
             
             {/* Section Masthead */}
             <section className="mt-10">
-              <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight">VHUB Charts</h1>
-              <p className="vh-meta mt-2">The scoreboards of the immersive creator economy.</p>
-              
-              <div className="mt-3 flex items-center gap-4 flex-wrap">
+              <div className="flex items-center gap-4 flex-wrap mb-6">
                 <span className="vh-meta">Last updated Jan 15, 2024</span>
                 <button 
                   className="text-sm text-accent hover:text-accent/80 transition-colors underline"
