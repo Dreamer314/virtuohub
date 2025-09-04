@@ -15,17 +15,26 @@ interface ChartTableProps {
 // Pro lock card component
 function ProLockCard({ onUpgrade }: { onUpgrade?: () => void }) {
   return (
-    <div className="vh-row bg-gradient-to-r from-accent/5 to-accent/10 border-accent/30">
-      <div className="flex items-center justify-center w-full col-span-3 py-8">
-        <div className="text-center space-y-3">
-          <Lock className="w-6 h-6 text-accent mx-auto" />
-          <div>
-            <p className="font-semibold text-foreground">Unlock the full Top 25 on VHUB Pro</p>
-            <p className="text-sm text-muted-foreground">Get access to complete rankings and advanced analytics</p>
+    <div className="vh-row bg-gradient-to-r from-accent/5 to-accent/10 border-accent/30 border-2 border-dashed">
+      <div className="flex items-center justify-center w-full col-span-3 py-12">
+        <div className="text-center space-y-4 max-w-md">
+          <div className="w-16 h-16 mx-auto bg-accent/10 rounded-full flex items-center justify-center">
+            <Lock className="w-8 h-8 text-accent" />
           </div>
-          <Button onClick={onUpgrade} className="btn-primary mt-2">
-            Upgrade to Pro
-          </Button>
+          <div>
+            <h3 className="text-lg font-bold text-foreground mb-2">See the Full Top 25 Rankings</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              You're seeing ranks 1-10. Upgrade to VHUB Pro to unlock ranks 11-25 plus advanced analytics, creator insights, and weekly data exports.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Button onClick={onUpgrade} className="btn-primary">
+              Upgrade to Pro - $9/month
+            </Button>
+            <Button variant="outline" size="sm" className="text-xs">
+              Learn more about Pro
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -44,6 +53,9 @@ export function ChartTable({
   // For Top 25 charts, show entries 1-10 for free users, then Pro lock card, then grayed out entries 11-25
   const freeEntries = displayEntries.slice(0, 10);
   const proEntries = displayEntries.slice(10, 25);
+  
+  // Debug: Log actual entry count
+  console.log(`Chart ${chart.id} has ${displayEntries.length} entries, showing ${freeEntries.length} free + ${proEntries.length} pro`);
 
   // Only render NEW chips for Momentum 25 first-timers
   const renderNewChip = (entry: ChartEntry) => {
@@ -163,18 +175,25 @@ export function ChartTable({
           </motion.div>
         )}
         
-        {/* Show entries 11-25 */}
-        {proEntries.map((entry, index) => (
+        {/* Show entries 11-25 - only if they exist */}
+        {proEntries.length > 0 && proEntries.map((entry, index) => (
           <motion.div
             key={entry.id}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: (index + 11) * 0.03 }}
-            className={!isProUser ? "opacity-40 pointer-events-none" : ""}
+            className={!isProUser ? "opacity-30 pointer-events-none grayscale" : ""}
           >
             {renderRankedCard(entry, index + 10)}
           </motion.div>
         ))}
+        
+        {/* Show placeholder entries if we don't have enough data */}
+        {!isProUser && proEntries.length < 15 && (
+          <div className="text-center py-8 text-muted-foreground">
+            <p className="text-sm">Entries 11-25 available with VHUB Pro</p>
+          </div>
+        )}
       </ul>
     </div>
   );
