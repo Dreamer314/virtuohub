@@ -27,6 +27,7 @@ export interface ChartConfig {
   sponsorName?: string;
   sponsorHref?: string;
   entries: ChartEntry[];
+  originalEntries?: ChartEntry[];  // Keep reference to original entries before filtering
   updatedAt: string;
   isPro: boolean;
   entityType: 'creator' | 'platform';
@@ -77,7 +78,8 @@ export function getChartById(chartId: ChartType, voice?: 'editorial' | 'communit
   
   return {
     ...chart,
-    entries
+    entries,
+    originalEntries: chart.entries  // Keep reference to original entries before filtering
   };
 }
 

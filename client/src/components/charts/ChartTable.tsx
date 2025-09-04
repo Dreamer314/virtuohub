@@ -85,15 +85,25 @@ export function ChartTable({
   const [showSignupModal, setShowSignupModal] = useState(false);
   const displayEntries = getProGatedEntries(entries, isProUser);
   // Show signup/upgrade card if the original chart has more than 5 entries and user doesn't have full access
-  // Always use the original entries length, not the filtered/displayed entries
-  const hasMoreEntries = chart.entries && chart.entries.length > 5 && (!isLoggedIn || (isLoggedIn && !isProUser));
+  // Use originalEntries if available (for filtered charts), otherwise use chart.entries
+  const originalEntriesCount = chart.originalEntries?.length || chart.entries?.length || 0;
+  const hasMoreEntries = originalEntriesCount > 5 && (!isLoggedIn || (isLoggedIn && !isProUser));
   
   // For Top 25 charts, show entries 1-5 for anonymous users, then Load Full Chart button
   const freeEntries = displayEntries.slice(0, 5);
   const proEntries = displayEntries.slice(5, 25);
   
-  // Debug: Log actual entry count
-  console.log(`Chart ${chart.id} has ${displayEntries.length} entries, showing ${freeEntries.length} free + ${proEntries.length} pro`);
+  // Debug: Log actual entry count and button visibility
+  console.log(`Chart ${chart.id}:`, {
+    originalEntriesCount,
+    displayEntries: displayEntries.length,
+    freeEntries: freeEntries.length,
+    proEntries: proEntries.length,
+    isLoggedIn,
+    isProUser,
+    hasMoreEntries,
+    willShowButton: hasMoreEntries && !isLoggedIn
+  });
 
   // Only render NEW chips for Momentum 25 first-timers
   const renderNewChip = (entry: ChartEntry) => {
