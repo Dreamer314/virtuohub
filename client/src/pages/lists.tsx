@@ -240,32 +240,7 @@ const ListsPage: React.FC = () => {
         </div>
       </div>
       
-      {/* Modals would be rendered here */}
-      {showMethodology && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowMethodology(false)}>
-          <div className="bg-background p-6 rounded-lg max-w-md mx-4" onClick={e => e.stopPropagation()}>
-            <h3 className="font-bold text-lg mb-4">Methodology</h3>
-            <p className="text-muted-foreground mb-4">
-              Our rankings are calculated using a combination of metrics including engagement, 
-              growth rate, community impact, and platform-specific data points.
-            </p>
-            <Button onClick={() => setShowMethodology(false)}>Close</Button>
-          </div>
-        </div>
-      )}
-      
-      {showSuggestUpdate && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowSuggestUpdate(false)}>
-          <div className="bg-background p-6 rounded-lg max-w-md mx-4" onClick={e => e.stopPropagation()}>
-            <h3 className="font-bold text-lg mb-4">Suggest an Update</h3>
-            <p className="text-muted-foreground mb-4">
-              Have feedback on our rankings? Send us your suggestions and we'll review them 
-              for future updates.
-            </p>
-            <Button onClick={() => setShowSuggestUpdate(false)}>Close</Button>
-          </div>
-        </div>
-      )}
+      {/* Modals are now handled by ChartsHero component */}
     </div>
   );
 };
