@@ -17,9 +17,11 @@ function generateId(): string {
   return Math.random().toString(36).substr(2, 9);
 }
 
-// Initialize with seed data if empty
+// Initialize with seed data if empty  
 function initializeData() {
-  if (!localStorage.getItem(POSTS_KEY)) {
+  // Force reset to load new data with images
+  if (!localStorage.getItem(POSTS_KEY) || localStorage.getItem('vhub.version') !== '1.2') {
+    localStorage.setItem('vhub.version', '1.2');
     const seedPosts: Post[] = [
       {
         id: 'post1',
