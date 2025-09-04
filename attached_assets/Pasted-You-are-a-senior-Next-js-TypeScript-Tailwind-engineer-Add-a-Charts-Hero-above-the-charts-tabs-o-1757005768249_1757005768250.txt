@@ -1,0 +1,120 @@
+You are a senior Next.js + TypeScript + Tailwind engineer. Add a Charts Hero above the charts tabs on /community/lists. Use the site’s existing tokens and the three modes (light, dark, charcoal). Do not invent new colors or theme variables.
+
+Context
+
+The lists page currently has no hero; the content starts with tabs and copy.
+
+We want a hero similar to the mock the PM provided: large headline, subtle grid background, big translucent “#1” watermark, right-side media slot (video/slideshow/image), and two CTAs.
+
+A “Presented by MetaVerse Studios” label appears in places — remove any hard-coded sponsor defaults. Sponsor chip should render only if explicitly passed.
+
+Tasks
+
+Create component
+
+File: components/charts/ChartsHero.tsx
+
+Props:
+
+export interface ChartsHeroProps {
+  sponsorName?: string;
+  sponsorHref?: string;
+  heroMedia?:
+    | { type: "image"; imageUrl: string; caption?: string }
+    | { type: "slideshow"; slides: Array<{ imageUrl: string; title?: string }> }
+    | { type: "video"; src: string; poster?: string; caption?: string };
+}
+
+
+Mount on page
+
+Import and render <ChartsHero /> at the very top of the center column on /community/lists, above the chart tabs.
+
+Add id="charts-start" to the tabs wrapper so the hero’s “Explore all charts” CTA can anchor-scroll.
+
+Hero layout & content (match the mock)
+
+Eyebrow: VHUB Charts
+
+H1 (large, bold): The scoreboards of the immersive creator economy.
+
+Subline: Updated weekly with data on creators, platforms, and momentum.
+
+Two CTAs:
+
+Primary link button → #charts-start label: Explore all charts
+
+Secondary button → opens existing Methodology modal label: Methodology
+
+Optional sponsor chip (top right): only render if sponsorName is provided. Remove all hard-coded defaults across repo (search and delete “MetaVerse Studios” fallbacks).
+
+Background styling
+
+Rounded container with an existing surface bg + ring/border utilities from the design system.
+
+Add a faint geometric grid overlay and a large translucent “#1” watermark behind the headline (absolutely positioned, pointer-events-none, low opacity). Must adapt to light/dark/charcoal via current tokens.
+
+Media slot (right side)
+
+A rounded rectangle “frame” with a soft glow ring.
+
+If heroMedia.type === "image": render image with object-cover.
+
+If slideshow: cross-fade between slides every 4s. Respect prefers-reduced-motion (pause animation).
+
+If video: render muted, looped, with poster and play/pause control; keyboard accessible.
+
+Utilities (use existing tokens; add only small class helpers)
+
+Add these utilities to your global styles (Tailwind @apply, no new colors):
+
+.vh-eyebrow { @apply uppercase tracking-wide text-xs font-semibold text-accent; }
+.vh-hero    { @apply text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight; }
+.vh-meta    { @apply text-sm opacity-80; }
+.btn-primary   { @apply inline-flex items-center justify-center rounded-full px-4 py-2 font-medium bg-accent text-accent-foreground hover:opacity-90 transition; }
+.btn-secondary { @apply inline-flex items-center justify-center rounded-full px-4 py-2 font-medium ring-1 ring-border hover:bg-surface/70 transition; }
+
+
+Component structure (use these class ideas; adapt to your tokens)
+
+Wrapper: relative overflow-hidden rounded-2xl p-6 md:p-10 bg-surface/80 ring-1 ring-border/50
+
+Grid overlay: absolute inset with very low opacity using border color
+
+Watermark #1: absolutely positioned, very large font size, low opacity
+
+Right media frame: fixed 16:9 box that collapses neatly on mobile (stack below text)
+
+Accessibility
+
+Ensure visible focus for CTAs and media controls.
+
+Provide aria-label for the media frame buttons.
+
+Hide decorative watermark/grid from AT (aria-hidden).
+
+Remove sponsor default
+
+Search the codebase for the string “MetaVerse Studios” and remove any default use in charts or hero. Sponsor chip renders only when sponsorName is passed.
+
+Tests
+
+Snapshot test: hero renders eyebrow, H1, subline, CTAs.
+
+Unit test: sponsor chip does not render without sponsorName.
+
+Unit test: slideshow respects prefers-reduced-motion.
+
+Acceptance criteria
+
+/community/lists shows a branded hero above tabs with eyebrow, large H1, subline, two CTAs, subtle grid, and a translucent #1 watermark.
+
+Optional sponsor chip is hidden by default and only appears when props are provided.
+
+Media slot supports image/slideshow/video and is responsive.
+
+“Explore all charts” anchors to the tabs.
+
+Styling fits existing light/dark/charcoal modes; no new colors added.
+
+No “MetaVerse Studios” appears anywhere unless passed as sponsorNam

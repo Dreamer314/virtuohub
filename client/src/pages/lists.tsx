@@ -9,6 +9,7 @@ import { RightSidebar } from '@/components/layout/right-sidebar';
 import { ListFilters } from '@/components/lists/ListFilters';
 import { ListGrid } from '@/components/lists/ListGrid';
 import { VHubChartsSection } from '@/components/charts/VHubChartsSection';
+import { ChartsHero } from '@/components/charts/ChartsHero';
 import { Button } from '@/components/ui/button';
 
 // URL param utilities
@@ -131,14 +132,19 @@ const ListsPage: React.FC = () => {
         <div className="grid-main relative z-0">
           <div className="py-8 relative z-10 px-4 lg:px-8 max-w-7xl mx-auto">
             
+            {/* Charts Hero */}
+            <ChartsHero />
+            
             {/* VHUB Charts Section */}
-            <VHubChartsSection 
-              onFiltersChange={(params) => {
-                const newSearch = params.toString();
-                const newPath = `/community/lists${newSearch ? `?${newSearch}` : ''}`;
-                window.history.replaceState({}, '', newPath);
-              }}
-            />
+            <div id="charts-start">
+              <VHubChartsSection 
+                onFiltersChange={(params) => {
+                  const newSearch = params.toString();
+                  const newPath = `/community/lists${newSearch ? `?${newSearch}` : ''}`;
+                  window.history.replaceState({}, '', newPath);
+                }}
+              />
+            </div>
             
             {/* Section Separator */}
             <div className="my-16 border-t border-border/50"></div>
