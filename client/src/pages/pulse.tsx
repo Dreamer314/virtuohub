@@ -25,26 +25,15 @@ const PulsePage: React.FC = () => {
     return unsubscribe;
   }, []);
 
-  // Get data from both APIs - combine VHub Pulse and user-created polls
-  const vhubActivePolls = pulseApi.listActivePolls();
-  const userActivePolls = mockApi.listActivePolls();
-  const activePolls = [...vhubActivePolls, ...userActivePolls];
-  
-  const vhubCompletedPolls = pulseApi.listCompletedPolls();
-  const userCompletedPolls = mockApi.listCompletedPolls();
-  const completedPolls = [...vhubCompletedPolls, ...userCompletedPolls];
+  // Get data ONLY from VHub Pulse API - user polls stay in community feed only
+  const activePolls = pulseApi.listActivePolls();
+  const completedPolls = pulseApi.listCompletedPolls();
   
   const reports = pulseApi.listReports();
 
   const handleVote = (pollId: string, optionIndex: number) => {
     try {
-      // Try VHub Pulse API first, then mock API
-      try {
-        pulseApi.vote(pollId, optionIndex);
-      } catch {
-        // If VHub poll fails, try mock API
-        mockApi.votePoll(pollId, [pollId + '-' + optionIndex]);
-      }
+      pulseApi.vote(pollId, optionIndex);
       setPulseRefresh(prev => prev + 1);
     } catch (error) {
       console.error('Vote failed:', error);

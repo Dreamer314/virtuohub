@@ -146,6 +146,33 @@ const CommunityPage: React.FC = () => {
                 </div>
 
                 <main>
+                  {/* VHub Header with Image and Effects */}
+                  <div className="relative mb-16 text-center">
+                    <div className="relative h-48 lg:h-64 mx-auto mb-8 overflow-hidden rounded-2xl shadow-2xl">
+                      <img 
+                        src={vhubHeaderImage} 
+                        alt="VirtuoHub - Virtual World Creator Community" 
+                        className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                      <div className="absolute bottom-6 left-6 right-6">
+                        <h1 className="text-3xl lg:text-5xl font-bold text-white mb-2 drop-shadow-lg">
+                          VirtuoHub
+                        </h1>
+                        <p className="text-lg lg:text-xl text-white/90 drop-shadow-md">
+                          Virtual World Creator Community
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Floating particles effect */}
+                    <div className="absolute inset-0 pointer-events-none">
+                      <div className="particle absolute top-10 left-20 w-2 h-2 bg-primary/30 rounded-full animate-float"></div>
+                      <div className="particle absolute top-20 right-32 w-1 h-1 bg-accent/40 rounded-full animate-float" style={{animationDelay: '2s'}}></div>
+                      <div className="particle absolute bottom-20 left-1/3 w-1.5 h-1.5 bg-primary/20 rounded-full animate-float" style={{animationDelay: '4s'}}></div>
+                    </div>
+                  </div>
+
                   {/* Featured Section */}
                   {FEATURED_V2 && (
                     <div className="mb-12">
