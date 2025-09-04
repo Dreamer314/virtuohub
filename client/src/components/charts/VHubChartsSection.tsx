@@ -103,7 +103,6 @@ export function VHubChartsSection({ onFiltersChange }: VHubChartsSectionProps) {
 
         {/* Main Header */}
         <div className="space-y-2">
-          <p className="vh-eyebrow">VHUB Charts</p>
           <h1 className="vh-hero">The scoreboards of the immersive creator economy.</h1>
         </div>
 

@@ -210,11 +210,10 @@ export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroM
         <div className="grid gap-8 lg:grid-cols-2 lg:gap-12 items-center">
           {/* Left content */}
           <div className="space-y-6">
-            {/* Eyebrow */}
-            <p className="vh-eyebrow text-white/90">VHUB Charts</p>
+            {/* Eyebrow - removed duplicate */}
             
             {/* Main headline */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-tight text-white hero-title-glow">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold leading-tight text-white hero-title-glow orbitron-font">
               VHUB Charts
             </h1>
             
