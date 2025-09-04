@@ -51,16 +51,6 @@ export class MemStorage implements IStorage {
         bio: 'VR Environment Artist',
         role: 'VR Environment Artist',
         createdAt: new Date(),
-      },
-      {
-        id: 'vhub_pulse',
-        username: 'vhub_data_pulse',
-        password: 'password',
-        displayName: 'VHub Data Pulse',
-        avatar: '/images/pulse-avatar.png',
-        bio: 'Official VirtuoHub Data Collection Account',
-        role: 'Data Analyst',
-        createdAt: new Date(),
       }
     ];
 
@@ -110,9 +100,9 @@ export class MemStorage implements IStorage {
       },
       {
         id: 'post3',
-        authorId: 'vhub_pulse',
+        authorId: 'user1',
         title: "What's your preferred platform for virtual world creation?",
-        content: '',
+        content: 'Curious to see what platforms our community prefers for creating virtual experiences!',
         imageUrl: '',
         images: [],
         files: [],
