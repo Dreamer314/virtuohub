@@ -85,6 +85,7 @@
   --sidebar-accent-foreground: hsl(222.2 47.4% 11.2%);
   --sidebar-border: hsl(214.3 31.8% 91.4%);
   --sidebar-ring: hsl(262.1 83.3% 57.8%);
+  --surface: hsl(0 0% 100%);
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-display: 'Poppins', system-ui, sans-serif;
   --font-tech: 'Orbitron', monospace;
@@ -144,6 +145,7 @@
   --sidebar-accent-foreground: hsl(210 40% 98%);
   --sidebar-border: hsl(217.2 32.6% 17.5%);
   --sidebar-ring: hsl(262.1 83.3% 57.8%);
+  --surface: hsl(222.2 47.4% 11.2%);
 }
 
 /* Reddit-style grid layout */
@@ -210,6 +212,7 @@
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: #27272b;
   --sidebar-ring: hsl(262.1 83.3% 57.8%);
+  --surface: #1c1c20;
 }
 
 @layer base {
