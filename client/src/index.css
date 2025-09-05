@@ -269,20 +269,38 @@
     border: 1px solid hsl(var(--border));
   }
 
-  /* Fix select dropdown options for all themes */
+  /* Force select styling for all themes */
+  select {
+    background-color: hsl(var(--surface)) !important;
+    color: hsl(var(--foreground)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+  }
+
   select option {
-    background-color: hsl(var(--surface));
-    color: hsl(var(--foreground));
+    background-color: hsl(var(--surface)) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+
+  .dark select {
+    background-color: #1c1c20 !important;
+    color: #ffffff !important;
+    border: 1px solid #374151 !important;
   }
 
   .dark select option {
-    background-color: hsl(var(--surface));
-    color: hsl(var(--foreground));
+    background-color: #1c1c20 !important;
+    color: #ffffff !important;
+  }
+
+  .charcoal select {
+    background-color: #1c1c20 !important;
+    color: #ffffff !important;
+    border: 1px solid #27272b !important;
   }
 
   .charcoal select option {
-    background-color: hsl(var(--surface));
-    color: hsl(var(--foreground));
+    background-color: #1c1c20 !important;
+    color: #ffffff !important;
   }
 
   /* Enhanced dark theme card styling with ambient effects */
