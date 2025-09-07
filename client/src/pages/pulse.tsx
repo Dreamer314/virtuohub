@@ -205,7 +205,7 @@ const PulsePage: React.FC = () => {
                           return (
                             <article key={poll.id} className="enhanced-card hover-lift rounded-xl p-6 border border-slate-500/30 flex flex-col min-h-[320px]">
                               <div className="flex items-center justify-between mb-4">
-                                <span className="inline-block px-3 py-1 text-xs font-medium bg-slate-500/20 text-slate-300 border border-slate-500/30 rounded-full">Completed</span>
+                                <span className="inline-block px-3 py-1 text-xs font-medium bg-muted text-muted-foreground border border-border rounded-full">Completed</span>
                                 <span className="text-sm text-muted-foreground">Ended {endedDaysAgo} days ago</span>
                               </div>
                               <h3 className="text-lg font-semibold text-foreground mb-3">

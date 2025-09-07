@@ -123,7 +123,7 @@ export function PollCard({ poll, context, onUpdate }: PollCardProps) {
           <div className="flex items-center justify-between mb-4">
             <Badge 
               variant={poll.status === 'active' ? 'default' : 'secondary'}
-              className={poll.status === 'active' ? 'bg-green-500/20 text-green-300 border-green-500/30' : 'bg-slate-500/20 text-slate-300 border-slate-500/30'}
+              className={poll.status === 'active' ? 'bg-green-500/20 text-green-300 border-green-500/30' : 'bg-muted text-muted-foreground border-border'}
             >
               {poll.status === 'active' ? 'Active Poll' : 'Completed'}
             </Badge>
