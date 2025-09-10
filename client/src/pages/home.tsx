@@ -493,20 +493,25 @@ const HomePage = () => {
                       ].map((platform, index) => (
                         <button
                           key={platform.slug || platform.name}
-                          onClick={() => {
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log(`Clicked platform chip: ${platform.name}`, platform.slug);
                             if (platform.slug) {
                               setLocation(`/community?platform=${platform.slug}`);
                               toast({
                                 title: `Filtered by ${platform.name}`,
                                 description: `Showing posts related to ${platform.name}`,
                               });
+                              console.log(`Navigating to: /community?platform=${platform.slug}`);
                             } else {
                               setLocation('/community');
+                              console.log('Navigating to: /community');
                             }
                           }}
                           className="flex-shrink-0 px-4 py-2 text-sm font-medium text-muted-foreground bg-muted/20 border border-muted-foreground/20 rounded-full hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 hover:scale-105 active:scale-95"
                           aria-label={platform.slug ? `Filter community by ${platform.name}` : 'View all platforms'}
-                          data-testid={`platform-chip-${platform.slug || 'more'}`}
+                          data-testid={`homepage-platform-chip-${platform.slug || 'more'}`}
                         >
                           {platform.name}
                         </button>
