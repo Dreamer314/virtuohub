@@ -47,9 +47,11 @@ interface CreatePostModalProps {
   isOpen: boolean;
   onClose: () => void;
   initialType?: 'regular' | 'pulse' | 'insight';
+  // COMPOSER ROUTING - Add initial category support
+  initialCategory?: string;
 }
 
-export function CreatePostModal({ isOpen, onClose, initialType = 'regular' }: CreatePostModalProps) {
+export function CreatePostModal({ isOpen, onClose, initialType = 'regular', initialCategory }: CreatePostModalProps) {
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
@@ -68,7 +70,8 @@ export function CreatePostModal({ isOpen, onClose, initialType = 'regular' }: Cr
       images: [],
       files: [],
       links: [],
-      category: "general", // POST CATEGORIES MVP - Use slug instead of label
+      // COMPOSER ROUTING - Use initialCategory if provided, otherwise default to general
+      category: initialCategory || "general",
       platforms: [],
       price: "",
       type: initialType,

@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { FeaturedCarousel } from "@/components/featured/FeaturedCarousel";
 import { featuredItems } from "@/components/featured/types";
-import { CreatePostModal } from "@/components/create-post-modal";
+// COMPOSER ROUTING - Remove composer import, add navigation
+import { useLocation } from "wouter";
 import vhubHeaderImage from '@assets/VHub.Header.no.font.new.png';
 import day1Image from '@assets/download (2).png';
 import week4Image from '@assets/download (1).png';
@@ -89,7 +90,8 @@ const CATEGORY_CONFIG = {
 } as const;
 
 const HomePage = () => {
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  // COMPOSER ROUTING - Remove modal state, add navigation hook
+  const [, setLocation] = useLocation();
 
 
   return (
@@ -228,9 +230,18 @@ const HomePage = () => {
               {/* POST CATEGORIES MVP - Updated button hierarchy */}
               <div className="relative z-10 text-center mb-8">
                 <div className="flex justify-center gap-4">
-                  <Button size="lg" className="bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-thread" onClick={() => setIsCreateModalOpen(true)}>Start a Thread</Button>
+                  {/* COMPOSER ROUTING - Navigate to community with compose query param */}
+                  <Button 
+                    size="lg" 
+                    className="bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-lg hover:shadow-xl transition-all" 
+                    data-testid="button-start-thread" 
+                    onClick={() => setLocation('/community?compose=true')}
+                    aria-label="Start a new thread"
+                  >
+                    Start a Thread
+                  </Button>
                   <Button asChild variant="outline" size="lg" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-all">
-                    <Link href="/community">Browse Community</Link>
+                    <Link href="/community" aria-label="Browse the community feed">Browse Community</Link>
                   </Button>
                 </div>
               </div>
@@ -241,42 +252,46 @@ const HomePage = () => {
                   const config = CATEGORY_CONFIG[category.slug as keyof typeof CATEGORY_CONFIG];
                   const IconComponent = config?.icon || MessageSquare;
                   
+                  // COMPOSER ROUTING - Navigate to community with category preselected
+                  const handleClick = () => {
+                    setLocation(`/community?compose=true&category=${category.slug}`);
+                  };
+                  
                   const handleKeyPress = (e: React.KeyboardEvent) => {
                     if (e.key === 'Enter' || e.key === ' ') {
                       e.preventDefault();
-                      setIsCreateModalOpen(true);
-                      // TODO: Pre-select category in composer
+                      handleClick();
                     }
                   };
                   
                   return (
                     <div key={category.slug}>
-                      <Link href={`/?category=${category.slug}`} data-testid={`card-${category.slug}`}>
-                        <Card 
-                          className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30"
-                          role="button"
-                          tabIndex={0}
-                          onKeyDown={handleKeyPress}
-                          aria-label={`Browse ${category.label} posts or create a new ${category.label} post`}
-                        >
-                          <CardContent className="p-6">
-                            <IconComponent 
-                              className="w-8 h-8 mb-4 text-transparent bg-clip-text" 
-                              style={{
-                                backgroundImage: `var(--${config?.gradient || 'gradient-cosmic'})`, 
-                                WebkitBackgroundClip: 'text', 
-                                WebkitTextFillColor: 'transparent'
-                              }} 
-                            />
-                            <h3 className="text-xl font-semibold text-foreground mb-3">
-                              {category.label}
-                            </h3>
-                            <p className="text-muted-foreground">
-                              {config?.description || 'Post content in this category.'}
-                            </p>
-                          </CardContent>
-                        </Card>
-                      </Link>
+                      <Card 
+                        className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30"
+                        role="button"
+                        tabIndex={0}
+                        onClick={handleClick}
+                        onKeyDown={handleKeyPress}
+                        aria-label={`Start a new thread in ${category.label}`}
+                        data-testid={`card-${category.slug}`}
+                      >
+                        <CardContent className="p-6">
+                          <IconComponent 
+                            className="w-8 h-8 mb-4 text-transparent bg-clip-text" 
+                            style={{
+                              backgroundImage: `var(--${config?.gradient || 'gradient-cosmic'})`, 
+                              WebkitBackgroundClip: 'text', 
+                              WebkitTextFillColor: 'transparent'
+                            }} 
+                          />
+                          <h3 className="text-xl font-semibold text-foreground mb-3">
+                            {category.label}
+                          </h3>
+                          <p className="text-muted-foreground">
+                            {config?.description || 'Post content in this category.'}
+                          </p>
+                        </CardContent>
+                      </Card>
                     </div>
                   );
                 })}
@@ -882,12 +897,7 @@ const HomePage = () => {
 
       <Footer />
       
-      {/* Create Post Modal */}
-      <CreatePostModal 
-        isOpen={isCreateModalOpen} 
-        onClose={() => setIsCreateModalOpen(false)}
-        initialType="regular"
-      />
+      {/* COMPOSER ROUTING - Removed CreatePostModal, routing to community page instead */}
     </div>
   );
 };

@@ -1,0 +1,69 @@
+Goal: Move all thread creation logic off the homepage. When a user clicks "Start a Thread" (or a category card), route to /community and auto-open the post composer there. The homepage should not render or import any composer code.
+
+Keep component names and styles intact. Comment edits with // COMPOSER ROUTING.
+
+1) Canonical compose trigger
+Create a simple URL trigger that the Community page listens for:
+- Query param: ?compose=true
+- Optional preselect: &category=<slug> using the slugs from POST_CATEGORIES
+
+Examples:
+- /community?compose=true
+- /community?compose=true&category=wip
+
+2) Homepage changes
+- Remove any composer imports and components from the homepage. Do not leave dead code.
+- Primary button "Start a Thread" should call router.push("/community?compose=true")
+- Category cards should be clickable and route to router.push(`/community?compose=true&category=${slug}`)
+- Secondary button "Browse Community" should call router.push("/community")
+
+3) Community page listener
+On the Community page, auto-open the composer when compose=true is present:
+- In a useEffect, read searchParams (App Router) or router.query (Pages Router)
+- If compose === "true", call openComposer()
+- If category is present and valid, preselect that category in the composer before opening
+
+Pseudo (App Router):
+"use client";
+import { useSearchParams, useRouter } from "next/navigation";
+useEffect(() => {
+  const sp = useSearchParams();
+  const shouldCompose = sp.get("compose") === "true";
+  const cat = sp.get("category");
+  if (shouldCompose) {
+    if (cat && isValidCategory(cat)) setComposerCategory(cat);
+    openComposer();
+  }
+}, []);
+
+Helper:
+import { POST_CATEGORIES } from "@/src/constants/postCategories";
+function isValidCategory(slug: string) {
+  return POST_CATEGORIES.some(c => c.slug === slug);
+}
+
+4) Close behavior and URL hygiene
+- When the composer modal closes, strip the compose and category params from the URL without a full reload.
+  - Use router.replace("/community", { scroll: false })
+- Do not break back/forward history. Use replace only on close, not on open.
+
+5) Accessibility
+- Buttons must have aria-labels:
+  - "Start a Thread" -> aria-label="Start a new thread"
+  - "Browse Community" -> aria-label="Browse the community feed"
+- Category cards rendered as buttons or links with keyboard activation and aria-label like:
+  aria-label="Start a new thread in Work in Progress"
+
+6) Type safety and state
+- If using TypeScript, extend the composer open function to accept an optional category: openComposer(opts?: { category?: PostCategorySlug })
+- Composer should accept a default category and reflect it in the UI
+
+7) Acceptance checks
+- Clicking "Start a Thread" on the homepage navigates to /community and opens the composer.
+- Clicking a category card on the homepage navigates to /community, opens the composer, and shows that category preselected.
+- The homepage does not import or render any composer code.
+- Closing the composer on /community removes compose and category from the URL without reloading the page.
+- Deep link test: Visiting /community?compose=true opens the composer even when arriving directly.
+- No console errors. Types pass. Unused imports removed. Prettier run.
+
+Optional: If both App and Pages Routers exist, prefer the current router in use and implement the appropriate hook imports.

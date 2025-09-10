@@ -18,10 +18,23 @@ import { pulseApi, subscribe, type Poll } from '@/data/pulseApi';
 import { listFeed } from '@/data/mockApi';
 import { PollCard } from '@/components/polls/PollCard';
 import type { FeedItem } from '@/types/content';
+// COMPOSER ROUTING - Add wouter hook for query params
+import { useLocation, useSearch } from 'wouter';
+// POST CATEGORIES MVP - Import canonical categories for validation
+import { POST_CATEGORIES } from '@/constants/postCategories';
 
 const FEATURED_V2 = true;
 
+// COMPOSER ROUTING - Helper function to validate category slugs
+function isValidCategory(slug: string): boolean {
+  return POST_CATEGORIES.some(c => c.slug === slug);
+}
+
 const CommunityPage: React.FC = () => {
+  // COMPOSER ROUTING - Add hooks for navigation and query params
+  const [location, setLocation] = useLocation();
+  const searchString = useSearch();
+  
   const [currentTab, setCurrentTab] = useState<'all' | 'saved'>('all');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
   const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
@@ -29,6 +42,7 @@ const CommunityPage: React.FC = () => {
   const [createModalType, setCreateModalType] = useState<'regular' | 'pulse' | 'insight'>('regular');
   const [pulsePollsRefresh, setPulsePollsRefresh] = useState(0);
   const [feedRefresh, setFeedRefresh] = useState(0);
+  const [composerCategory, setComposerCategory] = useState<string | undefined>(undefined);
 
   // Fetch unified feed data (posts + polls)
   const [feedData, setFeedData] = useState<FeedItem[]>([]);
@@ -69,6 +83,38 @@ const CommunityPage: React.FC = () => {
     });
     return unsubscribe;
   }, []);
+
+  // COMPOSER ROUTING - Listen for query params and auto-open composer
+  useEffect(() => {
+    const searchParams = new URLSearchParams(searchString);
+    const shouldCompose = searchParams.get('compose') === 'true';
+    const categorySlug = searchParams.get('category');
+    
+    if (shouldCompose) {
+      // Set category if provided and valid
+      if (categorySlug && isValidCategory(categorySlug)) {
+        // COMPOSER ROUTING - Map POST_CATEGORIES slugs to types/content CATEGORIES
+        const modalCategoryMap: Record<string, string> = {
+          "wip": "Collaboration & WIP",
+          "sell": "Assets for Sale",
+          "hire-collab": "Jobs & Gigs",
+          "events": "Events & Meetups",
+          "tutorials": "Tips & Tutorials",
+          "general": "General"
+        };
+        
+        const modalCategory = modalCategoryMap[categorySlug] || "General";
+        setComposerCategory(modalCategory);
+      } else {
+        setComposerCategory(undefined);
+      }
+      
+      // Open the composer
+      setIsCreatePostModalOpen(true);
+      
+      // Note: URL cleanup is now handled in modal close handler to preserve query params for testing
+    }
+  }, [searchString, setLocation]);
 
   // Filter feed items
   const allFeedItems = currentTab === 'saved' ? savedPosts.map(p => ({ ...p, type: 'post' as const })) : feedData;
@@ -548,8 +594,17 @@ const CommunityPage: React.FC = () => {
       {/* Create Post Modal */}
       <NewCreatePostModal
         open={isCreatePostModalOpen}
-        onOpenChange={setIsCreatePostModalOpen}
+        onOpenChange={(open) => {
+          setIsCreatePostModalOpen(open);
+          // COMPOSER ROUTING - Clear category and clean up URL when modal closes
+          if (!open) {
+            setComposerCategory(undefined);
+            // Clean up URL params after modal closes
+            setLocation('/community', { replace: true });
+          }
+        }}
         onPostCreated={() => setFeedRefresh(prev => prev + 1)}
+        initialCategory={composerCategory}
       />
       
       {/* Create Poll Modal */}

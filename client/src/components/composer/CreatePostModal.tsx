@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -29,9 +29,11 @@ interface CreatePostModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onPostCreated?: () => void;
+  // COMPOSER ROUTING - Add initial category support
+  initialCategory?: string;
 }
 
-export function CreatePostModal({ open, onOpenChange, onPostCreated }: CreatePostModalProps) {
+export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCategory }: CreatePostModalProps) {
   const [selectedPlatforms, setSelectedPlatforms] = useState<PlatformKey[]>([]);
   const [links, setLinks] = useState<string[]>(['']);
   const [images, setImages] = useState<string[]>([]);
@@ -44,12 +46,25 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated }: CreatePos
     defaultValues: {
       title: '',
       body: '',
-      category: 'General',
+      // COMPOSER ROUTING - Use initialCategory if provided, otherwise default to General
+      category: initialCategory || 'General',
       price: '',
       platforms: [],
       links: [],
     },
   });
+
+  // COMPOSER ROUTING - Sync initialCategory prop changes into form when modal opens
+  useEffect(() => {
+    console.log('Modal useEffect triggered:', { open, initialCategory, currentFormCategory: form.getValues('category') });
+    if (!open) return;
+    const nextCategory = initialCategory || 'General';
+    console.log('Setting category to:', nextCategory);
+    if (form.getValues('category') !== nextCategory) {
+      form.setValue('category', nextCategory, { shouldDirty: false, shouldValidate: true });
+      console.log('Category updated to:', form.getValues('category'));
+    }
+  }, [initialCategory, open, form]);
 
   const handlePlatformToggle = (platform: PlatformKey) => {
     setSelectedPlatforms(prev => {
