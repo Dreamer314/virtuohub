@@ -1,0 +1,78 @@
+Goal: Update the “What You Can Post” section AND propagate the same categories across the thread composer, thread schema, badges, and filters. Keep component names and styling intact. Do not remove existing data. Comment edits with // POST CATEGORIES MVP.
+
+1) CANONICAL CATEGORY LIST (use these exact labels and slugs)
+Create a single source of truth file if one doesn’t exist yet (e.g., src/constants/postCategories.ts) and export this array:
+
+export const POST_CATEGORIES = [
+  { label: "Work in Progress (WIP)", slug: "wip" },
+  { label: "Get Feedback", slug: "feedback" },
+  { label: "Tutorials & Guides", slug: "tutorials" },
+  { label: "Hire & Collaborate", slug: "hire-collab" },
+  { label: "Sell Your Creations", slug: "sell" },
+  { label: "Collabs & Teams", slug: "teams" },
+  { label: "Events & Workshops", slug: "events" },
+  { label: "Platform Q&A", slug: "platform-qa" },
+  { label: "General", slug: "general" }
+];
+
+2) HOMEPAGE “WHAT YOU CAN POST” GRID
+- Import POST_CATEGORIES and render cards from it in this order (as above).
+- Replace card titles and blurbs with:
+  - WIP: "Share updates, get eyes on your build, and track iterations."
+  - Get Feedback: "Ask questions, debug blockers, and get quick reviews."
+  - Tutorials & Guides: "Post step-by-step walkthroughs and creator tips."
+  - Hire & Collaborate: "Hire talent or team up on projects."
+  - Sell Your Creations: "Sell avatars, props, shaders, tools, and more."
+  - Collabs & Teams: "Find collaborators or recruit for a project."
+  - Events & Workshops: "Promote a session, stream, or in-person meetup."
+  - Platform Q&A: "Discuss Roblox, VRChat, Horizon, Second Life, and more."
+  - General: "For anything that doesn’t fit the other categories."
+- Button hierarchy: Primary = “Start a Thread”, Secondary = “Browse Community”.
+- Primary button should route to the thread composer. Secondary routes to the community feed.
+
+3) THREAD COMPOSER OPTIONS
+- Update the category selector to pull from POST_CATEGORIES (use label for display, slug for value).
+- Ensure the selected category slug is saved on thread creation (e.g., thread.category = slug).
+- Placeholder should read “Choose a category”.
+
+4) BADGES ON THREAD CARDS
+- Wherever a thread is listed (feed, profile, search), show a small badge using the label resolved from the saved slug.
+- Style the badge with existing tag/pill component. If a color map exists, keep it. If not, default to the primary tag style.
+
+5) FILTERS / QUERIES
+- Update any feed filters that previously referenced hard-coded category names to use category slugs from POST_CATEGORIES.
+- If there is a route param for filtering (e.g., /community?category=...), accept the slug values listed above.
+
+6) DATA MODEL / TYPE SAFETY
+- If using TypeScript, define:
+  export type PostCategorySlug =
+    | "wip" | "feedback" | "tutorials" | "hire-collab" | "sell" | "teams" | "events" | "platform-qa" | "general";
+- Update any zod/schema/Prisma enums accordingly. Keep backwards compatibility via a migration map (below).
+
+7) BACKWARDS COMPATIBILITY (migration map)
+If old threads used previous names, map them silently on read:
+const LEGACY_CATEGORY_MAP: Record<string, PostCategorySlug> = {
+  "WIP (Work in Progress)": "wip",
+  "Help & Feedback": "feedback",
+  "Tutorials & Guides": "tutorials",
+  "Jobs & Gigs": "hire-collab",
+  "Assets for Sale": "sell",
+  "Collabs & Teams": "teams",
+  "Events & Workshops": "events",
+  "Platform Q&A": "platform-qa",
+  "General": "general"
+};
+- On read: if thread.category is not one of the new slugs, convert using LEGACY_CATEGORY_MAP.
+- On write: always save the new slugs only.
+
+8) ACCESSIBILITY
+- Category cards should have role="button" and a keyboard handler (Enter/Space) to focus the composer with that category preselected.
+- Composer category select has aria-label="Choose a post category".
+
+9) ACCEPTANCE CHECKS
+- Homepage grid shows the nine updated categories with the new order and blurbs.
+- Composer category dropdown shows the same nine labels, stores slugs.
+- Creating a thread with a category shows the correct badge label in the feed.
+- Feed filters accept and display slug-based categories.
+- Legacy threads still render a correct badge via the migration map.
+- No console errors; types pass; Prettier runs; unused imports removed.
