@@ -9,6 +9,8 @@ import { type PostWithAuthor } from "@shared/schema";
 import { ThumbsUp, MessageCircle, Share, Heart, Zap, Lightbulb, Clock } from "lucide-react";
 import { Link } from "wouter";
 import { cn, getPlatformColor, getCategoryColor, formatTimeAgo } from "@/lib/utils";
+// POST CATEGORIES MVP - Import category utilities
+import { getCategoryLabel, normalizeCategoryToSlug } from "@/constants/postCategories";
 import { ImageViewerModal } from "./image-viewer-modal";
 
 interface PostCardProps {
@@ -173,14 +175,14 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
               </div>
             )}
             
-            {/* Category and Platforms */}
+            {/* POST CATEGORIES MVP - Enhanced category badge with label resolution */}
             <div className="flex flex-wrap gap-2 mb-3">
               <Badge 
                 variant="secondary" 
                 className={cn("text-xs", getCategoryColor(post.category))}
                 data-testid={`category-${post.id}`}
               >
-                {post.category}
+                {getCategoryLabel(post.category)}
               </Badge>
               {post.platforms.map((platform: string) => (
                 <Badge 

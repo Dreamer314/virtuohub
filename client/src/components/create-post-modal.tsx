@@ -4,7 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { insertPostSchema, CATEGORIES, PLATFORMS, type Category, type Platform } from "@shared/schema";
+import { insertPostSchema, PLATFORMS, type Platform } from "@shared/schema";
+// POST CATEGORIES MVP - Import canonical categories
+import { POST_CATEGORIES } from "@/constants/postCategories";
 import { ObjectUploader } from "@/components/ObjectUploader";
 import {
   Dialog,
@@ -66,7 +68,7 @@ export function CreatePostModal({ isOpen, onClose, initialType = 'regular' }: Cr
       images: [],
       files: [],
       links: [],
-      category: "General",
+      category: "general", // POST CATEGORIES MVP - Use slug instead of label
       platforms: [],
       price: "",
       type: initialType,
@@ -433,7 +435,7 @@ export function CreatePostModal({ isOpen, onClose, initialType = 'regular' }: Cr
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Category */}
+              {/* POST CATEGORIES MVP - Updated category selector */}
               <FormField
                 control={form.control}
                 name="category"
@@ -442,14 +444,14 @@ export function CreatePostModal({ isOpen, onClose, initialType = 'regular' }: Cr
                     <FormLabel>Category</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger data-testid="category-select">
-                          <SelectValue placeholder="Select category" />
+                        <SelectTrigger data-testid="category-select" aria-label="Choose a post category">
+                          <SelectValue placeholder="Choose a category" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {CATEGORIES.filter(cat => cat !== 'All').map((category) => (
-                          <SelectItem key={category} value={category} data-testid={`category-option-${category}`}>
-                            {category}
+                        {POST_CATEGORIES.map((category) => (
+                          <SelectItem key={category.slug} value={category.slug} data-testid={`category-option-${category.slug}`}>
+                            {category.label}
                           </SelectItem>
                         ))}
                       </SelectContent>

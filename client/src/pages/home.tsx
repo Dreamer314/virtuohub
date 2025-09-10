@@ -10,6 +10,8 @@ import vhubHeaderImage from '@assets/VHub.Header.no.font.new.png';
 import day1Image from '@assets/download (2).png';
 import week4Image from '@assets/download (1).png';
 import { Link } from "wouter";
+// POST CATEGORIES MVP - Import canonical categories
+import { POST_CATEGORIES } from "@/constants/postCategories";
 import { TitleWithRule } from "@/components/ui/title-with-rule";
 import { CheckItem } from "@/components/ui/check-item";
 import { 
@@ -36,6 +38,55 @@ import {
   HelpCircle,
   EyeOff
 } from "lucide-react";
+
+// POST CATEGORIES MVP - Category icons and content mapping
+const CATEGORY_CONFIG = {
+  "wip": {
+    icon: MessageSquare,
+    gradient: "gradient-cosmic",
+    description: "Share updates, get eyes on your build, and track iterations."
+  },
+  "feedback": {
+    icon: Users,
+    gradient: "gradient-nebula", 
+    description: "Ask questions, debug blockers, and get quick reviews."
+  },
+  "tutorials": {
+    icon: BookOpen,
+    gradient: "gradient-aurora",
+    description: "Post step-by-step walkthroughs and creator tips."
+  },
+  "hire-collab": {
+    icon: Users,
+    gradient: "gradient-dusk",
+    description: "Hire talent or team up on projects."
+  },
+  "sell": {
+    icon: ShoppingBag,
+    gradient: "gradient-mist",
+    description: "Sell avatars, props, shaders, tools, and more."
+  },
+  "teams": {
+    icon: Users,
+    gradient: "gradient-cosmic",
+    description: "Find collaborators or recruit for a project."
+  },
+  "events": {
+    icon: Calendar,
+    gradient: "gradient-dawn",
+    description: "Promote a session, stream, or in-person meetup."
+  },
+  "platform-qa": {
+    icon: MessageSquare,
+    gradient: "gradient-nebula",
+    description: "Discuss Roblox, VRChat, Horizon, Second Life, and more."
+  },
+  "general": {
+    icon: MessageSquare,
+    gradient: "gradient-aurora",
+    description: "For anything that doesn't fit the other categories."
+  }
+} as const;
 
 const HomePage = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -174,142 +225,61 @@ const HomePage = () => {
                 </p>
               </div>
 
-              {/* Centralized Action Buttons */}
+              {/* POST CATEGORIES MVP - Updated button hierarchy */}
               <div className="relative z-10 text-center mb-8">
                 <div className="flex justify-center gap-4">
+                  <Button size="lg" className="bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-thread" onClick={() => setIsCreateModalOpen(true)}>Start a Thread</Button>
                   <Button asChild variant="outline" size="lg" className="bg-gradient-mist hover:bg-gradient-mist-hover border-slate-200 text-slate-700 shadow-md hover:shadow-lg transition-all" data-testid="button-browse-all">
-                    <Link href="/#community-feed">Browse Community</Link>
+                    <Link href="/community">Browse Community</Link>
                   </Button>
-                  <Button size="lg" className="bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-lg hover:shadow-xl transition-all" data-testid="button-start-thread" onClick={() => setIsCreateModalOpen(true)}>Start Thread</Button>
                 </div>
               </div>
 
+              {/* POST CATEGORIES MVP - Dynamic category cards from canonical source */}
               <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-                <Link href="/?tag=wip" data-testid="card-wip">
-                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
-                    <CardContent className="p-6">
-                      <MessageSquare className="w-8 h-8 mb-4 text-transparent bg-gradient-cosmic bg-clip-text" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
-                      <h3 className="text-xl font-semibold text-foreground mb-3">
-                        WIP (Work in Progress)
-                      </h3>
-                      <p className="text-muted-foreground">
-                        Share progress, get eyes on your build, and track iterations.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Link>
-
-                <Link href="/?tag=help-feedback" data-testid="card-help-feedback">
-                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
-                    <CardContent className="p-6">
-                      <Users className="w-8 h-8 mb-4 text-transparent bg-gradient-nebula bg-clip-text" style={{backgroundImage: 'var(--gradient-nebula)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
-                      <h3 className="text-xl font-semibold text-foreground mb-3">
-                        Help & Feedback
-                      </h3>
-                      <p className="text-muted-foreground">
-                        Ask questions, debug blockers, and get quick reviews.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Link>
-
-                <Link href="/?tag=tutorials-guides" data-testid="card-tutorials-guides">
-                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
-                    <CardContent className="p-6">
-                      <BookOpen className="w-8 h-8 mb-4 text-transparent bg-gradient-aurora bg-clip-text" style={{backgroundImage: 'var(--gradient-aurora)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
-                      <h3 className="text-xl font-semibold text-foreground mb-3">
-                        Tutorials & Guides
-                      </h3>
-                      <p className="text-muted-foreground">
-                        Post step-by-step walkthroughs and quick tips.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Link>
-
-                <Link href="/?tag=jobs-gigs" data-testid="card-jobs-gigs">
-                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
-                    <CardContent className="p-6">
-                      <Users className="w-8 h-8 mb-4 text-transparent bg-gradient-dusk bg-clip-text" style={{backgroundImage: 'var(--gradient-dusk)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
-                      <h3 className="text-xl font-semibold text-foreground mb-3">
-                        Jobs & Gigs
-                      </h3>
-                      <p className="text-muted-foreground">
-                        Hire talent or offer your services.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Link>
-
-                <Link href="/?tag=assets-sale" data-testid="card-assets-sale">
-                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
-                    <CardContent className="p-6">
-                      <ShoppingBag className="w-8 h-8 mb-4 text-transparent bg-gradient-mist bg-clip-text" style={{backgroundImage: 'var(--gradient-mist)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
-                      <h3 className="text-xl font-semibold text-foreground mb-3">
-                        Assets for Sale
-                      </h3>
-                      <p className="text-muted-foreground">
-                        List avatars, props, shaders, tools, and more.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Link>
-
-                <Link href="/?tag=collabs-teams" data-testid="card-collabs-teams">
-                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
-                    <CardContent className="p-6">
-                      <Users className="w-8 h-8 mb-4 text-transparent bg-gradient-cosmic bg-clip-text" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
-                      <h3 className="text-xl font-semibold text-foreground mb-3">
-                        Collabs & Teams
-                      </h3>
-                      <p className="text-muted-foreground">
-                        Find collaborators or recruit for a project.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Link>
-
-                <Link href="/?tag=events-workshops" data-testid="card-events-workshops">
-                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
-                    <CardContent className="p-6">
-                      <Calendar className="w-8 h-8 mb-4 text-transparent bg-gradient-dawn bg-clip-text" style={{backgroundImage: 'var(--gradient-dawn)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
-                      <h3 className="text-xl font-semibold text-foreground mb-3">
-                        Events & Workshops
-                      </h3>
-                      <p className="text-muted-foreground">
-                        Promote a session, stream, or in-person meetup.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Link>
-
-                <Link href="/?tag=platform-qa" data-testid="card-platform-qa">
-                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
-                    <CardContent className="p-6">
-                      <MessageSquare className="w-8 h-8 mb-4 text-transparent bg-gradient-nebula bg-clip-text" style={{backgroundImage: 'var(--gradient-nebula)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
-                      <h3 className="text-xl font-semibold text-foreground mb-3">
-                        Platform Q&A
-                      </h3>
-                      <p className="text-muted-foreground">
-                        Roblox, VRChat, Horizon, Second Life, and more.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Link>
-
-                <Link href="/?tag=general" data-testid="card-general">
-                  <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
-                    <CardContent className="p-6">
-                      <MessageSquare className="w-8 h-8 mb-4 text-transparent bg-gradient-aurora bg-clip-text" style={{backgroundImage: 'var(--gradient-aurora)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
-                      <h3 className="text-xl font-semibold text-foreground mb-3">
-                        General
-                      </h3>
-                      <p className="text-muted-foreground">
-                        Anything that doesn't fit the other buckets.
-                      </p>
-                    </CardContent>
-                  </Card>
-                </Link>
+                {POST_CATEGORIES.map((category) => {
+                  const config = CATEGORY_CONFIG[category.slug as keyof typeof CATEGORY_CONFIG];
+                  const IconComponent = config?.icon || MessageSquare;
+                  
+                  const handleKeyPress = (e: React.KeyboardEvent) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setIsCreateModalOpen(true);
+                      // TODO: Pre-select category in composer
+                    }
+                  };
+                  
+                  return (
+                    <div key={category.slug}>
+                      <Link href={`/?category=${category.slug}`} data-testid={`card-${category.slug}`}>
+                        <Card 
+                          className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30"
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={handleKeyPress}
+                          aria-label={`Browse ${category.label} posts or create a new ${category.label} post`}
+                        >
+                          <CardContent className="p-6">
+                            <IconComponent 
+                              className="w-8 h-8 mb-4 text-transparent bg-clip-text" 
+                              style={{
+                                backgroundImage: `var(--${config?.gradient || 'gradient-cosmic'})`, 
+                                WebkitBackgroundClip: 'text', 
+                                WebkitTextFillColor: 'transparent'
+                              }} 
+                            />
+                            <h3 className="text-xl font-semibold text-foreground mb-3">
+                              {category.label}
+                            </h3>
+                            <p className="text-muted-foreground">
+                              {config?.description || 'Post content in this category.'}
+                            </p>
+                          </CardContent>
+                        </Card>
+                      </Link>
+                    </div>
+                  );
+                })}
               </div>
             </section>
 
