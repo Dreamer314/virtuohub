@@ -425,7 +425,7 @@ const HomePage = () => {
                   </Card>
                 </Link>
 
-                <Link href="/lists" data-testid="card-lists">
+                <Link href="/community/lists" data-testid="card-lists">
                   <Card className="enhanced-card hover-lift cursor-pointer group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:scale-105 hover:border-primary/30">
                     <CardContent className="p-6">
                       <ListOrdered className="w-8 h-8 mb-4 text-transparent bg-gradient-dawn bg-clip-text group-hover:scale-110 transition-all duration-300" style={{backgroundImage: 'var(--gradient-dawn)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
