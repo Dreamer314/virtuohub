@@ -1,0 +1,55 @@
+Update the “Build in Public” section for clarity and MVP alignment. Keep component names and styles. Comment edits with // BUILD IN PUBLIC.
+
+1) COPY
+- H2: "Build in Public. Get Real Feedback."
+- Subhead: "VirtuoHub is where immersive creators share WIP, get reviews, and turn threads into collaborations across VR and UGC platforms."
+- Left lead paragraph: "Beginners get unstuck and veterans find collaborators. Share progress, ask for help, and learn how the industry actually works."
+- Left cards:
+  - Card 1 title: "Start here"
+    Card 1 body: "Your first WIP post and worldbuilding log."
+  - Card 2 title: "Keep growing"
+    Card 2 body: "Weekly peer feedback and practical tips."
+- Right column H3: "Your creativity should pay you back"
+- Right list items (render as interactive buttons/links):
+  1) "Showcase and sell your work"
+  2) "Build with collaborators"
+  3) "Teach and share what you know"
+  Each button links to /community with a category filter where available:
+    - sell -> /community?category=sell
+    - hire-collab -> /community?category=hire-collab
+    - tutorials -> /community?category=tutorials
+- Proof bullets H4: "What you’ll get:"
+  Bullets:
+    - "Organized threads with categories like WIP, Feedback, Tutorials, Events, and General"
+    - "Editorial you can trust: Spotlights, Tips, Industry News, and Pulse polls"
+    - "Lightweight profiles, simple DMs, and polls that capture the community’s voice"
+- Founder POV H3: "We built what we needed"
+  Three bullet quotes as shown in the mock.
+
+2) PLATFORM CHIPS
+- Replace the long plain text list with a capped set of clickable chips (8 max) using existing tag/pill component:
+  ["Roblox","GTA FiveM","Second Life","VRChat","Fortnite","Minecraft","Unity","Unreal Engine","+ more"]
+- On click, route to /community?platform=<slug>. Use a small toast "Filtered by <name>".
+- On mobile, make chips horizontally scrollable.
+
+3) INTERACTION AND ROUTING
+- The three right-side buttons should navigate and open the composer if "?compose=true" is present in the current URL. Support deep links:
+  /community?category=sell
+  /community?category=hire-collab
+  /community?category=tutorials
+- Preserve the existing compose handling from /community (compose param).
+
+4) ACCESSIBILITY
+- All chips and right-column items are buttons or links with aria-labels like:
+  aria-label="Filter community by Roblox"
+  aria-label="View posts in Sell Your Creations"
+- Headings maintain a logical order.
+
+5) RESPONSIVE
+- At <md, stack columns. Replace two face cards with a simple one-item carousel or stack with equal spacing. Ensure no overflow.
+
+6) ACCEPTANCE
+- Copy matches exactly.
+- Chips render, are clickable, and filter.
+- Right-side items link correctly and reflect category slugs.
+- No layout shift at 360, 390, 414, 768, 1024. No console errors. Prettier run.

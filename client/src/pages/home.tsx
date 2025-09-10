@@ -13,6 +13,8 @@ import week4Image from '@assets/download (1).png';
 import { Link } from "wouter";
 // POST CATEGORIES MVP - Import canonical categories
 import { POST_CATEGORIES } from "@/constants/postCategories";
+// BUILD IN PUBLIC - Import toast for platform filtering feedback
+import { useToast } from "@/hooks/use-toast";
 import { TitleWithRule } from "@/components/ui/title-with-rule";
 import { CheckItem } from "@/components/ui/check-item";
 import { 
@@ -93,6 +95,8 @@ const CATEGORY_CONFIG = {
 const HomePage = () => {
   // COMPOSER ROUTING - Remove modal state, add navigation hook
   const [, setLocation] = useLocation();
+  // BUILD IN PUBLIC - Toast for platform filtering feedback
+  const { toast } = useToast();
 
 
   return (
@@ -459,42 +463,57 @@ const HomePage = () => {
                   <div className="relative inline-block">
                     <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-foreground mb-8 relative">
                       <span className="bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
-                        Build in Public. Level Up Faster.
+                        Build in Public. Get Real Feedback.
                       </span>
                     </h1>
                     <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 blur-xl -z-10"></div>
                   </div>
                   <div className="max-w-4xl mx-auto">
                     <p className="text-xl md:text-2xl text-muted-foreground font-medium leading-relaxed">
-                      VirtuoHub is where immersive creators post WIP, get feedback, and turn threads into collaborations across VR and UGC platforms.
+                      VirtuoHub is where immersive creators share WIP, get reviews, and turn threads into collaborations across VR and UGC platforms.
                     </p>
                   </div>
                 </div>
 
-                {/* Enhanced Platform Brand Row */}
+                {/* BUILD IN PUBLIC - Interactive Platform Chips */}
                 <div className="mb-20">
                   <div className="relative">
-                    <div className="flex flex-wrap justify-center items-center gap-6 md:gap-8 lg:gap-10 xl:gap-12 opacity-70">
+                    {/* BUILD IN PUBLIC - Clickable platform chips with routing */}
+                    <div className="flex flex-wrap justify-center items-center gap-3 md:gap-4 overflow-x-auto md:overflow-x-visible scrollbar-hide px-4 md:px-0">
                       {[
-                        'Roblox', 'IMVU', 'Second Life', 'Fortnite', 'Minecraft', 'GTA FiveM', 
-                        'Meta Horizon Worlds', 'VRChat', 'Unity', 'Unreal Engine', 'Elder Scrolls', 
-                        'Fallout', 'Counter-Strike', 'Team Fortress 2', 'Dreams', 'Core', 'The Sims', 'CCinZOI'
+                        { name: 'Roblox', slug: 'roblox' },
+                        { name: 'GTA FiveM', slug: 'gtafivem' },
+                        { name: 'Second Life', slug: 'secondlife' },
+                        { name: 'VRChat', slug: 'vrchat' },
+                        { name: 'Fortnite', slug: 'fortnite' },
+                        { name: 'Minecraft', slug: 'minecraft' },
+                        { name: 'Unity', slug: 'unity' },
+                        { name: 'Unreal Engine', slug: 'unreal' },
+                        { name: '+ more', slug: null }
                       ].map((platform, index) => (
-                        <span 
-                          key={platform} 
-                          className="text-sm md:text-base font-medium text-muted-foreground tracking-wider px-3 py-2 rounded-lg 
-                                     transition-all duration-300 hover:text-primary hover:scale-110 hover:opacity-100 hover:bg-primary/10 hover:shadow-lg cursor-default"
-                          style={{ 
-                            letterSpacing: '0.1em',
-                            animationDelay: `${index * 0.1}s`,
+                        <button
+                          key={platform.slug || platform.name}
+                          onClick={() => {
+                            if (platform.slug) {
+                              setLocation(`/community?platform=${platform.slug}`);
+                              toast({
+                                title: `Filtered by ${platform.name}`,
+                                description: `Showing posts related to ${platform.name}`,
+                              });
+                            } else {
+                              setLocation('/community');
+                            }
                           }}
+                          className="flex-shrink-0 px-4 py-2 text-sm font-medium text-muted-foreground bg-muted/20 border border-muted-foreground/20 rounded-full hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 hover:scale-105 active:scale-95"
+                          aria-label={platform.slug ? `Filter community by ${platform.name}` : 'View all platforms'}
+                          data-testid={`platform-chip-${platform.slug || 'more'}`}
                         >
-                          {platform}
-                        </span>
+                          {platform.name}
+                        </button>
                       ))}
                     </div>
                     {/* Subtle divider lines */}
-                    <div className="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
+                    <div className="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent pointer-events-none"></div>
                   </div>
                 </div>
 
@@ -506,7 +525,7 @@ const HomePage = () => {
                       You don't have to be a pro to begin
                     </h2>
                     <p className="text-base text-muted-foreground mb-8 leading-relaxed">
-                      Beginners get unstuck and veterans find collaborators. Share work in progress, ask for help, and learn how the industry actually works.
+                      Beginners get unstuck and veterans find collaborators. Share progress, ask for help, and learn how the industry actually works.
                     </p>
 
                     {/* Large Progress Images with Arrow */}
@@ -525,7 +544,7 @@ const HomePage = () => {
                         </Card>
                         <div className="mt-3 text-center">
                           <h4 className="font-bold text-base text-foreground mb-1">Start here</h4>
-                          <p className="text-sm text-muted-foreground">Your first WIP into 3D and worldbuilding.</p>
+                          <p className="text-sm text-muted-foreground">Your first WIP post and worldbuilding log.</p>
                         </div>
                       </div>
                       
@@ -548,19 +567,19 @@ const HomePage = () => {
                         </Card>
                         <div className="mt-3 text-center">
                           <h4 className="font-bold text-base text-foreground mb-1">Keep growing</h4>
-                          <p className="text-sm text-muted-foreground">Better every week with peer feedback and practical tips.</p>
+                          <p className="text-sm text-muted-foreground">Weekly peer feedback and practical tips.</p>
                         </div>
                       </div>
                     </div>
 
                     {/* What you'll get list */}
                     <div className="relative">
-                      <h3 className="text-lg font-bold text-foreground mb-4">
+                      <h4 className="text-lg font-bold text-foreground mb-4">
                         What you'll get:
-                      </h3>
+                      </h4>
                       <div className="space-y-3">
-                        <CheckItem>Organized threads with categories like WIP, Help & Feedback, Jobs & Gigs, Assets for Sale, Events, and General</CheckItem>
-                        <CheckItem>Editorial you can trust: Interviews, Spotlights, Tips & Guides, Industry News, and Pulse Reports</CheckItem>
+                        <CheckItem>Organized threads with categories like WIP, Feedback, Tutorials, Events, and General</CheckItem>
+                        <CheckItem>Editorial you can trust: Spotlights, Tips, Industry News, and Pulse polls</CheckItem>
                         <CheckItem>Lightweight profiles, simple DMs, and polls that capture the community's voice</CheckItem>
                       </div>
                     </div>
@@ -572,39 +591,55 @@ const HomePage = () => {
                       Your creativity should pay you back
                     </h2>
                     
+                    {/* BUILD IN PUBLIC - Interactive right-side buttons with category routing */}
                     <div className="space-y-4 mb-12">
-                      <div className="flex items-center gap-4 p-4 rounded-lg border border-primary/20 bg-primary/5 backdrop-blur-sm" data-testid="card-sell-assets">
+                      <button
+                        onClick={() => setLocation('/community?category=sell')}
+                        className="w-full flex items-center gap-4 p-4 rounded-lg border border-primary/20 bg-primary/5 backdrop-blur-sm hover:border-primary/40 hover:bg-primary/10 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                        aria-label="View posts in Sell Your Creations"
+                        data-testid="button-sell-work"
+                      >
                         <div className="flex-shrink-0 w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
                           <DollarSign className="w-5 h-5 text-primary" />
                         </div>
                         <div>
-                          <h3 className="text-base font-semibold text-foreground mb-1">
+                          <h3 className="text-base font-semibold text-foreground mb-1 text-left">
                             Showcase and sell your work
                           </h3>
                         </div>
-                      </div>
+                      </button>
 
-                      <div className="flex items-center gap-4 p-4 rounded-lg border border-purple-500/20 bg-purple-500/5 backdrop-blur-sm" data-testid="card-build-experiences">
+                      <button
+                        onClick={() => setLocation('/community?category=hire-collab')}
+                        className="w-full flex items-center gap-4 p-4 rounded-lg border border-purple-500/20 bg-purple-500/5 backdrop-blur-sm hover:border-purple-500/40 hover:bg-purple-500/10 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                        aria-label="View posts in Hire & Collaborate"
+                        data-testid="button-build-collaborators"
+                      >
                         <div className="flex-shrink-0 w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center">
                           <Sparkles className="w-5 h-5 text-purple-500" />
                         </div>
                         <div>
-                          <h3 className="text-base font-semibold text-foreground mb-1">
+                          <h3 className="text-base font-semibold text-foreground mb-1 text-left">
                             Build with collaborators
                           </h3>
                         </div>
-                      </div>
+                      </button>
 
-                      <div className="flex items-center gap-4 p-4 rounded-lg border border-blue-500/20 bg-blue-500/5 backdrop-blur-sm" data-testid="card-teach-workshops">
+                      <button
+                        onClick={() => setLocation('/community?category=tutorials')}
+                        className="w-full flex items-center gap-4 p-4 rounded-lg border border-blue-500/20 bg-blue-500/5 backdrop-blur-sm hover:border-blue-500/40 hover:bg-blue-500/10 transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                        aria-label="View posts in Tutorials & Guides"
+                        data-testid="button-teach-share"
+                      >
                         <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
                           <GraduationCap className="w-5 h-5 text-blue-500" />
                         </div>
                         <div>
-                          <h3 className="text-base font-semibold text-foreground mb-1">
+                          <h3 className="text-base font-semibold text-foreground mb-1 text-left">
                             Teach and share what you know
                           </h3>
                         </div>
-                      </div>
+                      </button>
                     </div>
 
                     {/* We built what we needed - Compact list style */}
