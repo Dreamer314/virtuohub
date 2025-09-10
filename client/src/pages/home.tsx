@@ -6,7 +6,7 @@ import { Footer } from "@/components/layout/footer";
 import { FeaturedCarousel } from "@/components/featured/FeaturedCarousel";
 import { featuredItems } from "@/components/featured/types";
 import { CreatePostModal } from "@/components/create-post-modal";
-import vhubHeaderImage from '@assets/VHub.Header.no.font.Light.Page.png';
+import vhubHeaderImage from '@assets/VHub.Header.no.font.new.png';
 import day1Image from '@assets/download (2).png';
 import week4Image from '@assets/download (1).png';
 import { Link } from "wouter";
