@@ -58,7 +58,7 @@ const HomePage = () => {
         <main className="relative z-10">
           <div className="py-8 px-4 lg:px-8">
           {/* Hero Section */}
-          <div className="mb-20">
+          <div className="mb-16">
             <div className="glass-card rounded-2xl overflow-hidden hover-lift relative" data-testid="hero-section">
               <div className="relative min-h-[576px] flex items-center justify-center hero-glow-container">
                 <img 
@@ -130,16 +130,19 @@ const HomePage = () => {
                     <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                   </div>
                 </div>
+                {/* ONE HUB MVP - Updated blurb paragraph */}
                 <p className="text-lg text-muted-foreground mb-8 leading-relaxed">
-                  Ditch scattered subchannels, forums, and buried comments. Find exactly what you need. VirtuoHub gives you profiles, organized feeds, and real opportunities in one place where your work is seen and valued.
+                  Step beyond scattered forums and subchannels. VirtuoHub is built for immersive creators, with organized feeds, profiles, and real opportunities in one hub where your work is seen, valued, and celebrated.
                 </p>
+                {/* ONE HUB MVP - Updated button label, routing, and accessibility */}
                 <Button 
                   asChild 
                   size="lg"
                   className="bg-gradient-nebula hover:bg-gradient-nebula-hover text-white shadow-lg hover:shadow-xl transition-all"
                   data-testid="button-find-community"
+                  aria-label="Explore the VirtuoHub community feed"
                 >
-                  <Link href="/">Find Your Community</Link>
+                  <Link href="/community">Explore the Feed</Link>
                 </Button>
               </div>
             </section>
