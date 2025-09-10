@@ -1,0 +1,41 @@
+You are updating the HERO section of my Next.js/Tailwind site to align with our Community-first MVP. Make only the changes listed. Do not rename components or break existing styles. Keep code clean, commented, and accessible.
+
+1) HERO COPY
+- Headline text (H1, Orbitron): 
+  "VirtuoHub: The HQ for creators building the future of immersive games and virtual worlds."
+- Subhead text (paragraph under H1):
+  "Your community for news, insights, and connection across the immersive creator economy. From Roblox and GTA to Sims and Second Life, join the conversation shaping what’s next in virtual worlds."
+- Primary CTA button label: "Join the Community"
+- Secondary CTA button label: "Watch Demo"
+- Microcopy below buttons:
+  "Start free and connect with creators across the immersive economy today."
+- Search placeholder should read: "Search posts, creators, or tags"
+
+2) HERO VISUALS AND HIERARCHY
+- Add a subtle bottom-to-center dark gradient overlay on the hero image so text passes WCAG contrast. Implement via a before pseudo-element or an absolutely positioned div with opacity, not by editing the image.
+- Make primary CTA visually dominant: filled style using brand neon-blue glow, larger shadow, hover scale 1.02. Secondary CTA should be outline style with the same radius and padding.
+- Keep rounded hero container and existing drop shadow.
+
+3) TYPOGRAPHY AND SPACING
+- Ensure H1 uses Orbitron at a larger size on desktop (e.g., text-5xl md:text-6xl) and tight line-height for two-line lockup.
+- Subhead uses readable max-w (e.g., max-w-3xl) and slightly increased leading.
+- Maintain consistent vertical rhythm across breakpoints.
+
+4) ACCESSIBILITY
+- H1 remains the first and only H1 on the page.
+- Buttons have aria-labels: 
+  Primary -> aria-label="Join the VirtuoHub community"
+  Secondary -> aria-label="Watch the VirtuoHub demo"
+- Search input has label for screen readers and role="search".
+
+5) IMPLEMENTATION NOTES
+- Do not change routing. Primary CTA links to the Community page route. Secondary CTA links to the demo route.
+- Add comments near updated lines: // HERO updated per community-first MVP
+- Run Prettier and remove unused imports.
+
+6) ACCEPTANCE CHECKS (add a temporary console report after build)
+- Text matches exactly as provided above.
+- Primary CTA is visually stronger than secondary.
+- Search placeholder updated.
+- Contrast passes with overlay enabled.
+- No layout shift on mobile widths 360, 390, 414, 768, 1024.

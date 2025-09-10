@@ -40,6 +40,7 @@ import {
 const HomePage = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -68,38 +69,47 @@ const HomePage = () => {
                     filter: 'drop-shadow(0 0 20px rgba(6, 182, 212, 0.2)) drop-shadow(0 0 40px rgba(147, 51, 234, 0.15))'
                   }}
                 />
+                {/* HERO updated per community-first MVP - Dark gradient overlay for WCAG contrast */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/20 rounded-2xl"></div>
                 <div className="text-center z-10 relative px-6">
-                  <h1 className="text-3xl md:text-4xl lg:text-5xl font-display font-bold text-white mb-8 drop-shadow-lg max-w-4xl mx-auto leading-tight">
-                    The leading cultural and educational hub for active and aspiring world builders.
+                  {/* HERO updated per community-first MVP - New headline with Orbitron font */}
+                  <h1 className="orbitron-font text-5xl md:text-6xl font-bold text-white mb-8 drop-shadow-lg max-w-4xl mx-auto leading-tight">
+                    VirtuoHub: The HQ for creators building the future of immersive games and virtual worlds.
                   </h1>
+                  {/* HERO updated per community-first MVP - New subhead text */}
                   <p className="text-lg md:text-xl text-white/90 drop-shadow-md mb-12 max-w-3xl mx-auto leading-relaxed">
-                    Shaping the future of digital creators with insider insights, multi-platform learning, and real business growth. Learn. Monetize. Connect.
+                    Your community for news, insights, and connection across the immersive creator economy. From Roblox and GTA to Sims and Second Life, join the conversation shaping what's next in virtual worlds.
                   </p>
                   <div className="flex flex-col gap-6 justify-center items-center">
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                      {/* HERO updated per community-first MVP - Primary CTA with neon-blue glow and aria-label */}
                       <Button 
                         asChild 
                         size="lg" 
-                        className="px-10 py-4 text-lg font-semibold bg-gradient-cosmic hover:bg-gradient-cosmic-hover text-white shadow-2xl shadow-primary/50 transition-all hover:scale-105 hover:shadow-primary/70"
+                        className="px-10 py-4 text-lg font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-2xl shadow-cyan-500/50 transition-all hover:scale-[1.02] hover:shadow-cyan-500/70 ring-2 ring-cyan-400/20"
                         data-testid="button-join-community"
+                        aria-label="Join the VirtuoHub community"
                       >
-                        <Link href="/">Join the Community</Link>
+                        <Link href="/community">Join the Community</Link>
                       </Button>
+                      {/* HERO updated per community-first MVP - Secondary CTA with outline style and aria-label */}
                       <Button 
+                        asChild
                         variant="outline" 
                         size="lg" 
-                        className="px-10 py-4 text-lg font-semibold bg-white/95 backdrop-blur-sm border-2 border-white/80 text-gray-900 hover:bg-white hover:border-white shadow-2xl shadow-white/30 transition-all hover:scale-105 hover:shadow-white/50"
+                        className="px-10 py-4 text-lg font-semibold bg-white/10 backdrop-blur-sm border-2 border-white/60 text-white hover:bg-white/20 hover:border-white/80 shadow-2xl shadow-white/20 transition-all hover:scale-[1.02] hover:shadow-white/30"
                         data-testid="button-watch-demo"
+                        aria-label="Watch the VirtuoHub demo"
                       >
-                        Watch Demo
+                        <Link href="/demo">Watch Demo</Link>
                       </Button>
                     </div>
+                    {/* HERO updated per community-first MVP - New microcopy */}
                     <span className="text-base text-white/90 drop-shadow-lg" data-testid="text-signup-micro">
-                      Create your free account today
+                      Start free and connect with creators across the immersive economy today.
                     </span>
                   </div>
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-black/35 rounded-2xl"></div>
               </div>
             </div>
           </div>
