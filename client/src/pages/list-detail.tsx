@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useRoute } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
+import { formatNumber } from '@/lib/utils';
 import { type FullList } from '@/types/lists';
 import { getListBySlug, incrementViews, getRelatedLists } from '@/lib/data/lists';
 import { Header } from '@/components/layout/header';
@@ -75,11 +76,6 @@ const ListDetailPage: React.FC = () => {
     );
   }
 
-  const formatViews = (views: number): string => {
-    if (views >= 1000000) return `${(views / 1000000).toFixed(1)}M`;
-    if (views >= 1000) return `${(views / 1000).toFixed(1)}K`;
-    return views.toString();
-  };
 
   const getTypeColor = (type: string): string => {
     const colors = {
@@ -213,7 +209,7 @@ const ListDetailPage: React.FC = () => {
                   <div className="flex flex-wrap gap-6 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <Eye className="w-4 h-4" />
-                      {formatViews(list.views)} views
+                      {formatNumber(list.views)} views
                     </div>
                     <div className="flex items-center gap-1">
                       <Clock className="w-4 h-4" />

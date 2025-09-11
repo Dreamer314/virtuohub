@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { formatShortDate, formatViews, getChipClasses } from '@/lib/utils';
 import { fetchFeaturedLists } from '@/lib/lists/repo';
 import { FeaturedList, ListType, Platform, Voice } from '@/lib/lists/types';
 
@@ -92,7 +93,7 @@ export default function FeaturedLists() {
             <button
               key={t.key}
               onClick={() => toggleType(t.key)}
-              className={chipClass(types.includes(t.key))}
+              className={getChipClasses(types.includes(t.key))}
               data-testid={`filter-type-${t.key}`}
             >
               {t.label}
@@ -105,14 +106,14 @@ export default function FeaturedLists() {
           <span className="text-sm text-foreground/70">Voice:</span>
           <button
             onClick={() => setVoice(voice === 'editorial' ? undefined : 'editorial')}
-            className={chipClass(voice === 'editorial')}
+            className={getChipClasses(voice === 'editorial')}
             data-testid="voice-editorial"
           >
             VHub Picks
           </button>
           <button
             onClick={() => setVoice(voice === 'community' ? undefined : 'community')}
-            className={chipClass(voice === 'community')}
+            className={getChipClasses(voice === 'community')}
             data-testid="voice-community"
           >
             User Choice
@@ -141,7 +142,7 @@ export default function FeaturedLists() {
           <button
             key={p.key}
             onClick={() => togglePlatform(p.key)}
-            className={chipClass(platforms.includes(p.key))}
+            className={getChipClasses(platforms.includes(p.key))}
             data-testid={`filter-platform-${p.key}`}
           >
             {p.label}
@@ -179,9 +180,9 @@ export default function FeaturedLists() {
                   <h3 className="font-semibold text-lg">{item.title}</h3>
                   {item.subtitle ? <p className="mt-1 text-sm text-foreground/80">{item.subtitle}</p> : null}
                   <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-foreground/70">
-                    <span>{formatDate(item.updatedAt)}</span>
+                    <span>{formatShortDate(item.updatedAt)}</span>
                     <span>•</span>
-                    <span>{formatViews(item.metrics.views)}</span>
+                    <span>{formatViews(item.metrics.views || 0)}</span>
                     {item.metrics.rating && (
                       <>
                         <span>•</span>
@@ -213,28 +214,8 @@ export default function FeaturedLists() {
   );
 }
 
-function formatDate(iso: string) {
-  const d = new Date(iso);
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-}
 
-function formatViews(v?: number) {
-  if (!v) return '0 views';
-  if (v < 1000) return `${v} views`;
-  if (v < 1000000) return `${(v/1000).toFixed(1)}K views`;
-  return `${(v/1000000).toFixed(1)}M views`;
-}
 
-// Brand-matching chip styles (no loud rainbow pills)
-function chipClass(active: boolean) {
-  return [
-    'px-3 py-1.5 rounded-full text-sm transition-colors',
-    'ring-1 ring-border/50',
-    active
-      ? 'bg-accent/15 text-accent ring-accent/40'
-      : 'bg-surface/80 text-foreground/80 hover:bg-surface/90'
-  ].join(' ');
-}
 
 const selectClass =
   'rounded-lg bg-surface/80 text-foreground ring-1 ring-border/50 ' +

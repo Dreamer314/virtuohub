@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { formatAbsoluteDate, getContentTypeColor, noWidow } from "@/lib/utils";
 import type { FeaturedItem } from "./types";
 
 interface FeaturedCarouselProps {
@@ -24,36 +25,8 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
     setCurrentIndex(index);
   }, []);
 
-  const formatDate = (dateISO: string) => {
-    const date = new Date(dateISO);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    });
-  };
 
-  const chipClass = (tag: string) => {
-    switch (tag) {
-      case 'Interview':
-        return 'bg-teal-500/20 text-teal-300 border border-teal-500/30';
-      case 'Industry News':
-        return 'bg-blue-500/20 text-blue-300 border border-blue-500/30';
-      case 'Tips & Guides':
-        return 'bg-green-500/20 text-green-300 border border-green-500/30';
-      case 'Spotlight':
-        return 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30';
-      case 'Pulse Report':
-        return 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30';
-      default:
-        return 'bg-purple-500/20 text-purple-300 border border-purple-500/30';
-    }
-  };
 
-  const noWidow = (text: string) => {
-    // Prevents widow words by replacing the last space with a non-breaking space
-    return text.replace(/\s+(\S+)$/, '\u00A0$1');
-  };
 
   // Keyboard navigation
   useEffect(() => {
@@ -127,9 +100,9 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
 
         {/* Text */}
         <div className="cq max-w-[560px] xl:min-w-[440px]">
-          <div className="text-sm text-muted-foreground">{formatDate(currentItem.dateISO)}</div>
+          <div className="text-sm text-muted-foreground">{formatAbsoluteDate(currentItem.dateISO)}</div>
           <div className="mt-2 flex items-center gap-2">
-            <span className={`rounded-full px-3 py-1 text-xs font-medium ${chipClass(currentItem.tag)}`}>
+            <span className={`rounded-full px-3 py-1 text-xs font-medium ${getContentTypeColor(currentItem.tag)}`}>
               {currentItem.tag}
             </span>
             {currentItem.type ? (
