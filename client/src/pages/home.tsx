@@ -123,8 +123,9 @@ const HomePage = () => {
                 <img 
                   src={vhubHeaderImage} 
                   alt="VirtuoHub Homepage Header"
-                  className="absolute inset-0 w-full h-full object-contain object-center rounded-2xl"
+                  className="absolute inset-0 w-full h-full object-cover object-center rounded-2xl"
                   style={{
+                    objectPosition: 'center 20%',
                     filter: 'drop-shadow(0 0 20px rgba(6, 182, 212, 0.2)) drop-shadow(0 0 40px rgba(147, 51, 234, 0.15))'
                   }}
                 />
