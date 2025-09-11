@@ -15,6 +15,7 @@ import { Link } from "wouter";
 import { POST_CATEGORIES } from "@/constants/postCategories";
 // BUILD IN PUBLIC - Import toast for platform filtering feedback
 import { useToast } from "@/hooks/use-toast";
+import { PLATFORMS } from "@/types/content";
 import { TitleWithRule } from "@/components/ui/title-with-rule";
 import { CheckItem } from "@/components/ui/check-item";
 import { 
@@ -481,15 +482,8 @@ const HomePage = () => {
                     {/* BUILD IN PUBLIC - Clickable platform chips with routing */}
                     <div className="flex flex-wrap justify-center items-center gap-3 md:gap-4 overflow-x-auto md:overflow-x-visible scrollbar-hide px-4 md:px-0 relative z-20 pointer-events-auto">
                       {[
-                        { name: 'Roblox', slug: 'roblox' },
-                        { name: 'GTA FiveM', slug: 'gtafivem' },
-                        { name: 'Second Life', slug: 'secondlife' },
-                        { name: 'VRChat', slug: 'vrchat' },
-                        { name: 'Fortnite', slug: 'fortnite' },
-                        { name: 'Minecraft', slug: 'minecraft' },
-                        { name: 'Unity', slug: 'unity' },
-                        { name: 'Unreal Engine', slug: 'unreal' },
-                        { name: '+ more', slug: null }
+                        ...PLATFORMS.slice(0, 8).map(p => ({ name: p.label, slug: p.key })),
+                        { name: '+ more', slug: null as any }
                       ].map((platform, index) => (
                         <button
                           key={platform.slug || platform.name}
