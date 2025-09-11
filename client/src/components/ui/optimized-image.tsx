@@ -181,16 +181,33 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
       )}
 
       {/* Loading state */}
-      {!inView && (
+      {!inView && !hasError && (
         <div 
           className={cn(
-            'w-full h-full bg-muted animate-pulse flex items-center justify-center',
+            'w-full h-full bg-muted/50 animate-pulse flex items-center justify-center',
             getAspectRatioClass(aspectRatio)
           )}
           style={{ width, height }}
           aria-label="Loading image..."
         >
-          <div className="w-8 h-8 rounded-full bg-muted-foreground/20" />
+          <div className="w-6 h-6 rounded-full bg-muted-foreground/30" />
+        </div>
+      )}
+      
+      {/* Error state placeholder */}
+      {hasError && !isLoaded && (
+        <div 
+          className={cn(
+            'w-full h-full bg-muted/30 flex items-center justify-center text-muted-foreground',
+            getAspectRatioClass(aspectRatio)
+          )}
+          style={{ width, height }}
+          aria-label="Image failed to load"
+        >
+          <div className="text-center">
+            <div className="w-6 h-6 mx-auto mb-1 rounded bg-muted-foreground/20" />
+            <span className="text-xs">Image unavailable</span>
+          </div>
         </div>
       )}
     </div>
