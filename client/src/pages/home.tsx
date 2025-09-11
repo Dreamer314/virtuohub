@@ -479,7 +479,7 @@ const HomePage = () => {
                 <div className="mb-20">
                   <div className="relative">
                     {/* BUILD IN PUBLIC - Clickable platform chips with routing */}
-                    <div className="flex flex-wrap justify-center items-center gap-3 md:gap-4 overflow-x-auto md:overflow-x-visible scrollbar-hide px-4 md:px-0">
+                    <div className="flex flex-wrap justify-center items-center gap-3 md:gap-4 overflow-x-auto md:overflow-x-visible scrollbar-hide px-4 md:px-0 relative z-20 pointer-events-auto">
                       {[
                         { name: 'Roblox', slug: 'roblox' },
                         { name: 'GTA FiveM', slug: 'gtafivem' },
@@ -493,23 +493,19 @@ const HomePage = () => {
                       ].map((platform, index) => (
                         <button
                           key={platform.slug || platform.name}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            console.log(`Clicked platform chip: ${platform.name}`, platform.slug);
+                          onClick={() => {
                             if (platform.slug) {
                               setLocation(`/community?platform=${platform.slug}`);
                               toast({
                                 title: `Filtered by ${platform.name}`,
                                 description: `Showing posts related to ${platform.name}`,
                               });
-                              console.log(`Navigating to: /community?platform=${platform.slug}`);
                             } else {
                               setLocation('/community');
-                              console.log('Navigating to: /community');
                             }
                           }}
-                          className="flex-shrink-0 px-4 py-2 text-sm font-medium text-muted-foreground bg-muted/20 border border-muted-foreground/20 rounded-full hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 hover:scale-105 active:scale-95"
+                          type="button"
+                          className="flex-shrink-0 px-4 py-2 text-sm font-medium text-muted-foreground bg-muted/20 border border-muted-foreground/20 rounded-full hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
                           aria-label={platform.slug ? `Filter community by ${platform.name}` : 'View all platforms'}
                           data-testid={`homepage-platform-chip-${platform.slug || 'more'}`}
                         >
@@ -518,7 +514,7 @@ const HomePage = () => {
                       ))}
                     </div>
                     {/* Subtle divider lines */}
-                    <div className="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent pointer-events-none"></div>
+                    <div className="absolute top-1/2 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent pointer-events-none z-0"></div>
                   </div>
                 </div>
 
