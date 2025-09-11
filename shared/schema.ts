@@ -17,21 +17,35 @@ export const users = pgTable("users", {
 export const posts = pgTable("posts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   authorId: varchar("author_id").notNull(),
+  subtype: text("subtype").notNull().default('thread'), // thread, poll, spotlight, interview, tip, news, trending, event, report, list
   title: text("title").notNull(),
-  content: text("content").notNull(),
+  summary: text("summary"), // brief description/excerpt
+  body: text("body").notNull(), // renamed from content for clarity
+  tags: text("tags").array().default([]),
+  platforms: text("platforms").array().notNull(),
   imageUrl: text("image_url").default(''),
   images: text("images").array().default([]),
   files: text("files").array().default([]),
   links: text("links").array().default([]),
-  category: text("category").notNull(),
-  platforms: text("platforms").array().notNull(),
   price: text("price").default(''),
-  type: text("type").notNull().default('regular'), // regular, pulse, insight
-  pollData: jsonb("poll_data"),
+  status: text("status").notNull().default('published'), // draft, published, archived
+  
+  // Subtype Extensions (using jsonb for flexibility)
+  // event: { startTime, endTime, location, rsvpLink }
+  // poll: { question, choices[], closesAt, oneVotePerUser }
+  // spotlight: { subjectType, subjectProfileRef }
+  // report: { dataPackRef, priceTier, methodologyRef }
+  // list: { rankingPeriod, scoringVersion, entries[] }
+  subtypeData: jsonb("subtype_data"),
+  
+  // Engagement metrics
   likes: integer("likes").default(0),
   comments: integer("comments").default(0),
   shares: integer("shares").default(0),
+  views: integer("views").default(0),
+  
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const savedPosts = pgTable("saved_posts", {
@@ -74,20 +88,22 @@ export const insertUserSchema = createInsertSchema(users).pick({
   bio: true,
 });
 
-// POST CATEGORIES MVP - Updated schema to validate category slugs
+// Unified Post Schema - Updated to support all content subtypes
 export const insertPostSchema = createInsertSchema(posts).pick({
   title: true,
-  content: true,
+  summary: true,
+  body: true,
+  tags: true,
+  platforms: true,
   imageUrl: true,
   images: true,
   files: true,
   links: true,
-  platforms: true,
   price: true,
-  type: true,
-  pollData: true,
+  status: true,
+  subtypeData: true,
 }).extend({
-  category: z.enum(["wip", "feedback", "tutorials", "hire-collab", "sell", "teams", "events", "platform-qa", "general"])
+  subtype: z.enum(["thread", "poll", "spotlight", "interview", "tip", "news", "trending", "event", "report", "list"])
 });
 
 export const insertSavedPostSchema = createInsertSchema(savedPosts).pick({

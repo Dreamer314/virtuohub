@@ -60,69 +60,88 @@ export function getSamplePosts(): Post[] {
     {
       id: 'post1',
       authorId: 'user1',
+      subtype: 'thread',
       title: 'New VRChat Avatar Collection - Fantasy Series',
-      content: 'Just released my latest avatar collection featuring fantasy creatures! Each avatar comes with custom animations and gesture support. Perfect for D&D roleplay sessions in VRChat.',
+      summary: 'Latest avatar collection featuring fantasy creatures with custom animations',
+      body: 'Just released my latest avatar collection featuring fantasy creatures! Each avatar comes with custom animations and gesture support. Perfect for D&D roleplay sessions in VRChat.',
+      tags: ['avatars', 'fantasy', 'vrchat'],
+      platforms: ['VRChat'],
       imageUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=600&fit=crop&crop=center',
       images: [],
       files: [],
       links: ['https://gumroad.com/sarah-avatars'],
-      category: 'Assets for Sale',
-      platforms: ['VRChat'],
       price: '$25 - $45 per avatar',
-      type: 'regular',
+      status: 'published',
+      subtypeData: null,
       likes: 156,
       comments: 23,
       shares: 12,
+      views: 450,
       createdAt: new Date('2024-01-15'),
+      updatedAt: new Date('2024-01-15'),
     },
     // VHub Pulse Poll Posts
     {
       id: 'pulse1',
       authorId: 'user2',
+      subtype: 'poll',
       title: 'Which platform offers the best creator monetization?',
-      content: 'With recent changes to creator programs across platforms, curious to see where the community thinks we can best monetize our work. This will help inform our 2024 strategy.',
+      summary: 'Community poll on creator monetization across platforms',
+      body: 'With recent changes to creator programs across platforms, curious to see where the community thinks we can best monetize our work. This will help inform our 2024 strategy.',
+      tags: ['monetization', 'platforms', 'creators'],
+      platforms: ['Other'],
       imageUrl: '',
       images: [],
       files: [],
       links: [],
-      category: 'General',
-      platforms: ['Other'],
       price: '',
-      type: 'pulse',
-      pollData: {
+      status: 'published',
+      subtypeData: {
         question: 'Which platform offers the best creator monetization?',
-        options: [
-          { text: 'Roblox DevEx Program', votes: 234, percentage: 42 },
-          { text: 'VRChat Creator Economy', votes: 156, percentage: 28 },
-          { text: 'Second Life Marketplace', votes: 89, percentage: 16 },
-          { text: 'Unity Asset Store', votes: 78, percentage: 14 }
+        choices: [
+          { text: 'Roblox DevEx Program', votes: 234, id: 'choice1' },
+          { text: 'VRChat Creator Economy', votes: 156, id: 'choice2' },
+          { text: 'Second Life Marketplace', votes: 89, id: 'choice3' },
+          { text: 'Unity Asset Store', votes: 78, id: 'choice4' }
         ],
-        totalVotes: 557,
-        endDate: new Date('2024-02-01')
+        closesAt: new Date('2024-02-01').getTime(),
+        oneVotePerUser: true
       },
       likes: 89,
       comments: 45,
       shares: 67,
+      views: 1200,
       createdAt: new Date('2024-01-18'),
+      updatedAt: new Date('2024-01-18'),
     },
     // Creator Insights Interview Posts
     {
       id: 'insight1',
       authorId: 'user3',
+      subtype: 'interview',
       title: 'From Hobby to Full-Time: Building VR Experiences',
-      content: 'Started as a weekend hobby, now running a VR studio with 12 employees. Here\'s what I learned about scaling creative work in virtual spaces.',
+      summary: 'Journey from weekend VR hobbyist to running a 12-person studio',
+      body: 'Started as a weekend hobby, now running a VR studio with 12 employees. Here\'s what I learned about scaling creative work in virtual spaces.',
+      tags: ['vr', 'entrepreneurship', 'scaling', 'studio'],
+      platforms: ['VRChat', 'Other'],
       imageUrl: 'https://images.unsplash.com/photo-1536431311719-398b6704d4cc?w=800&h=600&fit=crop&crop=center',
       images: [],
       files: [],
       links: ['https://alexvr.studio'],
-      category: 'General',
-      platforms: ['VRChat', 'Other'],
       price: '',
-      type: 'insight',
+      status: 'published',
+      subtypeData: {
+        intervieweeId: 'user3',
+        interviewerRole: 'VHub Editorial',
+        duration: '45 mins',
+        topics: ['scaling', 'team building', 'vr development']
+      },
       likes: 445,
       comments: 78,
       shares: 156,
+      views: 2100,
       createdAt: new Date('2024-01-10'),
+      updatedAt: new Date('2024-01-10'),
     }
   ];
 }
@@ -134,6 +153,8 @@ export function getSampleArticles(): Article[] {
       postId: 'insight1',
       slug: 'from-hobby-to-fulltime-building-vr-experiences',
       excerpt: 'Alex Kim shares the journey from weekend VR hobbyist to running a 12-person studio, including key lessons about scaling creative work in virtual spaces.',
+      seoTitle: 'From Hobby to Full-Time: Building VR Experiences | VirtuoHub',
+      seoDescription: 'Learn how Alex Kim transformed weekend VR experiments into a 12-person studio, with practical insights on scaling creative work in virtual spaces.',
       fullContent: `# From Hobby to Full-Time: Building VR Experiences
 
 ## The Beginning
@@ -182,6 +203,7 @@ export function getSampleComments(): Comment[] {
   return [
     {
       id: 'comment1',
+      postId: null,
       articleId: 'article1',
       authorId: 'user1',
       content: 'This really resonates with my experience! The community-first approach is so important. Started with VRChat avatars and the feedback loop with users was everything.',
@@ -191,6 +213,7 @@ export function getSampleComments(): Comment[] {
     },
     {
       id: 'comment2',
+      postId: null,
       articleId: 'article1',
       authorId: 'user2',
       content: 'Great insights on team scaling. Curious about your revenue model - how do you balance creative freedom with commercial viability?',
@@ -200,6 +223,7 @@ export function getSampleComments(): Comment[] {
     },
     {
       id: 'comment3',
+      postId: null,
       articleId: 'article1',
       authorId: 'user3',
       content: 'Thanks for the question! We use a mixed model - some client work to fund experimental projects. Key is setting clear boundaries about which projects are pure R&D.',

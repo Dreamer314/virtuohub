@@ -1,0 +1,55 @@
+You are my lead engineer for the VirtuoHub Community MVP. Work inside this repo and complete the following. Do not invent features beyond what is listed. Keep everything neat, modular, and future-ready for a Supabase connection.
+
+GOALS
+1) Ensure all content types (spotlights, interviews, tips, news, trending, events, post reports, lists, threads, polls) share one unified Post structure.  
+   - Core fields: id, authorId, subtype, title, summary, body, tags, platforms[], createdAt, updatedAt, status.  
+   - Subtype extensions:  
+     • event: start/end time, location, RSVP link  
+     • poll: question, choices[], closesAt, oneVotePerUser  
+     • spotlight: subjectType (creator, brand, studio), subjectProfileRef  
+     • report: dataPackRef, priceTier, methodologyRef  
+     • list: rankingPeriod, scoringVersion, entries[] (name, platform, score, proofUrl)  
+   - Each page (e.g. Spotlights, Events, Lists) should filter/render only its subtype, but the backend structure stays unified.
+
+2) Compartmentalize and clean the codebase.  
+   - Shared UI (cards, modals, filters, pills, dropdowns) must live in `/components`.  
+   - Shared logic (fetching, filtering, state) must live in `/lib` or `/hooks`.  
+   - Theme files (colors, fonts, shadows, spacing) must live in `/styles` and be imported everywhere.  
+   - Remove duplicate or inline implementations that conflict.
+
+3) Apply a brand-wide design system.  
+   - Fonts: Orbitron for headings, Inter or system-UI for body/captions.  
+   - Colors: build from current site palette, not legacy orange/blue. Define CSS variables:  
+     • --vh-bg, --vh-surface, --vh-border  
+     • --vh-text, --vh-text-muted  
+     • --vh-accent1, --vh-accent2  
+   - Modes: light, dark, charcoal. Ensure dropdowns, pills, and cards are legible in all three modes.  
+   - Pills/filters: consistent rounded chips with brand accent colors, good contrast, WCAG AA compliant.
+
+4) Functionality polish for database-readiness.  
+   - Use in-memory mock data or JSON fixtures now, but enforce the same structure a database will use.  
+   - All filters (platform chips, tags, subtypes) must be connected to one central state store (Zustand or Redux).  
+   - URL query params must mirror state (e.g., ?platform=Roblox&subtype=event).  
+   - Composer modal must handle creating at least threads and polls, saving to mock store, and updating feed instantly.
+
+5) Automated quality checks.  
+   - Add Playwright tests for:  
+     • Composer opens on community page correctly.  
+     • Platform filters show only matching posts.  
+     • “Clear all” restores full feed.  
+     • Poll creation renders correctly in feed.  
+     • Each mode (light, dark, charcoal) shows cards with visible text and buttons.  
+   - Include tests in a `check:all` script that runs typecheck, lint, build, and tests.
+
+6) Cleanup.  
+   - Remove unused styles, components, or dead logic.  
+   - Add a 404 page and an error boundary.  
+   - Optimize images with proper width/height and lazy loading.  
+   - Prefetch routes on hover.  
+   - Write a concise CHANGELOG.md describing changes, with a “Next Steps” note pointing to Supabase integration.
+
+DELIVERABLES
+- A neat, modular codebase with a unified Post structure powering all sections.  
+- Consistent branding and styling across all modes.  
+- Automated tests proving filters, modals, and polls work.  
+- No dead code, clean structure, and a CHANGELOG.md.
