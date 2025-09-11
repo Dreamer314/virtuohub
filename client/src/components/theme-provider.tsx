@@ -41,11 +41,15 @@ export function ThemeProvider({
         ? "dark"
         : "light";
 
+      // Set both class and data-theme attribute for system theme
       root.classList.add(systemTheme);
+      root.setAttribute("data-theme", systemTheme);
       return;
     }
 
+    // Set both class and data-theme attribute for explicit themes
     root.classList.add(theme);
+    root.setAttribute("data-theme", theme);
   }, [theme]);
 
   const value = {

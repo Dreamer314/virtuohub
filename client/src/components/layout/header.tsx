@@ -14,10 +14,18 @@ export function Header({ onCreatePost }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleTheme = () => {
-    const themeOrder: Array<"light" | "dark" | "charcoal"> = ["light", "dark", "charcoal"];
-    const currentIndex = themeOrder.indexOf(theme as "light" | "dark" | "charcoal");
-    const nextIndex = (currentIndex + 1) % themeOrder.length;
-    setTheme(themeOrder[nextIndex]);
+    // Handle theme cycling including system theme
+    let nextTheme: "light" | "dark" | "charcoal";
+    
+    if (theme === "system" || theme === "light") {
+      nextTheme = "dark";
+    } else if (theme === "dark") {
+      nextTheme = "charcoal";
+    } else {
+      nextTheme = "light"; // charcoal → light
+    }
+    
+    setTheme(nextTheme);
   };
 
   return (
@@ -37,14 +45,14 @@ export function Header({ onCreatePost }: HeaderProps) {
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center justify-center space-x-8">
-            <Link href="/home" className={`transition-colors font-medium text-base ${
-              location === '/home' ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+            <Link href="/home" className={`vh-nav-item px-3 py-2 rounded-lg font-medium text-base ${
+              location === '/home' ? 'active' : ''
             }`} data-testid="nav-home">Home</Link>
-            <a href="#" className="text-foreground hover:text-primary transition-colors font-medium text-base" data-testid="nav-learn">Learn</a>
-            <a href="#" className="text-foreground hover:text-primary transition-colors font-medium text-base" data-testid="nav-earn">Earn</a>
-            <a href="#" className="text-foreground hover:text-primary transition-colors font-medium text-base" data-testid="nav-connect">Connect</a>
-            <Link href="/" className={`transition-colors font-medium text-base ${
-              location === '/' ? 'text-primary font-semibold' : 'text-foreground hover:text-primary'
+            <a href="#" className="vh-nav-item px-3 py-2 rounded-lg font-medium text-base" data-testid="nav-learn">Learn</a>
+            <a href="#" className="vh-nav-item px-3 py-2 rounded-lg font-medium text-base" data-testid="nav-earn">Earn</a>
+            <a href="#" className="vh-nav-item px-3 py-2 rounded-lg font-medium text-base" data-testid="nav-connect">Connect</a>
+            <Link href="/" className={`vh-nav-item px-3 py-2 rounded-lg font-medium text-base ${
+              location === '/' ? 'active' : ''
             }`} data-testid="nav-community">Community</Link>
           </nav>
 
@@ -56,20 +64,20 @@ export function Header({ onCreatePost }: HeaderProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="w-9 h-9 rounded-full hover:bg-muted/50 transition-colors"
+                  className="w-9 h-9 rounded-full vh-button-ghost"
                   data-testid="messaging-button"
                 >
-                  <MessageCircle className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
+                  <MessageCircle className="w-4 h-4" />
                 </Button>
                 
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="w-9 h-9 rounded-full hover:bg-muted/50 transition-colors relative"
+                  className="w-9 h-9 rounded-full vh-button-ghost relative"
                   data-testid="notification-button"
                   aria-label="Notifications (1 unread)"
                 >
-                  <Bell className="w-4 h-4 text-muted-foreground hover:text-foreground transition-colors" />
+                  <Bell className="w-4 h-4" />
                   <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-medium">
                     1
                   </span>
@@ -91,7 +99,7 @@ export function Header({ onCreatePost }: HeaderProps) {
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
-              className="w-9 h-9 rounded-full hover:bg-muted/50 transition-colors"
+              className="w-9 h-9 rounded-full vh-button-ghost"
               data-testid="theme-toggle"
               aria-label={
                 theme === "light" ? "Switch to dark mode" : 
@@ -100,13 +108,13 @@ export function Header({ onCreatePost }: HeaderProps) {
               }
             >
               {theme === "light" ? (
-                <Moon className="h-4 w-4 text-muted-foreground" />
+                <Moon className="h-4 w-4" />
               ) : theme === "dark" ? (
                 <div className="h-4 w-4 bg-gradient-to-br from-gray-600 to-gray-800 rounded-sm border border-gray-500" />
               ) : theme === "charcoal" ? (
                 <Sun className="h-4 w-4 text-yellow-500" />
               ) : (
-                <Moon className="h-4 w-4 text-muted-foreground" />
+                <Moon className="h-4 w-4" />
               )}
             </Button>
             
@@ -138,17 +146,17 @@ export function Header({ onCreatePost }: HeaderProps) {
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
-              className="w-9 h-9 rounded-full hover:bg-muted/50 transition-colors"
+              className="w-9 h-9 rounded-full vh-button-ghost"
               data-testid="mobile-theme-toggle"
             >
               {theme === "light" ? (
-                <Moon className="h-4 w-4 text-muted-foreground" />
+                <Moon className="h-4 w-4" />
               ) : theme === "dark" ? (
                 <div className="h-4 w-4 bg-gradient-to-br from-gray-600 to-gray-800 rounded-sm border border-gray-500" />
               ) : theme === "charcoal" ? (
                 <Sun className="h-4 w-4 text-yellow-500" />
               ) : (
-                <Moon className="h-4 w-4 text-muted-foreground" />
+                <Moon className="h-4 w-4" />
               )}
             </Button>
 
@@ -173,11 +181,11 @@ export function Header({ onCreatePost }: HeaderProps) {
         {isMobileMenuOpen && (
           <div className="lg:hidden border-t border-border bg-background/95 backdrop-blur-sm">
             <nav className="flex flex-col space-y-1 py-4">
-              <a href="#" className="px-4 py-3 text-foreground hover:text-primary hover:bg-muted/50 transition-colors font-medium rounded-lg mx-2" data-testid="mobile-nav-home">Home</a>
-              <a href="#" className="px-4 py-3 text-foreground hover:text-primary hover:bg-muted/50 transition-colors font-medium rounded-lg mx-2" data-testid="mobile-nav-learn">Learn</a>
-              <a href="#" className="px-4 py-3 text-foreground hover:text-primary hover:bg-muted/50 transition-colors font-medium rounded-lg mx-2" data-testid="mobile-nav-earn">Earn</a>
-              <a href="#" className="px-4 py-3 text-foreground hover:text-primary hover:bg-muted/50 transition-colors font-medium rounded-lg mx-2" data-testid="mobile-nav-connect">Connect</a>
-              <a href="#" className="px-4 py-3 text-primary font-semibold bg-primary/10 rounded-lg mx-2" data-testid="mobile-nav-community">Community</a>
+              <a href="#" className="vh-nav-item px-4 py-3 font-medium rounded-lg mx-2" data-testid="mobile-nav-home">Home</a>
+              <a href="#" className="vh-nav-item px-4 py-3 font-medium rounded-lg mx-2" data-testid="mobile-nav-learn">Learn</a>
+              <a href="#" className="vh-nav-item px-4 py-3 font-medium rounded-lg mx-2" data-testid="mobile-nav-earn">Earn</a>
+              <a href="#" className="vh-nav-item px-4 py-3 font-medium rounded-lg mx-2" data-testid="mobile-nav-connect">Connect</a>
+              <a href="#" className="vh-nav-item active px-4 py-3 font-medium rounded-lg mx-2" data-testid="mobile-nav-community">Community</a>
               
               {/* Mobile Auth Buttons */}
               <div className="flex flex-col space-y-2 pt-4 px-2">
@@ -195,20 +203,20 @@ export function Header({ onCreatePost }: HeaderProps) {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="w-12 h-12 rounded-full hover:bg-muted/50 transition-colors"
+                    className="w-12 h-12 rounded-full vh-button-ghost"
                     data-testid="mobile-messaging-button"
                   >
-                    <MessageCircle className="w-5 h-5 text-muted-foreground hover:text-foreground transition-colors" />
+                    <MessageCircle className="w-5 h-5" />
                   </Button>
                   
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="w-12 h-12 rounded-full hover:bg-muted/50 transition-colors relative"
+                    className="w-12 h-12 rounded-full vh-button-ghost relative"
                     data-testid="mobile-notification-button"
                     aria-label="Notifications (1 unread)"
                   >
-                    <Bell className="w-5 h-5 text-muted-foreground hover:text-foreground transition-colors" />
+                    <Bell className="w-5 h-5" />
                     <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
                       1
                     </span>

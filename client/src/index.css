@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 /* Import VirtuoHub Design System */
 @import './styles/index.css';
+/* Import Base Color System */
+@import './styles/base-colors.css';
 
 @layer utilities {
   .bg-gradient-radial {
@@ -51,42 +53,43 @@
   }
 }
 
-/* Light Theme Variables */
+/* Light Theme Variables - Updated for Base Color System */
 :root,
 [data-theme="light"] {
-  --background: hsl(0 0% 100%);
-  --foreground: hsl(222.2 84% 4.9%);
-  --card: hsl(0 0% 98%);
-  --card-foreground: hsl(222.2 84% 4.9%);
-  --popover: hsl(0 0% 100%);
-  --popover-foreground: hsl(222.2 84% 4.9%);
-  --primary: hsl(263 70% 50%);
+  /* Use base color system variables */
+  --background: var(--vh-bg-primary);
+  --foreground: var(--vh-text-primary);
+  --card: var(--vh-bg-secondary);
+  --card-foreground: var(--vh-text-primary);
+  --popover: var(--vh-bg-primary);
+  --popover-foreground: var(--vh-text-primary);
+  --primary: var(--vh-accent-primary);
   --primary-foreground: hsl(210 40% 98%);
-  --secondary: hsl(210 40% 96%);
-  --secondary-foreground: hsl(222.2 47.4% 11.2%);
-  --muted: hsl(210 40% 96%);
-  --muted-foreground: hsl(215.4 16.3% 46.9%);
-  --accent: hsl(200 98% 39%);
-  --accent-foreground: hsl(210 40% 98%);
-  --destructive: hsl(0 72% 51%);
+  --secondary: var(--vh-bg-tertiary);
+  --secondary-foreground: var(--vh-text-primary);
+  --muted: var(--vh-bg-hover);
+  --muted-foreground: var(--vh-text-secondary);
+  --accent: var(--vh-bg-hover);
+  --accent-foreground: var(--vh-text-primary);
+  --destructive: var(--vh-accent-error);
   --destructive-foreground: hsl(0 0% 100%);
-  --border: hsl(220 13% 91%);
-  --input: hsl(214.3 31.8% 91.4%);
-  --ring: hsl(263 70% 50%);
+  --border: var(--vh-border-primary);
+  --input: var(--vh-border-primary);
+  --ring: var(--vh-accent-primary);
   --chart-1: hsl(203.8863 88.2845% 53.1373%);
   --chart-2: hsl(159.7826 100% 36.0784%);
   --chart-3: hsl(42.0290 92.8251% 56.2745%);
   --chart-4: hsl(147.1429 78.5047% 41.9608%);
   --chart-5: hsl(341.4894 75.2000% 50.9804%);
-  --sidebar: hsl(0 0% 100%);
-  --sidebar-foreground: hsl(222.2 84% 4.9%);
-  --sidebar-primary: hsl(263 70% 50%);
+  --sidebar: var(--vh-bg-primary);
+  --sidebar-foreground: var(--vh-text-primary);
+  --sidebar-primary: var(--vh-accent-primary);
   --sidebar-primary-foreground: hsl(210 40% 98%);
-  --sidebar-accent: hsl(210 40% 96%);
-  --sidebar-accent-foreground: hsl(222.2 47.4% 11.2%);
-  --sidebar-border: hsl(220 13% 91%);
-  --sidebar-ring: hsl(263 70% 50%);
-  --surface: hsl(0 0% 98%);
+  --sidebar-accent: var(--vh-bg-tertiary);
+  --sidebar-accent-foreground: var(--vh-text-primary);
+  --sidebar-border: var(--vh-border-primary);
+  --sidebar-ring: var(--vh-accent-primary);
+  --surface: var(--vh-bg-secondary);
   --font-sans: 'Inter', system-ui, sans-serif;
   --font-display: 'Poppins', system-ui, sans-serif;
   --font-tech: 'Orbitron', monospace;
@@ -191,68 +194,70 @@
   --surface: hsl(0 0% 98%);
 }
 
-/* Dark Theme Variables */
+/* Dark Theme Variables - Updated for Base Color System */
 [data-theme="dark"] {
-  --background: hsl(222 84% 5%);
-  --foreground: hsl(210 40% 98%);
-  --card: hsl(215 28% 9%);
-  --card-foreground: hsl(210 40% 98%);
-  --popover: hsl(215 28% 9%);
-  --popover-foreground: hsl(210 40% 98%);
-  --primary: hsl(263 70% 55%);
+  /* Use base color system variables */
+  --background: var(--vh-bg-primary);
+  --foreground: var(--vh-text-primary);
+  --card: var(--vh-bg-secondary);
+  --card-foreground: var(--vh-text-primary);
+  --popover: var(--vh-bg-secondary);
+  --popover-foreground: var(--vh-text-primary);
+  --primary: var(--vh-accent-primary);
   --primary-foreground: hsl(210 40% 98%);
-  --secondary: hsl(215 20% 15%);
-  --secondary-foreground: hsl(210 40% 98%);
-  --muted: hsl(215 20% 15%);
-  --muted-foreground: hsl(215 20% 65%);
-  --accent: hsl(200 98% 45%);
-  --accent-foreground: hsl(210 40% 98%);
-  --destructive: hsl(0 72% 60%);
+  --secondary: var(--vh-bg-tertiary);
+  --secondary-foreground: var(--vh-text-primary);
+  --muted: var(--vh-bg-hover);
+  --muted-foreground: var(--vh-text-secondary);
+  --accent: var(--vh-bg-hover);
+  --accent-foreground: var(--vh-text-primary);
+  --destructive: var(--vh-accent-error);
   --destructive-foreground: hsl(0 0% 100%);
-  --border: hsl(215 20% 15%);
-  --input: hsl(215 20% 15%);
-  --ring: hsl(263 70% 55%);
-  --sidebar: hsl(215 28% 9%);
-  --sidebar-foreground: hsl(210 40% 98%);
-  --sidebar-primary: hsl(263 70% 55%);
+  --border: var(--vh-border-primary);
+  --input: var(--vh-border-primary);
+  --ring: var(--vh-accent-primary);
+  --sidebar: var(--vh-bg-secondary);
+  --sidebar-foreground: var(--vh-text-primary);
+  --sidebar-primary: var(--vh-accent-primary);
   --sidebar-primary-foreground: hsl(210 40% 98%);
-  --sidebar-accent: hsl(215 20% 15%);
-  --sidebar-accent-foreground: hsl(210 40% 98%);
-  --sidebar-border: hsl(215 20% 15%);
-  --sidebar-ring: hsl(263 70% 55%);
-  --surface: hsl(215 28% 9%);
+  --sidebar-accent: var(--vh-bg-tertiary);
+  --sidebar-accent-foreground: var(--vh-text-primary);
+  --sidebar-border: var(--vh-border-primary);
+  --sidebar-ring: var(--vh-accent-primary);
+  --surface: var(--vh-bg-secondary);
 }
 
-/* Charcoal Theme Variables */
+/* Charcoal Theme Variables - Updated for Base Color System */
 [data-theme="charcoal"] {
-  --background: hsl(210 11% 8%);
-  --foreground: hsl(210 25% 95%);
-  --card: hsl(210 11% 11%);
-  --card-foreground: hsl(210 25% 95%);
-  --popover: hsl(210 11% 11%);
-  --popover-foreground: hsl(210 25% 95%);
-  --primary: hsl(263 60% 58%);
+  /* Use base color system variables */
+  --background: var(--vh-bg-primary);
+  --foreground: var(--vh-text-primary);
+  --card: var(--vh-bg-secondary);
+  --card-foreground: var(--vh-text-primary);
+  --popover: var(--vh-bg-secondary);
+  --popover-foreground: var(--vh-text-primary);
+  --primary: var(--vh-accent-primary);
   --primary-foreground: hsl(210 25% 95%);
-  --secondary: hsl(210 11% 18%);
-  --secondary-foreground: hsl(210 25% 95%);
-  --muted: hsl(210 11% 18%);
-  --muted-foreground: hsl(210 15% 68%);
-  --accent: hsl(195 85% 48%);
-  --accent-foreground: hsl(210 25% 95%);
-  --destructive: hsl(0 68% 62%);
+  --secondary: var(--vh-bg-tertiary);
+  --secondary-foreground: var(--vh-text-primary);
+  --muted: var(--vh-bg-hover);
+  --muted-foreground: var(--vh-text-secondary);
+  --accent: var(--vh-bg-hover);
+  --accent-foreground: var(--vh-text-primary);
+  --destructive: var(--vh-accent-error);
   --destructive-foreground: hsl(0 0% 100%);
-  --border: hsl(210 11% 18%);
-  --input: hsl(210 11% 18%);
-  --ring: hsl(263 60% 58%);
-  --sidebar: hsl(210 11% 11%);
-  --sidebar-foreground: hsl(210 25% 95%);
-  --sidebar-primary: hsl(263 60% 58%);
+  --border: var(--vh-border-primary);
+  --input: var(--vh-border-primary);
+  --ring: var(--vh-accent-primary);
+  --sidebar: var(--vh-bg-secondary);
+  --sidebar-foreground: var(--vh-text-primary);
+  --sidebar-primary: var(--vh-accent-primary);
   --sidebar-primary-foreground: hsl(210 25% 95%);
-  --sidebar-accent: hsl(210 11% 18%);
-  --sidebar-accent-foreground: hsl(210 25% 95%);
-  --sidebar-border: hsl(210 11% 18%);
-  --sidebar-ring: hsl(263 60% 58%);
-  --surface: hsl(210 11% 11%);
+  --sidebar-accent: var(--vh-bg-tertiary);
+  --sidebar-accent-foreground: var(--vh-text-primary);
+  --sidebar-border: var(--vh-border-primary);
+  --sidebar-ring: var(--vh-accent-primary);
+  --surface: var(--vh-bg-secondary);
 }
 
 @layer base {
