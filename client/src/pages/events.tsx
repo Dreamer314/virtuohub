@@ -20,10 +20,22 @@ const EventsPage: React.FC = () => {
   // Initialize page-specific filtering on mount
   useEffect(() => {
     window.scrollTo(0, 0);
-    // Set subtype filter to 'event' for this page
-    actions.clearFilters();
-    actions.addSubtype('event');
-  }, [actions]);
+    
+    // Only set event filter if it's not already active or if there are conflicting filters
+    const currentSubtypes = filterStore.selectedSubtypes;
+    const hasEventFilter = currentSubtypes.includes('event');
+    const hasOtherFilters = currentSubtypes.some(subtype => subtype !== 'event');
+    
+    if (!hasEventFilter || hasOtherFilters) {
+      // Clear other subtypes and set event - but do it gently
+      if (hasOtherFilters) {
+        actions.clearSubtypes();
+      }
+      if (!hasEventFilter) {
+        actions.addSubtype('event');
+      }
+    }
+  }, []); // Remove actions from dependencies to prevent re-runs
 
   // Fetch all posts and filter for event posts using unified schema
   const { data: posts = [], isLoading } = useQuery<PostWithAuthor[]>({

@@ -3,7 +3,7 @@
 
 import { useFilterStore } from './stores/filter-store';
 import { useLocation } from 'wouter';
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import type { PlatformKey } from '@/types/content';
 
 // URL Query Parameter Keys
@@ -239,40 +239,71 @@ export function useURLSync() {
   const [location, setLocation] = useLocation();
   const filterState = useFilterStore();
   
+  // Prevent recursive updates with a ref flag
+  const isUpdatingFromURL = useRef(false);
+  const isUpdatingURL = useRef(false);
+  
   // Initialize state from URL on mount and location changes
   useEffect(() => {
+    // Prevent recursive updates
+    if (isUpdatingURL.current) {
+      return;
+    }
+    
+    isUpdatingFromURL.current = true;
+    
     const searchParams = new URLSearchParams(location.includes('?') ? location.split('?')[1] : '');
     const urlState = parseURLToState(searchParams);
     
     // Apply URL state to store using proper Zustand setState
     if (Object.keys(urlState).length > 0) {
-      // Reset to defaults first, then apply URL state using Zustand's setState
-      useFilterStore.setState((state) => ({
-        ...state,
-        // Reset to defaults first
-        selectedPlatforms: [],
-        selectedSubtypes: [],
-        selectedCategories: [],
-        searchQuery: '',
-        sortBy: 'recent' as const,
-        sortDirection: 'desc' as const,
-        showPulsePolls: true,
-        showSpotlights: true,
-        showEvents: true,
-        hideReadPosts: false,
-        onlyShowSavedPosts: false,
-        timeRange: 'all' as const,
-        viewMode: 'card' as const,
-        platformFilterMode: 'any' as const,
-        subtypeFilterMode: 'any' as const,
-        // Then apply URL state
-        ...urlState,
-      }), true); // Replace entire state to trigger subscribers
+      // Only update if state actually differs to prevent unnecessary updates
+      const currentState = useFilterStore.getState();
+      const stateChanged = Object.keys(urlState).some(key => 
+        JSON.stringify(currentState[key as keyof typeof currentState]) !== JSON.stringify(urlState[key as keyof typeof urlState])
+      );
+      
+      if (stateChanged) {
+        // Reset to defaults first, then apply URL state using Zustand's setState
+        useFilterStore.setState((state) => ({
+          ...state,
+          // Reset to defaults first
+          selectedPlatforms: [],
+          selectedSubtypes: [],
+          selectedCategories: [],
+          searchQuery: '',
+          sortBy: 'recent' as const,
+          sortDirection: 'desc' as const,
+          showPulsePolls: true,
+          showSpotlights: true,
+          showEvents: true,
+          hideReadPosts: false,
+          onlyShowSavedPosts: false,
+          timeRange: 'all' as const,
+          viewMode: 'card' as const,
+          platformFilterMode: 'any' as const,
+          subtypeFilterMode: 'any' as const,
+          // Then apply URL state
+          ...urlState,
+        }), false); // Don't replace entire state to avoid triggering all subscribers
+      }
     }
+    
+    // Reset flag after a short delay
+    setTimeout(() => {
+      isUpdatingFromURL.current = false;
+    }, 0);
   }, [location]); // React to location changes for back/forward navigation
   
   // Update URL when state changes
   const updateURL = useCallback(() => {
+    // Prevent recursive updates
+    if (isUpdatingFromURL.current) {
+      return;
+    }
+    
+    isUpdatingURL.current = true;
+    
     const currentState = useFilterStore.getState();
     const params = serializeStateToURL(currentState);
     const queryString = params.toString();
@@ -286,11 +317,21 @@ export function useURLSync() {
       // Use replace to avoid spamming browser history
       setLocation(newURL, { replace: true });
     }
+    
+    // Reset flag after a short delay
+    setTimeout(() => {
+      isUpdatingURL.current = false;
+    }, 10);
   }, [location, setLocation]);
   
   // Subscribe to filter store changes
   useEffect(() => {
     const unsubscribe = useFilterStore.subscribe((state, prevState) => {
+      // Skip URL updates if we're currently updating from URL
+      if (isUpdatingFromURL.current) {
+        return;
+      }
+      
       // Check if relevant filtering state has changed
       const relevantKeys = [
         'selectedPlatforms', 'selectedSubtypes', 'selectedCategories',
@@ -316,8 +357,20 @@ export function useURLSync() {
   return {
     // Utility functions for components
     clearFilters: () => {
+      // Prevent recursive updates during clear operation
+      isUpdatingFromURL.current = true;
+      
+      // Reset filters in store
       useFilterStore.getState().resetFilters();
-      setLocation(location.split('?')[0], { replace: true });
+      
+      // Clear URL parameters
+      const basePath = location.split('?')[0];
+      setLocation(basePath, { replace: true });
+      
+      // Reset flag after operation
+      setTimeout(() => {
+        isUpdatingFromURL.current = false;
+      }, 10);
     },
     
     shareURL: () => {

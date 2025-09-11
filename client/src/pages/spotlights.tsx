@@ -19,10 +19,22 @@ const SpotlightsPage: React.FC = () => {
   // Initialize page-specific filtering on mount
   useEffect(() => {
     window.scrollTo(0, 0);
-    // Set subtype filter to 'spotlight' for this page
-    actions.clearFilters();
-    actions.addSubtype('spotlight');
-  }, [actions]);
+    
+    // Only set spotlight filter if it's not already active or if there are conflicting filters
+    const currentSubtypes = filterStore.selectedSubtypes;
+    const hasSpotlightFilter = currentSubtypes.includes('spotlight');
+    const hasOtherFilters = currentSubtypes.some(subtype => subtype !== 'spotlight');
+    
+    if (!hasSpotlightFilter || hasOtherFilters) {
+      // Clear other subtypes and set spotlight - but do it gently
+      if (hasOtherFilters) {
+        actions.clearSubtypes();
+      }
+      if (!hasSpotlightFilter) {
+        actions.addSubtype('spotlight');
+      }
+    }
+  }, []); // Remove actions from dependencies to prevent re-runs
 
   // Fetch all posts and filter for spotlight posts using unified schema
   const { data: posts = [], isLoading } = useQuery<PostWithAuthor[]>({
