@@ -131,12 +131,12 @@ const CommunityPage: React.FC = () => {
   const filteredFeedItems = selectedPlatforms.length > 0 
     ? allFeedItems.filter(item => {
         // For posts, check if any selected platform matches
-        if (item.type === 'post' && item.platforms) {
-          return selectedPlatforms.some(platform => item.platforms.includes(platform));
+        if (item.type === 'post' && item.platforms && Array.isArray(item.platforms)) {
+          return selectedPlatforms.some(platform => item.platforms!.includes(platform));
         }
         // For polls, check platforms if they exist
-        if (item.type === 'poll' && item.platforms) {
-          return selectedPlatforms.some(platform => item.platforms.includes(platform));
+        if (item.type === 'poll' && item.platforms && Array.isArray(item.platforms)) {
+          return selectedPlatforms.some(platform => item.platforms!.includes(platform));
         }
         // Show items without platform info when no filter is active
         return selectedPlatforms.length === 0;
@@ -546,8 +546,8 @@ const CommunityPage: React.FC = () => {
                           ))}
                         </div>
                       ) : currentTab === 'saved' ? (
-                        allFeedItems.length > 0 ? (
-                          allFeedItems.map((item: any) => (
+                        filteredFeedItems.length > 0 ? (
+                          filteredFeedItems.map((item: any) => (
                             <PostCard key={item.id} post={item} />
                           ))
                         ) : (
@@ -561,8 +561,8 @@ const CommunityPage: React.FC = () => {
                             </p>
                           </div>
                         )
-                      ) : allFeedItems.length > 0 ? (
-                        allFeedItems.map((item: FeedItem) => {
+                      ) : filteredFeedItems.length > 0 ? (
+                        filteredFeedItems.map((item: any) => {
                           if (item.type === 'poll') {
                             return (
                               <PollCard 
@@ -581,28 +581,55 @@ const CommunityPage: React.FC = () => {
                       ) : (
                         <div className="glass-card rounded-xl p-12 text-center" data-testid="empty-state">
                           <div className="text-6xl mb-4">🌟</div>
-                          <h3 className="text-xl font-display font-semibold mb-2 text-foreground">
-                            No posts or polls found
-                          </h3>
-                          <p className="text-muted-foreground mb-4">
-                            Be the first to create a post or poll for the community!
-                          </p>
-                          <div className="flex gap-3 justify-center">
-                            <Button
-                              onClick={() => setIsCreatePostModalOpen(true)}
-                              className="bg-primary hover:bg-primary/90"
-                            >
-                              <FileText className="w-4 h-4 mr-2" />
-                              Create Post
-                            </Button>
-                            <Button
-                              onClick={() => setIsCreatePollModalOpen(true)}
-                              variant="outline"
-                            >
-                              <BarChart3 className="w-4 h-4 mr-2" />
-                              Create Poll
-                            </Button>
-                          </div>
+                          {selectedPlatforms.length > 0 ? (
+                            // Platform-specific empty state
+                            <>
+                              <h3 className="text-xl font-display font-semibold mb-2 text-foreground">
+                                No posts yet for {PLATFORMS.find(p => p.key === selectedPlatforms[0])?.label || selectedPlatforms[0]}
+                              </h3>
+                              <p className="text-muted-foreground mb-4">
+                                Be the first to start a thread for this platform.
+                              </p>
+                              <Button
+                                onClick={() => {
+                                  setLocation(`/community?compose=true&platform=${selectedPlatforms[0]}`);
+                                  setIsCreatePostModalOpen(true);
+                                }}
+                                className="bg-primary hover:bg-primary/90"
+                                aria-label={`Start a new thread for ${PLATFORMS.find(p => p.key === selectedPlatforms[0])?.label || selectedPlatforms[0]}`}
+                                data-testid="start-thread-button"
+                              >
+                                <FileText className="w-4 h-4 mr-2" />
+                                Start a Thread
+                              </Button>
+                            </>
+                          ) : (
+                            // General empty state
+                            <>
+                              <h3 className="text-xl font-display font-semibold mb-2 text-foreground">
+                                No posts or polls found
+                              </h3>
+                              <p className="text-muted-foreground mb-4">
+                                Be the first to create a post or poll for the community!
+                              </p>
+                              <div className="flex gap-3 justify-center">
+                                <Button
+                                  onClick={() => setIsCreatePostModalOpen(true)}
+                                  className="bg-primary hover:bg-primary/90"
+                                >
+                                  <FileText className="w-4 h-4 mr-2" />
+                                  Create Post
+                                </Button>
+                                <Button
+                                  onClick={() => setIsCreatePollModalOpen(true)}
+                                  variant="outline"
+                                >
+                                  <BarChart3 className="w-4 h-4 mr-2" />
+                                  Create Poll
+                                </Button>
+                              </div>
+                            </>
+                          )}
                         </div>
                       )}
                     </div>

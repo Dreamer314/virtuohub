@@ -1,14 +1,15 @@
 import { Button } from "@/components/ui/button";
-import { Home, TrendingUp, Newspaper, Star, Lightbulb, Monitor, BookOpen, Gamepad2, Hammer, Zap, Mountain, Sword, Target, Palette, Users, Blocks, Globe, ChevronDown, ChevronUp, Settings, List } from "lucide-react";
+import { Home, TrendingUp, Newspaper, Star, Lightbulb, Monitor, BookOpen, Gamepad2, Hammer, Zap, Mountain, Sword, Target, Palette, Users, Blocks, Globe, ChevronDown, ChevronUp, Settings, List, X } from "lucide-react";
 import { SiRoblox, SiUnity, SiUnrealengine } from "react-icons/si";
 import { Link, useLocation } from "wouter";
 import { useState } from "react";
+import { type PlatformKey } from "@/types/content";
 
 interface LeftSidebarProps {
   currentTab: 'all' | 'saved';
   onTabChange: (tab: 'all' | 'saved') => void;
-  selectedPlatforms?: string[];
-  onPlatformChange?: (platforms: string[]) => void;
+  selectedPlatforms?: PlatformKey[];
+  onPlatformChange?: (platforms: PlatformKey[]) => void;
   currentSection?: 'feed' | 'trending' | 'industry' | 'spotlights' | 'insights' | 'tips';
   onSectionChange?: (section: 'feed' | 'trending' | 'industry' | 'spotlights' | 'insights' | 'tips') => void;
 }
@@ -120,12 +121,17 @@ export function LeftSidebar({
     { id: 'other', label: 'Other Platform', icon: Globe },
   ];
 
-  const togglePlatform = (platformId: string) => {
+  const togglePlatform = (platformId: PlatformKey) => {
     if (!onPlatformChange) return;
     const updated = selectedPlatforms.includes(platformId)
       ? selectedPlatforms.filter(p => p !== platformId)
       : [...selectedPlatforms, platformId];
     onPlatformChange(updated);
+  };
+
+  const clearPlatformFilters = () => {
+    if (!onPlatformChange) return;
+    onPlatformChange([]);
   };
 
   return (
@@ -199,9 +205,21 @@ export function LeftSidebar({
               </div>
               {!isPlatformFiltersCollapsed && (
                 <div className="space-y-1">
+                  {/* Clear filter option */}
+                  {selectedPlatforms.length > 0 && (
+                    <Button
+                      variant="ghost"
+                      className="w-full justify-start px-3 h-10 transition-all text-destructive hover:text-destructive hover:bg-destructive/10 border-b border-border/50 mb-2"
+                      onClick={clearPlatformFilters}
+                      data-testid="clear-platform-filter"
+                    >
+                      <X className="w-4 h-4 mr-3" />
+                      Clear filter
+                    </Button>
+                  )}
                   {platformFilters.map((platform) => {
                     const Icon = platform.icon;
-                    const isSelected = selectedPlatforms.includes(platform.id);
+                    const isSelected = selectedPlatforms.includes(platform.id as PlatformKey);
                     return (
                       <Button
                         key={platform.id}
@@ -211,8 +229,9 @@ export function LeftSidebar({
                             ? 'bg-primary/20 text-primary font-medium'
                             : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                         }`}
-                        onClick={() => togglePlatform(platform.id)}
+                        onClick={() => togglePlatform(platform.id as PlatformKey)}
                         data-testid={`platform-filter-${platform.id}`}
+                        aria-current={isSelected ? "true" : undefined}
                       >
                         <Icon className="w-4 h-4 mr-3" />
                         {platform.label}
