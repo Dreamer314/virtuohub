@@ -1,0 +1,234 @@
+/* VirtuoHub Design System - Main Entry Point */
+
+/* Import design system files */
+@import './theme.css';
+@import './components.css';
+
+/* Tailwind CSS base styles (keep existing integration) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design System Integration with Tailwind */
+@layer base {
+  /* Override Tailwind defaults with our design system */
+  html {
+    font-family: var(--vh-font-body);
+    background-color: var(--vh-bg);
+    color: var(--vh-text);
+  }
+  
+  body {
+    font-family: var(--vh-font-body);
+    background-color: var(--vh-bg);
+    color: var(--vh-text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Reset margins and apply consistent spacing */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--vh-font-heading);
+    color: var(--vh-text);
+    margin: 0;
+  }
+  
+  p {
+    margin: 0;
+    color: var(--vh-text);
+  }
+  
+  /* Form elements inherit theme colors */
+  input, textarea, select {
+    background-color: var(--vh-surface);
+    border-color: var(--vh-border);
+    color: var(--vh-text);
+  }
+  
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--vh-accent1);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--vh-accent1-light);
+  }
+}
+
+@layer components {
+  /* Extend Tailwind component classes with design system */
+  .btn-primary {
+    @apply vh-button vh-button-primary;
+  }
+  
+  .btn-secondary {
+    @apply vh-button vh-button-secondary;
+  }
+  
+  .card {
+    @apply vh-card;
+  }
+  
+  .post-card {
+    @apply vh-post-card;
+  }
+  
+  .poll-card {
+    @apply vh-poll-card;
+  }
+  
+  .platform-pill {
+    @apply vh-platform-pill;
+  }
+  
+  .category-pill {
+    @apply vh-category-pill;
+  }
+  
+  .glass-card {
+    @apply vh-glass vh-card;
+  }
+  
+  /* Typography utility classes */
+  .heading-1 { @apply vh-heading-1; }
+  .heading-2 { @apply vh-heading-2; }
+  .heading-3 { @apply vh-heading-3; }
+  .heading-4 { @apply vh-heading-4; }
+  .heading-5 { @apply vh-heading-5; }
+  .body-large { @apply vh-body-large; }
+  .body { @apply vh-body; }
+  .body-small { @apply vh-body-small; }
+  .caption { @apply vh-caption; }
+}
+
+@layer utilities {
+  /* Custom utility classes that integrate with design system */
+  .text-vh-accent1 { color: var(--vh-accent1); }
+  .text-vh-accent2 { color: var(--vh-accent2); }
+  .text-vh-muted { color: var(--vh-text-muted); }
+  .text-vh-subtle { color: var(--vh-text-subtle); }
+  
+  .bg-vh-surface { background-color: var(--vh-surface); }
+  .bg-vh-accent1 { background-color: var(--vh-accent1); }
+  .bg-vh-accent1-light { background-color: var(--vh-accent1-light); }
+  .bg-vh-accent2 { background-color: var(--vh-accent2); }
+  .bg-vh-accent2-light { background-color: var(--vh-accent2-light); }
+  
+  .border-vh { border-color: var(--vh-border); }
+  .border-vh-accent1 { border-color: var(--vh-accent1); }
+  .border-vh-accent2 { border-color: var(--vh-accent2); }
+  
+  .shadow-vh-sm { box-shadow: var(--vh-shadow-sm); }
+  .shadow-vh-md { box-shadow: var(--vh-shadow-md); }
+  .shadow-vh-lg { box-shadow: var(--vh-shadow-lg); }
+  .shadow-vh-xl { box-shadow: var(--vh-shadow-xl); }
+  
+  /* Animation utilities */
+  .animate-fade-in { animation: fadeIn var(--vh-transition-normal) ease-out; }
+  .animate-slide-up { animation: slideUp var(--vh-transition-slow) cubic-bezier(0.34, 1.56, 0.64, 1); }
+  
+  /* Transition utilities */
+  .transition-vh-fast { transition: all var(--vh-transition-fast); }
+  .transition-vh-normal { transition: all var(--vh-transition-normal); }
+  .transition-vh-slow { transition: all var(--vh-transition-slow); }
+  
+  /* Spacing utilities aligned with design system */
+  .space-vh-xs { gap: var(--vh-space-xs); }
+  .space-vh-sm { gap: var(--vh-space-sm); }
+  .space-vh-md { gap: var(--vh-space-md); }
+  .space-vh-lg { gap: var(--vh-space-lg); }
+  .space-vh-xl { gap: var(--vh-space-xl); }
+  .space-vh-2xl { gap: var(--vh-space-2xl); }
+  .space-vh-3xl { gap: var(--vh-space-3xl); }
+  
+  .p-vh-xs { padding: var(--vh-space-xs); }
+  .p-vh-sm { padding: var(--vh-space-sm); }
+  .p-vh-md { padding: var(--vh-space-md); }
+  .p-vh-lg { padding: var(--vh-space-lg); }
+  .p-vh-xl { padding: var(--vh-space-xl); }
+  .p-vh-2xl { padding: var(--vh-space-2xl); }
+  .p-vh-3xl { padding: var(--vh-space-3xl); }
+  
+  /* Radius utilities */
+  .rounded-vh-sm { border-radius: var(--vh-radius-sm); }
+  .rounded-vh-md { border-radius: var(--vh-radius-md); }
+  .rounded-vh-lg { border-radius: var(--vh-radius-lg); }
+  .rounded-vh-xl { border-radius: var(--vh-radius-xl); }
+  .rounded-vh-2xl { border-radius: var(--vh-radius-2xl); }
+}
+
+/* Legacy support - gradually migrate from these */
+/* Keep existing custom classes during transition */
+.orbitron-font {
+  font-family: var(--vh-font-heading);
+}
+
+.glass-card {
+  @apply vh-glass vh-card;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  transition: all var(--vh-transition-normal);
+  box-shadow: var(--vh-shadow-xl);
+}
+
+/* Ensure dark mode compatibility with existing classes */
+.dark .glass-card {
+  @apply vh-glass;
+}
+
+/* Theme transition for existing elements */
+.enhanced-card {
+  @apply vh-card transition-vh-normal;
+}
+
+.enhanced-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--vh-shadow-lg);
+}
+
+/* Ensure brand colors override any existing styles */
+.bg-primary {
+  background-color: var(--vh-accent1) !important;
+}
+
+.text-primary {
+  color: var(--vh-accent1) !important;
+}
+
+.border-primary {
+  border-color: var(--vh-accent1) !important;
+}
+
+/* Loading states and skeleton improvements */
+.skeleton {
+  @apply vh-skeleton;
+}
+
+/* Responsive design overrides */
+@media (max-width: 640px) {
+  .vh-heading-1 { font-size: 2.25rem; }
+  .vh-heading-2 { font-size: 1.875rem; }
+  .vh-heading-3 { font-size: 1.5rem; }
+  
+  .vh-card, .vh-post-card, .vh-poll-card {
+    padding: var(--vh-space-md);
+  }
+  
+  .vh-button {
+    padding: var(--vh-space-xs) var(--vh-space-md);
+    font-size: 0.875rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+  
+  .vh-card {
+    border: 1px solid #ccc !important;
+  }
+}
