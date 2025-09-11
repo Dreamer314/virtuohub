@@ -119,33 +119,33 @@ const HomePage = () => {
           {/* Hero Section */}
           <div className="mb-16">
             <div className="glass-card rounded-2xl overflow-hidden hover-lift relative" data-testid="hero-section">
-              <div className="relative min-h-[576px] flex items-center justify-center hero-glow-container">
+              <div className="relative h-[400px] sm:h-[500px] lg:h-[600px] xl:h-[700px] flex items-center justify-center hero-glow-container">
                 <img 
                   src={vhubHeaderImage} 
                   alt="VirtuoHub Homepage Header"
-                  className="absolute inset-0 w-full h-full object-cover rounded-2xl"
+                  className="absolute inset-0 w-full h-full object-contain object-center rounded-2xl"
                   style={{
                     filter: 'drop-shadow(0 0 20px rgba(6, 182, 212, 0.2)) drop-shadow(0 0 40px rgba(147, 51, 234, 0.15))'
                   }}
                 />
-                {/* HERO updated per community-first MVP - Dark gradient overlay for WCAG contrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/20 rounded-2xl"></div>
-                <div className="text-center z-10 relative px-6">
-                  {/* HERO updated per community-first MVP - New headline with Orbitron font */}
-                  <h1 className="orbitron-font text-5xl md:text-6xl font-bold text-white mb-8 drop-shadow-lg max-w-4xl mx-auto leading-tight">
+                {/* HERO updated per community-first MVP - Lighter gradient overlay for better image visibility */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent rounded-2xl"></div>
+                <div className="absolute bottom-0 left-0 right-0 text-center z-10 relative px-4 pb-8 sm:pb-12">
+                  {/* HERO updated per community-first MVP - Smaller, responsive headline */}
+                  <h1 className="orbitron-font text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-4 sm:mb-6 drop-shadow-lg max-w-4xl mx-auto leading-tight">
                     VirtuoHub: The HQ for creators building the future of immersive games and virtual worlds.
                   </h1>
-                  {/* HERO updated per community-first MVP - New subhead text */}
-                  <p className="text-lg md:text-xl text-white/90 drop-shadow-md mb-12 max-w-3xl mx-auto leading-relaxed">
+                  {/* HERO updated per community-first MVP - Smaller subhead text */}
+                  <p className="text-sm sm:text-base lg:text-lg text-white/90 drop-shadow-md mb-6 sm:mb-8 max-w-3xl mx-auto leading-relaxed">
                     Your community for news, insights, and connection across the immersive creator economy. From Roblox and GTA to Sims and Second Life, join the conversation shaping what's next in virtual worlds.
                   </p>
-                  <div className="flex flex-col gap-6 justify-center items-center">
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                  <div className="flex flex-col gap-4 sm:gap-6 justify-center items-center">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
                       {/* HERO updated per community-first MVP - Primary CTA with neon-blue glow and aria-label */}
                       <Button 
                         asChild 
                         size="lg" 
-                        className="px-10 py-4 text-lg font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-2xl shadow-cyan-500/50 transition-all hover:scale-[1.02] hover:shadow-cyan-500/70 ring-2 ring-cyan-400/20"
+                        className="px-8 py-3 text-base font-semibold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white shadow-2xl shadow-cyan-500/50 transition-all hover:scale-[1.02] hover:shadow-cyan-500/70 ring-2 ring-cyan-400/20"
                         data-testid="button-join-community"
                         aria-label="Join the VirtuoHub community"
                       >
@@ -156,7 +156,7 @@ const HomePage = () => {
                         asChild
                         variant="outline" 
                         size="lg" 
-                        className="px-10 py-4 text-lg font-semibold bg-white/10 backdrop-blur-sm border-2 border-white/60 text-white hover:bg-white/20 hover:border-white/80 shadow-2xl shadow-white/20 transition-all hover:scale-[1.02] hover:shadow-white/30"
+                        className="px-8 py-3 text-base font-semibold bg-white/10 backdrop-blur-sm border-2 border-white/60 text-white hover:bg-white/20 hover:border-white/80 shadow-2xl shadow-white/20 transition-all hover:scale-[1.02] hover:shadow-white/30"
                         data-testid="button-watch-demo"
                         aria-label="Watch the VirtuoHub demo"
                       >
@@ -164,7 +164,7 @@ const HomePage = () => {
                       </Button>
                     </div>
                     {/* HERO updated per community-first MVP - New microcopy */}
-                    <span className="text-base text-white/90 drop-shadow-lg" data-testid="text-signup-micro">
+                    <span className="text-xs sm:text-sm text-white/90 drop-shadow-lg" data-testid="text-signup-micro">
                       Start free and connect with creators across the immersive economy today.
                     </span>
                   </div>
