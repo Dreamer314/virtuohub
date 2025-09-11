@@ -1,0 +1,61 @@
+Goal: Make homepage platform chips open the Community feed filtered by platform. The Community page should read ?platform=<slug>, apply the filter, highlight the active item in the sidebar, and support clearing the filter. Remove all extra logic from the homepage; filtering belongs on the Community page.
+
+1) Platform constants
+- Create src/constants/platforms.ts with:
+export const PLATFORMS = [
+  { label: "Roblox", slug: "roblox" },
+  { label: "VRChat", slug: "vrchat" },
+  { label: "Second Life", slug: "second-life" },
+  { label: "IMVU", slug: "imvu" },
+  { label: "Meta Horizon Worlds", slug: "horizon" },
+  { label: "Unity", slug: "unity" },
+  { label: "Unreal Engine", slug: "unreal" },
+  { label: "Core", slug: "core" },
+  { label: "Dreams", slug: "dreams" },
+  { label: "Fortnite Creative", slug: "fortnite" },
+  { label: "Minecraft", slug: "minecraft" },
+  { label: "GTA FiveM", slug: "fivem" },
+  { label: "The Sims", slug: "sims" },
+  { label: "inZOI", slug: "inzoi" },
+  { label: "Elder Scrolls Online", slug: "eso" },
+  { label: "Fallout", slug: "fallout" },
+  { label: "Counter-Strike", slug: "cs" },
+  { label: "Team Fortress 2", slug: "tf2" },
+  { label: "Other Platform", slug: "other" }
+];
+
+2) Homepage chips
+- Each chip should route to /community?platform=<slug>.
+- Chips are buttons or links with aria-label="Filter community by <label>".
+
+3) Community page
+- On mount, read const platform = searchParams.get("platform").
+- If it matches a valid slug, set local filterPlatform state and apply it to the feed query.
+- Update the sidebar to highlight the active platform item.
+
+4) Sidebar integration
+- Sidebar items come from PLATFORMS.
+- Active item gets bold text and primary icon color.
+- Clicking an item updates filterPlatform and pushes /community?platform=<slug>.
+- Add “Clear filter” item at the top when a filter is active. Clicking clears state and resets URL to /community.
+
+5) Feed query
+- Accept optional platform param in feed hook or API call.
+- When present, filter posts by platform. If not yet implemented in backend, filter client-side temporarily.
+
+6) Empty state
+- If filter returns no posts, show:
+  Title: "No posts yet for {platform label}"
+  Subtitle: "Be the first to start a thread for this platform."
+  Button: "Start a Thread" → /community?compose=true&platform=<slug>
+
+7) Accessibility
+- Sidebar active item has aria-current="true".
+- Empty state button aria-label="Start a new thread for {label}".
+
+8) Acceptance checks
+- Clicking a homepage chip navigates to /community?platform=<slug>, highlights that sidebar item, and filters feed.
+- Sidebar item clicks update URL and feed.
+- Clear filter resets URL and feed.
+- Visiting /community?platform=roblox directly loads filtered feed.
+- No console errors. Prettier run. Unused imports removed.

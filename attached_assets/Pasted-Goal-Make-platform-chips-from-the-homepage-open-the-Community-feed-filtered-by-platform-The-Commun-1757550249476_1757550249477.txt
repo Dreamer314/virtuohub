@@ -1,0 +1,66 @@
+Goal: Make platform chips from the homepage open the Community feed filtered by platform. The Community page should read ?platform=<slug>, apply the filter, highlight the active item in the sidebar, and support clearing the filter. Keep component names and styling. Comment edits with // PLATFORM FILTER ROUTING.
+
+1) Slug constants
+Create src/constants/platforms.ts exporting a list of platforms with label + slug that matches the sidebar options (use kebab case for slugs):
+export const PLATFORMS = [
+  { label: "Roblox", slug: "roblox" },
+  { label: "VRChat", slug: "vrchat" },
+  { label: "Second Life", slug: "second-life" },
+  { label: "IMVU", slug: "imvu" },
+  { label: "Meta Horizon Worlds", slug: "horizon" },
+  { label: "Unity", slug: "unity" },
+  { label: "Unreal Engine", slug: "unreal" },
+  { label: "Core", slug: "core" },
+  { label: "Dreams", slug: "dreams" },
+  { label: "Fortnite Creative", slug: "fortnite" },
+  { label: "Minecraft", slug: "minecraft" },
+  { label: "GTA FiveM", slug: "fivem" },
+  { label: "The Sims", slug: "sims" },
+  { label: "inZOI", slug: "inzoi" },
+  { label: "Elder Scrolls Online", slug: "eso" },
+  { label: "Fallout", slug: "fallout" },
+  { label: "Counter-Strike", slug: "cs" },
+  { label: "Team Fortress 2", slug: "tf2" },
+  { label: "Other Platform", slug: "other" }
+];
+export function isValidPlatform(slug: string) { return PLATFORMS.some(p => p.slug === slug); }
+export function labelForPlatform(slug: string) { return PLATFORMS.find(p => p.slug === slug)?.label ?? null; }
+
+2) Homepage chips
+- Ensure each chip routes to /community?platform=<slug> using a slug from PLATFORMS.
+- Chips must be focusable buttons or links with aria-label like "Filter community by Roblox".
+
+3) Community page: read and apply filter
+- Use the current Next.js router (App Router: useSearchParams/useRouter; Pages Router: useRouter).
+- On mount, read const platform = searchParams.get("platform").
+- If isValidPlatform(platform), set local state filterPlatform = platform and apply it to the feed query.
+- If you already have platform tagging on posts, filter server/query calls by platform slug.
+- If not yet tagged, at minimum set the UI filter to platform and show an info notice: e.g., “Filtered by Roblox”.
+- When the filter changes via the sidebar, update the URL with router.replace(`/community?platform=${newSlug}`) without full reload. If cleared, replace to `/community` with no param.
+
+4) Sidebar integration
+- Render the list from PLATFORMS to avoid drift.
+- Add active state based on filterPlatform. Example: active item has bold text and primary icon color.
+- Clicking an item sets filterPlatform and updates URL as described above.
+- Add a small “Clear filter” item at the top when a platform is active. On click it clears state and URL.
+
+5) Feed query
+- Add optional platform parameter to the feed data hook or API call. The function signature should accept { platform?: string, category?: string, sort?: string }.
+- When platform is present, pass it through to the query. If no backend filter exists yet, filter client-side as a temporary measure with a TODO comment.
+
+6) Empty state
+- If a filter returns no results, show an empty state inside the feed area:
+  Title: "No posts yet for {labelForPlatform(platform)}"
+  Subtitle: "Be the first to start a thread for this platform."
+  Button: "Start a Thread" → /community?compose=true&platform=<slug>
+
+7) Accessibility
+- Sidebar items are buttons or links with aria-current="true" when active.
+- Empty-state button has aria-label="Start a new thread for {label}".
+
+8) Acceptance checks
+- Clicking a homepage chip navigates to /community?platform=<slug>, highlights the matching sidebar item, and the feed reflects the filter.
+- Changing the platform in the sidebar updates both the feed and the URL.
+- Clearing the filter removes the param and resets the feed.
+- Deep-link test: visiting /community?platform=roblox directly opens the page filtered to Roblox.
+- No console errors. Prettier run. Unused imports removed.
