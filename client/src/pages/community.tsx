@@ -22,6 +22,8 @@ import type { FeedItem } from '@/types/content';
 import { useLocation, useSearch } from 'wouter';
 // POST CATEGORIES MVP - Import canonical categories for validation
 import { POST_CATEGORIES } from '@/constants/postCategories';
+// PLATFORM FILTERING - Import platform constants and utilities
+import { PLATFORMS, type PlatformKey } from '@/types/content';
 
 const FEATURED_V2 = true;
 
@@ -36,7 +38,7 @@ const CommunityPage: React.FC = () => {
   const searchString = useSearch();
   
   const [currentTab, setCurrentTab] = useState<'all' | 'saved'>('all');
-  const [selectedPlatforms, setSelectedPlatforms] = useState<Platform[]>([]);
+  const [selectedPlatforms, setSelectedPlatforms] = useState<PlatformKey[]>([]);
   const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
   const [isCreatePollModalOpen, setIsCreatePollModalOpen] = useState(false);
   const [createModalType, setCreateModalType] = useState<'regular' | 'pulse' | 'insight'>('regular');
@@ -84,11 +86,17 @@ const CommunityPage: React.FC = () => {
     return unsubscribe;
   }, []);
 
-  // COMPOSER ROUTING - Listen for query params and auto-open composer
+  // COMPOSER ROUTING & PLATFORM FILTERING - Listen for query params
   useEffect(() => {
     const searchParams = new URLSearchParams(searchString);
     const shouldCompose = searchParams.get('compose') === 'true';
     const categorySlug = searchParams.get('category');
+    const platformSlug = searchParams.get('platform');
+    
+    // Handle platform filtering from URL
+    if (platformSlug && PLATFORMS.some(p => p.key === platformSlug)) {
+      setSelectedPlatforms([platformSlug as PlatformKey]);
+    }
     
     if (shouldCompose) {
       // Set category if provided and valid
@@ -116,8 +124,24 @@ const CommunityPage: React.FC = () => {
     }
   }, [searchString, setLocation]);
 
-  // Filter feed items
+  // Filter feed items by platform
   const allFeedItems = currentTab === 'saved' ? savedPosts.map(p => ({ ...p, type: 'post' as const })) : feedData;
+  
+  // Apply platform filtering
+  const filteredFeedItems = selectedPlatforms.length > 0 
+    ? allFeedItems.filter(item => {
+        // For posts, check if any selected platform matches
+        if (item.type === 'post' && item.platforms) {
+          return selectedPlatforms.some(platform => item.platforms.includes(platform));
+        }
+        // For polls, check platforms if they exist
+        if (item.type === 'poll' && item.platforms) {
+          return selectedPlatforms.some(platform => item.platforms.includes(platform));
+        }
+        // Show items without platform info when no filter is active
+        return selectedPlatforms.length === 0;
+      })
+    : allFeedItems;
 
   // Add scroll animation observer
   useEffect(() => {
@@ -160,8 +184,16 @@ const CommunityPage: React.FC = () => {
             <LeftSidebar
               currentTab={currentTab}
               onTabChange={setCurrentTab}
-              selectedPlatforms={selectedPlatforms.map(p => p)}
-              onPlatformChange={(platforms) => setSelectedPlatforms(platforms as Platform[])}
+              selectedPlatforms={selectedPlatforms}
+              onPlatformChange={(platforms) => {
+                setSelectedPlatforms(platforms as PlatformKey[]);
+                // Update URL with platform filter
+                if (platforms.length > 0) {
+                  setLocation(`/community?platform=${platforms[0]}`);
+                } else {
+                  setLocation('/community');
+                }
+              }}
               currentSection="feed"
             />
           </div>
@@ -248,8 +280,16 @@ const CommunityPage: React.FC = () => {
                   <LeftSidebar
                     currentTab={currentTab}
                     onTabChange={setCurrentTab}
-                    selectedPlatforms={selectedPlatforms.map(p => p)}
-                    onPlatformChange={(platforms) => setSelectedPlatforms(platforms as Platform[])}
+                    selectedPlatforms={selectedPlatforms}
+                    onPlatformChange={(platforms) => {
+                      setSelectedPlatforms(platforms as PlatformKey[]);
+                      // Update URL with platform filter
+                      if (platforms.length > 0) {
+                        setLocation(`/community?platform=${platforms[0]}`);
+                      } else {
+                        setLocation('/community');
+                      }
+                    }}
                     currentSection="feed"
                   />
                 </div>
