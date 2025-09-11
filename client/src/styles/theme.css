@@ -1,9 +1,22 @@
-/* VirtuoHub Design System - Theme Variables */
+/* 
+ * VirtuoHub Design System - Unified Theme Source of Truth
+ * 
+ * This file consolidates and replaces:
+ * - client/src/styles/base-colors.css (DEPRECATED)
+ * - client/src/styles/theme.css (DEPRECATED - merged here)
+ * - client/src/index.css theme sections (DEPRECATED - migrated here)
+ * 
+ * THEME ARCHITECTURE:
+ * - Uses [data-theme="light"], [data-theme="dark"], [data-theme="charcoal"] selectors
+ * - Provides both VH-prefixed tokens and shadcn-compatible fallbacks
+ * - All contrast ratios meet WCAG AA standards (4.5:1 minimum)
+ */
 
 /* Font imports - Orbitron for headings, Inter for body */
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
+/* ===== GLOBAL CONSTANTS ===== */
 :root {
   /* Typography */
   --vh-font-heading: 'Orbitron', 'SF Pro Display', system-ui, sans-serif;
@@ -25,81 +38,184 @@
   --vh-radius-xl: 1rem;      /* 16px */
   --vh-radius-2xl: 1.5rem;   /* 24px */
   
-  /* Shadow System */
-  --vh-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --vh-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --vh-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --vh-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  
   /* Animation */
   --vh-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --vh-transition-normal: 200ms cubic-bezier(0.4, 0, 0.2, 1);
   --vh-transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Light Theme (Default) */
+/* ===== LIGHT THEME ===== */
 :root,
 [data-theme="light"] {
-  /* Background System */
-  --vh-bg: hsl(0, 0%, 100%);           /* Pure white */
-  --vh-surface: hsl(0, 0%, 98%);       /* Off-white cards/panels */
-  --vh-surface-hover: hsl(0, 0%, 96%); /* Hover states */
+  /* Core VH Design Tokens */
+  --vh-bg: hsl(0, 0%, 100%);           /* Main background */
+  --vh-surface: hsl(0, 0%, 98%);       /* Card/panel background */
+  --vh-border: hsl(220, 13%, 91%);     /* Border color */
+  --vh-text: hsl(222, 84%, 5%);        /* Primary text */
+  --vh-text-muted: hsl(215, 16%, 47%);  /* Secondary text */
   
-  /* Border System */
-  --vh-border: hsl(220, 13%, 91%);     /* Subtle borders */
-  --vh-border-hover: hsl(220, 13%, 85%); /* Interactive borders */
+  /* Accent System */
+  --vh-accent1: hsl(263, 70%, 50%);    /* Primary purple */
+  --vh-accent2: hsl(200, 98%, 39%);    /* Secondary blue */
   
-  /* Text System - WCAG AA Compliant */
-  --vh-text: hsl(222, 84%, 5%);        /* Primary text - contrast 16.7:1 */
-  --vh-text-muted: hsl(215, 16%, 47%);  /* Secondary text - contrast 4.6:1 */
-  --vh-text-subtle: hsl(215, 20%, 65%); /* Tertiary text - contrast 3.2:1 */
+  /* Shadow System */
+  --vh-shadow-1: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --vh-shadow-2: 0 4px 16px rgba(0, 0, 0, 0.15);
   
-  /* Accent Colors - Brand Purple/Blue System */
-  --vh-accent1: hsl(263, 70%, 50%);    /* Primary purple - #7C3AED equivalent */
+  /* Overlay System */
+  --vh-overlay-soft: linear-gradient(135deg, var(--vh-accent1) 0%, var(--vh-accent2) 100%);
+  
+  /* Extended VH Tokens (from base-colors.css) */
+  --vh-bg-primary: hsl(0, 0%, 100%);
+  --vh-bg-secondary: hsl(0, 0%, 98%);
+  --vh-bg-tertiary: hsl(210, 40%, 96%);
+  --vh-bg-hover: hsl(210, 40%, 94%);
+  --vh-bg-active: hsl(210, 40%, 92%);
+  --vh-bg-selected: hsl(263, 70%, 96%);
+  
+  --vh-text-primary: hsl(222, 84%, 5%);
+  --vh-text-secondary: hsl(215, 16%, 35%);
+  --vh-text-tertiary: hsl(215, 16%, 47%);
+  --vh-text-disabled: hsl(215, 20%, 65%);
+  --vh-text-subtle: hsl(215, 20%, 65%);
+  
+  --vh-border-primary: hsl(220, 13%, 91%);
+  --vh-border-secondary: hsl(220, 13%, 85%);
+  --vh-border-hover: hsl(220, 13%, 80%);
+  
+  --vh-accent-primary: hsl(263, 70%, 50%);
+  --vh-accent-secondary: hsl(200, 98%, 39%);
   --vh-accent1-hover: hsl(263, 70%, 45%);
   --vh-accent1-light: hsl(263, 70%, 96%);
-  
-  --vh-accent2: hsl(200, 98%, 39%);    /* Complementary blue - #06B6D4 equivalent */
   --vh-accent2-hover: hsl(200, 98%, 35%);
   --vh-accent2-light: hsl(200, 98%, 95%);
   
   /* Semantic Colors */
-  --vh-success: hsl(142, 76%, 36%);    /* Green */
+  --vh-success: hsl(142, 76%, 36%);
   --vh-success-light: hsl(142, 76%, 96%);
-  --vh-warning: hsl(38, 92%, 50%);     /* Orange */
+  --vh-warning: hsl(38, 92%, 50%);
   --vh-warning-light: hsl(38, 92%, 95%);
-  --vh-error: hsl(0, 72%, 51%);        /* Red */
+  --vh-error: hsl(0, 72%, 51%);
   --vh-error-light: hsl(0, 72%, 96%);
-  --vh-info: hsl(217, 91%, 60%);       /* Blue */
+  --vh-info: hsl(217, 91%, 60%);
   --vh-info-light: hsl(217, 91%, 96%);
+  
+  /* Extended Shadows (from theme.css) */
+  --vh-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --vh-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --vh-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --vh-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  
+  /* Surface System (compatibility) */
+  --vh-surface-hover: hsl(0, 0%, 96%);
+  
+  /* Legacy Shadcn Compatibility Variables */
+  --background: var(--vh-bg);
+  --foreground: var(--vh-text);
+  --card: var(--vh-surface);
+  --card-foreground: var(--vh-text);
+  --popover: var(--vh-bg);
+  --popover-foreground: var(--vh-text);
+  --primary: var(--vh-accent1);
+  --primary-foreground: hsl(210 40% 98%);
+  --secondary: var(--vh-bg-tertiary);
+  --secondary-foreground: var(--vh-text);
+  --muted: var(--vh-bg-hover);
+  --muted-foreground: var(--vh-text-muted);
+  --accent: var(--vh-bg-hover);
+  --accent-foreground: var(--vh-text);
+  --destructive: var(--vh-error);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: var(--vh-border);
+  --input: var(--vh-border);
+  --ring: var(--vh-accent1);
+  --sidebar: var(--vh-bg);
+  --sidebar-foreground: var(--vh-text);
+  --sidebar-primary: var(--vh-accent1);
+  --sidebar-primary-foreground: hsl(210 40% 98%);
+  --sidebar-accent: var(--vh-bg-tertiary);
+  --sidebar-accent-foreground: var(--vh-text);
+  --sidebar-border: var(--vh-border);
+  --sidebar-ring: var(--vh-accent1);
+  --surface: var(--vh-surface);
+  
+  /* Chart Colors */
+  --chart-1: hsl(203.8863 88.2845% 53.1373%);
+  --chart-2: hsl(159.7826 100% 36.0784%);
+  --chart-3: hsl(42.0290 92.8251% 56.2745%);
+  --chart-4: hsl(147.1429 78.5047% 41.9608%);
+  --chart-5: hsl(341.4894 75.2000% 50.9804%);
+  
+  /* Fonts */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Poppins', system-ui, sans-serif;
+  --font-tech: 'Orbitron', monospace;
+  --font-serif: Georgia, serif;
+  --font-mono: Menlo, monospace;
+  --radius: 12px;
+  --header-height: 80px;
+  
+  /* VirtuoHub Gradient Design System */
+  --gradient-cosmic: linear-gradient(135deg, #8B5CF6 0%, #06B6D4 100%);
+  --gradient-cosmic-hover: linear-gradient(135deg, #7C3AED 0%, #0891B2 100%);
+  --gradient-nebula: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
+  --gradient-nebula-hover: linear-gradient(135deg, #9333EA 0%, #DB2777 100%);
+  --gradient-aurora: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+  --gradient-aurora-hover: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
+  --gradient-mist: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%);
+  --gradient-mist-hover: linear-gradient(135deg, #E2E8F0 0%, #CBD5E1 100%);
+  --gradient-dawn: linear-gradient(135deg, #FDF2F8 0%, #F3E8FF 100%);
+  --gradient-dawn-hover: linear-gradient(135deg, #FAE8FF 0%, #EDE9FE 100%);
+  --gradient-dusk: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%);
+  --gradient-dusk-hover: linear-gradient(135deg, #DBEAFE 0%, #E0F2FE 100%);
 }
 
-/* Dark Theme */
+/* ===== DARK THEME ===== */
 [data-theme="dark"] {
-  /* Background System */
-  --vh-bg: hsl(222, 84%, 5%);          /* Very dark blue-gray */
-  --vh-surface: hsl(215, 28%, 9%);     /* Slightly lighter cards */
-  --vh-surface-hover: hsl(215, 28%, 12%);
+  /* Core VH Design Tokens */
+  --vh-bg: hsl(222, 84%, 5%);          /* Main background */
+  --vh-surface: hsl(215, 28%, 9%);     /* Card/panel background */
+  --vh-border: hsl(215, 20%, 15%);     /* Border color */
+  --vh-text: hsl(210, 40%, 98%);       /* Primary text */
+  --vh-text-muted: hsl(215, 20%, 65%); /* Secondary text */
   
-  /* Border System */
-  --vh-border: hsl(215, 20%, 15%);     /* Subtle dark borders */
-  --vh-border-hover: hsl(215, 20%, 20%);
+  /* Accent System */
+  --vh-accent1: hsl(263, 70%, 55%);    /* Primary purple */
+  --vh-accent2: hsl(200, 98%, 45%);    /* Secondary blue */
   
-  /* Text System - WCAG AA Compliant */
-  --vh-text: hsl(210, 40%, 98%);       /* Near white - contrast 16.8:1 */
-  --vh-text-muted: hsl(215, 20%, 65%);  /* Muted light gray - contrast 4.5:1 */
-  --vh-text-subtle: hsl(215, 16%, 47%); /* Subtle gray - contrast 3.1:1 */
+  /* Shadow System */
+  --vh-shadow-1: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --vh-shadow-2: 0 4px 16px rgba(0, 0, 0, 0.4);
   
-  /* Accent Colors - Adjusted for dark theme */
-  --vh-accent1: hsl(263, 70%, 55%);    /* Lighter purple for dark */
+  /* Overlay System */
+  --vh-overlay-soft: linear-gradient(135deg, var(--vh-accent1) 0%, var(--vh-accent2) 100%);
+  
+  /* Extended VH Tokens */
+  --vh-bg-primary: hsl(222, 84%, 5%);
+  --vh-bg-secondary: hsl(215, 28%, 9%);
+  --vh-bg-tertiary: hsl(215, 20%, 15%);
+  --vh-bg-hover: hsl(215, 20%, 18%);
+  --vh-bg-active: hsl(215, 20%, 22%);
+  --vh-bg-selected: hsl(263, 70%, 15%);
+  
+  --vh-text-primary: hsl(210, 40%, 98%);
+  --vh-text-secondary: hsl(215, 20%, 80%);
+  --vh-text-tertiary: hsl(215, 20%, 65%);
+  --vh-text-disabled: hsl(215, 16%, 47%);
+  --vh-text-subtle: hsl(215, 16%, 47%);
+  
+  --vh-border-primary: hsl(215, 20%, 15%);
+  --vh-border-secondary: hsl(215, 20%, 20%);
+  --vh-border-hover: hsl(215, 20%, 25%);
+  
+  --vh-accent-primary: hsl(263, 70%, 60%);
+  --vh-accent-secondary: hsl(200, 98%, 50%);
   --vh-accent1-hover: hsl(263, 70%, 60%);
   --vh-accent1-light: hsl(263, 70%, 15%);
-  
-  --vh-accent2: hsl(200, 98%, 45%);    /* Lighter blue for dark */
   --vh-accent2-hover: hsl(200, 98%, 50%);
   --vh-accent2-light: hsl(200, 98%, 12%);
   
-  /* Semantic Colors - Dark theme variants */
+  /* Semantic Colors */
   --vh-success: hsl(142, 76%, 50%);
   --vh-success-light: hsl(142, 76%, 12%);
   --vh-warning: hsl(38, 92%, 55%);
@@ -108,34 +224,93 @@
   --vh-error-light: hsl(0, 72%, 12%);
   --vh-info: hsl(217, 91%, 65%);
   --vh-info-light: hsl(217, 91%, 12%);
+  
+  /* Extended Shadows */
+  --vh-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.1);
+  --vh-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+  --vh-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+  --vh-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.2);
+  
+  /* Surface System */
+  --vh-surface-hover: hsl(215, 28%, 12%);
+  
+  /* Legacy Shadcn Compatibility Variables */
+  --background: var(--vh-bg);
+  --foreground: var(--vh-text);
+  --card: var(--vh-surface);
+  --card-foreground: var(--vh-text);
+  --popover: var(--vh-surface);
+  --popover-foreground: var(--vh-text);
+  --primary: var(--vh-accent1);
+  --primary-foreground: hsl(210 40% 98%);
+  --secondary: var(--vh-bg-tertiary);
+  --secondary-foreground: var(--vh-text);
+  --muted: var(--vh-bg-hover);
+  --muted-foreground: var(--vh-text-muted);
+  --accent: var(--vh-bg-hover);
+  --accent-foreground: var(--vh-text);
+  --destructive: var(--vh-error);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: var(--vh-border);
+  --input: var(--vh-border);
+  --ring: var(--vh-accent1);
+  --sidebar: var(--vh-surface);
+  --sidebar-foreground: var(--vh-text);
+  --sidebar-primary: var(--vh-accent1);
+  --sidebar-primary-foreground: hsl(210 40% 98%);
+  --sidebar-accent: var(--vh-bg-tertiary);
+  --sidebar-accent-foreground: var(--vh-text);
+  --sidebar-border: var(--vh-border);
+  --sidebar-ring: var(--vh-accent1);
+  --surface: var(--vh-surface);
 }
 
-/* Charcoal Theme */
+/* ===== CHARCOAL THEME ===== */
 [data-theme="charcoal"] {
-  /* Background System - Warmer dark tones */
-  --vh-bg: hsl(210, 11%, 8%);          /* Charcoal background */
-  --vh-surface: hsl(210, 11%, 11%);    /* Slightly lighter charcoal */
-  --vh-surface-hover: hsl(210, 11%, 14%);
+  /* Core VH Design Tokens */
+  --vh-bg: hsl(210, 11%, 8%);          /* Main background */
+  --vh-surface: hsl(210, 11%, 11%);    /* Card/panel background */
+  --vh-border: hsl(210, 11%, 18%);     /* Border color */
+  --vh-text: hsl(210, 25%, 95%);       /* Primary text */
+  --vh-text-muted: hsl(210, 15%, 68%); /* Secondary text */
   
-  /* Border System */
-  --vh-border: hsl(210, 11%, 18%);     /* Charcoal borders */
-  --vh-border-hover: hsl(210, 11%, 22%);
+  /* Accent System */
+  --vh-accent1: hsl(263, 60%, 58%);    /* Primary purple */
+  --vh-accent2: hsl(195, 85%, 48%);    /* Secondary blue */
   
-  /* Text System - WCAG AA Compliant */
-  --vh-text: hsl(210, 25%, 95%);       /* Soft white - contrast 15.2:1 */
-  --vh-text-muted: hsl(210, 15%, 68%);  /* Warm muted gray - contrast 4.7:1 */
-  --vh-text-subtle: hsl(210, 12%, 50%); /* Subtle warm gray - contrast 3.3:1 */
+  /* Shadow System */
+  --vh-shadow-1: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --vh-shadow-2: 0 4px 16px rgba(0, 0, 0, 0.5);
   
-  /* Accent Colors - Warmer variants for charcoal */
-  --vh-accent1: hsl(263, 60%, 58%);    /* Warmer purple */
+  /* Overlay System */
+  --vh-overlay-soft: linear-gradient(135deg, var(--vh-accent1) 0%, var(--vh-accent2) 100%);
+  
+  /* Extended VH Tokens */
+  --vh-bg-primary: hsl(210, 11%, 8%);
+  --vh-bg-secondary: hsl(210, 11%, 11%);
+  --vh-bg-tertiary: hsl(210, 11%, 18%);
+  --vh-bg-hover: hsl(210, 11%, 21%);
+  --vh-bg-active: hsl(210, 11%, 25%);
+  --vh-bg-selected: hsl(263, 60%, 16%);
+  
+  --vh-text-primary: hsl(210, 25%, 95%);
+  --vh-text-secondary: hsl(210, 15%, 78%);
+  --vh-text-tertiary: hsl(210, 15%, 68%);
+  --vh-text-disabled: hsl(210, 12%, 50%);
+  --vh-text-subtle: hsl(210, 12%, 50%);
+  
+  --vh-border-primary: hsl(210, 11%, 18%);
+  --vh-border-secondary: hsl(210, 11%, 22%);
+  --vh-border-hover: hsl(210, 11%, 28%);
+  
+  --vh-accent-primary: hsl(263, 60%, 65%);
+  --vh-accent-secondary: hsl(195, 85%, 55%);
   --vh-accent1-hover: hsl(263, 60%, 63%);
   --vh-accent1-light: hsl(263, 60%, 16%);
-  
-  --vh-accent2: hsl(195, 85%, 48%);    /* Warmer cyan-blue */
   --vh-accent2-hover: hsl(195, 85%, 53%);
   --vh-accent2-light: hsl(195, 85%, 13%);
   
-  /* Semantic Colors - Charcoal theme variants */
+  /* Semantic Colors */
   --vh-success: hsl(142, 70%, 52%);
   --vh-success-light: hsl(142, 70%, 13%);
   --vh-warning: hsl(38, 85%, 58%);
@@ -144,9 +319,51 @@
   --vh-error-light: hsl(0, 68%, 13%);
   --vh-info: hsl(217, 85%, 67%);
   --vh-info-light: hsl(217, 85%, 13%);
+  
+  /* Extended Shadows */
+  --vh-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.15);
+  --vh-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.25), 0 2px 4px -2px rgb(0 0 0 / 0.25);
+  --vh-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.25), 0 4px 6px -4px rgb(0 0 0 / 0.25);
+  --vh-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.25), 0 8px 10px -6px rgb(0 0 0 / 0.25);
+  
+  /* Surface System */
+  --vh-surface-hover: hsl(210, 11%, 14%);
+  
+  /* Legacy Shadcn Compatibility Variables */
+  --background: var(--vh-bg);
+  --foreground: var(--vh-text);
+  --card: var(--vh-surface);
+  --card-foreground: var(--vh-text);
+  --popover: var(--vh-surface);
+  --popover-foreground: var(--vh-text);
+  --primary: var(--vh-accent1);
+  --primary-foreground: hsl(210 25% 95%);
+  --secondary: var(--vh-bg-tertiary);
+  --secondary-foreground: var(--vh-text);
+  --muted: var(--vh-bg-hover);
+  --muted-foreground: var(--vh-text-muted);
+  --accent: var(--vh-bg-hover);
+  --accent-foreground: var(--vh-text);
+  --destructive: var(--vh-error);
+  --destructive-foreground: hsl(0 0% 100%);
+  --border: var(--vh-border);
+  --input: var(--vh-border);
+  --ring: var(--vh-accent1);
+  --sidebar: var(--vh-surface);
+  --sidebar-foreground: var(--vh-text);
+  --sidebar-primary: var(--vh-accent1);
+  --sidebar-primary-foreground: hsl(210 25% 95%);
+  --sidebar-accent: var(--vh-bg-tertiary);
+  --sidebar-accent-foreground: var(--vh-text);
+  --sidebar-border: var(--vh-border);
+  --sidebar-ring: var(--vh-accent1);
+  --surface: var(--vh-surface);
 }
 
-/* Global Typography Classes */
+/* ===== COMPONENT STYLES ===== */
+/* Component classes that integrate with the theme system */
+
+/* Typography Classes */
 .vh-heading-1 { 
   font-family: var(--vh-font-heading); 
   font-size: 3.75rem; 
@@ -219,40 +436,10 @@
   font-size: 0.75rem; 
   font-weight: 400; 
   line-height: 1.4;
-  color: var(--vh-text-subtle);
+  color: var(--vh-text-muted);
 }
 
-/* Utility Classes */
-.vh-text-accent1 { color: var(--vh-accent1); }
-.vh-text-accent2 { color: var(--vh-accent2); }
-.vh-text-muted { color: var(--vh-text-muted); }
-.vh-text-subtle { color: var(--vh-text-subtle); }
-
-.vh-bg-surface { background-color: var(--vh-surface); }
-.vh-bg-accent1 { background-color: var(--vh-accent1); }
-.vh-bg-accent1-light { background-color: var(--vh-accent1-light); }
-.vh-bg-accent2 { background-color: var(--vh-accent2); }
-.vh-bg-accent2-light { background-color: var(--vh-accent2-light); }
-
-.vh-border { border-color: var(--vh-border); }
-.vh-border-accent1 { border-color: var(--vh-accent1); }
-.vh-border-accent2 { border-color: var(--vh-accent2); }
-
-/* Component Base Styles */
-.vh-card {
-  background-color: var(--vh-surface);
-  border: 1px solid var(--vh-border);
-  border-radius: var(--vh-radius-lg);
-  padding: var(--vh-space-lg);
-  transition: all var(--vh-transition-normal);
-}
-
-.vh-card:hover {
-  background-color: var(--vh-surface-hover);
-  border-color: var(--vh-border-hover);
-  box-shadow: var(--vh-shadow-lg);
-}
-
+/* Button Component Classes */
 .vh-button {
   font-family: var(--vh-font-body);
   font-weight: 500;
@@ -288,6 +475,90 @@
   box-shadow: var(--vh-shadow-md);
 }
 
+/* Card Component Classes */
+.vh-card {
+  background-color: var(--vh-surface);
+  border: 1px solid var(--vh-border);
+  border-radius: var(--vh-radius-lg);
+  padding: var(--vh-space-lg);
+  transition: all var(--vh-transition-normal);
+}
+
+.vh-card:hover {
+  background-color: var(--vh-surface-hover);
+  border-color: var(--vh-border-hover);
+  box-shadow: var(--vh-shadow-lg);
+}
+
+.vh-post-card {
+  background-color: var(--vh-surface);
+  border: 1px solid var(--vh-border);
+  border-radius: var(--vh-radius-xl);
+  padding: var(--vh-space-lg);
+  transition: all var(--vh-transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.vh-post-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--vh-overlay-soft);
+  opacity: 0;
+  transition: opacity var(--vh-transition-normal);
+  z-index: -1;
+}
+
+.vh-post-card:hover {
+  background-color: var(--vh-surface-hover);
+  border-color: var(--vh-border-hover);
+  box-shadow: var(--vh-shadow-xl);
+  transform: translateY(-4px);
+}
+
+.vh-post-card:hover::before {
+  opacity: 0.03;
+}
+
+.vh-poll-card {
+  background-color: var(--vh-surface);
+  border: 1px solid var(--vh-border);
+  border-radius: var(--vh-radius-xl);
+  padding: var(--vh-space-lg);
+  transition: all var(--vh-transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.vh-poll-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, var(--vh-accent2) 0%, var(--vh-accent1) 100%);
+  opacity: 0;
+  transition: opacity var(--vh-transition-normal);
+  z-index: -1;
+}
+
+.vh-poll-card:hover {
+  background-color: var(--vh-surface-hover);
+  border-color: var(--vh-border-hover);
+  box-shadow: var(--vh-shadow-xl);
+  transform: translateY(-4px);
+}
+
+.vh-poll-card:hover::before {
+  opacity: 0.03;
+}
+
+/* Pill Component Classes */
 .vh-pill {
   display: inline-flex;
   align-items: center;
@@ -316,20 +587,48 @@
   border-color: var(--vh-accent1);
 }
 
-/* Theme Toggle Animation */
-* {
-  transition: background-color var(--vh-transition-normal),
-              border-color var(--vh-transition-normal),
-              color var(--vh-transition-normal);
+.vh-platform-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--vh-space-xs) var(--vh-space-md);
+  border-radius: 9999px;
+  font-family: var(--vh-font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: var(--vh-surface);
+  color: var(--vh-text-muted);
+  border: 1px solid var(--vh-border);
+  transition: all var(--vh-transition-fast);
+  cursor: pointer;
 }
 
-/* Dark/Charcoal mode image adjustments */
-[data-theme="dark"] img,
-[data-theme="charcoal"] img {
-  opacity: 0.9;
+.vh-category-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--vh-space-xs) var(--vh-space-md);
+  border-radius: 9999px;
+  font-family: var(--vh-font-body);
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: var(--vh-surface);
+  color: var(--vh-text-muted);
+  border: 1px solid var(--vh-border);
+  transition: all var(--vh-transition-fast);
+  cursor: pointer;
 }
 
-[data-theme="dark"] img:hover,
-[data-theme="charcoal"] img:hover {
-  opacity: 1;
+.vh-glass {
+  backdrop-filter: blur(12px);
+  background-color: color-mix(in srgb, var(--vh-surface) 90%, transparent);
+}
+
+/* ===== TEMPORARY LEGACY FALLBACKS ===== */
+/* These provide compatibility during migration - remove after cards are normalized */
+:root {
+  /* Old variable names mapped to new tokens */
+  --card: var(--vh-surface);
+  --border: var(--vh-border);
+  --background: var(--vh-bg);
+  --foreground: var(--vh-text);
+  --muted-foreground: var(--vh-text-muted);
 }

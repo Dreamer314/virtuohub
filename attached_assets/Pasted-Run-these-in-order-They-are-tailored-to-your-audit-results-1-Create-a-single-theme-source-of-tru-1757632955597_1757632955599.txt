@@ -1,0 +1,101 @@
+Run these in order. They are tailored to your audit results.
+
+1) Create a single theme source of truth and deprecate the old files
+Agent, unify the theming system into a single source of truth.
+
+1) Add /styles/theme.css with variables for three modes using [data-theme] on html or body:
+   --vh-bg, --vh-surface, --vh-border,
+   --vh-text, --vh-text-muted,
+   --vh-accent1, --vh-accent2,
+   --vh-shadow-1, --vh-shadow-2,
+   --vh-overlay-soft.
+
+2) Merge the three existing CSS files that define overlapping variables into theme.css.
+   - Preserve their current values by mapping legacy names to the new tokens.
+   - Add a temporary fallback block that maps old names to new tokens, for example:
+     :root { --card: var(--vh-surface); }
+   - Remove .charcoal class targeting and replace with [data-theme="charcoal"].
+
+3) Ensure the theme switcher sets [data-theme] on html or body and that all pages import /styles/theme.css.
+
+4) Document the final token values per mode in CHANGELOG.md under "Theme Tokens".
+   Document which old files were merged and mark them deprecated in comments at the top.
+Stop here, no component refactors yet.
+
+2) Normalize cards to one base, then rewrap PostCard, PollCard, ListCard
+Agent, normalize all card components with one base shell, then rewrap existing cards.
+
+1) Create /components/ui/CardBase.tsx with a single visual shell:
+   - Classes must use CSS variables only:
+     bg-[var(--vh-surface)]
+     text-[color:var(--vh-text)]
+     border border-[color:var(--vh-border)]
+     rounded-2xl p-4 md:p-6
+     shadow-[var(--vh-shadow-1)] hover:shadow-[var(--vh-shadow-2)]
+     relative overflow-hidden
+     before:absolute before:inset-0 before:pointer-events-none before:bg-[var(--vh-overlay-soft)] before:opacity-[0.04]
+
+2) Add a small "variant" prop for density only, for example variant="thread" | "poll" | "list" | "spotlight".
+   Variants can adjust spacing or header layout only. Do not change colors.
+
+3) Refactor PostCard, PollCard, ListCard, and SpotlightCard to render their content inside <CardBase>.
+   Remove duplicate surface, border, shadow, and overlay code from these components.
+
+4) Replace any direct references to .vh-post-card or .enhanced-card with CardBase.
+   Where those classes carry unique layout rules, move only the layout bits into the component,
+   but keep colors, borders, shadows, and overlay provided by CardBase.
+
+5) In dark mode, ensure CardBase resolves --vh-surface from the dark section, not charcoal.
+   Add a unit-style check in the refactor commit message: "dark uses dark tokens, not charcoal".
+   Record changed files in CHANGELOG.md under "Card Normalization".
+Stop when cards render identically except for content and density.
+
+3) Remove hardcoded colors and shadow literals, add a semantic accent map
+Agent, remove hardcoded colors and dynamic Tailwind color strings from components.
+
+1) Search for hex, rgb, or rgba literals and replace them with theme tokens where possible:
+   - Replace any blue, yellow, green accents with --vh-accent1 or --vh-accent2 plus opacity utilities.
+   - Replace shadow rgba literals with var(--vh-shadow-1) or var(--vh-shadow-2).
+
+2) Create /lib/accents.ts that exports a small semantic accent map:
+   export const accent = {
+     primary: 'var(--vh-accent1)',
+     secondary: 'var(--vh-accent2)',
+     success: 'var(--vh-accent2)',  // temporary mapping
+     warning: 'var(--vh-accent1)'   // temporary mapping
+   }
+   Use inline style or css var utilities rather than dynamic class strings like bg-${color}-500/20.
+
+3) Update Poll components that used dynamic Tailwind classes to read from the accent map instead.
+   Use utilities for opacity, for example via an overlay element or tailwind opacity classes.
+
+4) Update CHANGELOG.md with a "Color De-hardcode" section listing files changed and the accent map policy.
+Stop after all hardcoded color and shadow literals are removed from components.
+
+4) Logo contrast fix for light mode
+Agent, ensure the cube logo remains visible in light mode.
+
+1) Identify the Logo component. If it is SVG, prefer using currentColor where possible.
+2) Wrap the logo in a container that sets a contrast-safe color in light mode:
+   For [data-theme="light"], set text-[color:var(--vh-text)] on the wrapper.
+3) If the logo is an image, add a subtle background behind it in light mode using --vh-overlay-soft or a 1px tokenized ring with --vh-border.
+
+Add a Playwright test:
+- Switch to light mode, query the logo wrapper, compute its color and background from CSS variables, then assert contrast passes a simple threshold.
+Document the approach in CHANGELOG.md under "Logo Contrast".
+
+5) Add automated guards so style drift cannot return
+Agent, add tests and a linter script to guard the theme system.
+
+1) Playwright tests:
+   - Switch to dark mode, select a Thread card, assert its computed background equals the resolved value for --vh-surface in dark mode.
+   - Switch to charcoal, assert the card surface differs from the dark mode surface.
+   - Switch to light, assert Dropdown and Pill components have text and background that pass a simple contrast threshold against --vh-surface.
+
+2) Add /scripts/check-hardcoded-colors.js:
+   - Scan /components and /pages for hex or rgb literals.
+   - Fail if found, except inside /styles/theme.css or tailwind config, and ignore tests.
+   - Add this script to npm run check:all.
+
+3) Run npm run check:all. If any item fails, fix it, rerun, then stop.
+Update CHANGELOG.md with a "Theme Guards" section describing the tests and linter.

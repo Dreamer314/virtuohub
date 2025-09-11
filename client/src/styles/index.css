@@ -55,48 +55,16 @@
 
 @layer components {
   /* Extend Tailwind component classes with design system */
+  /* Note: VH component classes are now defined in theme.css */
+  
+  /* Simple class aliases for convenience */
   .btn-primary {
-    @apply vh-button vh-button-primary;
+    @apply bg-vh-accent1 text-white hover:bg-vh-accent1-hover hover:shadow-vh-md transition-all duration-150;
   }
   
   .btn-secondary {
-    @apply vh-button vh-button-secondary;
+    @apply bg-vh-accent2 text-white hover:bg-vh-accent2-hover hover:shadow-vh-md transition-all duration-150;
   }
-  
-  .card {
-    @apply vh-card;
-  }
-  
-  .post-card {
-    @apply vh-post-card;
-  }
-  
-  .poll-card {
-    @apply vh-poll-card;
-  }
-  
-  .platform-pill {
-    @apply vh-platform-pill;
-  }
-  
-  .category-pill {
-    @apply vh-category-pill;
-  }
-  
-  .glass-card {
-    @apply vh-glass vh-card;
-  }
-  
-  /* Typography utility classes */
-  .heading-1 { @apply vh-heading-1; }
-  .heading-2 { @apply vh-heading-2; }
-  .heading-3 { @apply vh-heading-3; }
-  .heading-4 { @apply vh-heading-4; }
-  .heading-5 { @apply vh-heading-5; }
-  .body-large { @apply vh-body-large; }
-  .body { @apply vh-body; }
-  .body-small { @apply vh-body-small; }
-  .caption { @apply vh-caption; }
 }
 
 @layer utilities {

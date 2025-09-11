@@ -1,8 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
-/* Import VirtuoHub Design System */
-@import './styles/index.css';
-/* Import Base Color System */
+/* Import Unified Theme System */
+@import './styles/theme.css';
+/* Import Legacy Styles (DEPRECATED) */
 @import './styles/base-colors.css';
+
+/* Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 @layer utilities {
   .bg-gradient-radial {
@@ -53,73 +58,11 @@
   }
 }
 
-/* Light Theme Variables - Updated for Base Color System */
-:root,
-[data-theme="light"] {
-  /* Use base color system variables */
-  --background: var(--vh-bg-primary);
-  --foreground: var(--vh-text-primary);
-  --card: var(--vh-bg-secondary);
-  --card-foreground: var(--vh-text-primary);
-  --popover: var(--vh-bg-primary);
-  --popover-foreground: var(--vh-text-primary);
-  --primary: var(--vh-accent-primary);
-  --primary-foreground: hsl(210 40% 98%);
-  --secondary: var(--vh-bg-tertiary);
-  --secondary-foreground: var(--vh-text-primary);
-  --muted: var(--vh-bg-hover);
-  --muted-foreground: var(--vh-text-secondary);
-  --accent: var(--vh-bg-hover);
-  --accent-foreground: var(--vh-text-primary);
-  --destructive: var(--vh-accent-error);
-  --destructive-foreground: hsl(0 0% 100%);
-  --border: var(--vh-border-primary);
-  --input: var(--vh-border-primary);
-  --ring: var(--vh-accent-primary);
-  --chart-1: hsl(203.8863 88.2845% 53.1373%);
-  --chart-2: hsl(159.7826 100% 36.0784%);
-  --chart-3: hsl(42.0290 92.8251% 56.2745%);
-  --chart-4: hsl(147.1429 78.5047% 41.9608%);
-  --chart-5: hsl(341.4894 75.2000% 50.9804%);
-  --sidebar: var(--vh-bg-primary);
-  --sidebar-foreground: var(--vh-text-primary);
-  --sidebar-primary: var(--vh-accent-primary);
-  --sidebar-primary-foreground: hsl(210 40% 98%);
-  --sidebar-accent: var(--vh-bg-tertiary);
-  --sidebar-accent-foreground: var(--vh-text-primary);
-  --sidebar-border: var(--vh-border-primary);
-  --sidebar-ring: var(--vh-accent-primary);
-  --surface: var(--vh-bg-secondary);
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-display: 'Poppins', system-ui, sans-serif;
-  --font-tech: 'Orbitron', monospace;
-  --font-serif: Georgia, serif;
-  --font-mono: Menlo, monospace;
-  --radius: 12px;
-  --header-height: 80px;
-  
-  /* VirtuoHub Gradient Design System */
-  /* Primary Action Gradients - for CTAs and important buttons */
-  --gradient-cosmic: linear-gradient(135deg, #8B5CF6 0%, #06B6D4 100%);
-  --gradient-cosmic-hover: linear-gradient(135deg, #7C3AED 0%, #0891B2 100%);
-  
-  --gradient-nebula: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
-  --gradient-nebula-hover: linear-gradient(135deg, #9333EA 0%, #DB2777 100%);
-  
-  --gradient-aurora: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
-  --gradient-aurora-hover: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
-  
-  /* Secondary Action Gradients - for Browse/outline buttons */
-  --gradient-mist: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%);
-  --gradient-mist-hover: linear-gradient(135deg, #E2E8F0 0%, #CBD5E1 100%);
-  
-  /* Editorial Gradients - for content sections */
-  --gradient-dawn: linear-gradient(135deg, #FDF2F8 0%, #F3E8FF 100%);
-  --gradient-dawn-hover: linear-gradient(135deg, #FAE8FF 0%, #EDE9FE 100%);
-  
-  --gradient-dusk: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%);
-  --gradient-dusk-hover: linear-gradient(135deg, #DBEAFE 0%, #E0F2FE 100%);
-}
+/* ⚠️ THEME VARIABLES MOVED TO theme.css 
+ * The theme variables previously defined here have been consolidated
+ * into client/src/styles/theme.css for unified theme management.
+ * Import theme.css instead of defining variables here.
+ */
 
 
 /* Reddit-style grid layout */
@@ -158,107 +101,16 @@
   grid-area: right;
 }
 
-.charcoal {
-  --background: hsl(240 3% 6%);
-  --foreground: hsl(0 0% 100%);
-  --card: hsl(240 4% 11%);
-  --card-foreground: hsl(0 0% 100%);
-  --popover: hsl(240 3% 6%);
-  --popover-foreground: hsl(0 0% 100%);
-  --primary: hsl(262.1 83.3% 57.8%);
-  --primary-foreground: hsl(210 40% 98%);
-  --secondary: hsl(240 4% 11%);
-  --secondary-foreground: hsl(0 0% 100%);
-  --muted: hsl(240 4% 11%);
-  --muted-foreground: hsl(0 0% 68%);
-  --accent: hsl(248.7 83.3% 57.8%);
-  --accent-foreground: hsl(210 40% 98%);
-  --destructive: hsl(356.3033 90.5579% 54.3137%);
-  --destructive-foreground: hsl(0 0% 100%);
-  --border: hsl(240 6% 15%);
-  --input: hsl(240 6% 15%);
-  --ring: hsl(262.1 83.3% 57.8%);
-  --chart-1: hsl(203.8863 88.2845% 53.1373%);
-  --chart-2: hsl(159.7826 100% 36.0784%);
-  --chart-3: hsl(42.0290 92.8251% 56.2745%);
-  --chart-4: hsl(147.1429 78.5047% 41.9608%);
-  --chart-5: hsl(341.4894 75.2000% 50.9804%);
-  --sidebar: hsl(240 5% 14%);
-  --sidebar-foreground: hsl(0 0% 100%);
-  --sidebar-primary: hsl(262.1 83.3% 57.8%);
-  --sidebar-primary-foreground: hsl(210 40% 98%);
-  --sidebar-accent: hsl(240 4% 11%);
-  --sidebar-accent-foreground: hsl(0 0% 100%);
-  --sidebar-border: hsl(240 6% 15%);
-  --sidebar-ring: hsl(263 70% 50%);
-  --surface: hsl(0 0% 98%);
-}
+/* ⚠️ LEGACY .charcoal CLASS REMOVED
+ * This legacy class has been replaced with [data-theme="charcoal"] 
+ * in client/src/styles/theme.css. The theme provider now sets 
+ * data-theme attributes instead of classes.
+ */
 
-/* Dark Theme Variables - Updated for Base Color System */
-[data-theme="dark"] {
-  /* Use base color system variables */
-  --background: var(--vh-bg-primary);
-  --foreground: var(--vh-text-primary);
-  --card: var(--vh-bg-secondary);
-  --card-foreground: var(--vh-text-primary);
-  --popover: var(--vh-bg-secondary);
-  --popover-foreground: var(--vh-text-primary);
-  --primary: var(--vh-accent-primary);
-  --primary-foreground: hsl(210 40% 98%);
-  --secondary: var(--vh-bg-tertiary);
-  --secondary-foreground: var(--vh-text-primary);
-  --muted: var(--vh-bg-hover);
-  --muted-foreground: var(--vh-text-secondary);
-  --accent: var(--vh-bg-hover);
-  --accent-foreground: var(--vh-text-primary);
-  --destructive: var(--vh-accent-error);
-  --destructive-foreground: hsl(0 0% 100%);
-  --border: var(--vh-border-primary);
-  --input: var(--vh-border-primary);
-  --ring: var(--vh-accent-primary);
-  --sidebar: var(--vh-bg-secondary);
-  --sidebar-foreground: var(--vh-text-primary);
-  --sidebar-primary: var(--vh-accent-primary);
-  --sidebar-primary-foreground: hsl(210 40% 98%);
-  --sidebar-accent: var(--vh-bg-tertiary);
-  --sidebar-accent-foreground: var(--vh-text-primary);
-  --sidebar-border: var(--vh-border-primary);
-  --sidebar-ring: var(--vh-accent-primary);
-  --surface: var(--vh-bg-secondary);
-}
-
-/* Charcoal Theme Variables - Updated for Base Color System */
-[data-theme="charcoal"] {
-  /* Use base color system variables */
-  --background: var(--vh-bg-primary);
-  --foreground: var(--vh-text-primary);
-  --card: var(--vh-bg-secondary);
-  --card-foreground: var(--vh-text-primary);
-  --popover: var(--vh-bg-secondary);
-  --popover-foreground: var(--vh-text-primary);
-  --primary: var(--vh-accent-primary);
-  --primary-foreground: hsl(210 25% 95%);
-  --secondary: var(--vh-bg-tertiary);
-  --secondary-foreground: var(--vh-text-primary);
-  --muted: var(--vh-bg-hover);
-  --muted-foreground: var(--vh-text-secondary);
-  --accent: var(--vh-bg-hover);
-  --accent-foreground: var(--vh-text-primary);
-  --destructive: var(--vh-accent-error);
-  --destructive-foreground: hsl(0 0% 100%);
-  --border: var(--vh-border-primary);
-  --input: var(--vh-border-primary);
-  --ring: var(--vh-accent-primary);
-  --sidebar: var(--vh-bg-secondary);
-  --sidebar-foreground: var(--vh-text-primary);
-  --sidebar-primary: var(--vh-accent-primary);
-  --sidebar-primary-foreground: hsl(210 25% 95%);
-  --sidebar-accent: var(--vh-bg-tertiary);
-  --sidebar-accent-foreground: var(--vh-text-primary);
-  --sidebar-border: var(--vh-border-primary);
-  --sidebar-ring: var(--vh-accent-primary);
-  --surface: var(--vh-bg-secondary);
-}
+/* ⚠️ THEME VARIABLES MOVED TO theme.css 
+ * Dark and charcoal theme variables have been consolidated
+ * into client/src/styles/theme.css with proper [data-theme] selectors.
+ */
 
 @layer base {
   * {

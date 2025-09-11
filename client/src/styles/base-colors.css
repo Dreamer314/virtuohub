@@ -1,12 +1,14 @@
 /* 
- * VirtuoHub Base Color System
- * Comprehensive color system ensuring proper contrast across all themes
+ * ⚠️ DEPRECATED - DO NOT EDIT
  * 
- * RULES:
- * - Light theme: Dark text on light backgrounds
- * - Dark theme: Light text on dark backgrounds  
- * - Charcoal theme: Light text on charcoal backgrounds
- * - All contrast ratios meet WCAG AA standards (4.5:1 minimum)
+ * This file has been consolidated into client/src/styles/theme.css
+ * 
+ * MIGRATION STATUS: 
+ * - All variables moved to theme.css with unified naming
+ * - Utility classes preserved but deprecated
+ * - This file will be removed in future refactor
+ * 
+ * Use theme.css for all new theme tokens
  */
 
 /* ===== LIGHT THEME BASE COLORS ===== */

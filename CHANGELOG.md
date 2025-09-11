@@ -107,6 +107,43 @@
 4. **Hardcoded Values**: Colors that should be tokenized are hardcoded
 5. **Mode Inconsistency**: Dark mode using charcoal tokens instead of dark tokens
 
+### **Theme Tokens**
+
+**Final Unified Theme System** - All theme variables consolidated into `client/src/styles/theme.css`
+
+#### **Core Design Tokens**
+| Token | Light | Dark | Charcoal |
+|-------|-------|------|----------|
+| `--vh-bg` | `hsl(0, 0%, 100%)` | `hsl(222, 84%, 5%)` | `hsl(210, 11%, 8%)` |
+| `--vh-surface` | `hsl(0, 0%, 98%)` | `hsl(215, 28%, 9%)` | `hsl(210, 11%, 11%)` |
+| `--vh-border` | `hsl(220, 13%, 91%)` | `hsl(215, 20%, 15%)` | `hsl(210, 11%, 18%)` |
+| `--vh-text` | `hsl(222, 84%, 5%)` | `hsl(210, 40%, 98%)` | `hsl(210, 25%, 95%)` |
+| `--vh-text-muted` | `hsl(215, 16%, 47%)` | `hsl(215, 20%, 65%)` | `hsl(210, 15%, 68%)` |
+| `--vh-accent1` | `hsl(263, 70%, 50%)` | `hsl(263, 70%, 55%)` | `hsl(263, 60%, 58%)` |
+| `--vh-accent2` | `hsl(200, 98%, 39%)` | `hsl(200, 98%, 45%)` | `hsl(195, 85%, 48%)` |
+
+#### **Shadow System**
+| Token | Light | Dark | Charcoal |
+|-------|-------|------|----------|
+| `--vh-shadow-1` | `0 2px 8px rgba(0, 0, 0, 0.1)` | `0 2px 8px rgba(0, 0, 0, 0.3)` | `0 2px 8px rgba(0, 0, 0, 0.4)` |
+| `--vh-shadow-2` | `0 4px 16px rgba(0, 0, 0, 0.15)` | `0 4px 16px rgba(0, 0, 0, 0.4)` | `0 4px 16px rgba(0, 0, 0, 0.5)` |
+
+#### **NEW: Overlay System**
+- `--vh-overlay-soft`: `linear-gradient(135deg, var(--vh-accent1) 0%, var(--vh-accent2) 100%)`
+- Used for ambient depth effects on card hover states
+
+#### **Files Deprecated & Merged**
+- ✅ **MERGED**: `client/src/styles/base-colors.css` → `theme.css` (marked DEPRECATED)
+- ✅ **MERGED**: `client/src/styles/theme.css` variables → unified `theme.css`
+- ✅ **MIGRATED**: `client/src/index.css` theme sections → `theme.css`
+- ✅ **REMOVED**: Legacy `.charcoal` class selector (replaced with `[data-theme="charcoal"]`)
+
+#### **Key Fixes Applied**
+- **Mode Consistency Fixed**: Dark mode now uses proper dark tokens, not charcoal tokens
+- **Unified Selectors**: All themes use `[data-theme="*"]` selectors consistently
+- **Component Classes**: Added missing `vh-button`, `vh-card`, `vh-post-card` classes
+- **Legacy Fallbacks**: Temporary compatibility variables for migration period
+
 ---
 
 ## Version 2.0.0 - Major MVP Refactoring (September 11, 2025)
