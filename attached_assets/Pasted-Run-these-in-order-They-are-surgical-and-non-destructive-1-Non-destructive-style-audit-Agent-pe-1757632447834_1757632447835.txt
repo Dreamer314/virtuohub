@@ -1,0 +1,73 @@
+Run these in order. They are surgical and non destructive.
+
+1) Non destructive style audit
+Agent, perform a non destructive style audit focused on theme consistency. Do not refactor yet.
+
+Produce a "Theme Audit" section in CHANGELOG.md that lists:
+- Every component that renders a "card" for posts, threads, polls, lists, spotlights. Include file paths.
+- Where each card gets its background, border, text, shadow values from (Tailwind class, CSS var, inline style).
+- A list of any hardcoded hex or rgb values used in components that should be tokens instead.
+- The files that define theme tokens. Confirm variables exist for: --vh-bg, --vh-surface, --vh-border, --vh-text, --vh-text-muted, --vh-accent1, --vh-accent2, --vh-shadow-1, --vh-shadow-2, --vh-overlay-soft.
+
+Stop after writing the audit. Do not change code yet.
+
+2) Create a single source of truth for theming
+Agent, create or update a single theme source of truth without changing working behavior.
+
+- Add /styles/theme.css that defines CSS variables for three modes: [data-theme="light"], [data-theme="dark"], [data-theme="charcoal"].
+- Variables:
+  --vh-bg, --vh-surface, --vh-border, --vh-text, --vh-text-muted,
+  --vh-accent1, --vh-accent2,
+  --vh-shadow-1, --vh-shadow-2,
+  --vh-overlay-soft  /* subtle gradient or vignette for "ambient" depth */
+
+- Ensure the app sets a data-theme attribute on the html or body element and that your existing theme switcher updates it.
+
+- Extend Tailwind usage to prefer CSS variables:
+  Use arbitrary values like bg-[var(--vh-surface)], text-[color:var(--vh-text)], border-[color:var(--vh-border)], shadow-[var(--vh-shadow-1)] where needed.
+  Remove any component level hardcoded hex values only when a direct token replacement is clear.
+
+Update CHANGELOG.md with the exact variable map per mode. Do not alter layouts or logic.
+
+3) Normalize all cards to one base with small variants
+Agent, normalize Card styling across the app while keeping UX and layout intact.
+
+- Create /components/ui/CardBase.tsx that applies:
+  bg-[var(--vh-surface)], text-[color:var(--vh-text)], border border-[color:var(--vh-border)],
+  rounded-2xl, p-4 md:p-6, shadow-[var(--vh-shadow-1)], hover:shadow-[var(--vh-shadow-2)],
+  relative overflow-hidden before:absolute before:inset-0 before:pointer-events-none
+  before:bg-[var(--vh-overlay-soft)] before:opacity-[0.04]
+
+- Replace ad hoc card wrappers in Thread cards, Poll cards, List cards, Spotlight cards to use CardBase.
+- Allow small visual variants via a prop, for example <CardBase variant="thread" | "poll" | "list" | "spotlight"> that only changes tiny details like header density, not colors.
+- Remove duplicate card components or unify them to import CardBase. Do not change content or data fetching.
+
+- Ensure dark mode uses dark tokens, not charcoal tokens, for thread cards. Charcoal mode should remain distinct.
+
+Write notes in CHANGELOG.md under "Decisions" listing which files now wrap CardBase.
+
+4) Fix logo visibility in light mode
+Agent, ensure the cube logo remains visible in light mode.
+
+- Identify where the logo is rendered. If it is an SVG, prefer currentColor for fills or strokes when appropriate.
+- Add a logo container style that sets an explicit contrast-safe color:
+  For light mode: use text-[color:var(--vh-text)] and add a subtle backdrop or ring if the logo blends into surface.
+- If the logo is an image, add a light-mode specific backdrop using a tokenized subtle shadow or a faint gradient from --vh-overlay-soft behind the logo.
+
+Add a Playwright assertion that in light mode the logo container has a computed contrast ratio meeting WCAG AA against the surrounding surface. Document approach in CHANGELOG.md.
+
+5) Add automated guards so this never regresses
+Agent, add theme consistency tests and a simple color linter.
+
+- Playwright tests:
+  1) Toggle to dark mode. Query a Thread card and assert:
+     getComputedStyle(el).backgroundColor equals the CSS variable resolved from --vh-surface in dark mode, not the charcoal value.
+  2) Toggle to charcoal. Assert the surface differs from dark by at least a delta (compare rgba strings).
+  3) Toggle to light. Assert Dropdown and Pill components have computed color and background that pass a simple contrast check against surface.
+
+- Add a small Node script in /scripts/check-hardcoded-colors.js that scans /components and /pages for hex or rgb literals.
+  Fail the script if matches are found outside the theme or Tailwind config. Allowlist test files and theme.css.
+
+- Add these to "npm run check:all": node scripts/check-hardcoded-colors.js and the new Playwright tests.
+
+Stop after tests pass. Do not modify routing, data, or behavior outside styling.

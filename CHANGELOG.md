@@ -1,5 +1,114 @@
 # VirtuoHub Community Platform - Changelog
 
+## Theme Audit - November 11, 2025
+
+### **Card Components Analysis**
+
+#### **Post Cards**
+- **File**: `client/src/components/cards/PostCard.tsx`
+- **Background**: Uses `.vh-post-card` CSS class from `client/src/styles/components.css`
+- **Styling Source**: `var(--vh-surface)` for background, `var(--vh-border)` for borders
+- **Shadow**: `var(--vh-shadow-xl)` on hover
+- **Issues**: Direct CSS class approach, not using unified card system
+
+#### **Poll Cards** 
+- **File**: `client/src/components/polls/PollCard.tsx`
+- **Background**: Uses `.enhanced-card` Tailwind utility class  
+- **Styling Source**: `hsl(var(--card))` from index.css
+- **Issues**: Mixed approaches - some hardcoded colors (`bg-blue-600`, `bg-green-500/20`)
+
+#### **List Cards**
+- **File**: `client/src/components/lists/ListCard.tsx`
+- **Background**: Uses `.enhanced-card` and `.hover-lift` Tailwind utility classes
+- **Styling Source**: `hsl(var(--card))` from index.css
+- **Issues**: Background gradients with hardcoded opacity (`bg-black/20`, `bg-black/10`)
+
+#### **Base Card Component**
+- **File**: `client/src/components/ui/card.tsx`
+- **Background**: Uses Tailwind classes `bg-card text-card-foreground`
+- **Styling Source**: References `--card` and `--card-foreground` variables
+- **Issues**: Not consistently used across card components
+
+### **CSS Variable Systems**
+
+#### **Primary Theme Files**
+1. **`client/src/styles/base-colors.css`** - VH-prefixed variables (`--vh-bg-primary`, `--vh-surface`, etc.)
+2. **`client/src/styles/theme.css`** - VH-prefixed variables (`--vh-bg`, `--vh-surface`, etc.) 
+3. **`client/src/index.css`** - Shadcn variables (`--background`, `--card`, `--foreground`, etc.)
+
+#### **Variable Inconsistencies**
+- **Light Theme**: Uses both `--vh-surface` and `--card` for the same purpose
+- **Dark Theme**: Properly defined in base-colors.css and theme.css
+- **Charcoal Theme**: Defined as legacy `.charcoal` class instead of `[data-theme="charcoal"]`
+
+#### **Missing Core Variables**
+**Currently Missing:**
+- `--vh-overlay-soft` (for ambient depth effects)
+- Unified `--vh-shadow-1` and `--vh-shadow-2` (shadows scattered across different files)
+
+**Partially Defined:**
+- `--vh-accent1` and `--vh-accent2` exist but not consistently used
+- Border variables exist but naming is inconsistent
+
+### **Hardcoded Color Values Found**
+
+#### **In Poll Components**
+- **File**: `client/src/components/polls/PollCard.tsx`
+- **Line 77**: `bg-blue-600` (should use `--vh-accent2`)
+- **Line 126**: `bg-green-500/20 text-green-300 border-green-500/30` (should use semantic tokens)
+- **Line 214**: `bg-${color}-500/20` (dynamic Tailwind class that won't compile)
+
+#### **In Post Components**  
+- **File**: `client/src/components/cards/PostCard.tsx`
+- **Line 85**: `text-yellow-500` (should use `--vh-warning`)
+- **Line 88**: `text-blue-500` (should use `--vh-accent2`)
+
+#### **In CSS Files**
+- **File**: `client/src/index.css`
+- **Lines 294-320**: `.enhanced-card` has hardcoded rgba shadow values
+- **Lines 161-195**: `.charcoal` class with hardcoded HSL values instead of using data-theme
+
+### **Theme Scoping Issues**
+
+#### **Inconsistent Selectors**
+- **Base Colors**: Uses `[data-theme="light"]`, `[data-theme="dark"]`, `[data-theme="charcoal"]`
+- **Index CSS**: Uses `:root`, `.dark`, `.charcoal` classes 
+- **Problem**: Theme provider sets both classes AND data-theme, but CSS targets different selectors
+
+#### **Dark Mode Inconsistency**
+**Critical Finding**: Dark theme cards are using charcoal-colored variables instead of proper dark theme variables, causing mode inconsistencies as user identified.
+
+### **Current Theme Token Status**
+
+#### **✅ Properly Defined Variables**
+- `--vh-bg`: Main background ✓
+- `--vh-surface`: Card/panel background ✓  
+- `--vh-border`: Border colors ✓
+- `--vh-text`: Primary text ✓
+- `--vh-text-muted`: Secondary text ✓
+- `--vh-accent1`: Primary purple ✓
+- `--vh-accent2`: Secondary blue ✓
+
+#### **❌ Missing Variables**
+- `--vh-shadow-1`: Light shadow (scattered across files)
+- `--vh-shadow-2`: Heavy shadow (scattered across files)
+- `--vh-overlay-soft`: Subtle gradient/vignette for ambient depth
+
+#### **⚠️ Inconsistent Variables**
+- Shadow system uses mix of `--vh-shadow-xl`, `rgba()` values, and Tailwind classes
+- Accent colors sometimes use `--vh-accent1`, sometimes `--primary`
+- Border system mixes `--vh-border`, `--border`, and `--vh-border-primary`
+
+### **Architectural Problems Identified**
+
+1. **Multiple Card Systems**: Three different approaches to styling cards (CSS classes, Tailwind utilities, component classes)
+2. **Variable Naming Conflicts**: VH-prefixed vs shadcn-style variables serving same purpose  
+3. **Theme Scoping Mismatch**: CSS targets different selectors than theme provider sets
+4. **Hardcoded Values**: Colors that should be tokenized are hardcoded
+5. **Mode Inconsistency**: Dark mode using charcoal tokens instead of dark tokens
+
+---
+
 ## Version 2.0.0 - Major MVP Refactoring (September 11, 2025)
 
 This release represents a complete architectural transformation of VirtuoHub from a prototype to a solid MVP foundation. The refactoring focused on code organization, performance optimization, comprehensive testing, and establishing a robust foundation for future development.
