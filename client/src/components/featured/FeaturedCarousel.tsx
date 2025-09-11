@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { formatAbsoluteDate, getContentTypeColor, noWidow } from "@/lib/utils";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 import type { FeaturedItem } from "./types";
 
 interface FeaturedCarouselProps {
@@ -89,11 +90,16 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
         <div className="relative md:-ml-6 xl:-ml-12">
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(closest-side,rgba(120,100,255,.18),transparent_70%)]" />
           <div className="w-full aspect-[16/9] min-h-[300px] xl:min-h-[360px] rounded-2xl overflow-hidden shadow-[0_0_90px_rgba(120,100,255,.16)] ring-1 ring-white/8">
-            <img 
+            <OptimizedImage 
               src={currentItem.imageSrc} 
-              alt={currentItem.imageAlt} 
-              className="w-full h-full object-cover object-center" 
-              loading="lazy" 
+              alt={currentItem.imageAlt}
+              width="100%"
+              height="100%"
+              aspectRatio="video"
+              loading="lazy"
+              priority={currentIndex === 0}
+              className="w-full h-full object-cover object-center"
+              data-testid={`featured-image-${currentIndex}`}
             />
           </div>
         </div>

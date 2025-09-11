@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { PlatformPill } from '@/components/pills/PlatformPill';
 import { VoiceBadge } from '@/components/common/VoiceBadge';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { HelpCircle, TrendingUp, Clock } from 'lucide-react';
 
 interface BillboardHeroProps {
@@ -124,11 +125,15 @@ export const BillboardHero: React.FC<BillboardHeroProps> = ({
                           {/* Name & Avatar */}
                           <div className="col-span-6 lg:col-span-5 flex items-center gap-3">
                             {item.imageUrl && (
-                              <img 
+                              <OptimizedImage 
                                 src={item.imageUrl} 
                                 alt={item.title}
-                                className="w-8 h-8 rounded-full object-cover border border-border/50"
+                                width="32px"
+                                height="32px"
+                                aspectRatio="square"
                                 loading="lazy"
+                                className="w-8 h-8 rounded-full object-cover border border-border/50"
+                                data-testid={`billboard-avatar-${item.id}`}
                               />
                             )}
                             <div className="min-w-0">

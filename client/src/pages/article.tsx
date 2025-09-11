@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { ArrowLeft, Calendar, Clock, Heart, MessageCircle, Share2, User } from 'lucide-react';
 import { Link } from 'wouter';
 import { useState, useEffect } from 'react';
@@ -182,10 +183,16 @@ export default function ArticlePage() {
 
       {/* Hero Section */}
       <div className="relative h-96 overflow-hidden">
-        <img
+        <OptimizedImage
           src={article.post.imageUrl || '/placeholder-image.jpg'}
           alt={article.post.title}
+          width="100%"
+          height="384px"
+          aspectRatio="wide"
+          loading="eager"
+          priority={true}
           className="w-full h-full object-cover"
+          data-testid="article-hero-image"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
         <div className="absolute top-6 left-6">

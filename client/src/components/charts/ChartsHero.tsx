@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 import { ExternalLink, Play, Pause } from "lucide-react";
 import { MethodologyModal } from "@/components/modals/MethodologyModal";
 import { SuggestUpdateModal } from "@/components/modals/SuggestUpdateModal";
@@ -102,10 +103,16 @@ export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroM
       case 'image':
         return (
           <div className={`${mediaFrame} hero-image-glow`}>
-            <img
+            <OptimizedImage
               src={heroMedia.imageUrl}
               alt={heroMedia.caption || "Hero image"}
+              width="100%"
+              height="100%"
+              aspectRatio="video"
+              loading="eager"
+              priority={true}
               className="w-full h-full object-cover"
+              data-testid="charts-hero-image"
             />
             {heroMedia.caption && (
               <div className="absolute bottom-2 left-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
@@ -125,10 +132,16 @@ export function ChartsHero({ backgroundImageUrl, sponsorName, sponsorHref, heroM
                   index === currentSlide ? 'opacity-100' : 'opacity-0'
                 }`}
               >
-                <img
+                <OptimizedImage
                   src={slide.imageUrl}
                   alt={slide.title || `Slide ${index + 1}`}
+                  width="100%"
+                  height="100%"
+                  aspectRatio="video"
+                  loading={index === 0 ? "eager" : "lazy"}
+                  priority={index === 0}
                   className="w-full h-full object-cover"
+                  data-testid={`charts-hero-slide-${index}`}
                 />
                 {slide.title && (
                   <div className="absolute bottom-2 left-2 right-2 bg-black/60 text-white text-xs px-2 py-1 rounded">

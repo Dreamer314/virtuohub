@@ -1,6 +1,7 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { X, Download, ExternalLink } from 'lucide-react';
 
 interface ImageViewerModalProps {
@@ -81,9 +82,14 @@ export const ImageViewerModal: React.FC<ImageViewerModalProps> = ({
 
         {/* Image container */}
         <div className="flex items-center justify-center min-h-[50vh] max-h-[80vh] bg-vh-bg">
-          <img
+          <OptimizedImage
             src={imageUrl}
             alt={imageAlt}
+            width="auto"
+            height="auto"
+            objectFit="contain"
+            loading="eager"
+            priority={true}
             className="max-w-full max-h-full object-contain"
             data-testid="modal-image"
             onLoad={() => {

@@ -11,6 +11,7 @@ import { Link } from "wouter";
 import { cn, getPlatformColor, getCategoryColor, formatTimeAgo } from "@/lib/utils";
 import { getCategoryLabel, normalizeCategoryToSlug } from "@/constants/postCategories";
 import { ImageViewerModal } from "@/components/modals/ImageViewerModal";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 interface PostCardProps {
   post: PostWithAuthor;
@@ -141,9 +142,13 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 {/* Image */}
                 {post.imageUrl && (
                   <div className="mb-3 rounded-vh-lg overflow-hidden">
-                    <img 
+                    <OptimizedImage 
                       src={post.imageUrl} 
                       alt={post.title}
+                      width="100%"
+                      height="auto"
+                      aspectRatio="wide"
+                      loading="lazy"
                       className="w-full h-auto max-h-96 object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
                       data-testid={`image-${post.id}`}
                       onClick={(e) => {
@@ -172,9 +177,14 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 {/* Image */}
                 {post.imageUrl && (
                   <div className="mt-4 rounded-vh-lg overflow-hidden">
-                    <img 
+                    <OptimizedImage 
                       src={post.imageUrl} 
                       alt={post.title}
+                      width="100%"
+                      height="auto"
+                      aspectRatio="wide"
+                      loading="eager"
+                      priority={true}
                       className="w-full h-auto max-h-96 object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
                       data-testid={`image-${post.id}`}
                       onClick={(e) => {

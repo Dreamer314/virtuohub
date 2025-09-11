@@ -5,6 +5,7 @@ import { PlatformPill } from '@/components/pills/PlatformPill';
 import { VoiceBadge } from '@/components/common/VoiceBadge';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { Eye, Bookmark, Share } from 'lucide-react';
 
 interface ListCardProps {
@@ -38,11 +39,15 @@ export const ListCard: React.FC<ListCardProps> = ({ list }) => {
           {/* Cover Image */}
           {list.coverImageUrl && (
             <div className="relative aspect-[16/9] overflow-hidden rounded-t-lg">
-              <img
+              <OptimizedImage
                 src={list.coverImageUrl}
                 alt={list.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                width="100%"
+                height="100%"
+                aspectRatio="video"
                 loading="lazy"
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                data-testid={`list-cover-${list.slug}`}
               />
               <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors duration-300" />
               

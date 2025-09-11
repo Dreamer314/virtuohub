@@ -11,6 +11,7 @@ import { PlatformPill } from '@/components/pills/PlatformPill';
 import { VoiceBadge } from '@/components/common/VoiceBadge';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { OptimizedImage } from '@/components/ui/optimized-image';
 import { ArrowLeft, Eye, Clock, ExternalLink, Heart } from 'lucide-react';
 import { Link } from 'wouter';
 
@@ -155,11 +156,16 @@ const ListDetailPage: React.FC = () => {
                 {/* Cover Image */}
                 {list.coverImageUrl && (
                   <div className="lg:w-80 aspect-[16/9] rounded-lg overflow-hidden">
-                    <img
+                    <OptimizedImage
                       src={list.coverImageUrl}
                       alt={list.title}
-                      className="w-full h-full object-cover"
+                      width="320px"
+                      height="180px"
+                      aspectRatio="video"
                       loading="eager"
+                      priority={true}
+                      className="w-full h-full object-cover"
+                      data-testid={`list-cover-${list.slug}`}
                     />
                   </div>
                 )}
@@ -263,11 +269,15 @@ const ListDetailPage: React.FC = () => {
                         {/* Image */}
                         {item.imageUrl && (
                           <div className="flex-shrink-0">
-                            <img
+                            <OptimizedImage
                               src={item.imageUrl}
                               alt={item.title}
-                              className="w-16 h-16 rounded-lg object-cover border border-border/50"
+                              width="64px"
+                              height="64px"
+                              aspectRatio="square"
                               loading="lazy"
+                              className="w-16 h-16 rounded-lg object-cover border border-border/50"
+                              data-testid={`list-item-image-${item.id}`}
                             />
                           </div>
                         )}
