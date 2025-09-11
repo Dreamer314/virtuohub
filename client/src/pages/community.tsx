@@ -4,7 +4,7 @@ import { Plus, Star, TrendingUp, Heart, ImageIcon, BarChart3, FileText, Zap, Thu
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
-import { PostCard } from '@/components/post-card';
+import { PostCard } from '@/components/cards/PostCard';
 import { CreatePostModal } from '@/components/create-post-modal';
 import { CreatePostModal as NewCreatePostModal } from '@/components/composer/CreatePostModal';
 import { CreatePollModal } from '@/components/composer/CreatePollModal';

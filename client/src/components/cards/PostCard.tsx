@@ -9,9 +9,8 @@ import { type PostWithAuthor } from "@shared/schema";
 import { ThumbsUp, MessageCircle, Share, Heart, Zap, Lightbulb, Clock } from "lucide-react";
 import { Link } from "wouter";
 import { cn, getPlatformColor, getCategoryColor, formatTimeAgo } from "@/lib/utils";
-// POST CATEGORIES MVP - Import category utilities
 import { getCategoryLabel, normalizeCategoryToSlug } from "@/constants/postCategories";
-import { ImageViewerModal } from "./image-viewer-modal";
+import { ImageViewerModal } from "@/components/modals/ImageViewerModal";
 
 interface PostCardProps {
   post: PostWithAuthor;
@@ -65,7 +64,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
 
   const handleShare = async () => {
     try {
-      if (navigator.share && post.type !== 'pulse') {
+      if (navigator.share && post.subtype !== 'poll') {
         await navigator.share({
           title: post.title,
           url: `${window.location.origin}/thread/${post.id}`
@@ -81,22 +80,25 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
   };
 
   const renderTypeIcon = () => {
-    if (post.type === 'pulse') {
+    if (post.subtype === 'poll') {
       return <Zap className="w-4 h-4 text-yellow-500" />;
     }
-    if (post.type === 'insight') {
+    if (post.subtype === 'interview') {
       return <Lightbulb className="w-4 h-4 text-blue-500" />;
     }
     return null;
   };
 
+  // Get poll data from subtypeData if it's a poll
+  const pollData = post.subtype === 'poll' ? post.subtypeData as { question?: string, choices?: Array<{text: string, votes: number, id: string}>, closesAt?: number, oneVotePerUser?: boolean } : null;
+
   return (
     <>
-      <article className="enhanced-card hover-lift group p-6 space-y-4 transition-all duration-200" data-testid={`post-card-${post.id}`}>
+      <article className="vh-post-card" data-testid={`post-card-${post.id}`}>
         <div className="flex space-x-4">
           {/* Avatar */}
           <div className="flex-shrink-0">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-gradient-cosmic text-white font-medium text-lg">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-vh-accent1 text-white font-medium text-lg">
               {(post.author.displayName || post.author.username || 'U').charAt(0)}
             </span>
           </div>
@@ -104,7 +106,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
           <div className="flex-1 min-w-0">
             {/* Header */}
             <div className="flex items-center space-x-2 mb-1">
-              <span className="font-medium text-foreground" data-testid={`author-${post.id}`}>
+              <span className="vh-body font-medium" data-testid={`author-${post.id}`}>
                 {post.author.displayName || post.author.username || 'Anonymous'}
               </span>
               {post.author.role && (
@@ -112,27 +114,33 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                   {post.author.role}
                 </Badge>
               )}
-              <span className="text-xs text-muted-foreground">•</span>
-              <span className="text-xs text-muted-foreground" data-testid={`time-${post.id}`}>
+              <span className="text-xs text-vh-text-subtle">•</span>
+              <span className="vh-caption" data-testid={`time-${post.id}`}>
                 {formatTimeAgo(post.createdAt ? new Date(post.createdAt) : new Date())}
               </span>
+              {renderTypeIcon()}
             </div>
             
             {/* Content */}
             {!isDetailView ? (
               <Link href={`/thread/${post.id}`} className="block group mb-3">
                 <div className="mb-3">
-                  <h3 className="text-base font-semibold mb-1 text-foreground group-hover:text-primary transition-colors" data-testid={`title-${post.id}`}>
+                  <h3 className="vh-heading-5 mb-1 group-hover:text-vh-accent1 transition-colors" data-testid={`title-${post.id}`}>
                     {post.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground line-clamp-3" data-testid={`content-${post.id}`}>
-                    {post.content || (post as any).body}
+                  {post.summary && (
+                    <p className="vh-body-small text-vh-text-muted line-clamp-2" data-testid={`summary-${post.id}`}>
+                      {post.summary}
+                    </p>
+                  )}
+                  <p className="vh-body text-vh-text-muted line-clamp-3" data-testid={`content-${post.id}`}>
+                    {post.body}
                   </p>
                 </div>
                 
                 {/* Image */}
                 {post.imageUrl && (
-                  <div className="mb-3 rounded-lg overflow-hidden">
+                  <div className="mb-3 rounded-vh-lg overflow-hidden">
                     <img 
                       src={post.imageUrl} 
                       alt={post.title}
@@ -149,16 +157,21 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
               </Link>
             ) : (
               <div className="mb-3">
-                <h1 className="text-xl font-bold mb-2 text-foreground" data-testid={`title-${post.id}`}>
+                <h1 className="vh-heading-3 mb-2" data-testid={`title-${post.id}`}>
                   {post.title}
                 </h1>
-                <div className="text-sm text-foreground whitespace-pre-wrap" data-testid={`content-${post.id}`}>
-                  {post.content}
+                {post.summary && (
+                  <p className="vh-body-large text-vh-text-muted mb-3" data-testid={`summary-${post.id}`}>
+                    {post.summary}
+                  </p>
+                )}
+                <div className="vh-body whitespace-pre-wrap" data-testid={`content-${post.id}`}>
+                  {post.body}
                 </div>
                 
                 {/* Image */}
                 {post.imageUrl && (
-                  <div className="mb-3 rounded-lg overflow-hidden">
+                  <div className="mt-4 rounded-vh-lg overflow-hidden">
                     <img 
                       src={post.imageUrl} 
                       alt={post.title}
@@ -175,41 +188,47 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
               </div>
             )}
             
-            {/* POST CATEGORIES MVP - Enhanced category badge with label resolution */}
+            {/* Tags and Platforms */}
             <div className="flex flex-wrap gap-2 mb-3">
-              <Badge 
-                variant="secondary" 
-                className={cn("text-xs", getCategoryColor(post.category))}
-                data-testid={`category-${post.id}`}
-              >
-                {getCategoryLabel(post.category)}
-              </Badge>
+              {post.tags && post.tags.length > 0 && (
+                <div className="flex flex-wrap gap-1">
+                  {post.tags.map((tag: string) => (
+                    <span 
+                      key={tag}
+                      className="vh-pill text-xs bg-vh-accent1-light text-vh-accent1"
+                      data-testid={`tag-${post.id}-${tag}`}
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
               {post.platforms.map((platform: string) => (
-                <Badge 
+                <span 
                   key={platform} 
-                  variant="outline" 
-                  className={cn("text-xs", getPlatformColor(platform))}
+                  className="vh-platform-pill"
                   data-testid={`platform-${post.id}-${platform}`}
                 >
                   {platform}
-                </Badge>
+                </span>
               ))}
             </div>
 
-            {/* VHub Data Pulse Poll */}
-            {post.type === 'pulse' && (post as any).pollOptions && (
-              <div className="mb-4">
-                <p className="text-sm font-medium text-muted-foreground mb-3">
-                  Vote on this pulse:
+            {/* Poll Section for VHub Data Pulse */}
+            {post.subtype === 'poll' && pollData && pollData.choices && (
+              <div className="vh-poll-card mb-4">
+                <p className="vh-body-small font-medium text-vh-text-muted mb-3">
+                  {pollData.question || 'Vote on this poll:'}
                 </p>
                 <div className="space-y-2">
-                  {(post as any).pollOptions.map((option: string, index: number) => {
-                    const percentage = (post as any).pollResults?.[index] || 0;
+                  {pollData.choices.map((choice, index) => {
+                    const totalVotes = pollData.choices?.reduce((sum, c) => sum + c.votes, 0) || 0;
+                    const percentage = totalVotes > 0 ? Math.round((choice.votes / totalVotes) * 100) : 0;
                     const isSelected = selectedOption === index;
                     
                     return (
                       <button
-                        key={index}
+                        key={choice.id}
                         onClick={() => {
                           if (!hasVoted) {
                             setSelectedOption(index);
@@ -218,19 +237,19 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                         }}
                         disabled={hasVoted}
                         className={cn(
-                          "w-full p-3 rounded-lg border text-left transition-all",
+                          "w-full p-3 rounded-vh-md border text-left transition-vh-fast",
                           hasVoted 
                             ? isSelected 
-                              ? "border-primary bg-primary/10" 
-                              : "border-border bg-muted/50"
-                            : "border-border hover:border-primary hover:bg-accent/5"
+                              ? "border-vh-accent1 bg-vh-accent1-light" 
+                              : "border-vh-border bg-vh-surface"
+                            : "border-vh-border hover:border-vh-accent1 hover:bg-vh-accent1-light"
                         )}
                         data-testid={`poll-option-${post.id}-${index}`}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm font-medium">{option}</span>
+                          <span className="vh-body-small font-medium">{choice.text}</span>
                           {hasVoted && (
-                            <span className="text-xs text-muted-foreground">
+                            <span className="vh-caption">
                               {percentage}%
                             </span>
                           )}
@@ -247,8 +266,8 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                   })}
                 </div>
                 {hasVoted && (
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Poll results based on {(post as any).pollResults?.reduce((a: number, b: number) => a + b, 0) || 0} votes
+                  <p className="vh-caption mt-2">
+                    Poll results based on {pollData.choices?.reduce((sum, c) => sum + c.votes, 0) || 0} votes
                   </p>
                 )}
               </div>
@@ -261,60 +280,60 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                   variant="ghost"
                   size="sm"
                   onClick={handleLike}
-                  className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
+                  className="vh-button flex items-center space-x-2 px-2 py-1"
                   data-testid={`like-button-${post.id}`}
                 >
                   <ThumbsUp size={16} />
-                  <span>{post.likes}</span>
+                  <span className="vh-body-small">{post.likes}</span>
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleSave}
-                  className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
+                  className="vh-button flex items-center space-x-2 px-2 py-1"
                   data-testid={`save-button-${post.id}`}
                 >
-                  <Heart size={16} className={isSaved ? "fill-current" : ""} />
-                  <span>{isSaved ? "Saved" : "Save"}</span>
+                  <Heart size={16} className={isSaved ? "fill-current text-vh-error" : ""} />
+                  <span className="vh-body-small">{isSaved ? "Saved" : "Save"}</span>
                 </Button>
                 {!isDetailView ? (
                   <Link href={`/thread/${post.id}`}>
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
+                      className="vh-button flex items-center space-x-2 px-2 py-1"
                       data-testid={`comment-button-${post.id}`}
                     >
                       <MessageCircle size={16} />
-                      <span>{post.comments} comments</span>
+                      <span className="vh-body-small">{post.comments} comments</span>
                     </Button>
                   </Link>
                 ) : (
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
+                    className="vh-button flex items-center space-x-2 px-2 py-1"
                     data-testid={`comment-button-${post.id}`}
                   >
                     <MessageCircle size={16} />
-                    <span>{post.comments} comments</span>
+                    <span className="vh-body-small">{post.comments} comments</span>
                   </Button>
                 )}
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={handleShare}
-                  className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
+                  className="vh-button flex items-center space-x-2 px-2 py-1"
                   data-testid={`share-button-${post.id}`}
                 >
                   <Share size={16} />
-                  <span>
-                    {post.type === 'pulse' && shareSuccess ? 'Link Copied!' : post.shares}
+                  <span className="vh-body-small">
+                    {post.subtype === 'poll' && shareSuccess ? 'Link Copied!' : post.shares}
                   </span>
                 </Button>
               </div>
               {post.price && (
-                <span className="text-sm font-medium text-green-600 dark:text-green-400" data-testid={`price-${post.id}`}>
+                <span className="vh-body-small font-medium text-vh-success" data-testid={`price-${post.id}`}>
                   {post.price}
                 </span>
               )}

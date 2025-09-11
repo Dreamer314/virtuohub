@@ -4,7 +4,7 @@ import { Link } from 'wouter';
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
-import { PostCard } from '@/components/post-card';
+import { PostCard } from '@/components/cards/PostCard';
 import { Footer } from '@/components/layout/footer';
 import { EngagementSection } from '@/components/engagement-section';
 import { useQuery } from '@tanstack/react-query';

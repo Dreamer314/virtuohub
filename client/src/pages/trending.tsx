@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
-import { PostCard } from '@/components/post-card';
+import { PostCard } from '@/components/cards/PostCard';
 import { Footer } from '@/components/layout/footer';
 import { useQuery } from '@tanstack/react-query';
 import type { PostWithAuthor } from '@shared/schema';

@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "wouter";
 import { Header } from "@/components/layout/header";
 import { LeftSidebar } from "@/components/layout/left-sidebar";
-import { PostCard } from "@/components/post-card";
+import { PostCard } from "@/components/cards/PostCard";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
