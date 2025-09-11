@@ -51,7 +51,7 @@ function initializeData() {
         category: 'Jobs & Gigs',
         platforms: ['secondlife', 'vrchat'],
         createdAt: Date.now() - 4 * 60 * 60 * 1000, // 4 hours ago
-        author: { id: 'user2', name: 'Maya Rodriguez', displayName: 'Maya Rodriguez' },
+        author: { id: 'user2', name: 'Maya Rodriguez' },
         stats: { likes: 25, saves: 18, comments: 7 }
       },
       {
@@ -67,7 +67,7 @@ function initializeData() {
         category: 'Assets for Sale',
         platforms: ['unity', 'vrchat'],
         createdAt: Date.now() - 6 * 60 * 60 * 1000, // 6 hours ago
-        author: { id: 'user5', name: 'Chris Wilson', displayName: 'Chris Wilson' },
+        author: { id: 'user5', name: 'Chris Wilson' },
         stats: { likes: 89, saves: 156, comments: 23 }
       },
       {
@@ -83,7 +83,7 @@ function initializeData() {
         category: 'Assets for Sale',
         platforms: ['vrchat'],
         createdAt: Date.now() - 3 * 60 * 60 * 1000, // 3 hours ago
-        author: { id: 'user6', name: 'Sarah Chen', displayName: 'Sarah Chen' },
+        author: { id: 'user6', name: 'Sarah Chen' },
         stats: { likes: 45, saves: 32, comments: 8 }
       }
     ];
@@ -109,7 +109,7 @@ function initializeData() {
         category: 'General',
         platforms: ['vrchat', 'secondlife', 'roblox'],
         createdAt: now - 1 * 60 * 60 * 1000, // 1 hour ago
-        author: { id: 'user3', name: 'Jordan Kim', displayName: 'Jordan Kim' },
+        author: { id: 'user3', name: 'Jordan Kim' },
         status: 'active'
       },
       {
@@ -128,7 +128,7 @@ function initializeData() {
         category: 'General',
         platforms: ['roblox', 'secondlife', 'vrchat', 'horizon'],
         createdAt: now - 3 * 60 * 60 * 1000, // 3 hours ago
-        author: { id: 'user4', name: 'Sam Rivera', displayName: 'Sam Rivera' },
+        author: { id: 'user4', name: 'Sam Rivera' },
         status: 'active'
       }
     ];

@@ -11,16 +11,30 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X, Upload, Plus, Link as LinkIcon } from 'lucide-react';
 import { PlatformKey, CATEGORIES, PLATFORMS } from '@/types/content';
-import { createFeedPost, getCurrentUser } from '@/data/mockApi';
+import { createFeedPost, createPoll, getCurrentUser } from '@/data/mockApi';
 import { useToast } from '@/hooks/use-toast';
 
 const createPostSchema = z.object({
+  subtype: z.enum(['thread', 'poll']).default('thread'),
   title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
   body: z.string().min(1, 'Content is required').max(5000, 'Content too long'),
   category: z.string().min(1, 'Category is required'),
   price: z.string().optional(),
   platforms: z.array(z.string()).min(1, 'Select at least one platform'),
   links: z.array(z.string().url('Invalid URL')).max(10, 'Max 10 links'),
+  // Poll-specific fields
+  pollQuestion: z.string().optional(),
+  pollOptions: z.array(z.string().min(1, 'Option cannot be empty')).optional(),
+  pollDurationDays: z.number().min(1).max(30).optional(),
+}).refine((data) => {
+  if (data.subtype === 'poll') {
+    return data.pollQuestion && data.pollQuestion.trim().length > 0 &&
+           data.pollOptions && data.pollOptions.length >= 2 && data.pollOptions.length <= 10;
+  }
+  return true;
+}, {
+  message: 'Polls must have a question and 2-10 options',
+  path: ['pollQuestion'],
 });
 
 type CreatePostForm = z.infer<typeof createPostSchema>;
@@ -31,19 +45,23 @@ interface CreatePostModalProps {
   onPostCreated?: () => void;
   // COMPOSER ROUTING - Add initial category support
   initialCategory?: string;
+  // Content type selection
+  initialSubtype?: 'thread' | 'poll';
 }
 
-export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCategory }: CreatePostModalProps) {
+export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCategory, initialSubtype }: CreatePostModalProps) {
   const [selectedPlatforms, setSelectedPlatforms] = useState<PlatformKey[]>([]);
   const [links, setLinks] = useState<string[]>(['']);
   const [images, setImages] = useState<string[]>([]);
   const [files, setFiles] = useState<{ name: string; b64: string }[]>([]);
+  const [pollOptions, setPollOptions] = useState<string[]>(['', '']);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
   const form = useForm<CreatePostForm>({
     resolver: zodResolver(createPostSchema),
     defaultValues: {
+      subtype: initialSubtype || 'thread',
       title: '',
       body: '',
       // COMPOSER ROUTING - Use initialCategory if provided, otherwise default to General
@@ -51,8 +69,13 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
       price: '',
       platforms: [],
       links: [],
+      pollQuestion: '',
+      pollOptions: [],
+      pollDurationDays: 7,
     },
   });
+
+  const currentSubtype = form.watch('subtype');
 
   // COMPOSER ROUTING - Sync initialCategory prop changes into form when modal opens
   useEffect(() => {
@@ -156,6 +179,28 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
     setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
+  // Poll option management
+  const handlePollOptionChange = (index: number, value: string) => {
+    const updated = [...pollOptions];
+    updated[index] = value;
+    setPollOptions(updated);
+    form.setValue('pollOptions', updated.filter(opt => opt.trim()));
+  };
+
+  const addPollOption = () => {
+    if (pollOptions.length < 10) {
+      setPollOptions([...pollOptions, '']);
+    }
+  };
+
+  const removePollOption = (index: number) => {
+    if (pollOptions.length > 2) {
+      const updated = pollOptions.filter((_, i) => i !== index);
+      setPollOptions(updated);
+      form.setValue('pollOptions', updated.filter(opt => opt.trim()));
+    }
+  };
+
   const isValidUrl = (string: string) => {
     try {
       new URL(string);
@@ -169,22 +214,50 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
     try {
       setIsSubmitting(true);
       
-      const post = createFeedPost({
-        type: 'post',
-        title: data.title,
-        body: data.body,
-        category: data.category,
-        price: data.price || undefined,
-        platforms: selectedPlatforms,
-        links: data.links || [],
-        images,
-        files,
-        author: getCurrentUser(),
-      });
+      if (data.subtype === 'poll') {
+        // Create poll using existing Poll API
+        const pollOptions = data.pollOptions?.filter(opt => opt.trim()).map((label, index) => ({
+          id: `opt${index + 1}`,
+          label,
+          votes: 0
+        })) || [];
 
+        if (pollOptions.length < 2) {
+          throw new Error('Polls must have at least 2 options');
+        }
+
+        createPoll({
+          type: 'poll',
+          question: data.pollQuestion || '',
+          options: pollOptions,
+          allowMultiple: false,
+          showResults: 'after-vote',
+          closesAt: Date.now() + (data.pollDurationDays || 7) * 24 * 60 * 60 * 1000,
+          category: data.category,
+          platforms: selectedPlatforms,
+          author: getCurrentUser()
+        });
+      } else {
+        // Create thread using existing Post API
+        createFeedPost({
+          type: 'post',
+          title: data.title,
+          body: data.body,
+          category: data.category,
+          platforms: selectedPlatforms,
+          imageUrl: images[0] || '',
+          images,
+          files: files,
+          links: data.links || [],
+          price: data.price || '',
+          author: getCurrentUser()
+        });
+      }
+
+      const postTypeLabel = data.subtype === 'poll' ? 'Poll' : 'Thread';
       toast({
-        title: 'Post published',
-        description: 'Your post has been shared with the community',
+        title: `${postTypeLabel} published`,
+        description: `Your ${postTypeLabel.toLowerCase()} has been shared with the community`,
       });
 
       // Reset form
@@ -193,12 +266,13 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
       setLinks(['']);
       setImages([]);
       setFiles([]);
+      setPollOptions(['', '']);
       
       onPostCreated?.();
       onOpenChange(false);
     } catch (error) {
       toast({
-        title: 'Failed to publish post',
+        title: 'Failed to publish',
         description: 'Please try again',
         variant: 'destructive',
       });
@@ -211,10 +285,36 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Create a Post</DialogTitle>
+          <DialogTitle>
+            {currentSubtype === 'poll' ? 'Create a Poll' : 'Create a Thread'}
+          </DialogTitle>
         </DialogHeader>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {/* Content Type Selection */}
+          <div className="space-y-2">
+            <Label>Content Type</Label>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant={currentSubtype === 'thread' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => form.setValue('subtype', 'thread')}
+                data-testid="subtype-thread"
+              >
+                Thread
+              </Button>
+              <Button
+                type="button"
+                variant={currentSubtype === 'poll' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => form.setValue('subtype', 'poll')}
+                data-testid="subtype-poll"
+              >
+                Poll
+              </Button>
+            </div>
+          </div>
           {/* Title */}
           <div className="space-y-2">
             <Label htmlFor="title">Title *</Label>
@@ -231,10 +331,16 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
 
           {/* Content */}
           <div className="space-y-2">
-            <Label htmlFor="body">Content *</Label>
+            <Label htmlFor="body">
+              {currentSubtype === 'poll' ? 'Poll Description *' : 'Content *'}
+            </Label>
             <Textarea
               id="body"
-              placeholder="Share your thoughts with the community..."
+              placeholder={
+                currentSubtype === 'poll'
+                  ? 'Provide context for your poll question..'
+                  : 'Share your thoughts with the community...'
+              }
               className="min-h-[120px]"
               {...form.register('body')}
               data-testid="post-body-input"
@@ -243,6 +349,84 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
               <p className="text-sm text-red-500">{form.formState.errors.body.message}</p>
             )}
           </div>
+
+          {/* Poll-specific fields */}
+          {currentSubtype === 'poll' && (
+            <>
+              {/* Poll Question */}
+              <div className="space-y-2">
+                <Label htmlFor="pollQuestion">Poll Question *</Label>
+                <Input
+                  id="pollQuestion"
+                  placeholder="What question would you like to ask?"
+                  {...form.register('pollQuestion')}
+                  data-testid="poll-question-input"
+                />
+                {form.formState.errors.pollQuestion && (
+                  <p className="text-sm text-red-500">{form.formState.errors.pollQuestion.message}</p>
+                )}
+              </div>
+
+              {/* Poll Options */}
+              <div className="space-y-2">
+                <Label>Poll Options (2-10 options)</Label>
+                {pollOptions.map((option, index) => (
+                  <div key={index} className="flex gap-2">
+                    <Input
+                      placeholder={`Option ${index + 1}`}
+                      value={option}
+                      onChange={(e) => handlePollOptionChange(index, e.target.value)}
+                      data-testid={`poll-option-${index}`}
+                    />
+                    {pollOptions.length > 2 && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="icon"
+                        onClick={() => removePollOption(index)}
+                        data-testid={`remove-poll-option-${index}`}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+                {pollOptions.length < 10 && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={addPollOption}
+                    className="w-full"
+                    data-testid="add-poll-option"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Option
+                  </Button>
+                )}
+              </div>
+
+              {/* Poll Duration */}
+              <div className="space-y-2">
+                <Label htmlFor="pollDurationDays">Poll Duration</Label>
+                <Select
+                  defaultValue="7"
+                  onValueChange={(value) => form.setValue('pollDurationDays', parseInt(value))}
+                >
+                  <SelectTrigger data-testid="poll-duration-select">
+                    <SelectValue placeholder="Select duration" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1 day</SelectItem>
+                    <SelectItem value="3">3 days</SelectItem>
+                    <SelectItem value="7">1 week</SelectItem>
+                    <SelectItem value="14">2 weeks</SelectItem>
+                    <SelectItem value="30">1 month</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </>
+          )}
 
           {/* Category */}
           <div className="space-y-2">
@@ -420,7 +604,12 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
               disabled={isSubmitting || selectedPlatforms.length === 0}
               data-testid="post-submit-button"
             >
-              {isSubmitting ? 'Publishing...' : 'Publish Post'}
+              {isSubmitting
+                ? 'Publishing...'
+                : currentSubtype === 'poll'
+                ? 'Create Poll'
+                : 'Publish Thread'
+              }
             </Button>
           </div>
         </form>
