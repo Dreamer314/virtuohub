@@ -31,8 +31,8 @@ export function Header({ onCreatePost }: HeaderProps) {
                 <Box className="text-white text-sm" size={16} />
               </div>
             </div>
-            <span className="text-xl font-display font-bold gradient-text ml-2 hidden sm:block">VirtuoHub</span>
-            <span className="text-lg font-display font-bold gradient-text ml-2 sm:hidden">VHub</span>
+            <span className="text-xl font-display font-bold text-foreground ml-2 hidden sm:block">VirtuoHub</span>
+            <span className="text-lg font-display font-bold text-foreground ml-2 sm:hidden">VHub</span>
           </div>
 
           {/* Desktop Navigation */}
