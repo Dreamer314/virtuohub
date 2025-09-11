@@ -21,14 +21,13 @@ const NewsPage: React.FC = () => {
   });
 
   const newsPosts = posts.filter(post => 
-    post.type === 'regular' && 
-    (post.category === 'General' && 
-     (post.title.toLowerCase().includes('industry') || 
-      post.title.toLowerCase().includes('news') ||
-      post.title.toLowerCase().includes('update') ||
-      post.title.toLowerCase().includes('announcement') ||
-      post.title.toLowerCase().includes('launch') ||
-      post.title.toLowerCase().includes('release')))
+    post.subtype === 'news' ||
+    (post.title.toLowerCase().includes('industry') || 
+     post.title.toLowerCase().includes('news') ||
+     post.title.toLowerCase().includes('update') ||
+     post.title.toLowerCase().includes('announcement') ||
+     post.title.toLowerCase().includes('launch') ||
+     post.title.toLowerCase().includes('release'))
   ).sort((a, b) => {
       const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
       const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;

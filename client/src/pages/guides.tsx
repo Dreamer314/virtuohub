@@ -20,7 +20,7 @@ const GuidesPage: React.FC = () => {
   });
 
   const guidesPosts = posts.filter(post => 
-    post.type === 'regular' && 
+    post.subtype === 'tip' || 
     (post.title.toLowerCase().includes('tip') || 
      post.title.toLowerCase().includes('guide') ||
      post.title.toLowerCase().includes('tutorial') ||

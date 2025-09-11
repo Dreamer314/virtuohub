@@ -30,7 +30,7 @@ const TrendingPage: React.FC = () => {
     switch (activeTab) {
       case 'industry':
         filtered = posts.filter(post => 
-          post.type === 'regular' && 
+          post.subtype === 'news' || 
           (post.title.toLowerCase().includes('industry') || 
            post.title.toLowerCase().includes('platform') ||
            post.title.toLowerCase().includes('tool') ||
@@ -38,7 +38,7 @@ const TrendingPage: React.FC = () => {
         );
         break;
       case 'hub':
-        filtered = posts.filter(post => post.type === 'regular');
+        filtered = posts.filter(post => post.subtype === 'thread');
         break;
       case 'threads':
         filtered = posts.filter(post => post.comments && post.comments > 2);

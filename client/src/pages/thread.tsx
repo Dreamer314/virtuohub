@@ -111,7 +111,7 @@ export default function ThreadPage() {
             <LeftSidebar
               currentTab={'all'}
               onTabChange={() => {}}
-              selectedPlatforms={selectedPlatforms}
+              selectedPlatforms={selectedPlatforms as any}
               onPlatformChange={setSelectedPlatforms}
             />
           </div>

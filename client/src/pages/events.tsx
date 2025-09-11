@@ -51,7 +51,7 @@ const EventsPage: React.FC = () => {
       // Apply platform filtering if active
       if (filterStore.selectedPlatforms.length > 0) {
         const hasMatchingPlatform = post.platforms?.some(platform => 
-          filterStore.selectedPlatforms.includes(platform)
+          filterStore.selectedPlatforms.includes(platform as any)
         );
         if (!hasMatchingPlatform) return false;
       }

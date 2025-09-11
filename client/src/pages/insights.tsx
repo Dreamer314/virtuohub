@@ -12,7 +12,7 @@ export default function InsightsPage() {
     queryKey: ['/api/posts'],
   });
 
-  const insightPosts = posts.filter(post => post.type === 'insight');
+  const insightPosts = posts.filter(post => post.subtype === 'interview');
 
   const getArticleSlug = (postId: string) => {
     switch (postId) {

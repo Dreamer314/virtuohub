@@ -19,7 +19,7 @@ class ListsAPI {
     // Hide Studios content until feature is live
     filtered = filtered.filter(list => 
       !list.title.toLowerCase().includes('studio') && 
-      !list.summary?.toLowerCase().includes('studio')
+      !list.title.toLowerCase().includes('studio content')
     );
 
     // Apply filters

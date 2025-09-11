@@ -74,54 +74,64 @@ export class MemStorage implements IStorage {
         id: 'post1',
         authorId: 'user1',
         title: 'New VRChat Avatar Pack - Cyberpunk Collection',
-        content: 'Created a stunning cyberpunk-themed avatar collection for VRChat! Each avatar features neon accents, holographic details, and custom particle effects. Perfect for futuristic roleplay worlds!',
-        imageUrl: '',
+        body: 'Created a stunning cyberpunk-themed avatar collection for VRChat! Each avatar features neon accents, holographic details, and custom particle effects. Perfect for futuristic roleplay worlds!',
+        summary: null,
+        tags: [],
+        imageUrl: null,
         images: [],
         files: [],
         links: [],
-        category: 'Assets for Sale',
+        subtype: 'thread',
         platforms: ['VRChat'],
         price: '$180',
-        type: 'regular',
-        pollData: null,
+        status: 'published',
+        subtypeData: null,
         likes: 0,
         comments: 0,
         shares: 0,
+        views: 0,
         createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 hours ago
+        updatedAt: new Date(Date.now() - 3 * 60 * 60 * 1000),
       },
       {
         id: 'post2',
         authorId: 'user2',
         title: 'Looking for 3D modelers for Roblox adventure game',
-        content: "We're building an epic adventure game in Roblox and need talented 3D artists to join our team. Competitive rates and profit sharing available!",
+        body: "We're building an epic adventure game in Roblox and need talented 3D artists to join our team. Competitive rates and profit sharing available!",
+        summary: null,
+        tags: [],
         imageUrl: '/images/roblox-dev.png',
         images: [],
         files: [],
         links: [],
-        category: 'Jobs & Gigs',
+        subtype: 'thread',
         platforms: ['Roblox'],
         price: '$30-50/hr',
-        type: 'regular',
-        pollData: null,
+        status: 'published',
+        subtypeData: null,
         likes: 0,
         comments: 0,
         shares: 0,
+        views: 0,
         createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
+        updatedAt: new Date(Date.now() - 5 * 60 * 60 * 1000),
       },
       {
         id: 'post3',
         authorId: 'vhub_pulse',
         title: "What's your preferred platform for virtual world creation?",
-        content: '',
-        imageUrl: '',
+        body: '',
+        summary: null,
+        tags: [],
+        imageUrl: null,
         images: [],
         files: [],
         links: [],
-        category: 'General',
+        subtype: 'poll',
         platforms: ['VRChat', 'Roblox', 'Second Life'],
-        price: '',
-        type: 'pulse',
-        pollData: {
+        price: null,
+        status: 'published',
+        subtypeData: {
           question: "What's your preferred platform for virtual world creation?",
           options: [
             { text: 'Unity', votes: 0, percentage: 0 },
@@ -134,58 +144,78 @@ export class MemStorage implements IStorage {
         likes: 0,
         comments: 0,
         shares: 0,
+        views: 0,
         createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000), // 8 hours ago
+        updatedAt: new Date(Date.now() - 8 * 60 * 60 * 1000),
       },
       {
         id: 'post4',
         authorId: 'user3',
         title: 'Breaking Creative Blocks with AI Tools',
-        content: 'Alex Chen shares how he uses generative AI to speed up concept art workflows — without losing the human touch. Practical tips for creators balancing efficiency with originality.',
+        body: 'Alex Chen shares how he uses generative AI to speed up concept art workflows — without losing the human touch. Practical tips for creators balancing efficiency with originality.',
+        summary: null,
+        tags: [],
         imageUrl: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1200&h=600&fit=crop',
         images: [],
         files: [],
         links: [],
-        category: 'General',
+        subtype: 'interview',
         platforms: ['VRChat', 'Roblox'],
-        price: '',
-        type: 'insight',
-        pollData: null,
+        price: null,
+        status: 'published',
+        subtypeData: null,
         likes: 0,
         comments: 0,
         shares: 0,
+        views: 0,
         createdAt: new Date(Date.now() - 12 * 60 * 60 * 1000), // 12 hours ago
+        updatedAt: new Date(Date.now() - 12 * 60 * 60 * 1000),
       },
       {
         id: 'post5',
         authorId: 'user2',
         title: 'From Sims Modding to Virtual World Design',
-        content: 'How community modders are transforming hobbies into careers — and what game studios can learn from them.',
+        body: 'How community modders are transforming hobbies into careers — and what game studios can learn from them.',
+        summary: null,
+        tags: [],
         imageUrl: 'https://images.unsplash.com/photo-1556438064-2d7646166914?w=1200&h=600&fit=crop',
-        category: 'General',
+        images: [],
+        files: [],
+        links: [],
+        subtype: 'interview',
         platforms: ['The Sims', 'Roblox'],
-        price: '',
-        type: 'insight',
-        pollData: null,
+        price: null,
+        status: 'published',
+        subtypeData: null,
         likes: 0,
         comments: 0,
         shares: 0,
+        views: 0,
         createdAt: new Date(Date.now() - 18 * 60 * 60 * 1000), // 18 hours ago
+        updatedAt: new Date(Date.now() - 18 * 60 * 60 * 1000),
       },
       {
         id: 'post6',
         authorId: 'user1',
         title: 'The Future of Virtual Fashion',
-        content: 'Digital clothing is no longer just for avatars. Creator Maria Lopez explains how her designs are crossing into AR, social media, and even real-world production.',
+        body: 'Digital clothing is no longer just for avatars. Creator Maria Lopez explains how her designs are crossing into AR, social media, and even real-world production.',
+        summary: null,
+        tags: [],
         imageUrl: 'https://images.unsplash.com/photo-1558618047-3c8c76c7e6c1?w=1200&h=600&fit=crop',
-        category: 'General',
+        images: [],
+        files: [],
+        links: [],
+        subtype: 'interview',
         platforms: ['VRChat', 'IMVU'],
-        price: '',
-        type: 'insight',
-        pollData: null,
+        price: null,
+        status: 'published',
+        subtypeData: null,
         likes: 0,
         comments: 0,
         shares: 0,
+        views: 0,
         createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
+        updatedAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
       }
     ];
 
@@ -492,16 +522,21 @@ As the lines between physical and digital continue to blur, virtual fashion stan
     const post: Post = {
       ...postData,
       id,
+      summary: postData.summary || null,
+      tags: postData.tags || [],
       imageUrl: postData.imageUrl || null,
       images: postData.images || [],
       files: postData.files || [],
       links: postData.links || [],
       price: postData.price || null,
-      type: postData.type || 'regular',
+      status: postData.status || 'published',
+      subtypeData: postData.subtypeData || null,
       likes: 0,
       comments: 0,
       shares: 0,
+      views: 0,
       createdAt: new Date(),
+      updatedAt: new Date(),
     };
     this.posts.set(id, post);
     return post;
@@ -511,7 +546,7 @@ As the lines between physical and digital continue to blur, virtual fashion stan
     let posts = Array.from(this.posts.values());
     
     if (filters?.category && filters.category !== 'All') {
-      posts = posts.filter(post => post.category === filters.category);
+      posts = posts.filter(post => post.subtype === filters.category);
     }
     
     if (filters?.platforms && filters.platforms.length > 0) {
@@ -636,22 +671,24 @@ As the lines between physical and digital continue to blur, virtual fashion stan
 
   async voteOnPoll(postId: string, optionIndex: number): Promise<PostWithAuthor | null> {
     const post = this.posts.get(postId);
-    if (!post || post.type !== 'pulse' || !post.pollData) {
+    if (!post || post.subtype !== 'poll' || !post.subtypeData) {
       return null;
     }
 
+    const pollData = post.subtypeData as any;
     // Update the vote count for the selected option
-    if (post.pollData.options && post.pollData.options[optionIndex]) {
-      post.pollData.options[optionIndex].votes += 1;
-      post.pollData.totalVotes += 1;
+    if (pollData.options && pollData.options[optionIndex]) {
+      pollData.options[optionIndex].votes += 1;
+      pollData.totalVotes += 1;
 
       // Recalculate percentages for all options
-      post.pollData.options.forEach(option => {
-        option.percentage = Math.round((option.votes / post.pollData!.totalVotes) * 100);
+      pollData.options.forEach((option: any) => {
+        option.percentage = Math.round((option.votes / pollData.totalVotes) * 100);
       });
 
-      this.posts.set(postId, post);
-      return await this.getPost(postId);
+      this.posts.set(postId, { ...post, subtypeData: pollData });
+      const result = await this.getPost(postId);
+      return result || null;
     }
 
     return null;
@@ -665,6 +702,9 @@ As the lines between physical and digital continue to blur, virtual fashion stan
       id,
       publishDate: new Date(),
       createdAt: new Date(),
+      tags: articleData.tags || null,
+      seoTitle: articleData.seoTitle || null,
+      seoDescription: articleData.seoDescription || null,
     };
     this.articles.set(id, article);
     return article;
@@ -706,14 +746,14 @@ As the lines between physical and digital continue to blur, virtual fashion stan
   }
 
   // Comment methods
-  async createComment(commentData: InsertComment): Promise<Comment> {
+  async createComment(commentData: InsertComment & { postId?: string }): Promise<Comment> {
     const id = randomUUID();
     const comment: Comment = {
       ...commentData,
       id,
       likes: 0,
       createdAt: new Date(),
-      postId: commentData.postId || null,
+      postId: (commentData as any).postId || null,
       articleId: commentData.articleId || null,
       parentId: commentData.parentId || null,
     };

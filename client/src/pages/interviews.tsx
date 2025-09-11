@@ -22,7 +22,7 @@ const InterviewsPage: React.FC = () => {
   });
 
   const interviewPosts = posts
-    .filter(post => post.type === 'insight') // Using insight posts as interview content
+    .filter(post => post.subtype === 'interview') // Using interview posts
     .sort((a, b) => {
       const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
       const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;

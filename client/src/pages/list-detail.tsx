@@ -2,6 +2,17 @@ import React, { useEffect } from 'react';
 import { useRoute } from 'wouter';
 import { useQuery } from '@tanstack/react-query';
 import { formatNumber } from '@/lib/utils';
+
+// Add formatViews helper function
+const formatViews = (views: number): string => {
+  if (views >= 1000000) {
+    return `${(views / 1000000).toFixed(1)}M`;
+  } else if (views >= 1000) {
+    return `${(views / 1000).toFixed(1)}K`;
+  } else {
+    return views.toString();
+  }
+};
 import { type FullList } from '@/types/lists';
 import { getListBySlug, incrementViews, getRelatedLists } from '@/lib/data/lists';
 import { Header } from '@/components/layout/header';

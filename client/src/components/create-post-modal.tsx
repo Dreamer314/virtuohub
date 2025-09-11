@@ -65,17 +65,18 @@ export function CreatePostModal({ isOpen, onClose, initialType = 'regular', init
     resolver: zodResolver(createPostSchema),
     defaultValues: {
       title: "",
-      content: "",
-      imageUrl: "",
+      body: "",
+      summary: null,
+      tags: [],
+      imageUrl: null,
       images: [],
       files: [],
       links: [],
-      // COMPOSER ROUTING - Use initialCategory if provided, otherwise default to general
-      category: initialCategory || "general",
+      subtype: "thread",
       platforms: [],
-      price: "",
-      type: initialType,
-      pollData: initialType === 'pulse' ? { question: '', options: pollOptions, totalVotes: 0 } : null,
+      price: null,
+      status: "published",
+      subtypeData: initialType === 'pulse' ? { question: '', options: pollOptions, totalVotes: 0 } : null,
     },
   });
 
@@ -110,7 +111,7 @@ export function CreatePostModal({ isOpen, onClose, initialType = 'regular', init
     const response = await apiRequest('POST', '/api/objects/upload');
     return {
       method: 'PUT' as const,
-      url: response.uploadURL,
+      url: response.url,
     };
   };
 
@@ -206,7 +207,7 @@ export function CreatePostModal({ isOpen, onClose, initialType = 'regular', init
             {/* Content */}
             <FormField
               control={form.control}
-              name="content"
+              name="body"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>{initialType === 'pulse' ? 'Poll Question' : 'Content'}</FormLabel>
@@ -236,8 +237,8 @@ export function CreatePostModal({ isOpen, onClose, initialType = 'regular', init
                         const newOptions = [...pollOptions];
                         newOptions[index] = e.target.value;
                         setPollOptions(newOptions);
-                        form.setValue('pollData', { 
-                          question: form.watch('content') || '', 
+                        form.setValue('subtypeData', { 
+                          question: form.watch('body') || '', 
                           options: newOptions, 
                           totalVotes: 0 
                         });
@@ -252,8 +253,8 @@ export function CreatePostModal({ isOpen, onClose, initialType = 'regular', init
                         onClick={() => {
                           const newOptions = pollOptions.filter((_, i) => i !== index);
                           setPollOptions(newOptions);
-                          form.setValue('pollData', { 
-                            question: form.watch('content') || '', 
+                          form.setValue('subtypeData', { 
+                            question: form.watch('body') || '', 
                             options: newOptions, 
                             totalVotes: 0 
                           });
@@ -273,8 +274,8 @@ export function CreatePostModal({ isOpen, onClose, initialType = 'regular', init
                     onClick={() => {
                       const newOptions = [...pollOptions, ''];
                       setPollOptions(newOptions);
-                      form.setValue('pollData', { 
-                        question: form.watch('content') || '', 
+                      form.setValue('subtypeData', { 
+                        question: form.watch('body') || '', 
                         options: newOptions, 
                         totalVotes: 0 
                       });
@@ -438,25 +439,26 @@ export function CreatePostModal({ isOpen, onClose, initialType = 'regular', init
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* POST CATEGORIES MVP - Updated category selector */}
+              {/* Subtype selector */}
               <FormField
                 control={form.control}
-                name="category"
+                name="subtype"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Category</FormLabel>
+                    <FormLabel>Post Type</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <SelectTrigger data-testid="category-select" aria-label="Choose a post category">
-                          <SelectValue placeholder="Choose a category" />
+                        <SelectTrigger data-testid="subtype-select" aria-label="Choose a post type">
+                          <SelectValue placeholder="Choose a type" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {POST_CATEGORIES.map((category) => (
-                          <SelectItem key={category.slug} value={category.slug} data-testid={`category-option-${category.slug}`}>
-                            {category.label}
-                          </SelectItem>
-                        ))}
+                        <SelectItem value="thread" data-testid="subtype-option-thread">Discussion</SelectItem>
+                        <SelectItem value="poll" data-testid="subtype-option-poll">Poll</SelectItem>
+                        <SelectItem value="spotlight" data-testid="subtype-option-spotlight">Spotlight</SelectItem>
+                        <SelectItem value="tip" data-testid="subtype-option-tip">Tip</SelectItem>
+                        <SelectItem value="news" data-testid="subtype-option-news">News</SelectItem>
+                        <SelectItem value="event" data-testid="subtype-option-event">Event</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

@@ -157,7 +157,6 @@ const ListsPage: React.FC = () => {
                     <PostCard
                       key={post.id}
                       post={post}
-                      className="list-card"
                     />
                   ))
                 )}
