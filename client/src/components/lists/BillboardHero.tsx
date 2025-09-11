@@ -3,7 +3,7 @@ import { type BillboardTab } from '@/types/lists';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { PlatformPill } from '@/components/common/PlatformPill';
+import { PlatformPill } from '@/components/pills/PlatformPill';
 import { VoiceBadge } from '@/components/common/VoiceBadge';
 import { HelpCircle, TrendingUp, Clock } from 'lucide-react';
 

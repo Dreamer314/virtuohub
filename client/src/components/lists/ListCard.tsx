@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'wouter';
 import { type ListMeta } from '@/types/lists';
-import { PlatformPill } from '@/components/common/PlatformPill';
+import { PlatformPill } from '@/components/pills/PlatformPill';
 import { VoiceBadge } from '@/components/common/VoiceBadge';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';

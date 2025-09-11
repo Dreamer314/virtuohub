@@ -6,7 +6,7 @@ import { getListBySlug, incrementViews, getRelatedLists } from '@/lib/data/lists
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
-import { PlatformPill } from '@/components/common/PlatformPill';
+import { PlatformPill } from '@/components/pills/PlatformPill';
 import { VoiceBadge } from '@/components/common/VoiceBadge';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -106,7 +106,7 @@ const ListDetailPage: React.FC = () => {
               onTabChange={() => {}}
               selectedPlatforms={[]}
               onPlatformChange={() => {}}
-              currentSection="lists"
+              currentSection="feed"
             />
           </div>
         </div>
