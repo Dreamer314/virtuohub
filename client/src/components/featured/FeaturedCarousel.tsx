@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { formatAbsoluteDate, getContentTypeColor, noWidow } from "@/lib/utils";
 import { OptimizedImage } from "@/components/ui/optimized-image";
+import { Link } from "wouter";
 import type { FeaturedItem } from "./types";
 
 interface FeaturedCarouselProps {
@@ -89,19 +90,21 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
         {/* Media */}
         <div className="relative md:-ml-6 xl:-ml-12">
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(closest-side,rgba(120,100,255,.18),transparent_70%)]" />
-          <div className="w-full aspect-[16/9] min-h-[300px] xl:min-h-[360px] rounded-2xl overflow-hidden shadow-[0_0_90px_rgba(120,100,255,.16)] ring-1 ring-white/8">
-            <OptimizedImage 
-              src={currentItem.imageSrc} 
-              alt={currentItem.imageAlt}
-              width="100%"
-              height="100%"
-              aspectRatio="video"
-              loading="lazy"
-              priority={currentIndex === 0}
-              className="w-full h-full object-cover object-center"
-              data-testid={`featured-image-${currentIndex}`}
-            />
-          </div>
+          <Link href={currentItem.ctaHref}>
+            <div className="w-full aspect-[16/9] min-h-[300px] xl:min-h-[360px] rounded-2xl overflow-hidden shadow-[0_0_90px_rgba(120,100,255,.16)] ring-1 ring-white/8 cursor-pointer hover:scale-[1.02] transition-transform duration-200">
+              <OptimizedImage 
+                src={currentItem.imageSrc} 
+                alt={currentItem.imageAlt}
+                width="100%"
+                height="100%"
+                aspectRatio="video"
+                loading="lazy"
+                priority={currentIndex === 0}
+                className="w-full h-full object-cover object-center"
+                data-testid={`featured-image-${currentIndex}`}
+              />
+            </div>
+          </Link>
         </div>
 
         {/* Text */}
@@ -115,16 +118,18 @@ export function FeaturedCarousel({ items }: FeaturedCarouselProps) {
               <span className="text-muted-foreground text-xs">• {currentItem.type}</span>
             ) : null}
           </div>
-          <h2 className="mt-3 text-balance text-pretty keep-words leading-[1.05] tracking-tight text-[clamp(2.25rem,6cqi,3.75rem)] text-foreground font-bold">
-            {noWidow(currentItem.title)}
-          </h2>
+          <Link href={currentItem.ctaHref}>
+            <h2 className="mt-3 text-balance text-pretty keep-words leading-[1.05] tracking-tight text-[clamp(2.25rem,6cqi,3.75rem)] text-foreground font-bold cursor-pointer hover:text-primary transition-colors">
+              {noWidow(currentItem.title)}
+            </h2>
+          </Link>
           <p className="mt-5 text-lg text-foreground/80">{currentItem.blurb}</p>
-          <a 
+          <Link 
             href={currentItem.ctaHref} 
             className="mt-6 inline-flex items-center justify-center rounded-xl px-5 py-3 bg-[#6E4BFF] hover:bg-[#825FFF] text-white font-medium transition-colors"
           >
             {currentItem.ctaLabel}
-          </a>
+          </Link>
         </div>
       </div>
 
