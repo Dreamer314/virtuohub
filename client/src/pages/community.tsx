@@ -15,15 +15,13 @@ import vhubHeaderImage from '@assets/VHub.Header.no.font.Light.Page.png';
 import { useQuery } from '@tanstack/react-query';
 import type { PostWithAuthor, Platform } from '@shared/schema';
 import { pulseApi, subscribe, type Poll } from '@/data/pulseApi';
-import { listFeed } from '@/data/mockApi';
 import { PollCard } from '@/components/polls/PollCard';
-import type { FeedItem } from '@/types/content';
+import type { FeedItem, PlatformKey } from '@/types/content';
+import { PLATFORMS } from '@/types/content';
 // COMPOSER ROUTING - Add wouter hook for query params
 import { useLocation, useSearch } from 'wouter';
 // POST CATEGORIES MVP - Import canonical categories for validation
 import { POST_CATEGORIES } from '@/constants/postCategories';
-// PLATFORM FILTERING - Import platform constants and utilities
-import { PLATFORMS, type PlatformKey } from '@/types/content';
 
 const FEATURED_V2 = true;
 
@@ -46,24 +44,10 @@ const CommunityPage: React.FC = () => {
   const [feedRefresh, setFeedRefresh] = useState(0);
   const [composerCategory, setComposerCategory] = useState<string | undefined>(undefined);
 
-  // Fetch unified feed data (posts + polls)
-  const [feedData, setFeedData] = useState<FeedItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const refreshFeed = useCallback(() => {
-    try {
-      const feed = listFeed();
-      setFeedData(feed);
-    } catch (error) {
-      console.error('Failed to load feed:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [feedRefresh]);
-
-  useEffect(() => {
-    refreshFeed();
-  }, [refreshFeed]);
+  // Fetch posts directly from server API 
+  const { data: posts = [], isLoading } = useQuery<PostWithAuthor[]>({
+    queryKey: ['/api/posts']
+  });
 
   // Legacy saved posts query (keeping for compatibility)
   const { data: savedPosts = [], isLoading: savedLoading } = useQuery<PostWithAuthor[]>({
@@ -124,22 +108,17 @@ const CommunityPage: React.FC = () => {
     }
   }, [searchString, setLocation]);
 
-  // Filter feed items by platform
-  const allFeedItems = currentTab === 'saved' ? savedPosts.map(p => ({ ...p, type: 'post' as const })) : feedData;
+  // Filter feed items by platform - use server posts directly
+  const allFeedItems = currentTab === 'saved' ? savedPosts : posts;
   
-  // Apply platform filtering
+  // Apply platform filtering for PostWithAuthor objects
   const filteredFeedItems = selectedPlatforms.length > 0 
-    ? allFeedItems.filter(item => {
-        // For posts, check if any selected platform matches
-        if (item.type === 'post' && item.platforms && Array.isArray(item.platforms)) {
-          return selectedPlatforms.some(platform => item.platforms!.includes(platform));
+    ? allFeedItems.filter(post => {
+        // Check if any selected platform matches the post's platforms
+        if (post.platforms && Array.isArray(post.platforms)) {
+          return selectedPlatforms.some(platform => post.platforms.includes(platform));
         }
-        // For polls, check platforms if they exist
-        if (item.type === 'poll' && item.platforms && Array.isArray(item.platforms)) {
-          return selectedPlatforms.some(platform => item.platforms!.includes(platform));
-        }
-        // Show items without platform info when no filter is active
-        return selectedPlatforms.length === 0;
+        return false;
       })
     : allFeedItems;
 
@@ -562,22 +541,9 @@ const CommunityPage: React.FC = () => {
                           </div>
                         )
                       ) : filteredFeedItems.length > 0 ? (
-                        filteredFeedItems.map((item: any) => {
-                          if (item.type === 'poll') {
-                            return (
-                              <PollCard 
-                                key={item.id} 
-                                poll={item} 
-                                context="feed" 
-                                onUpdate={() => setFeedRefresh(prev => prev + 1)}
-                              />
-                            );
-                          } else {
-                            return (
-                              <PostCard key={item.id} post={item as any} />
-                            );
-                          }
-                        })
+                        filteredFeedItems.map((post) => (
+                          <PostCard key={post.id} post={post} />
+                        ))
                       ) : (
                         <div className="glass-card rounded-xl p-12 text-center" data-testid="empty-state">
                           <div className="text-6xl mb-4">🌟</div>
