@@ -342,17 +342,19 @@ function PollFooter({
       {showVoting && (
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button
-              onClick={onVote}
-              disabled={selectedOptions.length === 0 || isVoting || !user}
-              className="vh-button w-full"
-              data-testid={`poll-vote-button-${poll.id}`}
-            >
-              {isVoting ? 'Voting...' : 'Vote'}
-            </Button>
+            <div className="w-full">
+              <Button
+                onClick={onVote}
+                disabled={selectedOptions.length === 0 || isVoting || !user}
+                className="vh-button w-full"
+                data-testid={`poll-vote-button-${poll.id}`}
+              >
+                {isVoting ? 'Voting...' : 'Vote'}
+              </Button>
+            </div>
           </TooltipTrigger>
           {!user && (
-            <TooltipContent>
+            <TooltipContent data-testid={`poll-vote-tooltip-${poll.id}`}>
               <p>Log in to continue</p>
             </TooltipContent>
           )}
