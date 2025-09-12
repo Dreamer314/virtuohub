@@ -36,52 +36,30 @@ export function PollCard({ poll, context, onUpdate, onVote, userHasVoted: provid
       : `${hoursLeft}h left`;
 
   const handleOptionSelect = (optionId: string) => {
-    console.log('PollCard handleOptionSelect called:', { 
-      optionId, 
-      userHasVoted, 
-      isCompleted, 
-      allowMultiple: poll.allowMultiple 
-    });
-    
-    if (userHasVoted || isCompleted) {
-      console.log('Option selection blocked - user already voted or poll completed');
-      return;
-    }
+    if (userHasVoted || isCompleted) return;
     
     if (poll.allowMultiple) {
-      setSelectedOptions(prev => {
-        const newSelection = prev.includes(optionId) 
+      setSelectedOptions(prev => 
+        prev.includes(optionId) 
           ? prev.filter(id => id !== optionId)
-          : [...prev, optionId];
-        console.log('Updated selected options (multiple):', newSelection);
-        return newSelection;
-      });
+          : [...prev, optionId]
+      );
     } else {
-      console.log('Setting single option selection:', [optionId]);
       setSelectedOptions([optionId]);
     }
   };
 
   const handleVote = async () => {
-    console.log('PollCard handleVote called:', { selectedOptions, isVoting });
-    
-    if (selectedOptions.length === 0 || isVoting) {
-      console.log('Vote blocked - no selection or already voting');
-      return;
-    }
+    if (selectedOptions.length === 0 || isVoting) return;
     
     try {
       setIsVoting(true);
-      console.log('Attempting to vote:', { pollId: poll.id, selectedOptions });
-      
       // Use custom onVote prop if provided (for pulse polls), otherwise use default mockApi voting
       if (onVote) {
         await onVote(poll.id, selectedOptions);
       } else {
         await votePoll(poll.id, selectedOptions);
       }
-      
-      console.log('Vote successful, clearing selection');
       setSelectedOptions([]);
       onUpdate?.();
     } catch (error) {
@@ -366,6 +344,7 @@ function PollFooter({
           <Button
             variant="ghost" 
             size="sm"
+            onClick={() => {/* TODO: Add like functionality */}}
             className="vh-button flex items-center space-x-2 px-2 py-1"
             data-testid={`poll-like-${poll.id}`}
           >
@@ -374,7 +353,8 @@ function PollFooter({
           </Button>
           <Button
             variant="ghost"
-            size="sm" 
+            size="sm"
+            onClick={() => {/* TODO: Add save functionality */}}
             className="vh-button flex items-center space-x-2 px-2 py-1"
             data-testid={`poll-save-${poll.id}`}
           >
@@ -384,6 +364,7 @@ function PollFooter({
           <Button
             variant="ghost"
             size="sm"
+            onClick={() => {/* TODO: Add share functionality */}}
             className="vh-button flex items-center space-x-2 px-2 py-1"
             data-testid={`poll-share-${poll.id}`}
           >

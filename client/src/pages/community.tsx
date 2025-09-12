@@ -410,6 +410,7 @@ const CommunityPage: React.FC = () => {
                                     <Button
                                       variant="ghost"
                                       size="sm"
+                                      onClick={() => {/* TODO: Add like functionality */}}
                                       className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
                                       data-testid={`like-button-${poll.id}`}
                                     >
@@ -419,6 +420,7 @@ const CommunityPage: React.FC = () => {
                                   <Button
                                     variant="ghost"
                                     size="sm"
+                                    onClick={() => {/* TODO: Add comment functionality */}}
                                     className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
                                     data-testid={`comment-button-${poll.id}`}
                                   >
@@ -428,6 +430,7 @@ const CommunityPage: React.FC = () => {
                                   <Button
                                     variant="ghost"
                                     size="sm"
+                                    onClick={() => {/* TODO: Add share functionality */}}
                                     className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
                                     data-testid={`share-button-${poll.id}`}
                                   >
