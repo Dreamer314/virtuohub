@@ -136,9 +136,15 @@ const PulsePage: React.FC = () => {
                             context="pulse"
                             onUpdate={() => setPulseRefresh(prev => prev + 1)}
                             onVote={async (pollId: string, optionIds: string[]) => {
-                              // Convert optionIds to option indices for pulseApi
-                              const optionIndex = parseInt(optionIds[0].split('_option_')[1]);
-                              pulseApi.vote(pollId, optionIndex);
+                              try {
+                                // Convert optionIds to option indices for pulseApi
+                                const optionIndex = parseInt(optionIds[0].split('_option_')[1]);
+                                console.log('Voting:', { pollId, optionIds, optionIndex });
+                                pulseApi.vote(pollId, optionIndex);
+                                setPulseRefresh(prev => prev + 1);
+                              } catch (error) {
+                                console.error('Vote failed:', error);
+                              }
                             }}
                             userHasVoted={pulseApi.hasVoted(poll.id)}
                             userVoteIds={pulseApi.getUserVote(poll.id) !== null ? [`${poll.id}_option_${pulseApi.getUserVote(poll.id)}`] : undefined}
@@ -167,9 +173,15 @@ const PulsePage: React.FC = () => {
                             context="pulse"
                             onUpdate={() => setPulseRefresh(prev => prev + 1)}
                             onVote={async (pollId: string, optionIds: string[]) => {
-                              // Convert optionIds to option indices for pulseApi
-                              const optionIndex = parseInt(optionIds[0].split('_option_')[1]);
-                              pulseApi.vote(pollId, optionIndex);
+                              try {
+                                // Convert optionIds to option indices for pulseApi
+                                const optionIndex = parseInt(optionIds[0].split('_option_')[1]);
+                                console.log('Voting (completed):', { pollId, optionIds, optionIndex });
+                                pulseApi.vote(pollId, optionIndex);
+                                setPulseRefresh(prev => prev + 1);
+                              } catch (error) {
+                                console.error('Vote failed (completed):', error);
+                              }
                             }}
                             userHasVoted={pulseApi.hasVoted(poll.id)}
                             userVoteIds={pulseApi.getUserVote(poll.id) !== null ? [`${poll.id}_option_${pulseApi.getUserVote(poll.id)}`] : undefined}
