@@ -57,7 +57,8 @@ const CommunityPage: React.FC = () => {
   // Get pulse polls from new API
   const getFeaturedPolls = useCallback(() => {
     const featured = pulseApi.listFeaturedPolls();
-    return featured.length > 0 ? featured : pulseApi.listActivePolls().slice(0, 1);
+    const active = pulseApi.listActivePolls();
+    return featured.length > 0 ? featured : active.slice(0, 1);
   }, [pulsePollsRefresh]);
 
   const featuredPolls = getFeaturedPolls();
