@@ -250,6 +250,11 @@ export const pulseApi = {
     return store.userVotes[pollId] !== undefined;
   },
 
+  getUserVote(pollId: string): number | null {
+    const store = this.getStore();
+    return store.userVotes[pollId] !== undefined ? store.userVotes[pollId] : null;
+  },
+
   // Featured controls Community widget
   listFeaturedPolls(): Poll[] {
     const store = this.getStore();

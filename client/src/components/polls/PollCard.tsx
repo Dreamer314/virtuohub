@@ -69,7 +69,7 @@ export function PollCard({ poll, context, onUpdate, onVote, userHasVoted: provid
     }
   };
 
-  const showResults = userHasVoted || isCompleted || (poll.showResults === 'after-vote' && userHasVoted);
+  const showResults = userHasVoted || isCompleted || poll.showResults === 'always';
   const showVoting = !userHasVoted && !isCompleted;
   
   // Use unified theme system styling for both contexts
