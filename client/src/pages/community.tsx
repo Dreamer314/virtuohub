@@ -14,7 +14,7 @@ import { featuredItems } from '@/components/featured/types';
 import vhubHeaderImage from '@assets/VHub.Header.no.font.Light.Page.png';
 import { useQuery } from '@tanstack/react-query';
 import type { PostWithAuthor, Platform } from '@shared/schema';
-import { pulseApi, subscribe, type Poll } from '@/data/pulseApi';
+import { pulseApi, subscribe, convertPulseApiPoll, type Poll } from '@/data/pulseApi';
 import { PollCard } from '@/components/polls/PollCard';
 import type { FeedItem, PlatformKey } from '@/types/content';
 import { PLATFORMS } from '@/types/content';
@@ -307,167 +307,25 @@ const CommunityPage: React.FC = () => {
                         </div>
                       </div>
                       <div className="space-y-6">
-                        {featuredPolls.map((poll) => {
-                          const hasVoted = pulseApi.hasVoted(poll.id);
-                          const isExpired = poll.endsAt <= Date.now();
-                          const totalVotes = poll.options.reduce((sum, opt) => sum + opt.votes, 0);
-                          const timeLeft = Math.max(0, poll.endsAt - Date.now());
-                          const daysLeft = Math.ceil(timeLeft / (1000 * 60 * 60 * 24));
-                          const hoursLeft = Math.ceil(timeLeft / (1000 * 60 * 60));
-                          const createdAgo = Math.floor((Date.now() - poll.createdAt) / (1000 * 60 * 60));
-                          
-                          const handleVote = (optionIndex: number) => {
-                            console.log('Community page voting:', { pollId: poll.id, optionIndex, hasVoted });
-                            try {
-                              pulseApi.vote(poll.id, optionIndex);
-                              setPulsePollsRefresh(prev => prev + 1);
-                              console.log('Vote successful!');
-                            } catch (error) {
-                              console.error('Vote failed:', error);
-                            }
-                          };
-                          
-                          return (
-                            <article key={poll.id} className="enhanced-card hover-lift group p-6 transition-all duration-200 flex flex-col min-h-[280px]" data-testid={`pulse-card-${poll.id}`}>
-                              <div className="flex space-x-4 flex-1">
-                                {/* Avatar */}
-                                <div className="flex-shrink-0">
-                                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white font-medium text-lg">
-                                    <Zap className="w-6 h-6" />
-                                  </span>
-                                </div>
-                                
-                                <div className="flex-1 min-w-0 flex flex-col">
-                                  {/* Header */}
-                                  <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center space-x-2">
-                                      <span className="font-medium text-foreground">VHub Data Pulse</span>
-                                      <span className="text-xs text-muted-foreground">•</span>
-                                      <span className="text-xs text-muted-foreground">{createdAgo}h ago</span>
-                                    </div>
-                                  </div>
-                                  
-                                  {/* Poll Question */}
-                                  <h3 className="text-lg font-semibold text-foreground mb-4">
-                                    {poll.question}
-                                  </h3>
-                                  
-                                  {/* Poll Options */}
-                                  <div className="space-y-3 mb-4 flex-1">
-                                    {poll.options.map((option, index) => {
-                                      const percentage = totalVotes > 0 ? (option.votes / totalVotes) * 100 : 0;
-                                      
-                                      if (hasVoted || isExpired) {
-                                        // Show results
-                                        return (
-                                          <div key={index} className="relative w-full p-3 border border-border rounded-lg bg-muted/20">
-                                            <div className="flex justify-between items-center relative z-10">
-                                              <span className="text-sm font-medium text-foreground">{option.label}</span>
-                                              <span className="text-xs text-muted-foreground">{option.votes} votes ({percentage.toFixed(0)}%)</span>
-                                            </div>
-                                            <div className="absolute inset-0 bg-primary/10 rounded-lg" style={{ width: `${percentage}%` }}></div>
-                                          </div>
-                                        );
-                                      } else {
-                                        // Show voting buttons
-                                        return (
-                                          <button
-                                            key={index}
-                                            onClick={() => handleVote(index)}
-                                            className="w-full p-3 text-left border border-border rounded-lg hover:border-primary/50 hover:bg-primary/5 transition-colors cursor-pointer"
-                                            data-testid={`poll-option-${poll.id}-${index}`}
-                                          >
-                                            <span className="text-sm font-medium text-foreground">{option.label}</span>
-                                          </button>
-                                        );
-                                      }
-                                    })}
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              {/* Sticky Bottom Section */}
-                              <div className="mt-auto pt-4 border-t border-border/30">
-                                {/* Poll Meta */}
-                                <div className="flex items-center justify-between mb-3">
-                                  <span className="text-xs text-muted-foreground">{totalVotes} votes</span>
-                                  {isExpired ? (
-                                    <span className="text-xs text-muted-foreground">Poll ended</span>
-                                  ) : (
-                                    <span className="text-xs text-muted-foreground">
-                                      Poll ends in {daysLeft > 0 ? `${daysLeft} days` : `${hoursLeft} hours`}
-                                    </span>
-                                  )}
-                                </div>
-                                
-                                {!hasVoted && !isExpired && (
-                                  <div className="text-center text-sm text-muted-foreground mb-3">
-                                    Click an option above to vote
-                                  </div>
-                                )}
-
-                                {/* Engagement Actions */}
-                                <div className="flex items-center justify-between">
-                                  <div className="flex items-center space-x-1">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => {
-                                      console.log(`Liked poll: ${poll.id}`);
-                                      alert('Like functionality working! In a real app, this would increment likes.');
-                                    }}
-                                      className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
-                                      data-testid={`like-button-${poll.id}`}
-                                    >
-                                      <ThumbsUp size={16} />
-                                    <span>0</span>
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => {
-                                    console.log(`Commenting on poll: ${poll.id}`);
-                                    alert('Comment functionality working! In a real app, this would open a comment dialog.');
-                                  }}
-                                    className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
-                                    data-testid={`comment-button-${poll.id}`}
-                                  >
-                                    <MessageCircle size={16} />
-                                    <span>0 comments</span>
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => {
-                                    const shareUrl = `${window.location.origin}/pulse?poll=${poll.id}`;
-                                    navigator.clipboard.writeText(shareUrl);
-                                    console.log(`Shared poll: ${poll.id} - ${shareUrl}`);
-                                    alert(`Poll link copied to clipboard!\\n${shareUrl}`);
-                                  }}
-                                    className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
-                                    data-testid={`share-button-${poll.id}`}
-                                  >
-                                    <Share size={16} />
-                                    <span>Share</span>
-                                  </Button>
-                                  </div>
-                                  
-                                  {/* Link to Pulse Reports */}
-                                  <Link href="/pulse">
-                                    <Button 
-                                      variant="ghost" 
-                                      size="sm" 
-                                      className="text-xs text-muted-foreground hover:text-primary transition-colors"
-                                      data-testid={`view-pulse-${poll.id}`}
-                                    >
-                                      View in Pulse Reports →
-                                    </Button>
-                                  </Link>
-                                </div>
-                              </div>
-                            </article>
-                          );
-                        })}
+                        {featuredPolls.map((poll) => (
+                          <PollCard 
+                            key={poll.id}
+                            poll={convertPulseApiPoll(poll)}
+                            context="feed"
+                            onUpdate={() => setPulsePollsRefresh(prev => prev + 1)}
+                            onVote={async (pollId: string, optionIds: string[]) => {
+                              try {
+                                const optionIndex = parseInt(optionIds[0].split('_option_')[1]);
+                                pulseApi.vote(pollId, optionIndex);
+                                setPulsePollsRefresh(prev => prev + 1);
+                              } catch (error) {
+                                console.error('Vote failed:', error);
+                              }
+                            }}
+                            userHasVoted={pulseApi.hasVoted(poll.id)}
+                            userVoteIds={pulseApi.getUserVote(poll.id) !== null ? [`${poll.id}_option_${pulseApi.getUserVote(poll.id)}`] : undefined}
+                          />
+                        ))}
                       </div>
                       
                       {/* CTA Button */}

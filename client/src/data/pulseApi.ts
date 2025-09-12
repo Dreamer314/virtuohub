@@ -10,6 +10,35 @@ export type Poll = {
   tags?: string[];          // optional labels
 };
 
+// Import the Poll type from content.ts to avoid conflicts
+import type { Poll as ContentPoll, PollOption as ContentPollOption } from '@/types/content';
+
+// Convert pulseApi Poll to content Poll format for PollCard compatibility
+export function convertPulseApiPoll(poll: Poll): ContentPoll {
+  const now = Date.now();
+  return {
+    id: poll.id,
+    type: 'poll' as const,
+    question: poll.question,
+    options: poll.options.map((option, index) => ({
+      id: `${poll.id}_option_${index}`,
+      label: option.label,
+      votes: option.votes
+    })),
+    allowMultiple: false,
+    showResults: 'after-vote' as const,
+    closesAt: poll.endsAt,
+    category: poll.tags?.[0],
+    createdAt: poll.createdAt,
+    author: {
+      id: 'vhub-pulse',
+      name: 'VHub Data Pulse',
+      avatar: undefined
+    },
+    status: poll.endsAt <= now ? 'completed' as const : 'active' as const
+  };
+}
+
 export type Report = {
   id: string;
   title: string;
