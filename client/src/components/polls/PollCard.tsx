@@ -36,30 +36,47 @@ export function PollCard({ poll, context, onUpdate, onVote, userHasVoted: provid
       : `${hoursLeft}h left`;
 
   const handleOptionSelect = (optionId: string) => {
-    if (userHasVoted || isCompleted) return;
+    console.log('PollCard option selected:', { optionId, userHasVoted, isCompleted });
+    
+    if (userHasVoted || isCompleted) {
+      console.log('Selection blocked - already voted or completed');
+      return;
+    }
     
     if (poll.allowMultiple) {
-      setSelectedOptions(prev => 
-        prev.includes(optionId) 
+      setSelectedOptions(prev => {
+        const newOptions = prev.includes(optionId) 
           ? prev.filter(id => id !== optionId)
-          : [...prev, optionId]
-      );
+          : [...prev, optionId];
+        console.log('Updated selected options (multiple):', newOptions);
+        return newOptions;
+      });
     } else {
+      console.log('Setting single selection:', [optionId]);
       setSelectedOptions([optionId]);
     }
   };
 
   const handleVote = async () => {
-    if (selectedOptions.length === 0 || isVoting) return;
+    console.log('PollCard handleVote called:', { selectedOptions: selectedOptions.length, isVoting });
+    
+    if (selectedOptions.length === 0 || isVoting) {
+      console.log('Vote blocked - no selections or already voting');
+      return;
+    }
     
     try {
       setIsVoting(true);
+      console.log('Attempting vote:', { pollId: poll.id, selectedOptions });
+      
       // Use custom onVote prop if provided (for pulse polls), otherwise use default mockApi voting
       if (onVote) {
         await onVote(poll.id, selectedOptions);
       } else {
         await votePoll(poll.id, selectedOptions);
       }
+      
+      console.log('Vote successful!');
       setSelectedOptions([]);
       onUpdate?.();
     } catch (error) {
@@ -344,8 +361,11 @@ function PollFooter({
           <Button
             variant="ghost" 
             size="sm"
-            onClick={() => {/* TODO: Add like functionality */}}
-            className="vh-button flex items-center space-x-2 px-2 py-1"
+            onClick={() => {
+              console.log(`Liked poll: ${poll.id}`);
+              // TODO: Implement actual like functionality with backend
+            }}
+            className="vh-button flex items-center space-x-2 px-2 py-1 hover:bg-accent/10 transition-colors"
             data-testid={`poll-like-${poll.id}`}
           >
             <Heart className="w-4 h-4" />
@@ -354,8 +374,11 @@ function PollFooter({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => {/* TODO: Add save functionality */}}
-            className="vh-button flex items-center space-x-2 px-2 py-1"
+            onClick={() => {
+              console.log(`Saved poll: ${poll.id}`);
+              // TODO: Implement actual save functionality with backend
+            }}
+            className="vh-button flex items-center space-x-2 px-2 py-1 hover:bg-accent/10 transition-colors"
             data-testid={`poll-save-${poll.id}`}
           >
             <Bookmark className="w-4 h-4" />
@@ -364,8 +387,13 @@ function PollFooter({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => {/* TODO: Add share functionality */}}
-            className="vh-button flex items-center space-x-2 px-2 py-1"
+            onClick={() => {
+              const shareUrl = `${window.location.origin}/pulse?poll=${poll.id}`;
+              navigator.clipboard.writeText(shareUrl);
+              console.log(`Shared poll: ${poll.id}`);
+              // TODO: Show toast notification
+            }}
+            className="vh-button flex items-center space-x-2 px-2 py-1 hover:bg-accent/10 transition-colors"
             data-testid={`poll-share-${poll.id}`}
           >
             <Share className="w-4 h-4" />

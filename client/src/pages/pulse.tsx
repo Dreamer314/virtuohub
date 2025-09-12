@@ -240,23 +240,47 @@ const PulsePage: React.FC = () => {
                               )}
                               
                               {report.priceType === 'free' && isAvailable && (
-                                <Button className="w-full bg-green-500/20 hover:bg-green-500/30 border border-green-500/50 hover:border-green-500 text-green-300">
+                                <Button 
+                                  onClick={() => {
+                                    console.log(`Downloading free report: ${report.title}`);
+                                    // Simulate download - in real app would download actual PDF
+                                    window.open(report.downloadUrl, '_blank');
+                                  }}
+                                  className="w-full bg-green-500/20 hover:bg-green-500/30 border border-green-500/50 hover:border-green-500 text-green-300 transition-colors"
+                                  data-testid={`download-button-${report.id}`}
+                                >
                                   <Download className="w-4 h-4 mr-2" />
                                   Download PDF
                                 </Button>
                               )}
                               
                               {report.priceType === 'paid' && (
-                                <Button className="w-full bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/50 hover:border-yellow-500 text-yellow-300">
+                                <Button 
+                                  onClick={() => {
+                                    console.log(`Initiating purchase for: ${report.title} - $${(report.priceCents! / 100).toFixed(2)}`);
+                                    // Simulate payment flow - in real app would redirect to payment processor
+                                    alert(`Purchase flow for ${report.title} - $${(report.priceCents! / 100).toFixed(2)}\n\nIn a real app, this would redirect to a payment processor.`);
+                                  }}
+                                  className="w-full bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/50 hover:border-yellow-500 text-yellow-300 transition-colors"
+                                  data-testid={`purchase-button-${report.id}`}
+                                >
                                   <CreditCard className="w-4 h-4 mr-2" />
                                   Purchase
                                 </Button>
                               )}
                               
                               {report.priceType === 'private' && (
-                                <Button className="w-full bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 hover:border-red-500 text-red-300">
+                                <Button 
+                                  onClick={() => {
+                                    console.log(`Requesting access for private report: ${report.title}`);
+                                    // Simulate contact form - in real app would open contact modal
+                                    alert(`Request access to: ${report.title}\n\nIn a real app, this would open a contact form or email client.`);
+                                  }}
+                                  className="w-full bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 hover:border-red-500 text-red-300 transition-colors"
+                                  data-testid={`request-access-button-${report.id}`}
+                                >
                                   <Mail className="w-4 h-4 mr-2" />
-                                  Access Required
+                                  Request Access
                                 </Button>
                               )}
                             </article>
