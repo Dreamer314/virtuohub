@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertPostSchema, insertSavedPostSchema, insertArticleSchema, insertCommentSchema, insertProfileSchema, CATEGORIES, PLATFORMS } from "@shared/schema";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+import { validateSession } from "./middleware/auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -44,10 +45,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create a new post
-  app.post("/api/posts", async (req, res) => {
+  app.post("/api/posts", validateSession, async (req, res) => {
     try {
       const validatedData = insertPostSchema.parse(req.body);
-      const authorId = req.body.authorId || 'user1'; // Default to user1 for demo
+      // Use authenticated user ID from session
+      const authorId = req.user!.id;
       
       const post = await storage.createPost({ ...validatedData, authorId });
       const postWithAuthor = await storage.getPost(post.id);
@@ -207,11 +209,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create a comment on an article
-  app.post("/api/articles/:articleId/comments", async (req, res) => {
+  app.post("/api/articles/:articleId/comments", validateSession, async (req, res) => {
     try {
       const { articleId } = req.params;
       const { content, parentId } = req.body;
-      const authorId = req.body.authorId || 'user1'; // Default for demo
+      // Use authenticated user ID from session
+      const authorId = req.user!.id;
       
       const commentData = {
         articleId,
@@ -228,11 +231,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create a comment on a post
-  app.post("/api/posts/:postId/comments", async (req, res) => {
+  app.post("/api/posts/:postId/comments", validateSession, async (req, res) => {
     try {
       const { postId } = req.params;
       const { content, parentId } = req.body;
-      const authorId = req.body.authorId || 'user1'; // Default for demo
+      // Use authenticated user ID from session
+      const authorId = req.user!.id;
       
       const commentData = {
         postId,
