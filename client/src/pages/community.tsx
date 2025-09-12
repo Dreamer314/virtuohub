@@ -373,10 +373,7 @@ const CommunityPage: React.FC = () => {
                                         return (
                                           <button
                                             key={index}
-                                            onClick={() => {
-                                              console.log('Option clicked:', { option: option.label, index, pollId: poll.id });
-                                              handleVote(index);
-                                            }}
+                                            onClick={() => handleVote(index)}
                                             className="w-full p-3 text-left border border-border rounded-lg hover:border-primary/50 hover:bg-primary/5 transition-colors cursor-pointer"
                                             data-testid={`poll-option-${poll.id}-${index}`}
                                           >

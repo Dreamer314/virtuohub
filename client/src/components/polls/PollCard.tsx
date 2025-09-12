@@ -36,47 +36,30 @@ export function PollCard({ poll, context, onUpdate, onVote, userHasVoted: provid
       : `${hoursLeft}h left`;
 
   const handleOptionSelect = (optionId: string) => {
-    console.log('PollCard option selected:', { optionId, userHasVoted, isCompleted });
-    
-    if (userHasVoted || isCompleted) {
-      console.log('Selection blocked - already voted or completed');
-      return;
-    }
+    if (userHasVoted || isCompleted) return;
     
     if (poll.allowMultiple) {
-      setSelectedOptions(prev => {
-        const newOptions = prev.includes(optionId) 
+      setSelectedOptions(prev => 
+        prev.includes(optionId) 
           ? prev.filter(id => id !== optionId)
-          : [...prev, optionId];
-        console.log('Updated selected options (multiple):', newOptions);
-        return newOptions;
-      });
+          : [...prev, optionId]
+      );
     } else {
-      console.log('Setting single selection:', [optionId]);
       setSelectedOptions([optionId]);
     }
   };
 
   const handleVote = async () => {
-    console.log('PollCard handleVote called:', { selectedOptions: selectedOptions.length, isVoting });
-    
-    if (selectedOptions.length === 0 || isVoting) {
-      console.log('Vote blocked - no selections or already voting');
-      return;
-    }
+    if (selectedOptions.length === 0 || isVoting) return;
     
     try {
       setIsVoting(true);
-      console.log('Attempting vote:', { pollId: poll.id, selectedOptions });
-      
       // Use custom onVote prop if provided (for pulse polls), otherwise use default mockApi voting
       if (onVote) {
         await onVote(poll.id, selectedOptions);
       } else {
         await votePoll(poll.id, selectedOptions);
       }
-      
-      console.log('Vote successful!');
       setSelectedOptions([]);
       onUpdate?.();
     } catch (error) {
