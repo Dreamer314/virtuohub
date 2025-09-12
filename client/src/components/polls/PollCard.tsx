@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { Poll } from '@/types/content';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Clock, Users, CheckCircle, BarChart3, Heart, Bookmark, Share } from 'lucide-react';
 import { votePoll, hasVoted, getUserVote } from '@/data/mockApi';
+import { useAuth } from '@/providers/AuthProvider';
+import { createLoginGate } from '@/lib/auth';
 
 interface PollCardProps {
   poll: Poll;
@@ -12,11 +15,13 @@ interface PollCardProps {
   onVote?: (pollId: string, optionIds: string[]) => Promise<void>;
   userHasVoted?: boolean;
   userVoteIds?: string[];
+  openAuthModal?: () => void;
 }
 
-export function PollCard({ poll, context, onUpdate, onVote, userHasVoted: providedUserHasVoted, userVoteIds: providedUserVoteIds }: PollCardProps) {
+export function PollCard({ poll, context, onUpdate, onVote, userHasVoted: providedUserHasVoted, userVoteIds: providedUserVoteIds, openAuthModal }: PollCardProps) {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [isVoting, setIsVoting] = useState(false);
+  const { user } = useAuth();
   
   // Use provided voting state for pulse context, fallback to mockApi for feed context
   const userHasVoted = providedUserHasVoted !== undefined ? providedUserHasVoted : hasVoted(poll.id);
@@ -38,6 +43,12 @@ export function PollCard({ poll, context, onUpdate, onVote, userHasVoted: provid
   const handleOptionSelect = (optionId: string) => {
     if (userHasVoted || isCompleted) return;
     
+    // Check if user is authenticated before allowing voting
+    if (!user && openAuthModal) {
+      openAuthModal();
+      return;
+    }
+    
     if (poll.allowMultiple) {
       setSelectedOptions(prev => 
         prev.includes(optionId) 
@@ -51,6 +62,12 @@ export function PollCard({ poll, context, onUpdate, onVote, userHasVoted: provid
 
   const handleVote = async () => {
     if (selectedOptions.length === 0 || isVoting) return;
+    
+    // Check if user is authenticated before allowing voting
+    if (!user && openAuthModal) {
+      openAuthModal();
+      return;
+    }
     
     try {
       setIsVoting(true);
@@ -125,6 +142,8 @@ export function PollCard({ poll, context, onUpdate, onVote, userHasVoted: provid
               timeDisplay={timeDisplay}
               userHasVoted={userHasVoted}
               onVote={handleVote}
+              user={user}
+              openAuthModal={openAuthModal}
             />
           </div>
         </div>
@@ -173,6 +192,8 @@ export function PollCard({ poll, context, onUpdate, onVote, userHasVoted: provid
               timeDisplay={timeDisplay}
               userHasVoted={userHasVoted}
               onVote={handleVote}
+              user={user}
+              openAuthModal={openAuthModal}
             />
           </div>
         </>
@@ -289,6 +310,8 @@ interface PollFooterProps {
   timeDisplay: string;
   userHasVoted: boolean;
   onVote: () => void;
+  user: any;
+  openAuthModal?: () => void;
 }
 
 function PollFooter({ 
@@ -299,7 +322,9 @@ function PollFooter({
   totalVotes, 
   timeDisplay, 
   userHasVoted, 
-  onVote 
+  onVote,
+  user,
+  openAuthModal
 }: PollFooterProps) {
   return (
     <>
@@ -315,14 +340,23 @@ function PollFooter({
       </div>
       
       {showVoting && (
-        <Button
-          onClick={onVote}
-          disabled={selectedOptions.length === 0 || isVoting}
-          className="vh-button w-full"
-          data-testid={`poll-vote-button-${poll.id}`}
-        >
-          {isVoting ? 'Voting...' : 'Vote'}
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              onClick={onVote}
+              disabled={selectedOptions.length === 0 || isVoting || !user}
+              className="vh-button w-full"
+              data-testid={`poll-vote-button-${poll.id}`}
+            >
+              {isVoting ? 'Voting...' : 'Vote'}
+            </Button>
+          </TooltipTrigger>
+          {!user && (
+            <TooltipContent>
+              <p>Log in to continue</p>
+            </TooltipContent>
+          )}
+        </Tooltip>
       )}
       
       {userHasVoted && poll.showResults === 'after-vote' && (

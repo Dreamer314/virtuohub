@@ -1,20 +1,14 @@
-import { useAuth } from '@/providers/AuthProvider'
-
-// Hook to check if user is signed in
-export function isSignedIn(): boolean {
-  const { user } = useAuth()
+// Simple check to see if user is authenticated (without using hooks)
+export function isUserAuthenticated(user: any): boolean {
   return user !== null
 }
 
-// Function to require authentication for actions
-export function requireAuth(actionLabel: string) {
-  const { user } = useAuth()
-  
-  return function () {
+// Function to create a login gate handler
+export function createLoginGate(actionLabel: string, openAuthModal: () => void) {
+  return function (user: any) {
     if (!user) {
-      // This will be used to trigger the auth modal
-      // The actual modal opening logic will be implemented in the components
       console.log(`Authentication required for: ${actionLabel}`)
+      openAuthModal()
       return false
     }
     return true

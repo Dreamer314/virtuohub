@@ -8,9 +8,14 @@ import { Footer } from '@/components/layout/footer';
 import { PollCard } from '@/components/polls/PollCard';
 import { pulseApi, subscribe, type Poll as PulseApiPoll, type Report } from '@/data/pulseApi';
 import { type Poll } from '@/types/content';
+import { useAuth } from '@/providers/AuthProvider';
+import { AuthModal } from '@/components/auth/AuthModal';
 
 const PulsePage: React.FC = () => {
   const [pulseRefresh, setPulseRefresh] = useState(0);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup'>('signin');
+  const { user } = useAuth();
   
   // Scroll to top when component mounts
   useEffect(() => {
@@ -154,6 +159,10 @@ const PulsePage: React.FC = () => {
                             }}
                             userHasVoted={pulseApi.hasVoted(poll.id)}
                             userVoteIds={pulseApi.getUserVote(poll.id) !== null ? [`${poll.id}_option_${pulseApi.getUserVote(poll.id)}`] : undefined}
+                            openAuthModal={() => {
+                              setAuthModalMode('signin');
+                              setAuthModalOpen(true);
+                            }}
                           />
                         ))}
                       </div>
@@ -191,6 +200,10 @@ const PulsePage: React.FC = () => {
                             }}
                             userHasVoted={pulseApi.hasVoted(poll.id)}
                             userVoteIds={pulseApi.getUserVote(poll.id) !== null ? [`${poll.id}_option_${pulseApi.getUserVote(poll.id)}`] : undefined}
+                            openAuthModal={() => {
+                              setAuthModalMode('signin');
+                              setAuthModalOpen(true);
+                            }}
                           />
                         ))}
                       </div>
@@ -301,6 +314,12 @@ const PulsePage: React.FC = () => {
           </div>
         </div>
       </div>
+      
+      <AuthModal 
+        open={authModalOpen} 
+        onOpenChange={setAuthModalOpen}
+        defaultMode={authModalMode}
+      />
       
       <Footer />
     </div>

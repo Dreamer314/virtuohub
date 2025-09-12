@@ -21,6 +21,8 @@ import { PLATFORMS } from '@/types/content';
 import { useLocation, useSearch, Link } from 'wouter';
 // POST CATEGORIES MVP - Import canonical categories for validation
 import { POST_CATEGORIES } from '@/constants/postCategories';
+import { useAuth } from '@/providers/AuthProvider';
+import { AuthModal } from '@/components/auth/AuthModal';
 
 const FEATURED_V2 = true;
 
@@ -41,6 +43,9 @@ const CommunityPage: React.FC = () => {
   const [pulsePollsRefresh, setPulsePollsRefresh] = useState(0);
   const [feedRefresh, setFeedRefresh] = useState(0);
   const [composerCategory, setComposerCategory] = useState<string | undefined>(undefined);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup'>('signin');
+  const { user } = useAuth();
 
   // Fetch posts directly from server API 
   const { data: posts = [], isLoading } = useQuery<PostWithAuthor[]>({
@@ -324,6 +329,10 @@ const CommunityPage: React.FC = () => {
                             }}
                             userHasVoted={pulseApi.hasVoted(poll.id)}
                             userVoteIds={pulseApi.getUserVote(poll.id) !== null ? [`${poll.id}_option_${pulseApi.getUserVote(poll.id)}`] : undefined}
+                            openAuthModal={() => {
+                              setAuthModalMode('signin');
+                              setAuthModalOpen(true);
+                            }}
                           />
                         ))}
                       </div>
@@ -371,6 +380,11 @@ const CommunityPage: React.FC = () => {
                           <div className="flex-1">
                             <button
                               onClick={() => {
+                                if (!user) {
+                                  setAuthModalMode('signin');
+                                  setAuthModalOpen(true);
+                                  return;
+                                }
                                 setCreateModalType('regular');
                                 setIsCreatePostModalOpen(true);
                               }}
@@ -386,6 +400,11 @@ const CommunityPage: React.FC = () => {
                               <div className="flex items-center gap-3">
                                 <Button
                                   onClick={() => {
+                                    if (!user) {
+                                      setAuthModalMode('signin');
+                                      setAuthModalOpen(true);
+                                      return;
+                                    }
                                     setCreateModalType('regular');
                                     setIsCreatePostModalOpen(true);
                                   }}
@@ -398,6 +417,11 @@ const CommunityPage: React.FC = () => {
                                 </Button>
                                 <Button
                                   onClick={() => {
+                                    if (!user) {
+                                      setAuthModalMode('signin');
+                                      setAuthModalOpen(true);
+                                      return;
+                                    }
                                     setCreateModalType('pulse');
                                     setIsCreatePostModalOpen(true);
                                   }}
@@ -490,6 +514,11 @@ const CommunityPage: React.FC = () => {
                               <div className="flex gap-3 justify-center">
                                 <Button
                                   onClick={() => {
+                                    if (!user) {
+                                      setAuthModalMode('signin');
+                                      setAuthModalOpen(true);
+                                      return;
+                                    }
                                     setCreateModalType('regular');
                                     setIsCreatePostModalOpen(true);
                                   }}
@@ -500,6 +529,11 @@ const CommunityPage: React.FC = () => {
                                 </Button>
                                 <Button
                                   onClick={() => {
+                                    if (!user) {
+                                      setAuthModalMode('signin');
+                                      setAuthModalOpen(true);
+                                      return;
+                                    }
                                     setCreateModalType('pulse');
                                     setIsCreatePostModalOpen(true);
                                   }}
@@ -533,6 +567,11 @@ const CommunityPage: React.FC = () => {
       {/* Floating Action Button */}
       <Button
         onClick={() => {
+          if (!user) {
+            setAuthModalMode('signin');
+            setAuthModalOpen(true);
+            return;
+          }
           setCreateModalType('regular');
           setIsCreatePostModalOpen(true);
         }}
@@ -541,6 +580,13 @@ const CommunityPage: React.FC = () => {
       >
         <Plus className="w-6 h-6" />
       </Button>
+
+      {/* Auth Modal */}
+      <AuthModal 
+        open={authModalOpen} 
+        onOpenChange={setAuthModalOpen}
+        defaultMode={authModalMode}
+      />
 
       {/* Create Post Modal */}
       <NewCreatePostModal

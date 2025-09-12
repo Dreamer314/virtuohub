@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
-import { Moon, Sun, Box, MessageCircle, Bell, Plus, Menu, X } from "lucide-react";
+import { Moon, Sun, Box, MessageCircle, Bell, Plus, Menu, X, LogOut, User } from "lucide-react";
 import { useLocation, Link } from "wouter";
 import { useState } from "react";
+import { useAuth } from "@/providers/AuthProvider";
+import { AuthModal } from "@/components/auth/AuthModal";
+import { supabase } from "@/lib/supabaseClient";
 
 interface HeaderProps {
   onCreatePost?: () => void;
@@ -12,6 +15,9 @@ export function Header({ onCreatePost }: HeaderProps) {
   const { theme, setTheme } = useTheme();
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup'>('signin');
+  const { user, loading } = useAuth();
 
   const toggleTheme = () => {
     // Handle theme cycling including system theme
@@ -26,6 +32,19 @@ export function Header({ onCreatePost }: HeaderProps) {
     }
     
     setTheme(nextTheme);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  const openAuthModal = (mode: 'signin' | 'signup') => {
+    setAuthModalMode(mode);
+    setAuthModalOpen(true);
   };
 
   return (
@@ -119,12 +138,48 @@ export function Header({ onCreatePost }: HeaderProps) {
             </Button>
             
             {/* Auth Buttons */}
-            <Button variant="ghost" className="text-sm font-medium px-3 hidden lg:inline-flex" data-testid="login-button">
-              Log In
-            </Button>
-            <Button className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full hover:from-purple-700 hover:to-blue-700 transition-all hidden lg:inline-flex" data-testid="signup-button">
-              Sign Up
-            </Button>
+            {!loading && (
+              <>
+                {user ? (
+                  <div className="flex items-center space-x-2">
+                    <div className="hidden lg:flex items-center space-x-2 px-3 py-1 rounded-lg bg-muted/50">
+                      <User className="w-4 h-4" />
+                      <span className="text-sm font-medium" data-testid="user-display-name">
+                        {user.user_metadata?.full_name || user.email}
+                      </span>
+                    </div>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={handleSignOut}
+                      className="text-sm font-medium px-3 hidden lg:inline-flex"
+                      data-testid="logout-button"
+                    >
+                      <LogOut className="w-4 h-4 mr-1" />
+                      Log Out
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    <Button 
+                      variant="ghost" 
+                      className="text-sm font-medium px-3 hidden lg:inline-flex" 
+                      onClick={() => openAuthModal('signin')}
+                      data-testid="login-button"
+                    >
+                      Log In
+                    </Button>
+                    <Button 
+                      className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full hover:from-purple-700 hover:to-blue-700 transition-all hidden lg:inline-flex" 
+                      onClick={() => openAuthModal('signup')}
+                      data-testid="signup-button"
+                    >
+                      Sign Up
+                    </Button>
+                  </>
+                )}
+              </>
+            )}
           </div>
 
           {/* Mobile Actions */}
@@ -189,12 +244,47 @@ export function Header({ onCreatePost }: HeaderProps) {
               
               {/* Mobile Auth Buttons */}
               <div className="flex flex-col space-y-2 pt-4 px-2">
-                <Button variant="ghost" className="justify-start" data-testid="mobile-login-button">
-                  Log In
-                </Button>
-                <Button className="bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 transition-all" data-testid="mobile-signup-button">
-                  Sign Up
-                </Button>
+                {!loading && (
+                  <>
+                    {user ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-muted/50">
+                          <User className="w-4 h-4" />
+                          <span className="text-sm font-medium" data-testid="mobile-user-display-name">
+                            {user.user_metadata?.full_name || user.email}
+                          </span>
+                        </div>
+                        <Button 
+                          variant="ghost" 
+                          className="justify-start" 
+                          onClick={handleSignOut}
+                          data-testid="mobile-logout-button"
+                        >
+                          <LogOut className="w-4 h-4 mr-2" />
+                          Log Out
+                        </Button>
+                      </div>
+                    ) : (
+                      <>
+                        <Button 
+                          variant="ghost" 
+                          className="justify-start" 
+                          onClick={() => openAuthModal('signin')}
+                          data-testid="mobile-login-button"
+                        >
+                          Log In
+                        </Button>
+                        <Button 
+                          className="bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 transition-all" 
+                          onClick={() => openAuthModal('signup')}
+                          data-testid="mobile-signup-button"
+                        >
+                          Sign Up
+                        </Button>
+                      </>
+                    )}
+                  </>
+                )}
               </div>
 
               {/* Mobile Community Actions */}
@@ -227,6 +317,12 @@ export function Header({ onCreatePost }: HeaderProps) {
           </div>
         )}
       </div>
+      
+      <AuthModal 
+        open={authModalOpen} 
+        onOpenChange={setAuthModalOpen}
+        defaultMode={authModalMode}
+      />
     </header>
   );
 }
