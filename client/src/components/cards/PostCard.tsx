@@ -140,7 +140,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 </div>
                 
                 {/* Image */}
-                {post.imageUrl && (
+                {post.imageUrl && post.imageUrl.trim() !== '' && (
                   <div className="mb-3 rounded-vh-lg overflow-hidden">
                     <OptimizedImage 
                       src={post.imageUrl} 
@@ -175,7 +175,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 </div>
                 
                 {/* Image */}
-                {post.imageUrl && (
+                {post.imageUrl && post.imageUrl.trim() !== '' && (
                   <div className="mt-4 rounded-vh-lg overflow-hidden">
                     <OptimizedImage 
                       src={post.imageUrl} 
