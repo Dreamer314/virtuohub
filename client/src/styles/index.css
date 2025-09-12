@@ -139,10 +139,7 @@
   box-shadow: var(--vh-shadow-xl);
 }
 
-/* Ensure dark mode compatibility with existing classes */
-.dark .glass-card {
-  @apply vh-glass;
-}
+/* Legacy compatibility rules removed - now using unified data-theme system */
 
 /* Theme transition for existing elements */
 .enhanced-card {

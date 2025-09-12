@@ -33,6 +33,7 @@ export function ThemeProvider({
   useEffect(() => {
     const root = window.document.documentElement;
 
+    // Remove any legacy class-based themes
     root.classList.remove("light", "dark", "charcoal");
 
     if (theme === "system") {
@@ -41,14 +42,12 @@ export function ThemeProvider({
         ? "dark"
         : "light";
 
-      // Set both class and data-theme attribute for system theme
-      root.classList.add(systemTheme);
+      // Only use data-theme attribute for unified theme system
       root.setAttribute("data-theme", systemTheme);
       return;
     }
 
-    // Set both class and data-theme attribute for explicit themes
-    root.classList.add(theme);
+    // Only use data-theme attribute for unified theme system
     root.setAttribute("data-theme", theme);
   }, [theme]);
 
