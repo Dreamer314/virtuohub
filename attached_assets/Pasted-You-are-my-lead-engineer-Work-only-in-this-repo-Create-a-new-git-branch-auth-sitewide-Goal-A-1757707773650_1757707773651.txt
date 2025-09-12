@@ -1,0 +1,57 @@
+You are my lead engineer. Work only in this repo. Create a new git branch: auth-sitewide.
+
+Goal
+Add site-wide Supabase Auth so the whole app knows if a user is signed in. Provide a simple auth UI in the header (Sign up, Log in, Log out), a session provider available to all pages, and a login gate for actions like "Vote" and "Create post". Do not change colors or layouts. Do not connect any feature to database storage in this pass.
+
+Assumptions
+- SUPABASE_URL and SUPABASE_ANON_KEY are present in env.
+- We are not creating tables in this pass. Profiles and roles come later.
+
+Tasks
+1) Install and bootstrap
+- Add @supabase/supabase-js.
+- Create /lib/supabaseClient.ts that exports a single Supabase client reading env.
+- Create /providers/AuthProvider.tsx that subscribes to supabase.auth.onAuthStateChange and exposes { user, session, loading } via React context and a useAuth() hook.
+- Wrap the root layout/App with <AuthProvider> so all pages can read the session.
+
+2) Header auth menu
+- Add a compact account menu in the existing header:
+  • When signed out: "Log in" and "Sign up".
+  • When signed in: show display name or email, and "Log out".
+- Use a modal for auth. Support email+password and magic link. Keep styling consistent with current components and theme tokens.
+- Persist session across refresh. On mount, read supabase.auth.getSession() and set context.
+
+3) Helpers and guards
+- Create /lib/auth.ts with small helpers:
+  • isSignedIn() reads from AuthProvider.
+  • requireAuth(actionLabel) returns a function that opens the auth modal if not signed in.
+- Apply a login gate to:
+  • Pulse vote buttons on Community and Pulse Reports pages.
+  • The "Create post" entry point on Community.
+- When gated, show the same button disabled with a tooltip "Log in to continue". On click, open the auth modal.
+- Do not change any data fetching. This pass only controls access based on session.
+
+4) Minimal profile upsert (best effort, no hard fail)
+- After successful sign in, attempt a POST to /api/profile-upsert that calls supabase.from('profiles').upsert({ id: user.id, display_name: user.user_metadata.full_name || user.email }). If the table does not exist, catch the error, log a warning, and continue. Do not break the app.
+
+5) Tests and scripts
+- Add a Playwright test that:
+  • Visits Community signed out: Pulse vote button is disabled and shows "Log in to continue".
+  • Opens Log in, signs in a test user, returns to Community: the vote button is now enabled.
+- Ensure "npm run check:all" runs typecheck, lint, build, and tests. If the script is missing, add it.
+
+Constraints
+- Do not modify styling tokens or colors.
+- Do not add or change database tables.
+- Do not alter working routes or filters.
+- Never require or store the Supabase service role key.
+
+Deliverables
+- /lib/supabaseClient.ts
+- /providers/AuthProvider.tsx with useAuth() hook, wired at app root
+- Header auth menu and modal
+- Login gates on voting and create post actions
+- Passing Playwright test for the gate behavior
+- CHANGELOG.md updated with a short Plan and Outcome and a note that profiles/roles will be added in the next pass
+
+Stop when: the app can Sign up, Log in, Log out; session persists across refresh; gated buttons are disabled when signed out and enabled when signed in; the Playwright test passes; CHANGELOG.md is updated.
