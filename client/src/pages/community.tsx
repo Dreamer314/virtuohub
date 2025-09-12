@@ -19,7 +19,7 @@ import { PollCard } from '@/components/polls/PollCard';
 import type { FeedItem, PlatformKey } from '@/types/content';
 import { PLATFORMS } from '@/types/content';
 // COMPOSER ROUTING - Add wouter hook for query params
-import { useLocation, useSearch } from 'wouter';
+import { useLocation, useSearch, Link } from 'wouter';
 // POST CATEGORIES MVP - Import canonical categories for validation
 import { POST_CATEGORIES } from '@/constants/postCategories';
 
@@ -291,9 +291,19 @@ const CommunityPage: React.FC = () => {
                           </div>
                           <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                         </div>
-                        <div className="text-center space-y-1">
+                        <div className="text-center space-y-3">
                           <p className="text-lg font-semibold text-accent">Quick polls on Immersive Economy topics.</p>
                           <p className="text-sm text-muted-foreground">Cast your vote. See results.</p>
+                          <Link href="/pulse">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="text-xs hover:bg-primary/10 border-primary/30"
+                              data-testid="view-all-reports-button"
+                            >
+                              View All Reports & Polls
+                            </Button>
+                          </Link>
                         </div>
                       </div>
                       <div className="space-y-6">
@@ -395,14 +405,15 @@ const CommunityPage: React.FC = () => {
                                 )}
 
                                 {/* Engagement Actions */}
-                                <div className="flex items-center space-x-1">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
-                                    data-testid={`like-button-${poll.id}`}
-                                  >
-                                    <ThumbsUp size={16} />
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center space-x-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
+                                      data-testid={`like-button-${poll.id}`}
+                                    >
+                                      <ThumbsUp size={16} />
                                     <span>0</span>
                                   </Button>
                                   <Button
@@ -423,6 +434,19 @@ const CommunityPage: React.FC = () => {
                                     <Share size={16} />
                                     <span>Share</span>
                                   </Button>
+                                  </div>
+                                  
+                                  {/* Link to Pulse Reports */}
+                                  <Link href="/pulse">
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm" 
+                                      className="text-xs text-muted-foreground hover:text-primary transition-colors"
+                                      data-testid={`view-pulse-${poll.id}`}
+                                    >
+                                      View in Pulse Reports →
+                                    </Button>
+                                  </Link>
                                 </div>
                               </div>
                             </article>
