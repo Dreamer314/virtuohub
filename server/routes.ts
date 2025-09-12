@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertPostSchema, insertSavedPostSchema, insertArticleSchema, insertCommentSchema, CATEGORIES, PLATFORMS } from "@shared/schema";
+import { insertPostSchema, insertSavedPostSchema, insertArticleSchema, insertCommentSchema, insertProfileSchema, CATEGORIES, PLATFORMS } from "@shared/schema";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -489,6 +489,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to submit access request", error: error });
+    }
+  });
+
+  // Profile upsert endpoint for Supabase Auth integration
+  app.post("/api/profile-upsert", async (req, res) => {
+    try {
+      // TODO: Task 8 - Add proper Supabase session validation here
+      // Currently trusting client-provided id - this is a security risk that needs to be fixed
+      const { id, display_name, avatar_url } = req.body;
+      
+      // Validate using Zod schema
+      const profileData = insertProfileSchema.parse({
+        id,
+        displayName: display_name,
+        avatarUrl: avatar_url || null,
+      });
+      
+      const profile = await storage.upsertProfile(profileData);
+      res.json({ success: true, profile });
+    } catch (error) {
+      console.error("Profile upsert error:", error);
+      if (error instanceof Error && error.name === 'ZodError') {
+        return res.status(400).json({ message: "Invalid profile data", error: (error as any).errors });
+      }
+      res.status(500).json({ message: "Failed to upsert profile", error: error });
     }
   });
 
