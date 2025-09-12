@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { X, Upload, Plus, Link as LinkIcon } from 'lucide-react';
+import { X, Upload, Plus, Link as LinkIcon, Heart, BarChart3, Users, Clock } from 'lucide-react';
 import { PlatformKey, CATEGORIES, PLATFORMS } from '@/types/content';
 import { createFeedPost, createPoll, getCurrentUser } from '@/data/mockApi';
 import { useToast } from '@/hooks/use-toast';
@@ -281,16 +281,64 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
     }
   };
 
+  // Watch form values for live preview
+  const title = form.watch('title');
+  const body = form.watch('body');
+  const pollQuestion = form.watch('pollQuestion');
+  const category = form.watch('category');
+
+  // Create preview objects
+  const previewThread = {
+    id: 'preview',
+    type: 'post' as const,
+    title: title || "What's your post about?",
+    body: body || 'Share your thoughts with the community...',
+    category: category || 'General',
+    platforms: selectedPlatforms,
+    createdAt: Date.now(),
+    author: { id: 'user', name: 'You', avatar: undefined },
+    imageUrl: images[0] || '',
+    images,
+    links: links.filter(l => l.trim()),
+    price: form.watch('price') || ''
+  };
+
+  const previewPoll = {
+    id: 'preview',
+    type: 'poll' as const,
+    question: pollQuestion || 'What question would you like to ask?',
+    options: pollOptions.filter(opt => opt.trim()).map((label, index) => ({
+      id: `preview-opt-${index}`,
+      label,
+      votes: 0
+    })),
+    allowMultiple: false,
+    showResults: 'after-vote' as const,
+    closesAt: Date.now() + (form.watch('pollDurationDays') || 7) * 24 * 60 * 60 * 1000,
+    category: category || 'General',
+    platforms: selectedPlatforms,
+    createdAt: Date.now(),
+    author: { id: 'user', name: 'You', avatar: undefined },
+    status: 'active' as const
+  };
+
+  const timeLeft = Math.max(0, previewPoll.closesAt - Date.now());
+  const daysLeft = Math.ceil(timeLeft / (1000 * 60 * 60 * 24));
+  const hoursLeft = Math.ceil(timeLeft / (1000 * 60 * 60));
+  const timeDisplay = daysLeft > 0 ? `${daysLeft}d left` : `${hoursLeft}h left`;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {currentSubtype === 'poll' ? 'Create a Poll' : 'Create a Thread'}
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Left side - Form */}
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Content Type Selection */}
           <div className="space-y-2">
             <Label>Content Type</Label>
@@ -613,6 +661,145 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
             </Button>
           </div>
         </form>
+
+        {/* Right side - Live Preview */}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Live Preview</h3>
+          
+          {currentSubtype === 'thread' ? (
+            /* Thread Preview */
+            <div className="enhanced-card hover-lift p-6 space-y-4 transition-all duration-200">
+              <div className="flex space-x-4">
+                <div className="flex-shrink-0">
+                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white font-medium text-lg">
+                    {previewThread.author.name.charAt(0)}
+                  </span>
+                </div>
+                
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-2">
+                      <span className="font-medium text-foreground">{previewThread.author.name}</span>
+                      <Badge variant="secondary" className="text-xs">Thread</Badge>
+                      <span className="text-xs text-muted-foreground">•</span>
+                      <span className="text-xs text-muted-foreground">now</span>
+                    </div>
+                  </div>
+                  
+                  <h4 className="text-lg font-semibold text-foreground mb-2">
+                    {previewThread.title}
+                  </h4>
+                  
+                  <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
+                    {previewThread.body}
+                  </p>
+                  
+                  {previewThread.price && (
+                    <div className="mb-3">
+                      <Badge variant="outline" className="text-green-600">
+                        {previewThread.price}
+                      </Badge>
+                    </div>
+                  )}
+                  
+                  {previewThread.links.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-xs text-muted-foreground">{previewThread.links.length} link(s) attached</p>
+                    </div>
+                  )}
+                  
+                  {previewThread.images.length > 0 && (
+                    <div className="mb-3">
+                      <p className="text-xs text-muted-foreground">{previewThread.images.length} image(s) attached</p>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                    <Button variant="ghost" size="sm" disabled>
+                      <Heart className="w-4 h-4 mr-1" />
+                      Like
+                    </Button>
+                    <Button variant="ghost" size="sm" disabled>
+                      Reply
+                    </Button>
+                    <Button variant="ghost" size="sm" disabled>
+                      Share
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Poll Preview */
+            <div className="enhanced-card hover-lift p-6 space-y-4 transition-all duration-200">
+              <div className="flex space-x-4">
+                <div className="flex-shrink-0">
+                  <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white font-medium text-lg">
+                    <BarChart3 className="w-6 h-6" />
+                  </span>
+                </div>
+                
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-2">
+                      <span className="font-medium text-foreground">{previewPoll.author.name}</span>
+                      <Badge variant="secondary" className="text-xs">Poll</Badge>
+                      <span className="text-xs text-muted-foreground">•</span>
+                      <span className="text-xs text-muted-foreground">now</span>
+                    </div>
+                  </div>
+                  
+                  <h4 className="text-lg font-semibold text-foreground mb-4">
+                    {previewPoll.question}
+                  </h4>
+                  
+                  <div className="space-y-2 mb-4">
+                    {previewPoll.options.length > 0 ? (
+                      previewPoll.options.map((option, index) => (
+                        <div
+                          key={option.id}
+                          className="w-full p-3 text-left border border-border rounded-lg opacity-80"
+                        >
+                          <span className="text-sm font-medium">
+                            {previewPoll.allowMultiple ? '☐' : '○'} {option.label || `Option ${index + 1}`}
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-sm text-muted-foreground text-center py-4">
+                        Add poll options to see preview
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm text-muted-foreground flex items-center">
+                      <Users className="w-4 h-4 mr-1" />
+                      0 votes
+                    </span>
+                    <span className="text-sm text-muted-foreground flex items-center">
+                      <Clock className="w-4 h-4 mr-1" />
+                      {timeDisplay}
+                    </span>
+                  </div>
+                  
+                  <Button className="w-full" disabled>
+                    Vote
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <div className="text-sm text-muted-foreground">
+            <p>This is how your {currentSubtype} will appear in:</p>
+            <ul className="list-disc list-inside mt-2 space-y-1">
+              <li>Community feed (mixed with posts)</li>
+              {currentSubtype === 'poll' && <li>Pulse Reports → Active Polls section</li>}
+            </ul>
+          </div>
+        </div>
+      </div>
       </DialogContent>
     </Dialog>
   );
