@@ -317,9 +317,11 @@ const CommunityPage: React.FC = () => {
                           const createdAgo = Math.floor((Date.now() - poll.createdAt) / (1000 * 60 * 60));
                           
                           const handleVote = (optionIndex: number) => {
+                            console.log('Community page voting:', { pollId: poll.id, optionIndex, hasVoted });
                             try {
                               pulseApi.vote(poll.id, optionIndex);
                               setPulsePollsRefresh(prev => prev + 1);
+                              console.log('Vote successful!');
                             } catch (error) {
                               console.error('Vote failed:', error);
                             }
@@ -371,8 +373,11 @@ const CommunityPage: React.FC = () => {
                                         return (
                                           <button
                                             key={index}
-                                            onClick={() => handleVote(index)}
-                                            className="w-full p-3 text-left border border-border rounded-lg hover:border-primary/50 transition-colors"
+                                            onClick={() => {
+                                              console.log('Option clicked:', { option: option.label, index, pollId: poll.id });
+                                              handleVote(index);
+                                            }}
+                                            className="w-full p-3 text-left border border-border rounded-lg hover:border-primary/50 hover:bg-primary/5 transition-colors cursor-pointer"
                                             data-testid={`poll-option-${poll.id}-${index}`}
                                           >
                                             <span className="text-sm font-medium text-foreground">{option.label}</span>
