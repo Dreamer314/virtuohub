@@ -7,7 +7,6 @@ import { RightSidebar } from '@/components/layout/right-sidebar';
 import { PostCard } from '@/components/cards/PostCard';
 import { CreatePostModal } from '@/components/create-post-modal';
 import { CreatePostModal as NewCreatePostModal } from '@/components/composer/CreatePostModal';
-import { CreatePollModal } from '@/components/composer/CreatePollModal';
 import { Footer } from '@/components/layout/footer';
 import { FeaturedCarousel } from '@/components/featured/FeaturedCarousel';
 import { featuredItems } from '@/components/featured/types';
@@ -38,7 +37,6 @@ const CommunityPage: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<'all' | 'saved'>('all');
   const [selectedPlatforms, setSelectedPlatforms] = useState<PlatformKey[]>([]);
   const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
-  const [isCreatePollModalOpen, setIsCreatePollModalOpen] = useState(false);
   const [createModalType, setCreateModalType] = useState<'regular' | 'pulse' | 'insight'>('regular');
   const [pulsePollsRefresh, setPulsePollsRefresh] = useState(0);
   const [feedRefresh, setFeedRefresh] = useState(0);
@@ -103,6 +101,7 @@ const CommunityPage: React.FC = () => {
       }
       
       // Open the composer
+      setCreateModalType('regular');
       setIsCreatePostModalOpen(true);
       
       // Note: URL cleanup is now handled in modal close handler to preserve query params for testing
@@ -154,6 +153,7 @@ const CommunityPage: React.FC = () => {
       </div>
 
       <Header onCreatePost={() => {
+        setCreateModalType('regular');
         setIsCreatePostModalOpen(true);
       }} />
       
@@ -370,7 +370,10 @@ const CommunityPage: React.FC = () => {
                           </div>
                           <div className="flex-1">
                             <button
-                              onClick={() => setIsCreatePostModalOpen(true)}
+                              onClick={() => {
+                                setCreateModalType('regular');
+                                setIsCreatePostModalOpen(true);
+                              }}
                               className="w-full text-left px-4 py-3 bg-muted/50 hover:bg-muted/70 rounded-xl border border-border/50 hover:border-primary/30 transition-all duration-200 text-muted-foreground hover:text-foreground"
                               data-testid="create-post-input"
                             >
@@ -382,7 +385,10 @@ const CommunityPage: React.FC = () => {
                             <div className="flex items-center justify-between mt-4">
                               <div className="flex items-center gap-3">
                                 <Button
-                                  onClick={() => setIsCreatePostModalOpen(true)}
+                                  onClick={() => {
+                                    setCreateModalType('regular');
+                                    setIsCreatePostModalOpen(true);
+                                  }}
                                   variant="outline"
                                   className="flex items-center gap-2 px-4 py-2 text-sm border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-all"
                                   data-testid="create-post-button"
@@ -391,7 +397,10 @@ const CommunityPage: React.FC = () => {
                                   Create Post
                                 </Button>
                                 <Button
-                                  onClick={() => setIsCreatePollModalOpen(true)}
+                                  onClick={() => {
+                                    setCreateModalType('pulse');
+                                    setIsCreatePostModalOpen(true);
+                                  }}
                                   variant="outline"
                                   className="flex items-center gap-2 px-4 py-2 text-sm border-border/50 hover:border-primary/30 hover:bg-primary/5 transition-all"
                                   data-testid="create-poll-button"
@@ -457,6 +466,7 @@ const CommunityPage: React.FC = () => {
                               </p>
                               <Button
                                 onClick={() => {
+                                  setCreateModalType('regular');
                                   setLocation(`/community?compose=true&platform=${selectedPlatforms[0]}`);
                                   setIsCreatePostModalOpen(true);
                                 }}
@@ -479,14 +489,20 @@ const CommunityPage: React.FC = () => {
                               </p>
                               <div className="flex gap-3 justify-center">
                                 <Button
-                                  onClick={() => setIsCreatePostModalOpen(true)}
+                                  onClick={() => {
+                                    setCreateModalType('regular');
+                                    setIsCreatePostModalOpen(true);
+                                  }}
                                   className="bg-primary hover:bg-primary/90"
                                 >
                                   <FileText className="w-4 h-4 mr-2" />
                                   Create Post
                                 </Button>
                                 <Button
-                                  onClick={() => setIsCreatePollModalOpen(true)}
+                                  onClick={() => {
+                                    setCreateModalType('pulse');
+                                    setIsCreatePostModalOpen(true);
+                                  }}
                                   variant="outline"
                                 >
                                   <BarChart3 className="w-4 h-4 mr-2" />
@@ -516,7 +532,10 @@ const CommunityPage: React.FC = () => {
 
       {/* Floating Action Button */}
       <Button
-        onClick={() => setIsCreatePostModalOpen(true)}
+        onClick={() => {
+          setCreateModalType('regular');
+          setIsCreatePostModalOpen(true);
+        }}
         className="fixed bottom-8 right-8 w-14 h-14 bg-transparent text-primary rounded-full border border-primary/30 hover:border-primary hover:border-2 transition-all z-40 p-0"
         data-testid="floating-action-button"
       >
@@ -531,23 +550,19 @@ const CommunityPage: React.FC = () => {
           // COMPOSER ROUTING - Clear category and clean up URL when modal closes
           if (!open) {
             setComposerCategory(undefined);
+            setCreateModalType('regular');
             // Clean up URL params after modal closes
             setLocation('/community', { replace: true });
           }
         }}
-        onPostCreated={() => setFeedRefresh(prev => prev + 1)}
-        initialCategory={composerCategory}
-      />
-      
-      {/* Create Poll Modal */}
-      <CreatePollModal
-        open={isCreatePollModalOpen}
-        onOpenChange={setIsCreatePollModalOpen}
-        onPollCreated={() => {
+        onPostCreated={() => {
           setFeedRefresh(prev => prev + 1);
           setPulsePollsRefresh(prev => prev + 1);
         }}
+        initialCategory={composerCategory}
+        initialSubtype={createModalType === 'pulse' ? 'poll' : 'thread'}
       />
+      
     </div>
   );
 };

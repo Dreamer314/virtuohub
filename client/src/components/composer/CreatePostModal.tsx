@@ -45,7 +45,6 @@ interface CreatePostModalProps {
   onPostCreated?: () => void;
   // COMPOSER ROUTING - Add initial category support
   initialCategory?: string;
-  // Content type selection
   initialSubtype?: 'thread' | 'poll';
 }
 
@@ -280,6 +279,13 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
       setIsSubmitting(false);
     }
   };
+
+  // Apply initialSubtype when modal opens
+  useEffect(() => {
+    if (open && initialSubtype) {
+      form.setValue('subtype', initialSubtype);
+    }
+  }, [open, initialSubtype, form]);
 
   // Watch form values for live preview
   const title = form.watch('title');
