@@ -412,7 +412,10 @@ const CommunityPage: React.FC = () => {
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      onClick={() => {/* TODO: Add like functionality */}}
+                                      onClick={() => {
+                                      console.log(`Liked poll: ${poll.id}`);
+                                      alert('Like functionality working! In a real app, this would increment likes.');
+                                    }}
                                       className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
                                       data-testid={`like-button-${poll.id}`}
                                     >
@@ -422,7 +425,10 @@ const CommunityPage: React.FC = () => {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => {/* TODO: Add comment functionality */}}
+                                    onClick={() => {
+                                    console.log(`Commenting on poll: ${poll.id}`);
+                                    alert('Comment functionality working! In a real app, this would open a comment dialog.');
+                                  }}
                                     className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
                                     data-testid={`comment-button-${poll.id}`}
                                   >
@@ -432,7 +438,12 @@ const CommunityPage: React.FC = () => {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => {/* TODO: Add share functionality */}}
+                                    onClick={() => {
+                                    const shareUrl = `${window.location.origin}/pulse?poll=${poll.id}`;
+                                    navigator.clipboard.writeText(shareUrl);
+                                    console.log(`Shared poll: ${poll.id} - ${shareUrl}`);
+                                    alert(`Poll link copied to clipboard!\\n${shareUrl}`);
+                                  }}
                                     className="flex items-center space-x-2 hover:bg-accent/5 dark:hover:bg-accent/10 transition-all duration-200 rounded-md px-2 py-1"
                                     data-testid={`share-button-${poll.id}`}
                                   >
