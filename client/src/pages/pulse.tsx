@@ -26,9 +26,15 @@ const PulsePage: React.FC = () => {
   }, []);
 
   // Get data from pulse API (refresh when pulseRefresh changes)
-  const activePolls = pulseApi.listActivePolls();
-  const completedPolls = pulseApi.listCompletedPolls();
-  const reports = pulseApi.listReports();
+  const [activePolls, setActivePolls] = useState<PulseApiPoll[]>([]);
+  const [completedPolls, setCompletedPolls] = useState<PulseApiPoll[]>([]);
+  const [reports, setReports] = useState<Report[]>([]);
+
+  useEffect(() => {
+    setActivePolls(pulseApi.listActivePolls());
+    setCompletedPolls(pulseApi.listCompletedPolls());
+    setReports(pulseApi.listReports());
+  }, [pulseRefresh]);
 
   // Convert pulseApi Poll to content Poll type
   const convertPulseApiPoll = (apiPoll: PulseApiPoll): Poll => {
