@@ -281,3 +281,6 @@ export function listFeed(): FeedItem[] {
 export function getCurrentUser() {
   return currentUser;
 }
+
+// Initialize data on module load
+initializeData();

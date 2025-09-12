@@ -45,6 +45,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   fallbackSrc = '/placeholder-image.jpg',
   onLoad,
   onError,
+  onClick,
   ...props
 }) => {
   const [isLoaded, setIsLoaded] = useState(false);
@@ -175,6 +176,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
           className={baseClasses}
           onLoad={handleLoad}
           onError={handleError}
+          onClick={onClick || undefined}
           data-testid={(props as any)['data-testid'] || `optimized-image-${alt.toLowerCase().replace(/\s+/g, '-')}`}
           {...props}
         />

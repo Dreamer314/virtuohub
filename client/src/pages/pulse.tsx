@@ -5,7 +5,9 @@ import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
 import { Footer } from '@/components/layout/footer';
-import { pulseApi, subscribe, type Poll, type Report } from '@/data/pulseApi';
+import { PollCard } from '@/components/polls/PollCard';
+import { pulseApi, subscribe, type Poll as PulseApiPoll, type Report } from '@/data/pulseApi';
+import { type Poll } from '@/types/content';
 
 const PulsePage: React.FC = () => {
   const [pulseRefresh, setPulseRefresh] = useState(0);
@@ -27,6 +29,33 @@ const PulsePage: React.FC = () => {
   const activePolls = pulseApi.listActivePolls();
   const completedPolls = pulseApi.listCompletedPolls();
   const reports = pulseApi.listReports();
+
+  // Convert pulseApi Poll to content Poll type
+  const convertPulseApiPoll = (apiPoll: PulseApiPoll): Poll => {
+    const now = Date.now();
+    return {
+      id: apiPoll.id,
+      type: 'poll' as const,
+      question: apiPoll.question,
+      options: apiPoll.options.map((opt, index) => ({
+        id: `${apiPoll.id}_option_${index}`,
+        label: opt.label,
+        votes: opt.votes
+      })),
+      allowMultiple: false, // Default for pulse polls
+      showResults: 'after-vote' as const,
+      closesAt: apiPoll.endsAt,
+      category: 'General',
+      platforms: [],
+      createdAt: apiPoll.createdAt,
+      author: { 
+        id: 'system', 
+        name: 'VHub Data Pulse',
+        avatar: undefined 
+      },
+      status: (apiPoll.endsAt > now ? 'active' : 'completed') as 'active' | 'completed'
+    };
+  };
 
   const handleVote = (pollId: string, optionIndex: number) => {
     try {
@@ -100,88 +129,21 @@ const PulsePage: React.FC = () => {
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {activePolls.map((poll) => {
-                          const hasVoted = pulseApi.hasVoted(poll.id);
-                          const totalVotes = poll.options.reduce((sum, opt) => sum + opt.votes, 0);
-                          const timeLeft = Math.max(0, poll.endsAt - Date.now());
-                          const daysLeft = Math.ceil(timeLeft / (1000 * 60 * 60 * 24));
-                          
-                          return (
-                            <article key={poll.id} className="enhanced-card hover-lift rounded-xl p-6 border border-green-500/30 flex flex-col min-h-[320px]">
-                              <div className="flex items-center justify-between mb-4">
-                                <span className="inline-block px-3 py-1 text-xs font-medium bg-green-500/20 text-green-300 border border-green-500/30 rounded-full">Active Poll</span>
-                                <span className="text-sm text-muted-foreground">Ends in {daysLeft} days</span>
-                              </div>
-                              <h3 className="text-lg font-semibold text-foreground mb-3">
-                                {poll.question}
-                              </h3>
-                              
-                              <div className="flex-1">
-                                {hasVoted ? (
-                                  <div className="space-y-3 mb-4">
-                                    {poll.options.map((option, index) => {
-                                      const percentage = totalVotes > 0 ? (option.votes / totalVotes) * 100 : 0;
-                                      const colors = ['cyan', 'purple', 'yellow', 'green', 'blue', 'pink'];
-                                      const color = colors[index % colors.length];
-                                      
-                                      return (
-                                        <div key={index} className="flex justify-between items-center">
-                                          <span className="text-sm text-muted-foreground">{option.label}</span>
-                                          <div className="flex items-center gap-2">
-                                            <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                              <div className={`h-full bg-${color}-500 rounded-full`} style={{width: `${percentage}%`}}></div>
-                                            </div>
-                                            <span className={`text-sm text-${color}-400`}>{percentage.toFixed(0)}%</span>
-                                          </div>
-                                        </div>
-                                      );
-                                    })}
-                                  </div>
-                                ) : (
-                                  <div className="space-y-2 mb-4">
-                                    {poll.options.map((option, index) => (
-                                      <button
-                                        key={index}
-                                        onClick={() => handleVote(poll.id, index)}
-                                        className="w-full p-3 text-left border border-border rounded-lg hover:border-primary/50 transition-colors"
-                                        data-testid={`poll-option-${poll.id}-${index}`}
-                                      >
-                                        <span className="text-sm font-medium text-foreground">{option.label}</span>
-                                      </button>
-                                    ))}
-                                  </div>
-                                )}
-                              </div>
-                              
-                              {/* Sticky Bottom Section */}
-                              <div className="mt-auto pt-4 border-t border-border/30">
-                                <div className="flex items-center justify-between mb-3">
-                                  <span className="text-sm text-muted-foreground flex items-center">
-                                    <Users className="w-4 h-4 mr-1" />
-                                    {totalVotes} votes
-                                  </span>
-                                  <span className="text-sm text-muted-foreground flex items-center">
-                                    <Clock className="w-4 h-4 mr-1" />
-                                    {daysLeft} days left
-                                  </span>
-                                </div>
-                                
-                                {!hasVoted && (
-                                  <div className="text-center text-sm text-muted-foreground">
-                                    Click an option above to vote
-                                  </div>
-                                )}
-                                
-                                {hasVoted && (
-                                  <div className="flex items-center justify-center text-sm text-green-400">
-                                    <CheckCircle className="w-4 h-4 mr-1" />
-                                    You voted in this poll
-                                  </div>
-                                )}
-                              </div>
-                            </article>
-                          );
-                        })}
+                        {activePolls.map((poll) => (
+                          <PollCard 
+                            key={poll.id}
+                            poll={convertPulseApiPoll(poll)}
+                            context="pulse"
+                            onUpdate={() => setPulseRefresh(prev => prev + 1)}
+                            onVote={async (pollId: string, optionIds: string[]) => {
+                              // Convert optionIds to option indices for pulseApi
+                              const optionIndex = parseInt(optionIds[0].split('_option_')[1]);
+                              pulseApi.vote(pollId, optionIndex);
+                            }}
+                            userHasVoted={pulseApi.hasVoted(poll.id)}
+                            userVoteIds={pulseApi.getUserVote(poll.id) !== null ? [`${poll.id}_option_${pulseApi.getUserVote(poll.id)}`] : undefined}
+                          />
+                        ))}
                       </div>
                     )}
                   </div>
@@ -198,55 +160,21 @@ const PulsePage: React.FC = () => {
                       </div>
                     ) : (
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        {completedPolls.map((poll) => {
-                          const totalVotes = poll.options.reduce((sum, opt) => sum + opt.votes, 0);
-                          const endedDaysAgo = Math.floor((Date.now() - poll.endsAt) / (1000 * 60 * 60 * 24));
-                          
-                          return (
-                            <article key={poll.id} className="enhanced-card hover-lift rounded-xl p-6 border border-slate-500/30 flex flex-col min-h-[320px]">
-                              <div className="flex items-center justify-between mb-4">
-                                <span className="inline-block px-3 py-1 text-xs font-medium bg-muted text-muted-foreground border border-border rounded-full">Completed</span>
-                                <span className="text-sm text-muted-foreground">Ended {endedDaysAgo} days ago</span>
-                              </div>
-                              <h3 className="text-lg font-semibold text-foreground mb-3">
-                                {poll.question}
-                              </h3>
-                              
-                              <div className="flex-1">
-                                <div className="space-y-3 mb-4">
-                                  {poll.options.map((option, index) => {
-                                    const percentage = totalVotes > 0 ? (option.votes / totalVotes) * 100 : 0;
-                                    const colors = ['cyan', 'purple', 'yellow', 'green', 'blue', 'pink'];
-                                    const color = colors[index % colors.length];
-                                    
-                                    return (
-                                      <div key={index} className="flex justify-between items-center">
-                                        <span className="text-sm text-muted-foreground">{option.label}</span>
-                                        <div className="flex items-center gap-2">
-                                          <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
-                                            <div className={`h-full bg-${color}-500 rounded-full`} style={{width: `${percentage}%`}}></div>
-                                          </div>
-                                          <span className={`text-sm text-${color}-400`}>{percentage.toFixed(0)}%</span>
-                                        </div>
-                                      </div>
-                                    );
-                                  })}
-                                </div>
-                              </div>
-                              
-                              {/* Sticky Bottom Section */}
-                              <div className="mt-auto pt-4 border-t border-border/30">
-                                <div className="flex items-center justify-between">
-                                  <span className="text-sm text-muted-foreground flex items-center">
-                                    <Users className="w-4 h-4 mr-1" />
-                                    {totalVotes.toLocaleString()} total votes
-                                  </span>
-                                  <span className="text-sm text-muted-foreground">Final results</span>
-                                </div>
-                              </div>
-                            </article>
-                          );
-                        })}
+                        {completedPolls.map((poll) => (
+                          <PollCard 
+                            key={poll.id}
+                            poll={convertPulseApiPoll(poll)}
+                            context="pulse"
+                            onUpdate={() => setPulseRefresh(prev => prev + 1)}
+                            onVote={async (pollId: string, optionIds: string[]) => {
+                              // Convert optionIds to option indices for pulseApi
+                              const optionIndex = parseInt(optionIds[0].split('_option_')[1]);
+                              pulseApi.vote(pollId, optionIndex);
+                            }}
+                            userHasVoted={pulseApi.hasVoted(poll.id)}
+                            userVoteIds={pulseApi.getUserVote(poll.id) !== null ? [`${poll.id}_option_${pulseApi.getUserVote(poll.id)}`] : undefined}
+                          />
+                        ))}
                       </div>
                     )}
                   </div>
@@ -268,7 +196,7 @@ const PulsePage: React.FC = () => {
                           const isAvailable = report.releasedAt <= Date.now();
                           
                           return (
-                            <article key={report.id} className="enhanced-card hover-lift rounded-xl p-6 border border-blue-500/30">
+                            <article key={report.id} className="vh-card" data-testid={`report-card-${report.id}`}>
                               <div className="flex items-center justify-between mb-4">
                                 {report.priceType === 'free' && (
                                   <span className="inline-block px-3 py-1 text-xs font-medium bg-green-500/20 text-green-300 border border-green-500/30 rounded-full">FREE</span>

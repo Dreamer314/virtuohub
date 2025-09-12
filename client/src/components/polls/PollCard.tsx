@@ -9,14 +9,18 @@ interface PollCardProps {
   poll: Poll;
   context: 'feed' | 'pulse';
   onUpdate?: () => void;
+  onVote?: (pollId: string, optionIds: string[]) => Promise<void>;
+  userHasVoted?: boolean;
+  userVoteIds?: string[];
 }
 
-export function PollCard({ poll, context, onUpdate }: PollCardProps) {
+export function PollCard({ poll, context, onUpdate, onVote, userHasVoted: providedUserHasVoted, userVoteIds: providedUserVoteIds }: PollCardProps) {
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [isVoting, setIsVoting] = useState(false);
   
-  const userHasVoted = hasVoted(poll.id);
-  const userVote = getUserVote(poll.id);
+  // Use provided voting state for pulse context, fallback to mockApi for feed context
+  const userHasVoted = providedUserHasVoted !== undefined ? providedUserHasVoted : hasVoted(poll.id);
+  const userVote = providedUserVoteIds !== undefined ? providedUserVoteIds : getUserVote(poll.id);
   const totalVotes = poll.options.reduce((sum, opt) => sum + opt.votes, 0);
   const isCompleted = poll.status === 'completed';
   
@@ -50,7 +54,12 @@ export function PollCard({ poll, context, onUpdate }: PollCardProps) {
     
     try {
       setIsVoting(true);
-      await votePoll(poll.id, selectedOptions);
+      // Use custom onVote prop if provided (for pulse polls), otherwise use default mockApi voting
+      if (onVote) {
+        await onVote(poll.id, selectedOptions);
+      } else {
+        await votePoll(poll.id, selectedOptions);
+      }
       setSelectedOptions([]);
       onUpdate?.();
     } catch (error) {
@@ -60,38 +69,40 @@ export function PollCard({ poll, context, onUpdate }: PollCardProps) {
     }
   };
 
-  const showResults = userHasVoted || isCompleted || poll.showResults === 'after-vote';
+  const showResults = userHasVoted || isCompleted || (poll.showResults === 'after-vote' && userHasVoted);
   const showVoting = !userHasVoted && !isCompleted;
   
-  // Different styling based on context
+  // Use unified theme system styling for both contexts
   const cardClasses = context === 'feed' 
-    ? "enhanced-card hover-lift p-6 space-y-4 transition-all duration-200"
-    : "enhanced-card hover-lift rounded-xl p-6 border border-blue-500/30 flex flex-col min-h-[320px]";
+    ? "vh-poll-card"
+    : "vh-poll-card flex flex-col min-h-[320px]";
 
   return (
     <article className={cardClasses} data-testid={`poll-card-${poll.id}`}>
       {context === 'feed' ? (
-        // Feed layout (horizontal with avatar)
+        // Feed layout (horizontal with avatar) - Reddit-style
         <div className="flex space-x-4">
           <div className="flex-shrink-0">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-blue-600 text-white font-medium text-lg">
+            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-vh-accent1 text-white font-medium text-lg">
               <BarChart3 className="w-6 h-6" />
             </span>
           </div>
           
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-2">
-                <span className="font-medium text-foreground">{poll.author.name}</span>
-                <Badge variant="secondary" className="text-xs">Poll</Badge>
-                <span className="text-xs text-muted-foreground">•</span>
-                <span className="text-xs text-muted-foreground">
-                  {Math.floor((Date.now() - poll.createdAt) / (1000 * 60 * 60))}h ago
-                </span>
-              </div>
+            <div className="flex items-center space-x-2 mb-1">
+              <span className="vh-body font-medium" data-testid={`poll-author-${poll.id}`}>
+                {poll.author.name}
+              </span>
+              <Badge variant="secondary" className="text-xs bg-vh-accent2-light text-vh-accent2">
+                VHub Data Pulse
+              </Badge>
+              <span className="text-xs text-vh-text-subtle">•</span>
+              <span className="vh-caption" data-testid={`poll-time-${poll.id}`}>
+                {Math.floor((Date.now() - poll.createdAt) / (1000 * 60 * 60))}h ago
+              </span>
             </div>
             
-            <h3 className="text-lg font-semibold text-foreground mb-4">
+            <h3 className="vh-heading-5 mb-3" data-testid={`poll-question-${poll.id}`}>
               {poll.question}
             </h3>
             
@@ -118,19 +129,25 @@ export function PollCard({ poll, context, onUpdate }: PollCardProps) {
           </div>
         </div>
       ) : (
-        // Pulse page layout (vertical)
+        // Pulse page layout (vertical) - Card-based 
         <>
           <div className="flex items-center justify-between mb-4">
             <Badge 
               variant={poll.status === 'active' ? 'default' : 'secondary'}
-              className={poll.status === 'active' ? 'bg-green-500/20 text-green-300 border-green-500/30' : 'bg-muted text-muted-foreground border-border'}
+              className={poll.status === 'active' 
+                ? 'bg-vh-success/20 text-vh-success border-vh-success/30' 
+                : 'bg-vh-muted/20 text-vh-text-muted border-vh-border'
+              }
+              data-testid={`poll-status-${poll.id}`}
             >
               {poll.status === 'active' ? 'Active Poll' : 'Completed'}
             </Badge>
-            <span className="text-sm text-muted-foreground">{timeDisplay}</span>
+            <span className="vh-caption" data-testid={`poll-time-display-${poll.id}`}>
+              {timeDisplay}
+            </span>
           </div>
           
-          <h3 className="text-lg font-semibold text-foreground mb-3">
+          <h3 className="vh-heading-4 mb-3" data-testid={`poll-question-pulse-${poll.id}`}>
             {poll.question}
           </h3>
           
@@ -146,7 +163,7 @@ export function PollCard({ poll, context, onUpdate }: PollCardProps) {
             />
           </div>
           
-          <div className="mt-auto pt-4 border-t border-border/30">
+          <div className="mt-auto pt-4 border-t border-vh-border/30">
             <PollFooter 
               poll={poll}
               showVoting={showVoting}
@@ -195,23 +212,24 @@ function PollContent({
           return (
             <div 
               key={option.id} 
-              className={`relative w-full p-3 border rounded-lg transition-colors ${
+              className={`relative w-full p-3 rounded-vh-md border transition-vh-fast ${
                 isUserChoice 
-                  ? 'border-primary bg-primary/10' 
-                  : 'border-border bg-muted/20'
+                  ? 'border-vh-accent1 bg-vh-accent1-light' 
+                  : 'border-vh-border bg-vh-surface'
               }`}
+              data-testid={`poll-result-${poll.id}-${option.id}`}
             >
               <div className="flex justify-between items-center relative z-10">
-                <span className={`text-sm font-medium ${isUserChoice ? 'text-primary' : 'text-foreground'}`}>
+                <span className={`vh-body-small font-medium ${isUserChoice ? 'text-vh-accent1' : 'text-vh-text'}`}>
                   {option.label}
-                  {isUserChoice && <CheckCircle className="inline w-4 h-4 ml-2" />}
+                  {isUserChoice && <CheckCircle className="inline w-4 h-4 ml-2 text-vh-accent1" />}
                 </span>
-                <span className="text-xs text-muted-foreground">
+                <span className="vh-caption text-vh-text-muted">
                   {option.votes} votes ({percentage.toFixed(0)}%)
                 </span>
               </div>
               <div 
-                className={`absolute inset-0 bg-${color}-500/20 rounded-lg transition-all duration-300`}
+                className={`absolute inset-0 bg-vh-accent2/20 rounded-vh-md transition-all duration-300`}
                 style={{ width: `${percentage}%` }}
               />
             </div>
@@ -231,14 +249,14 @@ function PollContent({
             <button
               key={option.id}
               onClick={() => onOptionSelect(option.id)}
-              className={`w-full p-3 text-left border rounded-lg transition-colors ${
+              className={`w-full p-3 text-left rounded-vh-md border transition-vh-fast ${
                 isSelected 
-                  ? 'border-primary bg-primary/10 text-primary' 
-                  : 'border-border hover:border-primary/50'
+                  ? 'border-vh-accent1 bg-vh-accent1-light text-vh-accent1' 
+                  : 'border-vh-border hover:border-vh-accent1 hover:bg-vh-accent1-light'
               }`}
               data-testid={`poll-option-${poll.id}-${option.id}`}
             >
-              <span className="text-sm font-medium">
+              <span className="vh-body-small font-medium">
                 {poll.allowMultiple ? '☐' : '○'} {option.label}
               </span>
             </button>
@@ -251,11 +269,11 @@ function PollContent({
   return (
     <div className="space-y-2 mb-4 opacity-60">
       {poll.options.map((option) => (
-        <div key={option.id} className="w-full p-3 border border-border rounded-lg">
-          <span className="text-sm text-muted-foreground">{option.label}</span>
+        <div key={option.id} className="w-full p-3 border border-vh-border rounded-vh-md">
+          <span className="vh-body-small text-vh-text-muted">{option.label}</span>
         </div>
       ))}
-      <p className="text-sm text-muted-foreground text-center mt-4">
+      <p className="vh-body-small text-vh-text-muted text-center mt-4">
         Results will be visible when the poll closes.
       </p>
     </div>
@@ -286,11 +304,11 @@ function PollFooter({
   return (
     <>
       <div className="flex items-center justify-between mb-3">
-        <span className="text-sm text-muted-foreground flex items-center">
+        <span className="vh-body-small text-vh-text-muted flex items-center" data-testid={`poll-vote-count-${poll.id}`}>
           <Users className="w-4 h-4 mr-1" />
           {totalVotes} votes
         </span>
-        <span className="text-sm text-muted-foreground flex items-center">
+        <span className="vh-body-small text-vh-text-muted flex items-center" data-testid={`poll-time-remaining-${poll.id}`}>
           <Clock className="w-4 h-4 mr-1" />
           {timeDisplay}
         </span>
@@ -300,7 +318,7 @@ function PollFooter({
         <Button
           onClick={onVote}
           disabled={selectedOptions.length === 0 || isVoting}
-          className="w-full"
+          className="vh-button w-full"
           data-testid={`poll-vote-button-${poll.id}`}
         >
           {isVoting ? 'Voting...' : 'Vote'}
@@ -308,42 +326,48 @@ function PollFooter({
       )}
       
       {userHasVoted && poll.showResults === 'after-vote' && (
-        <div className="flex items-center justify-center text-sm text-green-400">
+        <div className="flex items-center justify-center vh-body-small text-vh-success" data-testid={`poll-voted-indicator-${poll.id}`}>
           <CheckCircle className="w-4 h-4 mr-1" />
           You voted in this poll
         </div>
       )}
       
       {userHasVoted && poll.showResults === 'after-close' && poll.status === 'active' && (
-        <div className="text-center text-sm text-muted-foreground">
+        <div className="text-center vh-body-small text-vh-text-muted">
           Thanks for voting. Results will be visible when the poll closes.
         </div>
       )}
       
-      {/* Engagement actions */}
-      <div className="flex items-center justify-between pt-3 border-t border-border mt-4">
-        <div className="flex items-center space-x-4">
-          <button 
-            className="flex items-center space-x-1 text-sm text-muted-foreground hover:text-red-500 transition-colors"
+      {/* Engagement actions - Reddit-style */}
+      <div className="flex items-center justify-between pt-3 border-t border-vh-border mt-4">
+        <div className="flex items-center space-x-1">
+          <Button
+            variant="ghost" 
+            size="sm"
+            className="vh-button flex items-center space-x-2 px-2 py-1"
             data-testid={`poll-like-${poll.id}`}
           >
             <Heart className="w-4 h-4" />
-            <span>Like</span>
-          </button>
-          <button 
-            className="flex items-center space-x-1 text-sm text-muted-foreground hover:text-blue-500 transition-colors"
+            <span className="vh-body-small">Like</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm" 
+            className="vh-button flex items-center space-x-2 px-2 py-1"
             data-testid={`poll-save-${poll.id}`}
           >
             <Bookmark className="w-4 h-4" />
-            <span>Save</span>
-          </button>
-          <button 
-            className="flex items-center space-x-1 text-sm text-muted-foreground hover:text-green-500 transition-colors"
+            <span className="vh-body-small">Save</span>
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="vh-button flex items-center space-x-2 px-2 py-1"
             data-testid={`poll-share-${poll.id}`}
           >
             <Share className="w-4 h-4" />
-            <span>Share</span>
-          </button>
+            <span className="vh-body-small">Share</span>
+          </Button>
         </div>
       </div>
     </>
