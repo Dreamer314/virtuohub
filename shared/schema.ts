@@ -69,6 +69,14 @@ export const articles = pgTable("articles", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const profiles = pgTable("profiles", {
+  id: varchar("id").primaryKey(), // Matches Supabase Auth user ID
+  displayName: text("display_name").notNull(),
+  avatarUrl: text("avatar_url"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 export const comments = pgTable("comments", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   postId: varchar("post_id"), // for post comments
@@ -129,6 +137,12 @@ export const insertCommentSchema = createInsertSchema(comments).pick({
   parentId: true,
 });
 
+export const insertProfileSchema = createInsertSchema(profiles).pick({
+  id: true,
+  displayName: true,
+  avatarUrl: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 
@@ -144,6 +158,9 @@ export type Article = typeof articles.$inferSelect;
 export type InsertComment = z.infer<typeof insertCommentSchema>;
 export type Comment = typeof comments.$inferSelect;
 
+export type InsertProfile = z.infer<typeof insertProfileSchema>;
+export type Profile = typeof profiles.$inferSelect;
+
 export interface PostWithAuthor extends Post {
   author: User;
   isSaved?: boolean;
@@ -154,7 +171,7 @@ export interface ArticleWithPost extends Article {
 }
 
 export interface CommentWithAuthor extends Comment {
-  author: User;
+  author: Profile;
   replies?: CommentWithAuthor[];
 }
 
