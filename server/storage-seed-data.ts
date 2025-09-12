@@ -4,9 +4,9 @@ export function getSampleUsers(): User[] {
   return [
     {
       id: 'user1',
-      username: 'sarah_chen',
+      username: 'demo_user1',
       password: 'password',
-      displayName: 'Sarah Chen',
+      displayName: 'Demo User 1',
       avatar: '/images/3d-artist.png',
       bio: '3D Artist specializing in VRChat avatars',
       role: '3D Artist',
@@ -127,7 +127,7 @@ export function getSamplePosts(): Post[] {
       imageUrl: 'https://images.unsplash.com/photo-1536431311719-398b6704d4cc?w=800&h=600&fit=crop&crop=center',
       images: [],
       files: [],
-      links: ['https://alexvr.studio'],
+      links: ['https://demovr.studio'],
       price: '',
       status: 'published',
       subtypeData: {
@@ -152,9 +152,9 @@ export function getSampleArticles(): Article[] {
       id: 'article1',
       postId: 'insight1',
       slug: 'from-hobby-to-fulltime-building-vr-experiences',
-      excerpt: 'Alex Kim shares the journey from weekend VR hobbyist to running a 12-person studio, including key lessons about scaling creative work in virtual spaces.',
+      excerpt: 'A VR developer shares the journey from weekend VR hobbyist to running a 12-person studio, including key lessons about scaling creative work in virtual spaces.',
       seoTitle: 'From Hobby to Full-Time: Building VR Experiences | VirtuoHub',
-      seoDescription: 'Learn how Alex Kim transformed weekend VR experiments into a 12-person studio, with practical insights on scaling creative work in virtual spaces.',
+      seoDescription: 'Learn how a VR developer transformed weekend VR experiments into a 12-person studio, with practical insights on scaling creative work in virtual spaces.',
       fullContent: `# From Hobby to Full-Time: Building VR Experiences
 
 ## The Beginning

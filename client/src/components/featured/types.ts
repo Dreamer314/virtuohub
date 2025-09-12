@@ -22,7 +22,7 @@ export const featuredItems: FeaturedItem[] = [
     tag: 'Interview',
     type: 'Interview',
     title: 'Breaking Creative Blocks with AI Tools',
-    blurb: 'Alex Chen shares how he uses generative AI to speed up concept art workflows — without losing the human touch. Practical tips for creators balancing efficiency with originality.',
+    blurb: 'A leading concept artist shares how they use generative AI to speed up workflows — without losing the human touch. Practical tips for creators balancing efficiency with originality.',
     ctaLabel: 'Read Interview',
     ctaHref: '/thread/post4',
     imageSrc: vrChatImage,

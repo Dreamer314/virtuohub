@@ -8,7 +8,7 @@ const POLL_VOTES_KEY = 'vhub.pollVotes';
 // Current user stub
 const currentUser = {
   id: 'user1',
-  name: 'Alex Chen',
+  name: 'Demo User',
   avatar: undefined
 };
 
@@ -20,8 +20,8 @@ function generateId(): string {
 // Initialize with seed data if empty  
 function initializeData() {
   // Force reset to load new data with images
-  if (!localStorage.getItem(POSTS_KEY) || localStorage.getItem('vhub.version') !== '1.4') {
-    localStorage.setItem('vhub.version', '1.4');
+  if (!localStorage.getItem(POSTS_KEY) || localStorage.getItem('vhub.version') !== '1.5') {
+    localStorage.setItem('vhub.version', '1.5');
     const seedPosts: Post[] = [
       {
         id: 'post1',
@@ -83,7 +83,7 @@ function initializeData() {
         category: 'Assets for Sale',
         platforms: ['vrchat'],
         createdAt: Date.now() - 3 * 60 * 60 * 1000, // 3 hours ago
-        author: { id: 'user6', name: 'Sarah Chen' },
+        author: { id: 'user6', name: 'Demo User 6' },
         stats: { likes: 45, saves: 32, comments: 8 }
       }
     ];
