@@ -1,10 +1,14 @@
-import { type User, type InsertUser, type Post, type InsertPost, type SavedPost, type InsertSavedPost, type PostWithAuthor, type Category, type Platform, type Article, type InsertArticle, type ArticleWithPost, type Comment, type InsertComment, type CommentWithAuthor } from "@shared/schema";
+import { type User, type InsertUser, type Post, type InsertPost, type SavedPost, type InsertSavedPost, type PostWithAuthor, type Category, type Platform, type Article, type InsertArticle, type ArticleWithPost, type Comment, type InsertComment, type CommentWithAuthor, type Profile, type InsertProfile } from "@shared/schema";
 
 export interface IStorage {
   // User methods
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+
+  // Profile methods  
+  getProfile(id: string): Promise<Profile | undefined>;
+  upsertProfile(profile: InsertProfile): Promise<Profile>;
 
   // Post methods
   createPost(post: InsertPost & { authorId: string }): Promise<Post>;

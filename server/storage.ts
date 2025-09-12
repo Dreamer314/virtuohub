@@ -1,10 +1,11 @@
-import { type User, type InsertUser, type Post, type InsertPost, type SavedPost, type InsertSavedPost, type PostWithAuthor, type Category, type Platform, type Article, type InsertArticle, type ArticleWithPost, type Comment, type InsertComment, type CommentWithAuthor } from "@shared/schema";
+import { type User, type InsertUser, type Post, type InsertPost, type SavedPost, type InsertSavedPost, type PostWithAuthor, type Category, type Platform, type Article, type InsertArticle, type ArticleWithPost, type Comment, type InsertComment, type CommentWithAuthor, type Profile, type InsertProfile } from "@shared/schema";
 import { randomUUID } from "crypto";
 import { IStorage } from "./storage-interface";
 import { getSampleUsers, getSamplePosts, getSampleArticles, getSampleComments } from "./storage-seed-data";
 
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
+  private profiles: Map<string, Profile>;
   private posts: Map<string, Post>;
   private savedPosts: Map<string, SavedPost>;
   private articles: Map<string, Article>;
@@ -12,6 +13,7 @@ export class MemStorage implements IStorage {
 
   constructor() {
     this.users = new Map();
+    this.profiles = new Map();
     this.posts = new Map();
     this.savedPosts = new Map();
     this.articles = new Map();
@@ -66,6 +68,16 @@ export class MemStorage implements IStorage {
 
     sampleUsers.forEach(user => {
       this.users.set(user.id, user);
+      
+      // Create corresponding profile
+      const profile: Profile = {
+        id: user.id,
+        displayName: user.displayName,
+        avatarUrl: user.avatar,
+        createdAt: user.createdAt,
+        updatedAt: user.createdAt,
+      };
+      this.profiles.set(user.id, profile);
     });
 
     // Create sample posts
@@ -517,6 +529,26 @@ As the lines between physical and digital continue to blur, virtual fashion stan
     return user;
   }
 
+  // Profile methods
+  async getProfile(id: string): Promise<Profile | undefined> {
+    return this.profiles.get(id);
+  }
+
+  async upsertProfile(insertProfile: InsertProfile): Promise<Profile> {
+    const existingProfile = this.profiles.get(insertProfile.id);
+    
+    const profile: Profile = {
+      id: insertProfile.id,
+      displayName: insertProfile.displayName,
+      avatarUrl: insertProfile.avatarUrl || null,
+      createdAt: existingProfile?.createdAt || new Date(),
+      updatedAt: new Date(),
+    };
+    
+    this.profiles.set(insertProfile.id, profile);
+    return profile;
+  }
+
   async createPost(postData: InsertPost & { authorId: string }): Promise<Post> {
     const id = randomUUID();
     const post: Post = {
@@ -768,7 +800,7 @@ As the lines between physical and digital continue to blur, virtual fashion stan
     
     const commentsWithAuthor = await Promise.all(
       comments.map(async (comment) => {
-        const author = await this.getUser(comment.authorId);
+        const author = await this.getProfile(comment.authorId);
         if (!author) return null;
         
         // Get replies
@@ -778,7 +810,7 @@ As the lines between physical and digital continue to blur, virtual fashion stan
         
         const repliesWithAuthor = await Promise.all(
           replies.map(async (reply) => {
-            const replyAuthor = await this.getUser(reply.authorId);
+            const replyAuthor = await this.getProfile(reply.authorId);
             if (!replyAuthor) return null;
             return {
               ...reply,
@@ -805,7 +837,7 @@ As the lines between physical and digital continue to blur, virtual fashion stan
     
     const commentsWithAuthor = await Promise.all(
       comments.map(async (comment) => {
-        const author = await this.getUser(comment.authorId);
+        const author = await this.getProfile(comment.authorId);
         if (!author) return null;
         
         // Get replies
@@ -815,7 +847,7 @@ As the lines between physical and digital continue to blur, virtual fashion stan
         
         const repliesWithAuthor = await Promise.all(
           replies.map(async (reply) => {
-            const replyAuthor = await this.getUser(reply.authorId);
+            const replyAuthor = await this.getProfile(reply.authorId);
             if (!replyAuthor) return null;
             return {
               ...reply,
