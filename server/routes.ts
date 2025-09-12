@@ -304,6 +304,194 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // PULSE API ROUTES - Poll interactions
+  app.post("/api/pulse/polls/:pollId/like", async (req, res) => {
+    try {
+      const { pollId } = req.params;
+      const userId = req.body.userId || 'user1'; // Default user for demo
+      
+      // In a real app, this would update database
+      console.log(`User ${userId} liked poll ${pollId}`);
+      
+      res.json({ 
+        success: true, 
+        message: 'Poll liked successfully',
+        pollId,
+        userId,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to like poll", error: error });
+    }
+  });
+
+  app.post("/api/pulse/polls/:pollId/save", async (req, res) => {
+    try {
+      const { pollId } = req.params;
+      const userId = req.body.userId || 'user1';
+      
+      console.log(`User ${userId} saved poll ${pollId}`);
+      
+      res.json({ 
+        success: true, 
+        message: 'Poll saved to your collection',
+        pollId,
+        userId,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to save poll", error: error });
+    }
+  });
+
+  app.post("/api/pulse/polls/:pollId/share", async (req, res) => {
+    try {
+      const { pollId } = req.params;
+      const userId = req.body.userId || 'user1';
+      const { shareMethod } = req.body; // 'copy', 'email', 'social'
+      
+      console.log(`User ${userId} shared poll ${pollId} via ${shareMethod}`);
+      
+      const shareUrl = `${req.protocol}://${req.get('host')}/pulse?poll=${pollId}`;
+      
+      res.json({ 
+        success: true, 
+        message: 'Poll shared successfully',
+        shareUrl,
+        pollId,
+        userId,
+        shareMethod,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to share poll", error: error });
+    }
+  });
+
+  // PULSE API ROUTES - Published reports
+  app.get("/api/pulse/reports", async (req, res) => {
+    try {
+      // In a real app, this would query the database
+      const mockReports = [
+        {
+          id: 'report_q4_trends',
+          title: 'Q4 2024 Platform Usage Trends',
+          summary: 'Analysis of user engagement patterns across major virtual world platforms. Based on 15,000+ creator responses.',
+          releasedAt: new Date().toISOString(),
+          priceType: 'free',
+          badges: ['Platform Data', 'Usage Analytics'],
+          downloadUrl: '/api/pulse/reports/report_q4_trends/download'
+        },
+        {
+          id: 'report_2025_forecast',
+          title: '2025 Immersive Economy Forecast',
+          summary: 'Comprehensive market analysis with revenue projections, emerging platform insights, and strategic recommendations for creators.',
+          releasedAt: new Date().toISOString(),
+          priceType: 'paid',
+          priceCents: 2900,
+          badges: ['Market Analysis', 'Forecasting']
+        },
+        {
+          id: 'report_enterprise_insights',
+          title: 'Enterprise Adoption Patterns',
+          summary: 'Confidential analysis of how Fortune 500 companies are integrating virtual world technologies into their operations.',
+          releasedAt: new Date().toISOString(),
+          priceType: 'private',
+          badges: ['Enterprise', 'Confidential']
+        }
+      ];
+      
+      res.json(mockReports);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch reports", error: error });
+    }
+  });
+
+  app.post("/api/pulse/reports/:reportId/download", async (req, res) => {
+    try {
+      const { reportId } = req.params;
+      const userId = req.body.userId || 'user1';
+      
+      console.log(`User ${userId} downloading report ${reportId}`);
+      
+      // In a real app, this would:
+      // 1. Check user permissions
+      // 2. Log the download
+      // 3. Generate/serve the actual file
+      
+      res.json({
+        success: true,
+        message: 'Download initiated',
+        downloadUrl: `/objects/reports/${reportId}.pdf`,
+        reportId,
+        userId,
+        timestamp: new Date().toISOString(),
+        fileSize: '2.4 MB',
+        format: 'PDF'
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to initiate download", error: error });
+    }
+  });
+
+  app.post("/api/pulse/reports/:reportId/purchase", async (req, res) => {
+    try {
+      const { reportId } = req.params;
+      const userId = req.body.userId || 'user1';
+      const { paymentMethod } = req.body;
+      
+      console.log(`User ${userId} purchasing report ${reportId} with ${paymentMethod}`);
+      
+      // In a real app, this would:
+      // 1. Process payment via Stripe/PayPal
+      // 2. Update user access permissions
+      // 3. Send confirmation email
+      // 4. Generate download link
+      
+      res.json({
+        success: true,
+        message: 'Purchase successful! Download link sent to your email.',
+        transactionId: `txn_${reportId}_${Date.now()}`,
+        downloadUrl: `/objects/reports/${reportId}.pdf`,
+        reportId,
+        userId,
+        amount: 2900, // cents
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to process purchase", error: error });
+    }
+  });
+
+  app.post("/api/pulse/reports/:reportId/request-access", async (req, res) => {
+    try {
+      const { reportId } = req.params;
+      const userId = req.body.userId || 'user1';
+      const { organization, reason } = req.body;
+      
+      console.log(`User ${userId} requesting access to report ${reportId} from ${organization}`);
+      
+      // In a real app, this would:
+      // 1. Save access request to database
+      // 2. Send notification to admin team
+      // 3. Send confirmation email to requester
+      
+      res.json({
+        success: true,
+        message: 'Access request submitted successfully. Our team will review and contact you within 2-3 business days.',
+        requestId: `req_${reportId}_${Date.now()}`,
+        reportId,
+        userId,
+        organization,
+        reason,
+        status: 'pending',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to submit access request", error: error });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

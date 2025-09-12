@@ -84,7 +84,7 @@ function getInitialStore(): Store {
           { label: 'Blender', votes: 0 }
         ],
         createdAt: now - (8 * 60 * 60 * 1000), // 8 hours ago
-        endsAt: now + (2 * dayMs), // 2 days from now
+        endsAt: now + (3 * dayMs), // 3 days from now (extended to ensure it's active)
         tags: ['development', 'tools']
       },
       {
@@ -204,6 +204,12 @@ export const pulseApi = {
       return initial;
     }
     return JSON.parse(stored);
+  },
+
+  // Clear cache to refresh poll data
+  clearCache(): void {
+    localStorage.removeItem(STORAGE_KEY);
+    notify('pulse:changed');
   },
 
   saveStore(next: Store): void {
