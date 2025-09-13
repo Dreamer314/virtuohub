@@ -1,5 +1,130 @@
 # VirtuoHub Community Platform - Changelog
 
+## Real User Profiles Integration - September 13, 2025
+
+### **Plan: Replace Mock Author Fallbacks with Supabase Auth Profiles**
+
+Implemented comprehensive profile-based author system replacing all hardcoded mock users ("Sarah Chen", "Alex Chen") with real authenticated user profiles from Supabase Auth. All comments and threads now display actual user profile data with graceful fallbacks.
+
+**Objectives:**
+- Eliminate all mock author names and hardcoded user IDs from comment/thread rendering
+- Replace hardcoded authorId ('user1') with session-based user ID extraction
+- Implement profile schema and storage for author data (display_name, avatar_url) 
+- Add graceful profile handling utilities for missing profile data
+- Maintain security by preventing client-side user impersonation
+- Add comprehensive test verification for authenticated comment posting
+
+### **Implementation Details**
+
+#### **Core Profile Infrastructure**
+- **Profile Schema** (`shared/schema.ts`): New profiles table with id (UUID), display_name, avatar_url fields using Drizzle ORM and Zod validation
+- **Profile Storage** (`server/storage.ts`): CRUD operations for profiles with getUserProfile, createProfile, updateProfile methods
+- **Profile Upsert API** (`server/routes.ts`): `/api/profile-upsert` endpoint handling profile creation/updates from Supabase Auth
+
+#### **Authentication & Session Management**
+- **JWT Token Integration** (`client/src/lib/queryClient.ts`): Fixed critical bug where client wasn't sending Supabase JWT tokens in Authorization headers
+- **Session-Based User ID Extraction** (`server/middleware/auth.ts`): Server extracts user ID from authenticated session (req.user.id) instead of trusting client-provided authorId
+- **Comment Creation Security**: Removed hardcoded `authorId: 'user1'` from client-side mutations, server now derives authorId from session
+
+#### **Profile Display Utilities** 
+- **Safe Profile Helpers** (`client/src/lib/utils.ts`): Graceful profile handling utilities:
+  - `getDisplayName()`: Returns display_name or email prefix fallback (e.g., "john" from "john@example.com")
+  - `getAvatarUrl()`: Returns avatar_url or null with proper null checks
+- **Comment Rendering Updates**: Article and thread comment components use profile utilities with null-safe rendering
+
+#### **Data Migration & Cleanup**
+- **Mock User Removal**: Eliminated hardcoded users from server/storage-seed-data.ts and client/src/data/mockApi.ts
+- **Client-Side Data Reset**: Bumped localStorage version to 1.5 to force clean reseed without mock author references
+- **Profile-Comment Integration**: Updated storage methods (getComments, getPostComments) to join with profiles table instead of users table
+
+### **Technical Implementation**
+
+#### **Authentication Flow**
+1. **Session Validation**: Server middleware validates JWT token from Authorization header
+2. **User ID Extraction**: Session user ID extracted server-side from req.user.id (no client trust)
+3. **Profile Resolution**: Profile data fetched using user ID for comment/thread author display
+4. **Graceful Fallback**: Missing profiles handled with email prefix fallbacks
+
+#### **Security Enhancements**
+- **Eliminated User Impersonation**: Client can no longer send fake authorId values
+- **JWT Token Transmission**: Fixed critical bug where Authorization headers weren't being sent with API requests
+- **Server-Side Session Validation**: All write operations extract user ID from validated session
+- **Profile Upsert Safety**: Automatic profile creation with display_name from user metadata or email fallback
+
+#### **Files Modified**
+- `shared/schema.ts` - Added profiles table schema and Zod validation
+- `server/storage.ts` - Added profile CRUD methods, updated comment queries to join profiles
+- `server/routes.ts` - Added `/api/profile-upsert` endpoint with Zod validation
+- `server/middleware/auth.ts` - Enhanced JWT session validation for user ID extraction
+- `client/src/lib/queryClient.ts` - **CRITICAL FIX**: Added Supabase JWT token to Authorization headers
+- `client/src/lib/utils.ts` - Added safe profile display utilities (getDisplayName, getAvatarUrl)
+- `client/src/pages/article.tsx` - Removed hardcoded authorId from comment mutations
+- `client/src/pages/thread.tsx` - Removed hardcoded authorId from comment mutations
+- `client/src/providers/AuthProvider.tsx` - Enhanced auth state management
+- `server/storage-seed-data.ts` - Removed mock users, added profile seeding
+- `client/src/data/mockApi.ts` - Removed hardcoded author names from client-side seed data
+
+### **Testing & Quality Assurance**
+- **Playwright Test Plan**: Comprehensive test for authenticated user comment posting with author verification
+- **Authentication Bug Discovery**: Testing revealed critical JWT token transmission issue
+- **End-to-End Verification**: Manual verification of authenticated comment flow with proper author display
+- **Profile Fallback Testing**: Verified graceful handling of missing profile data with email prefix fallbacks
+
+### **New Development Rule**
+
+#### **🚫 NO MOCK AUTHOR RULE**
+From this implementation forward, **all author references must use real authenticated user data**:
+
+**✅ REQUIRED APPROACH:**
+- Use `useAuth()` hook to get current authenticated user
+- Server endpoints extract `authorId` from `req.user.id` (validated session)
+- Display authors using profile utilities: `getDisplayName()`, `getAvatarUrl()`
+- Handle missing profiles gracefully with email prefix fallbacks
+
+**❌ PROHIBITED:**
+- Hardcoded author names like "Sarah Chen", "Alex Chen", "user1"
+- Client-side `authorId` in request bodies (security risk)
+- Mock user objects or getCurrentUser() stubs
+- Assuming user ID format for fallback generation
+
+**Example Implementation:**
+```typescript
+// ✅ Correct: Server-side session extraction
+export async function createComment(req: AuthRequest, res: Response) {
+  const { content } = req.body;
+  const authorId = req.user!.id; // From validated session
+  // ... create comment with real user ID
+}
+
+// ✅ Correct: Client-side profile display  
+const authorName = getDisplayName(comment.author);
+const avatarUrl = getAvatarUrl(comment.author);
+```
+
+### **Outcome: Secure Profile-Based Author System**
+
+✅ **Successfully replaced all mock author fallbacks** with:
+- Real authenticated user profiles from Supabase Auth
+- Secure session-based user ID extraction preventing impersonation
+- Graceful profile handling utilities with email fallbacks
+- Fixed critical JWT token transmission bug for authenticated requests
+- Comprehensive test coverage for authenticated comment flows
+- New development rule preventing future mock author usage
+
+**Security Improvements:**
+- **No User Impersonation**: Server ignores client-provided authorId, uses session user ID
+- **JWT Token Authentication**: Fixed bug where requests lacked Authorization headers
+- **Profile Data Integrity**: Author information sourced from validated Supabase Auth profiles
+- **Fallback Safety**: Missing profile data handled gracefully with email prefix display
+
+**Next Steps for Production:**
+1. Monitor authentication flow performance with real user load
+2. Add comprehensive logging for profile upsert operations
+3. Consider caching frequently accessed profile data
+4. Extend profile schema for additional user metadata as needed
+
+---
+
 ## Supabase Authentication Implementation - September 12, 2025
 
 ### **Plan: Site-wide Authentication Integration**
