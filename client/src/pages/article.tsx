@@ -8,6 +8,7 @@ import { ArrowLeft, Calendar, Clock, Heart, MessageCircle, Share2, User } from '
 import { Link } from 'wouter';
 import { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
+import { getDisplayName, getAvatarUrl } from '@/lib/utils';
 import type { ArticleWithPost, CommentWithAuthor } from '@shared/schema';
 
 export default function ArticlePage() {
@@ -348,13 +349,13 @@ export default function ArticlePage() {
                   <div key={comment.id} className="border-l-2 border-accent/20 pl-4" data-testid={`comment-${comment.id}`}>
                     <div className="flex items-start gap-4">
                       <img
-                        src={comment.author.avatar || '/images/vr-creator.png'}
-                        alt={comment.author.displayName}
+                        src={getAvatarUrl(comment.author)}
+                        alt={getDisplayName(comment?.author)}
                         className="w-10 h-10 rounded-full object-cover"
                       />
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <span className="font-medium">{comment.author.displayName}</span>
+                          <span className="font-medium">{getDisplayName(comment?.author)}</span>
                           <span className="text-sm text-muted-foreground">
                             {comment.createdAt ? formatDistanceToNow(new Date(comment.createdAt)) + ' ago' : 'Recently'}
                           </span>
@@ -380,13 +381,13 @@ export default function ArticlePage() {
                             {comment.replies.map((reply) => (
                               <div key={reply.id} className="flex items-start gap-4" data-testid={`reply-${reply.id}`}>
                                 <img
-                                  src={reply.author.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face'}
-                                  alt={reply.author.displayName}
+                                  src={getAvatarUrl(reply.author, 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face')}
+                                  alt={getDisplayName(reply?.author)}
                                   className="w-8 h-8 rounded-full object-cover"
                                 />
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2 mb-1">
-                                    <span className="font-medium text-sm">{reply.author.displayName}</span>
+                                    <span className="font-medium text-sm">{getDisplayName(reply?.author)}</span>
                                     <span className="text-xs text-muted-foreground">
                                       {reply.createdAt ? formatDistanceToNow(new Date(reply.createdAt)) + ' ago' : 'Recently'}
                                     </span>

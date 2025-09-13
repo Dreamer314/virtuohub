@@ -10,6 +10,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, MessageCircle, Heart, Share2, Send, ImageIcon, Smile, Paperclip, Copy, Check } from "lucide-react";
 import { Link } from "wouter";
 import { formatDistanceToNow } from "date-fns";
+import { getDisplayName } from "@/lib/utils";
 import type { PostWithAuthor } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { ObjectUploader } from "@/components/ObjectUploader";
@@ -286,11 +287,11 @@ export default function ThreadPage() {
                       <CardContent className="p-6">
                         <div className="flex space-x-4">
                           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-semibold text-sm">
-                            {comment.author?.displayName?.[0] || 'A'}
+                            {getDisplayName(comment?.author)?.[0] || 'U'}
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-2">
-                              <span className="font-semibold text-sm">{comment.author?.displayName || 'Anonymous'}</span>
+                              <span className="font-semibold text-sm">{getDisplayName(comment?.author)}</span>
                               <span className="text-xs text-muted-foreground">
                                 {formatDistanceToNow(new Date(comment.createdAt))} ago
                               </span>

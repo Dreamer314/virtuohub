@@ -30,6 +30,31 @@ export const PLATFORM_COLORS: Record<string, string> = {
   'Other': 'bg-vh-accent1-light text-vh-accent1 border-vh-accent1/20 hover:bg-vh-accent1/10',
 };
 
+/**
+ * Get a display name for a user profile with safe fallbacks
+ * The backend already handles email fallback in profile creation, so missing displayName is rare
+ */
+export function getDisplayName(profile?: { id?: string; displayName?: string | null } | null, fallbackName = 'User'): string {
+  if (!profile) {
+    return fallbackName;
+  }
+  
+  if (profile.displayName?.trim()) {
+    return profile.displayName.trim();
+  }
+  
+  // Backend should have set displayName to email during profile creation,
+  // but if somehow it's missing, return fallback
+  return fallbackName;
+}
+
+/**
+ * Get avatar URL with fallback
+ */
+export function getAvatarUrl(profile?: { avatarUrl?: string | null } | null, defaultUrl = '/images/vr-creator.png'): string {
+  return profile?.avatarUrl || defaultUrl;
+}
+
 // Category color constants - using VirtuoHub brand colors for consistency
 // POST CATEGORIES MVP - Updated category colors to use slugs
 export const CATEGORY_COLORS: Record<string, string> = {
