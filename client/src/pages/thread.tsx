@@ -42,8 +42,7 @@ export default function ThreadPage() {
     mutationFn: async (data: { content: string; images: string[] }) => {
       return apiRequest('POST', `/api/posts/${postId}/comments`, {
         content: data.content, 
-        images: data.images,
-        authorId: 'user1'
+        images: data.images
       });
     },
     onSuccess: () => {

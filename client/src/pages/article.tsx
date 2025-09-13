@@ -31,7 +31,7 @@ export default function ArticlePage() {
       const response = await fetch(`/api/articles/${article?.id}/comments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content, authorId: 'user1' }),
+        body: JSON.stringify({ content }),
       });
       if (!response.ok) throw new Error('Failed to post comment');
       return response.json();
