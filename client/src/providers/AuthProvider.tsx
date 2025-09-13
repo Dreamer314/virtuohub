@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabaseClient'
+import { upsertSelf } from '@/lib/profiles'
 
 interface AuthContextType {
   user: User | null
@@ -52,22 +53,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // Attempt profile upsert after successful sign in
         if (event === 'SIGNED_IN' && session?.user) {
           try {
-            const response = await fetch('/api/profile-upsert', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                id: session.user.id,
-                display_name: session.user.user_metadata?.full_name || session.user.email,
-              }),
-            })
-            
-            if (!response.ok) {
-              throw new Error(`Profile upsert failed: ${response.statusText}`)
-            }
+            await upsertSelf(session.user)
           } catch (error) {
-            console.warn('Profile upsert attempt failed (this is expected if profiles table does not exist):', error)
+            console.warn('Profile upsert attempt failed:', error)
           }
         }
       }
