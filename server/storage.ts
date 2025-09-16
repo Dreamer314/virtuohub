@@ -534,17 +534,6 @@ As the lines between physical and digital continue to blur, virtual fashion stan
     return this.profiles.get(id);
   }
 
-  async getProfiles(ids: string[]): Promise<Profile[]> {
-    const profiles: Profile[] = [];
-    for (const id of ids) {
-      const profile = this.profiles.get(id);
-      if (profile) {
-        profiles.push(profile);
-      }
-    }
-    return profiles;
-  }
-
   async upsertProfile(insertProfile: InsertProfile): Promise<Profile> {
     const existingProfile = this.profiles.get(insertProfile.id);
     

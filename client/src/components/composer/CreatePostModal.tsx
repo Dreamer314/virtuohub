@@ -11,10 +11,8 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X, Upload, Plus, Link as LinkIcon, Heart, BarChart3, Users, Clock } from 'lucide-react';
 import { PlatformKey, CATEGORIES, PLATFORMS } from '@/types/content';
+import { createFeedPost, createPoll, getCurrentUser } from '@/data/mockApi';
 import { useToast } from '@/hooks/use-toast';
-import { useMutation } from '@tanstack/react-query';
-import { apiRequest, queryClient } from '@/lib/queryClient';
-import { useAuth } from '@/providers/AuthProvider';
 
 const createPostSchema = z.object({
   subtype: z.enum(['thread', 'poll']).default('thread'),
@@ -58,19 +56,6 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
   const [pollOptions, setPollOptions] = useState<string[]>(['', '']);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const { user } = useAuth();
-
-  // Mutation for creating posts via real API
-  const createPostMutation = useMutation({
-    mutationFn: async (postData: any) => {
-      const response = await apiRequest('/api/posts', 'POST', postData);
-      return response;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
-      onPostCreated?.();
-    },
-  });
 
   const form = useForm<CreatePostForm>({
     resolver: zodResolver(createPostSchema),
@@ -228,32 +213,8 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
     try {
       setIsSubmitting(true);
       
-      // Check authentication
-      if (!user) {
-        toast({
-          title: 'Authentication required',
-          description: 'Please sign in to create posts',
-          variant: 'destructive',
-        });
-        return;
-      }
-
-      // Prepare post data for API
-      let postData: any = {
-        subtype: data.subtype === 'poll' ? 'poll' : 'thread',
-        title: data.title,
-        body: data.body,
-        platforms: selectedPlatforms,
-        imageUrl: images[0] || '',
-        images,
-        files: files.map(f => f.name), // Send file names for now
-        links: data.links || [],
-        price: data.price || '',
-        status: 'published',
-      };
-
-      // Add poll-specific data
       if (data.subtype === 'poll') {
+        // Create poll using existing Poll API
         const pollOptions = data.pollOptions?.filter(opt => opt.trim()).map((label, index) => ({
           id: `opt${index + 1}`,
           label,
@@ -264,17 +225,33 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
           throw new Error('Polls must have at least 2 options');
         }
 
-        postData.subtypeData = {
+        createPoll({
+          type: 'poll',
           question: data.pollQuestion || '',
           options: pollOptions,
           allowMultiple: false,
           showResults: 'after-vote',
           closesAt: Date.now() + (data.pollDurationDays || 7) * 24 * 60 * 60 * 1000,
-        };
+          category: data.category,
+          platforms: selectedPlatforms,
+          author: getCurrentUser()
+        });
+      } else {
+        // Create thread using existing Post API
+        createFeedPost({
+          type: 'post',
+          title: data.title,
+          body: data.body,
+          category: data.category,
+          platforms: selectedPlatforms,
+          imageUrl: images[0] || '',
+          images,
+          files: files,
+          links: data.links || [],
+          price: data.price || '',
+          author: getCurrentUser()
+        });
       }
-
-      // Submit via real API
-      await createPostMutation.mutateAsync(postData);
 
       const postTypeLabel = data.subtype === 'poll' ? 'Poll' : 'Thread';
       toast({
@@ -290,9 +267,9 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
       setFiles([]);
       setPollOptions(['', '']);
       
+      onPostCreated?.();
       onOpenChange(false);
     } catch (error) {
-      console.error('Post creation error:', error);
       toast({
         title: 'Failed to publish',
         description: 'Please try again',

@@ -8,7 +8,6 @@ export interface IStorage {
 
   // Profile methods  
   getProfile(id: string): Promise<Profile | undefined>;
-  getProfiles(ids: string[]): Promise<Profile[]>;
   upsertProfile(profile: InsertProfile): Promise<Profile>;
 
   // Post methods
