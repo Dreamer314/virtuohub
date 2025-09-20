@@ -5,7 +5,6 @@ import { RightSidebar } from "@/components/layout/right-sidebar";
 import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabaseClient";
-import AdminEditPoll from "@/components/polls/AdminEditPoll";
 import {
   Repeat2, Pencil, PieChart, X, RotateCcw, Copy, Download, Trash2, Star, EyeOff,
   FilePlus2, Check, Archive, Eye, Key, Plus, Minus
@@ -337,7 +336,6 @@ function PollsCard({
   const [polls, setPolls] = useState<PollRow[]>([]);
   const [busy, setBusy] = useState<string | null>(null);
   const [voteCounts, setVoteCounts] = useState<Record<string, number>>({});
-  const [editingPoll, setEditingPoll] = useState<PollRow | null>(null);
 
   useEffect(() => {
     let off = false;
@@ -518,12 +516,7 @@ function PollsCard({
                   <td className="px-6 py-4">{votes}</td>
                   <td className="px-6 py-4">
                     <div className="flex flex-wrap gap-2">
-                      <Button
-                        type="button"
-                        variant="secondary"
-                        onClick={() => setEditingPoll(p)}
-                        className="h-8"
-                      >
+                      <Button type="button" variant="secondary" disabled className="h-8">
                         <Pencil className="w-4 h-4 mr-1" /> Edit
                       </Button>
                       <Button type="button" variant="secondary" onClick={() => window.open("/pulse", "_blank")} className="h-8">
@@ -582,18 +575,6 @@ function PollsCard({
       <div className="px-6 py-3 text-xs text-muted-foreground border-t border-border">
         Poll results update live for everyone. To change structure in a big way, duplicate, then close the old one.
       </div>
-
-      {editingPoll && (
-        <AdminEditPoll
-          poll={editingPoll}
-          open={true}
-          onClose={() => setEditingPoll(null)}
-          onSaved={() => {
-            setEditingPoll(null);
-            onRefresh(); // already defined prop in PollsCard
-          }}
-        />
-      )}
     </div>
   );
 }
