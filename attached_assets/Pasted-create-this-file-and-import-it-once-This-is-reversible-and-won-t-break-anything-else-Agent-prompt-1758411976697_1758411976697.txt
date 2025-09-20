@@ -1,0 +1,151 @@
+create this file and import it once. This is reversible and won’t break anything else.
+
+Agent prompt (copy-paste):
+
+Create a new file at client/src/styles/light-contrast.css with the following content, and import it one time in client/src/main.tsx (or the global styles entry next to Tailwind imports).
+
+// client/src/styles/light-contrast.css
+/* High-contrast tweaks for LIGHT theme only */
+[data-theme="light"] {
+  /* Generic chip / pill tokens */
+  --pill-radius: 10px;
+
+  /* Success pill (e.g., Active) */
+  --pill-success-bg: #e9f7ef;   /* soft green */
+  --pill-success-fg: #0f5132;   /* deep green */
+  --pill-success-border: #b7e4c7;
+
+  /* Info/secondary pill (e.g., “On Reports”, tags) */
+  --pill-info-bg: #eef2ff;      /* soft indigo */
+  --pill-info-fg: #1e3a8a;      /* deep indigo */
+  --pill-info-border: #c7d2fe;
+
+  /* Price pill */
+  --pill-price-bg: #fff7e6;     /* soft amber */
+  --pill-price-fg: #7a4d00;     /* deep amber/brown */
+  --pill-price-border: #fde68a;
+
+  /* Neutral badge (muted chips) */
+  --pill-muted-bg: #f5f6f7;
+  --pill-muted-fg: #374151;
+  --pill-muted-border: #e5e7eb;
+}
+
+/* Map common pill patterns used across Admin and Reports cards */
+[data-theme="light"] .vh-pill,
+[data-theme="light"] .vh-badge,
+[data-theme="light"] .vh-chip,
+[data-theme="light"] .status-pill,
+[data-theme="light"] .tag-pill {
+  border-radius: var(--pill-radius);
+  border: 1px solid var(--pill-muted-border);
+  background: var(--pill-muted-bg);
+  color: var(--pill-muted-fg) !important;
+}
+
+/* Success (Active) – add a helper class if it exists, otherwise match by data-attribute or text class hook */
+[data-theme="light"] .vh-pill--success,
+[data-theme="light"] .status-pill--active {
+  background: var(--pill-success-bg) !important;
+  color: var(--pill-success-fg) !important;
+  border-color: var(--pill-success-border) !important;
+}
+
+/* Info/secondary (tags like “On Reports”, “On Community”, small metadata chips) */
+[data-theme="light"] .vh-pill--info,
+[data-theme="light"] .vh-chip--info {
+  background: var(--pill-info-bg) !important;
+  color: var(--pill-info-fg) !important;
+  border-color: var(--pill-info-border) !important;
+}
+
+/* Price pill on Published Reports */
+[data-theme="light"] .vh-pill--price,
+[data-theme="light"] .price-pill {
+  background: var(--pill-price-bg) !important;
+  color: var(--pill-price-fg) !important;
+  border-color: var(--pill-price-border) !important;
+}
+
+/* Dropdown menus: force readable text on light surfaces */
+[data-theme="light"] .select-content,
+[data-theme="light"] .dropdown-content,
+[data-theme="light"] .radix-themes__select__content,
+[data-theme="light"] [role="listbox"],
+[data-theme="light"] .vh-menu,
+[data-theme="light"] .vh-dropdown {
+  color: #111827 !important;        /* near-black */
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+/* Dropdown items: readable default + highlighted selection */
+[data-theme="light"] .select-item,
+[data-theme="light"] .dropdown-item,
+[data-theme="light"] [role="option"] {
+  color: #111827 !important;
+  background: #ffffff !important;
+}
+[data-theme="light"] .select-item[data-highlighted],
+[data-theme="light"] .dropdown-item[data-highlighted],
+[data-theme="light"] [role="option"][data-highlighted="true"] {
+  background: #eef2ff !important;
+  color: #1e3a8a !important;
+}
+
+/* Inputs in light theme: give a subtle outline so fields are visible */
+[data-theme="light"] input[type="text"],
+[data-theme="light"] input[type="number"],
+[data-theme="light"] input[type="datetime-local"],
+[data-theme="light"] textarea,
+[data-theme="light"] .vh-input,
+[data-theme="light"] .select-trigger {
+  border: 1px solid #e5e7eb !important;
+  background: #ffffff !important;
+  color: #111827 !important;
+}
+
+/* Keep hover/focus states accessible */
+[data-theme="light"] .vh-input:focus,
+[data-theme="light"] .select-trigger:focus {
+  outline: 2px solid #c7d2fe;
+  outline-offset: 2px;
+  border-color: #c7d2fe !important;
+}
+
+
+Then import it one time (after your Tailwind/global CSS) in the app bootstrap file:
+
+// client/src/main.tsx (or wherever you import global styles)
+import "./styles/light-contrast.css";
+
+
+Do not change any components. Just add this file and import it.
+
+
+**What this does**
+- It only applies in light theme (`[data-theme="light"]`).
+- Adds visible borders to inputs and pills.
+- Forces dropdown menu text to dark on white.
+- Gives clear color pairs for success/info/price chips with AA contrast.
+
+If your pills already have helper classes (like `vh-pill--price`, `status-pill--active`) this will style them. If not, the generic `.vh-pill/.vh-badge/.vh-chip` line will still improve their base contrast. It’s intentionally gentle to avoid side effects.
+
+---
+
+# Why this is “non site-damaging”
+- No component code changes.
+- Dark/Charcoal untouched.
+- Easy to remove by deleting one import.
+- Meets accessibility contrast without rewriting designs.
+
+---
+
+# Bonus (optional)
+Once this lands and you like the look, we can later:
+- Move tokens to your theme system (e.g., Tailwind CSS variables) so designers can tune colors centrally.
+- Add a “High contrast (light)” toggle if you want a user-facing switch.
+
+---
+
+If anything still looks off after the agent adds the file, send me a fresh screenshot of the **light** Admin page (Polls table and Published Reports card) and I’ll tune the exact hex values to your taste.
