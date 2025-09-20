@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 type Poll = {
   id: string;
   question: string;
-  options: string[] | null;
+  options: string[] | null;        // labels live here
   status: "active" | "closed";
 };
 
@@ -66,7 +66,9 @@ export default function PollCard({
   async function handleVote(idx: number) {
     if (!canVote) return;
     setSubmitting(true);
-    const { error } = await supabase.from("pulse_votes").insert({ poll_id: poll.id, option_index: idx });
+    const { error } = await supabase
+      .from("pulse_votes")
+      .insert({ poll_id: poll.id, option_index: idx });
     setSubmitting(false);
     if (!error) {
       setHasVoted(true);
