@@ -151,7 +151,6 @@ export default function AdminEditPoll({
               <Input
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
-                className="vh-input focus:!ring-2 focus:!ring-violet-500 focus:!border-violet-500"
               />
             </div>
 
@@ -159,14 +158,14 @@ export default function AdminEditPoll({
               <div>
                 <Label>Results visibility</Label>
                 <select
-                  className="w-full h-10 rounded-md border border-border bg-background px-3 vh-input !bg-white !text-black dark:!bg-neutral-900 dark:!text-white focus:!ring-2 focus:!ring-violet-500 focus:!border-violet-500"
+                  className="w-full h-10 rounded-md border border-border bg-background px-3"
                   value={showResults}
                   onChange={(e) =>
                     setShowResults(e.target.value as "after_vote" | "after_close")
                   }
                 >
-                  <option value="after_vote" className="text-black dark:text-white bg-white dark:bg-neutral-900">After user votes</option>
-                  <option value="after_close" className="text-black dark:text-white bg-white dark:bg-neutral-900">After poll closes</option>
+                  <option value="after_vote">After user votes</option>
+                  <option value="after_close">After poll closes</option>
                 </select>
               </div>
               <div className="hidden" />
@@ -187,7 +186,6 @@ export default function AdminEditPoll({
                         : null
                     )
                   }
-                  className="vh-input focus:!ring-2 focus:!ring-violet-500 focus:!border-violet-500"
                 />
               </div>
               <div>
@@ -204,7 +202,6 @@ export default function AdminEditPoll({
                         : null
                     )
                   }
-                  className="vh-input focus:!ring-2 focus:!ring-violet-500 focus:!border-violet-500"
                 />
               </div>
             </div>
@@ -249,7 +246,6 @@ export default function AdminEditPoll({
                       });
                     }}
                     placeholder={`Choice ${idx + 1}`}
-                    className="vh-input focus:!ring-2 focus:!ring-violet-500 focus:!border-violet-500"
                   />
                   <button
                     className="p-2 rounded border border-border text-red-400"
