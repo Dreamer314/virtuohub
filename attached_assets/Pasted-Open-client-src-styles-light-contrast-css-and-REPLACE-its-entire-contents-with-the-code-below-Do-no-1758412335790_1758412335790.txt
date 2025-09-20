@@ -1,0 +1,244 @@
+Open client/src/styles/light-contrast.css and REPLACE its entire contents with the code below. Do not keep any old content. Save, then confirm the file was updated. No other files should be changed.
+
+---- BEGIN NEW FILE: client/src/styles/light-contrast.css ----
+/* High-contrast tweaks for LIGHT theme only.
+   We support multiple light-mode markers so this works with any theme system. */
+:root[data-theme="light"],
+[data-theme="light"],
+.theme-light,
+html.light,
+body.light {
+  /* Generic chip / pill tokens */
+  --pill-radius: 10px;
+
+  /* Success pill (e.g., Active) */
+  --pill-success-bg: #e9f7ef;   /* soft green */
+  --pill-success-fg: #0f5132;   /* deep green */
+  --pill-success-border: #b7e4c7;
+
+  /* Info/secondary pill (e.g., “On Reports”, tags) */
+  --pill-info-bg: #eef2ff;      /* soft indigo */
+  --pill-info-fg: #1e3a8a;      /* deep indigo */
+  --pill-info-border: #c7d2fe;
+
+  /* Price pill */
+  --pill-price-bg: #fff7e6;     /* soft amber */
+  --pill-price-fg: #7a4d00;     /* deep amber/brown */
+  --pill-price-border: #fde68a;
+
+  /* Neutral badge (muted chips) */
+  --pill-muted-bg: #f5f6f7;
+  --pill-muted-fg: #374151;
+  --pill-muted-border: #e5e7eb;
+}
+
+/* Helper: build a selector list that matches ANY light marker */
+:root[data-theme="light"] .__light-scope, [data-theme="light"] .__light-scope,
+.theme-light .__light-scope, html.light .__light-scope, body.light .__light-scope {}
+
+/* Pills / badges (generic) */
+:root[data-theme="light"] .vh-pill,
+[data-theme="light"] .vh-pill,
+.theme-light .vh-pill,
+html.light .vh-pill,
+body.light .vh-pill,
+:root[data-theme="light"] .vh-badge,
+[data-theme="light"] .vh-badge,
+.theme-light .vh-badge,
+html.light .vh-badge,
+body.light .vh-badge,
+:root[data-theme="light"] .vh-chip,
+[data-theme="light"] .vh-chip,
+.theme-light .vh-chip,
+html.light .vh-chip,
+body.light .vh-chip,
+:root[data-theme="light"] .status-pill,
+[data-theme="light"] .status-pill,
+.theme-light .status-pill,
+html.light .status-pill,
+body.light .status-pill,
+:root[data-theme="light"] .tag-pill,
+[data-theme="light"] .tag-pill,
+.theme-light .tag-pill,
+html.light .tag-pill,
+body.light .tag-pill {
+  border-radius: var(--pill-radius);
+  border: 1px solid var(--pill-muted-border);
+  background: var(--pill-muted-bg);
+  color: var(--pill-muted-fg) !important;
+}
+
+/* Success (Active) */
+:root[data-theme="light"] .vh-pill--success,
+[data-theme="light"] .vh-pill--success,
+.theme-light .vh-pill--success,
+html.light .vh-pill--success,
+body.light .vh-pill--success,
+:root[data-theme="light"] .status-pill--active,
+[data-theme="light"] .status-pill--active,
+.theme-light .status-pill--active,
+html.light .status-pill--active,
+body.light .status-pill--active {
+  background: var(--pill-success-bg) !important;
+  color: var(--pill-success-fg) !important;
+  border-color: var(--pill-success-border) !important;
+}
+
+/* Info/secondary (tags, metadata) */
+:root[data-theme="light"] .vh-pill--info,
+[data-theme="light"] .vh-pill--info,
+.theme-light .vh-pill--info,
+html.light .vh-pill--info,
+body.light .vh-pill--info,
+:root[data-theme="light"] .vh-chip--info,
+[data-theme="light"] .vh-chip--info,
+.theme-light .vh-chip--info,
+html.light .vh-chip--info,
+body.light .vh-chip--info {
+  background: var(--pill-info-bg) !important;
+  color: var(--pill-info-fg) !important;
+  border-color: var(--pill-info-border) !important;
+}
+
+/* Price pill */
+:root[data-theme="light"] .vh-pill--price,
+[data-theme="light"] .vh-pill--price,
+.theme-light .vh-pill--price,
+html.light .vh-pill--price,
+body.light .vh-pill--price,
+:root[data-theme="light"] .price-pill,
+[data-theme="light"] .price-pill,
+.theme-light .price-pill,
+html.light .price-pill,
+body.light .price-pill {
+  background: var(--pill-price-bg) !important;
+  color: var(--pill-price-fg) !important;
+  border-color: var(--pill-price-border) !important;
+}
+
+/* Dropdown surfaces (Radix/shadcn and native fallbacks) */
+:root[data-theme="light"] .select-content,
+[data-theme="light"] .select-content,
+.theme-light .select-content,
+html.light .select-content,
+body.light .select-content,
+:root[data-theme="light"] .dropdown-content,
+[data-theme="light"] .dropdown-content,
+.theme-light .dropdown-content,
+html.light .dropdown-content,
+body.light .dropdown-content,
+:root[data-theme="light"] .radix-themes__select__content,
+[data-theme="light"] .radix-themes__select__content,
+.theme-light .radix-themes__select__content,
+html.light .radix-themes__select__content,
+body.light .radix-themes__select__content,
+:root[data-theme="light"] [role="listbox"],
+[data-theme="light"] [role="listbox"],
+.theme-light [role="listbox"],
+html.light [role="listbox"],
+body.light [role="listbox"],
+:root[data-theme="light"] .vh-menu,
+[data-theme="light"] .vh-menu,
+.theme-light .vh-menu,
+html.light .vh-menu,
+body.light .vh-menu,
+:root[data-theme="light"] .vh-dropdown,
+[data-theme="light"] .vh-dropdown,
+.theme-light .vh-dropdown,
+html.light .vh-dropdown,
+body.light .vh-dropdown {
+  color: #111827 !important;
+  background: #ffffff !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+/* Dropdown items */
+:root[data-theme="light"] .select-item,
+[data-theme="light"] .select-item,
+.theme-light .select-item,
+html.light .select-item,
+body.light .select-item,
+:root[data-theme="light"] .dropdown-item,
+[data-theme="light"] .dropdown-item,
+.theme-light .dropdown-item,
+html.light .dropdown-item,
+body.light .dropdown-item,
+:root[data-theme="light"] [role="option"],
+[data-theme="light"] [role="option"],
+.theme-light [role="option"],
+html.light [role="option"],
+body.light [role="option"] {
+  color: #111827 !important;
+  background: #ffffff !important;
+}
+:root[data-theme="light"] .select-item[data-highlighted],
+[data-theme="light"] .select-item[data-highlighted],
+.theme-light .select-item[data-highlighted],
+html.light .select-item[data-highlighted],
+body.light .select-item[data-highlighted],
+:root[data-theme="light"] .dropdown-item[data-highlighted],
+[data-theme="light"] .dropdown-item[data-highlighted],
+.theme-light .dropdown-item[data-highlighted],
+html.light .dropdown-item[data-highlighted],
+body.light .dropdown-item[data-highlighted],
+:root[data-theme="light"] [role="option"][data-highlighted="true"],
+[data-theme="light"] [role="option"][data-highlighted="true"],
+.theme-light [role="option"][data-highlighted="true"],
+html.light [role="option"][data-highlighted="true"],
+body.light [role="option"][data-highlighted="true"] {
+  background: #eef2ff !important;
+  color: #1e3a8a !important;
+}
+
+/* Inputs in light theme */
+:root[data-theme="light"] input[type="text"],
+[data-theme="light"] input[type="text"],
+.theme-light input[type="text"],
+html.light input[type="text"],
+body.light input[type="text"],
+:root[data-theme="light"] input[type="number"],
+[data-theme="light"] input[type="number"],
+.theme-light input[type="number"],
+html.light input[type="number"],
+body.light input[type="number"],
+:root[data-theme="light"] input[type="datetime-local"],
+[data-theme="light"] input[type="datetime-local"],
+.theme-light input[type="datetime-local"],
+html.light input[type="datetime-local"],
+body.light input[type="datetime-local"],
+:root[data-theme="light"] textarea,
+[data-theme="light"] textarea,
+.theme-light textarea,
+html.light textarea,
+body.light textarea,
+:root[data-theme="light"] .vh-input,
+[data-theme="light"] .vh-input,
+.theme-light .vh-input,
+html.light .vh-input,
+body.light .vh-input,
+:root[data-theme="light"] .select-trigger,
+[data-theme="light"] .select-trigger,
+.theme-light .select-trigger,
+html.light .select-trigger,
+body.light .select-trigger {
+  border: 1px solid #e5e7eb !important;
+  background: #ffffff !important;
+  color: #111827 !important;
+}
+
+/* Focus states */
+:root[data-theme="light"] .vh-input:focus,
+[data-theme="light"] .vh-input:focus,
+.theme-light .vh-input:focus,
+html.light .vh-input:focus,
+body.light .vh-input:focus,
+:root[data-theme="light"] .select-trigger:focus,
+[data-theme="light"] .select-trigger:focus,
+.theme-light .select-trigger:focus,
+html.light .select-trigger:focus,
+body.light .select-trigger:focus {
+  outline: 2px solid #c7d2fe;
+  outline-offset: 2px;
+  border-color: #c7d2fe !important;
+}
+---- END NEW FILE ----
