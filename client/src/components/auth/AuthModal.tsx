@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { supabase } from '@/lib/supabaseClient'
 import { Mail, Eye, EyeOff, Loader2 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+import OAuthButtons from '@/components/auth/OAuthButtons'
 
 interface AuthModalProps {
   open: boolean
@@ -13,10 +14,14 @@ interface AuthModalProps {
   defaultMode?: 'signin' | 'signup'
 }
 
+// Use the configured site URL. Fall back to the current origin if missing.
+const redirectBase = import.meta.env.VITE_SITE_URL || window.location.origin;
+
 export function AuthModal({ open, onOpenChange, defaultMode = 'signin' }: AuthModalProps) {
   const [mode, setMode] = useState<'signin' | 'signup' | 'magic-link'>(defaultMode)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('') // added
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()
@@ -27,38 +32,31 @@ export function AuthModal({ open, onOpenChange, defaultMode = 'signin' }: AuthMo
 
     try {
       if (mode === 'signup') {
-        const { error } = await supabase.auth.signUp({
+        if (password !== confirmPassword) throw new Error('Passwords do not match.')
+
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
+          options: { emailRedirectTo: `${redirectBase}/` }
         })
-        
         if (error) throw error
-        
-        toast({
-          title: "Check your email",
-          description: "We've sent you a confirmation link to complete your signup.",
-        })
-        onOpenChange(false)
+
+        if (data.session) {
+          toast({ title: 'Account created', description: 'You are now signed in.' })
+          onOpenChange(false)
+        } else {
+          toast({ title: 'Check your email', description: 'We sent a confirmation link to complete your signup.' })
+          onOpenChange(false)
+        }
       } else if (mode === 'signin') {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        })
-        
+        const { error } = await supabase.auth.signInWithPassword({ email, password })
         if (error) throw error
-        
-        toast({
-          title: "Welcome back!",
-          description: "You've been signed in successfully.",
-        })
+
+        toast({ title: 'Welcome back!', description: 'Signed in successfully.' })
         onOpenChange(false)
       }
     } catch (error: any) {
-      toast({
-        title: "Authentication failed",
-        description: error.message,
-        variant: "destructive",
-      })
+      toast({ title: 'Authentication failed', description: error.message, variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -67,28 +65,16 @@ export function AuthModal({ open, onOpenChange, defaultMode = 'signin' }: AuthMo
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-
     try {
       const { error } = await supabase.auth.signInWithOtp({
         email,
-        options: {
-          emailRedirectTo: window.location.origin,
-        }
+        options: { emailRedirectTo: `${redirectBase}/` }
       })
-      
       if (error) throw error
-      
-      toast({
-        title: "Check your email",
-        description: "We've sent you a magic link to sign in.",
-      })
+      toast({ title: 'Check your email', description: 'We sent you a magic link to sign in.' })
       onOpenChange(false)
     } catch (error: any) {
-      toast({
-        title: "Failed to send magic link",
-        description: error.message,
-        variant: "destructive",
-      })
+      toast({ title: 'Failed to send magic link', description: error.message, variant: 'destructive' })
     } finally {
       setLoading(false)
     }
@@ -97,14 +83,13 @@ export function AuthModal({ open, onOpenChange, defaultMode = 'signin' }: AuthMo
   const resetForm = () => {
     setEmail('')
     setPassword('')
+    setConfirmPassword('')
     setShowPassword(false)
     setLoading(false)
   }
 
   const handleOpenChange = (newOpen: boolean) => {
-    if (!newOpen) {
-      resetForm()
-    }
+    if (!newOpen) resetForm()
     onOpenChange(newOpen)
   }
 
@@ -118,9 +103,9 @@ export function AuthModal({ open, onOpenChange, defaultMode = 'signin' }: AuthMo
             {mode === 'magic-link' && 'Magic Link Sign In'}
           </DialogTitle>
           <DialogDescription>
-            {mode === 'signin' && 'Welcome back! Please sign in to continue.'}
+            {mode === 'signin' && 'Welcome back. Please sign in to continue.'}
             {mode === 'signup' && 'Create a new account to get started.'}
-            {mode === 'magic-link' && "We'll send you a magic link to sign in."}
+            {mode === 'magic-link' && "We will send you a magic link to sign in."}
           </DialogDescription>
         </DialogHeader>
 
@@ -139,12 +124,12 @@ export function AuthModal({ open, onOpenChange, defaultMode = 'signin' }: AuthMo
                   data-testid="magic-email-input"
                 />
               </div>
-              
+
               <Button type="submit" className="w-full" disabled={loading} data-testid="magic-link-button">
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Sending Magic Link...
+                    Sending magic link…
                   </>
                 ) : (
                   <>
@@ -153,6 +138,10 @@ export function AuthModal({ open, onOpenChange, defaultMode = 'signin' }: AuthMo
                   </>
                 )}
               </Button>
+
+              <div className="mt-4">
+                <OAuthButtons />
+              </div>
             </form>
           ) : (
             <form onSubmit={handleEmailAuth} className="space-y-4">
@@ -168,7 +157,7 @@ export function AuthModal({ open, onOpenChange, defaultMode = 'signin' }: AuthMo
                   data-testid="email-input"
                 />
               </div>
-              
+
               <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <div className="relative">
@@ -190,25 +179,41 @@ export function AuthModal({ open, onOpenChange, defaultMode = 'signin' }: AuthMo
                     onClick={() => setShowPassword(!showPassword)}
                     data-testid="toggle-password-visibility"
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
-                    ) : (
-                      <Eye className="h-4 w-4" />
-                    )}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </Button>
                 </div>
               </div>
-              
+
+              {mode === 'signup' && (
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-password">Confirm password</Label>
+                  <Input
+                    id="confirm-password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Re-enter your password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    data-testid="confirm-password-input"
+                  />
+                </div>
+              )}
+
               <Button type="submit" className="w-full" disabled={loading} data-testid="auth-submit-button">
                 {loading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {mode === 'signin' ? 'Signing In...' : 'Creating Account...'}
+                    {mode === 'signin' ? 'Signing in…' : 'Creating account…'}
                   </>
                 ) : (
                   mode === 'signin' ? 'Sign In' : 'Create Account'
                 )}
               </Button>
+
+              <div className="mt-4">
+                <OAuthButtons />
+              </div>
             </form>
           )}
 
@@ -225,7 +230,7 @@ export function AuthModal({ open, onOpenChange, defaultMode = 'signin' }: AuthMo
                 Use Magic Link Instead
               </Button>
             )}
-            
+
             {mode === 'magic-link' && (
               <Button
                 type="button"
@@ -242,7 +247,7 @@ export function AuthModal({ open, onOpenChange, defaultMode = 'signin' }: AuthMo
           <div className="text-center text-sm">
             {mode === 'signin' ? (
               <span>
-                Don't have an account?{' '}
+                Do not have an account?{' '}
                 <Button
                   type="button"
                   variant="link"

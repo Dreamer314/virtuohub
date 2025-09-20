@@ -1,95 +1,69 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Plus, Star, TrendingUp, Heart, ImageIcon, BarChart3, FileText, Zap, ThumbsUp, MessageCircle, Share } from 'lucide-react';
+import { Plus, Star, BarChart3, FileText, Zap } from 'lucide-react';
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
 import { PostCard } from '@/components/cards/PostCard';
-import { CreatePostModal } from '@/components/create-post-modal';
-import { CreatePostModal as NewCreatePostModal } from '@/components/composer/CreatePostModal';
 import { Footer } from '@/components/layout/footer';
 import { FeaturedCarousel } from '@/components/featured/FeaturedCarousel';
 import { featuredItems } from '@/components/featured/types';
 import vhubHeaderImage from '@assets/VHub.Header.no.font.Light.Page.png';
 import { useQuery } from '@tanstack/react-query';
-import type { PostWithAuthor, Platform } from '@shared/schema';
-import { pulseApi, subscribe, convertPulseApiPoll, type Poll } from '@/data/pulseApi';
-import { PollCard } from '@/components/polls/PollCard';
-import type { FeedItem, PlatformKey } from '@/types/content';
+import type { PostWithAuthor } from '@shared/schema';
+import type { PlatformKey } from '@/types/content';
 import { PLATFORMS } from '@/types/content';
-// COMPOSER ROUTING - Add wouter hook for query params
 import { useLocation, useSearch, Link } from 'wouter';
-// POST CATEGORIES MVP - Import canonical categories for validation
 import { POST_CATEGORIES } from '@/constants/postCategories';
 import { useAuth } from '@/providers/AuthProvider';
 import { AuthModal } from '@/components/auth/AuthModal';
+import { CreatePostModal as NewCreatePostModal } from '@/components/composer/CreatePostModal';
+
+/** NEW: use the real Supabase-backed polls */
+import PollList from '@/components/polls/PollList';
 
 const FEATURED_V2 = true;
 
-// COMPOSER ROUTING - Helper function to validate category slugs
 function isValidCategory(slug: string): boolean {
   return POST_CATEGORIES.some(c => c.slug === slug);
 }
 
 const CommunityPage: React.FC = () => {
-  // COMPOSER ROUTING - Add hooks for navigation and query params
   const [location, setLocation] = useLocation();
   const searchString = useSearch();
-  
+
   const [currentTab, setCurrentTab] = useState<'all' | 'saved'>('all');
   const [selectedPlatforms, setSelectedPlatforms] = useState<PlatformKey[]>([]);
   const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
   const [createModalType, setCreateModalType] = useState<'regular' | 'pulse' | 'insight'>('regular');
-  const [pulsePollsRefresh, setPulsePollsRefresh] = useState(0);
   const [feedRefresh, setFeedRefresh] = useState(0);
   const [composerCategory, setComposerCategory] = useState<string | undefined>(undefined);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup'>('signin');
   const { user } = useAuth();
 
-  // Fetch posts directly from server API 
+  // Posts
   const { data: posts = [], isLoading } = useQuery<PostWithAuthor[]>({
-    queryKey: ['/api/posts']
+    queryKey: ['/api/posts', feedRefresh],
   });
 
-  // Legacy saved posts query (keeping for compatibility)
   const { data: savedPosts = [], isLoading: savedLoading } = useQuery<PostWithAuthor[]>({
-    queryKey: ['/api/users/user1/saved-posts']
+    queryKey: ['/api/users/user1/saved-posts'],
   });
 
-  // Get pulse polls from new API
-  const getFeaturedPolls = useCallback(() => {
-    const featured = pulseApi.listFeaturedPolls();
-    const active = pulseApi.listActivePolls();
-    return featured.length > 0 ? featured : active.slice(0, 1);
-  }, [pulsePollsRefresh]);
-
-  const featuredPolls = getFeaturedPolls();
-
-  // Subscribe to pulse updates
-  useEffect(() => {
-    const unsubscribe = subscribe(() => {
-      setPulsePollsRefresh(prev => prev + 1);
-    });
-    return unsubscribe;
-  }, []);
-
-  // COMPOSER ROUTING & PLATFORM FILTERING - Listen for query params
+  // Composer routing + filters
   useEffect(() => {
     const searchParams = new URLSearchParams(searchString);
     const shouldCompose = searchParams.get('compose') === 'true';
     const categorySlug = searchParams.get('category');
     const platformSlug = searchParams.get('platform');
-    
-    // Handle platform filtering from URL
+
     if (platformSlug && PLATFORMS.some(p => p.key === platformSlug)) {
       setSelectedPlatforms([platformSlug as PlatformKey]);
     }
-    
+
     if (shouldCompose) {
-      // Set category if provided and valid
       if (categorySlug && isValidCategory(categorySlug)) {
-        // COMPOSER ROUTING - Map POST_CATEGORIES slugs to types/content CATEGORIES
         const modalCategoryMap: Record<string, string> = {
           "wip": "Collaboration & WIP",
           "sell": "Assets for Sale",
@@ -98,28 +72,20 @@ const CommunityPage: React.FC = () => {
           "tutorials": "Tips & Tutorials",
           "general": "General"
         };
-        
         const modalCategory = modalCategoryMap[categorySlug] || "General";
         setComposerCategory(modalCategory);
       } else {
         setComposerCategory(undefined);
       }
-      
-      // Open the composer
       setCreateModalType('regular');
       setIsCreatePostModalOpen(true);
-      
-      // Note: URL cleanup is now handled in modal close handler to preserve query params for testing
     }
   }, [searchString, setLocation]);
 
-  // Filter feed items by platform - use server posts directly
+  // Filter feed
   const allFeedItems = currentTab === 'saved' ? savedPosts : posts;
-  
-  // Apply platform filtering for PostWithAuthor objects
-  const filteredFeedItems = selectedPlatforms.length > 0 
+  const filteredFeedItems = selectedPlatforms.length > 0
     ? allFeedItems.filter(post => {
-        // Check if any selected platform matches the post's platforms
         if (post.platforms && Array.isArray(post.platforms)) {
           return selectedPlatforms.some(platform => post.platforms.includes(platform));
         }
@@ -127,30 +93,22 @@ const CommunityPage: React.FC = () => {
       })
     : allFeedItems;
 
-  // Add scroll animation observer
+  // Simple card-entrance animation observer (posts only)
   useEffect(() => {
-    const observerOptions = {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    };
-
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('slide-up');
-        }
+        if (entry.isIntersecting) entry.target.classList.add('slide-up');
       });
-    }, observerOptions);
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
 
-    const cards = document.querySelectorAll('[data-testid^="post-card-"], [data-testid^="poll-card-"]');
+    const cards = document.querySelectorAll('[data-testid^="post-card-"]');
     cards.forEach(card => observer.observe(card));
-
     return () => observer.disconnect();
-  }, [featuredPolls, allFeedItems]);
+  }, [allFeedItems]);
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
-      {/* Animated Background Elements */}
+      {/* Background accents */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="floating-element absolute top-20 left-10 w-16 h-16 bg-primary/20 rounded-full blur-xl"></div>
         <div className="floating-element absolute top-40 right-20 w-24 h-24 bg-accent/20 rounded-full blur-xl" style={{ animationDelay: '-2s' }}></div>
@@ -161,7 +119,7 @@ const CommunityPage: React.FC = () => {
         setCreateModalType('regular');
         setIsCreatePostModalOpen(true);
       }} />
-      
+
       <div className="community-grid">
         {/* Left Sidebar */}
         <div className="grid-left hidden xl:block bg-background/95 backdrop-blur-sm border-r border-border sticky top-[var(--header-height)] h-[calc(100vh-var(--header-height))] z-10 overflow-y-auto">
@@ -172,7 +130,6 @@ const CommunityPage: React.FC = () => {
               selectedPlatforms={selectedPlatforms}
               onPlatformChange={(platforms) => {
                 setSelectedPlatforms(platforms as PlatformKey[]);
-                // Update URL with platform filter
                 if (platforms.length > 0) {
                   setLocation(`/community?platform=${platforms[0]}`);
                 } else {
@@ -183,7 +140,7 @@ const CommunityPage: React.FC = () => {
             />
           </div>
         </div>
-        
+
         {/* Right Sidebar */}
         <div className="grid-right hidden lg:block bg-background/95 backdrop-blur-sm border-l border-border sticky top-[var(--header-height)] h-[calc(100vh-var(--header-height))] z-10 overflow-y-auto">
           <div className="p-4">
@@ -191,36 +148,27 @@ const CommunityPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Main Content Area */}
+        {/* Main */}
         <div className="grid-main relative z-0">
-          {/* Extended glow effect that affects the whole page */}
           <div className="absolute -top-20 -left-20 -right-20 h-96 pointer-events-none z-0">
             <div className="w-full h-full bg-gradient-to-br from-cyan-400/15 via-purple-500/10 to-orange-400/15 blur-3xl"></div>
           </div>
-          
+
           <div className="py-8 relative z-10 px-4 lg:px-8">
-            {/* Hero Section */}
+            {/* Hero */}
             <div className="mb-48">
               <div className="glass-card rounded-2xl overflow-hidden hover-lift relative" data-testid="hero-section">
                 <div className="relative min-h-[576px] flex items-center justify-center hero-glow-container">
-                  <img 
-                    src={vhubHeaderImage} 
+                  <img
+                    src={vhubHeaderImage}
                     alt="VirtuoHub Community Header"
                     className="absolute inset-0 w-full h-full object-cover rounded-2xl"
-                    style={{
-                      filter: 'drop-shadow(0 0 20px rgba(6, 182, 212, 0.2)) drop-shadow(0 0 40px rgba(147, 51, 234, 0.15))'
-                    }}
+                    style={{ filter: 'drop-shadow(0 0 20px rgba(6, 182, 212, 0.2)) drop-shadow(0 0 40px rgba(147, 51, 234, 0.15))' }}
                   />
                   <div className="text-center z-10 relative">
-                    <h1 className="text-9xl font-display font-bold text-white mb-6 drop-shadow-lg">
-                      VirtuoHub Community
-                    </h1>
-                    <h2 className="text-5xl font-display font-bold text-white mb-4 drop-shadow-lg">
-                      Your Immersive Economy HQ
-                    </h2>
-                    <p className="text-3xl text-white/90 drop-shadow-md mb-8">
-                      Discover, connect, and build together.
-                    </p>
+                    <h1 className="text-9xl font-display font-bold text-white mb-6 drop-shadow-lg">VirtuoHub Community</h1>
+                    <h2 className="text-5xl font-display font-bold text-white mb-4 drop-shadow-lg">Your Immersive Economy HQ</h2>
+                    <p className="text-3xl text-white/90 drop-shadow-md mb-8">Discover, connect, and build together.</p>
                     <button className="px-8 py-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold text-xl transition-all hover:scale-105 drop-shadow-lg">
                       Join the Community
                     </button>
@@ -230,7 +178,7 @@ const CommunityPage: React.FC = () => {
               </div>
             </div>
 
-            {/* Featured Content Carousel */}
+            {/* Featured Content */}
             {currentTab === 'all' && (
               <div className="mb-24 relative">
                 <div className="w-full">
@@ -239,25 +187,17 @@ const CommunityPage: React.FC = () => {
                       <div className="h-px bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
                       <div className="flex items-center space-x-4">
                         <Star className="w-8 h-8 text-accent" />
-                        <h2 className="text-5xl font-bold text-foreground tracking-tight">
-                          Featured Content
-                        </h2>
+                        <h2 className="text-5xl font-bold text-foreground tracking-tight">Featured Content</h2>
                       </div>
                       <div className="h-px bg-gradient-to-r from-accent via-transparent to-transparent flex-1"></div>
                     </div>
                   </div>
                 </div>
-                {FEATURED_V2 ? (
-                  <FeaturedCarousel items={featuredItems} />
-                ) : (
-                  <div className="space-y-6">
-                    {/* Legacy Featured section would go here */}
-                  </div>
-                )}
+                <FeaturedCarousel items={featuredItems} />
               </div>
             )}
 
-            {/* Content Area */}
+            {/* Main content column */}
             <div className="w-full">
               <div className="max-w-4xl mx-auto grid grid-cols-1 gap-8">
                 {/* Mobile Left Sidebar */}
@@ -268,7 +208,6 @@ const CommunityPage: React.FC = () => {
                     selectedPlatforms={selectedPlatforms}
                     onPlatformChange={(platforms) => {
                       setSelectedPlatforms(platforms as PlatformKey[]);
-                      // Update URL with platform filter
                       if (platforms.length > 0) {
                         setLocation(`/community?platform=${platforms[0]}`);
                       } else {
@@ -279,20 +218,19 @@ const CommunityPage: React.FC = () => {
                   />
                 </div>
 
-                {/* Main Content */}
                 <main>
-
-                  {/* VHub Pulse */}
-                  {currentTab === 'all' && featuredPolls.length > 0 && (
+                  {/* VHub Pulse (now interactive via PollList) */}
+                  {currentTab === 'all' && (
                     <div className="mb-48 pb-8 border-b border-border/30" data-testid="pulse-posts-feed">
                       <div className="flex flex-col items-center space-y-3 mb-6">
                         <div className="flex items-center space-x-2 w-full">
                           <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
                           <div className="flex items-center space-x-4">
-                            <Zap className="w-8 h-8 text-transparent bg-gradient-cosmic bg-clip-text" style={{backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}} />
-                            <h2 className="text-5xl font-bold text-foreground tracking-tight font-tech">
-                              VHub Pulse
-                            </h2>
+                            <Zap
+                              className="w-8 h-8 text-transparent bg-gradient-cosmic bg-clip-text"
+                              style={{ backgroundImage: 'var(--gradient-cosmic)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+                            />
+                            <h2 className="text-5xl font-bold text-foreground tracking-tight font-tech">VHub Pulse</h2>
                           </div>
                           <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
                         </div>
@@ -300,47 +238,22 @@ const CommunityPage: React.FC = () => {
                           <p className="text-lg font-semibold text-accent">Quick polls on Immersive Economy topics.</p>
                           <p className="text-sm text-muted-foreground">Cast your vote. See results.</p>
                           <Link href="/pulse">
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="text-xs hover:bg-primary/10 border-primary/30"
-                              data-testid="view-all-reports-button"
-                            >
+                            <Button variant="outline" size="sm" className="text-xs hover:bg-primary/10 border-primary/30" data-testid="view-all-reports-button">
                               View All Reports & Polls
                             </Button>
                           </Link>
                         </div>
                       </div>
-                      <div className="space-y-6">
-                        {featuredPolls.map((poll) => (
-                          <PollCard 
-                            key={poll.id}
-                            poll={convertPulseApiPoll(poll)}
-                            context="feed"
-                            onUpdate={() => setPulsePollsRefresh(prev => prev + 1)}
-                            onVote={async (pollId: string, optionIds: string[]) => {
-                              try {
-                                const optionIndex = parseInt(optionIds[0].split('_option_')[1]);
-                                pulseApi.vote(pollId, optionIndex);
-                                setPulsePollsRefresh(prev => prev + 1);
-                              } catch (error) {
-                                console.error('Vote failed:', error);
-                              }
-                            }}
-                            userHasVoted={pulseApi.hasVoted(poll.id)}
-                            userVoteIds={pulseApi.getUserVote(poll.id) !== null ? [`${poll.id}_option_${pulseApi.getUserVote(poll.id)}`] : undefined}
-                            openAuthModal={() => {
-                              setAuthModalMode('signin');
-                              setAuthModalOpen(true);
-                            }}
-                          />
-                        ))}
+
+                      {/* Actual interactive poll list */}
+                      <div className="relative z-10 pointer-events-auto">
+                        <PollList limitHome={1} communityOnly />
                       </div>
-                      
-                      {/* CTA Button */}
+
+                      {/* CTA */}
                       <div className="mt-8 text-center">
-                        <Button 
-                          onClick={() => window.location.href = '/pulse'}
+                        <Button
+                          onClick={() => (window.location.href = '/pulse')}
                           className="bg-primary/10 hover:bg-primary/20 border border-primary/30 hover:border-primary/50 text-primary font-medium py-3 px-6 rounded-lg transition-all duration-200 flex items-center gap-2 mx-auto"
                           data-testid="view-all-polls-button"
                         >
@@ -353,7 +266,6 @@ const CommunityPage: React.FC = () => {
 
                   {/* Community Feed */}
                   <div className="relative" data-testid="community-feed-section">
-                    {/* Content Area */}
                     <div className="mb-8 relative">
                       <div className="flex items-center space-x-2 mb-8">
                         <div className="h-0.5 bg-gradient-to-r from-transparent via-accent to-transparent flex-1"></div>
@@ -370,7 +282,7 @@ const CommunityPage: React.FC = () => {
                       </div>
                     </div>
 
-                    {/* Create Post Section */}
+                    {/* Create Post */}
                     <div className="mb-8" data-testid="create-post-section">
                       <div className="glass-card rounded-xl p-6 hover:shadow-lg transition-all duration-300">
                         <div className="flex items-start gap-4">
@@ -457,37 +369,26 @@ const CommunityPage: React.FC = () => {
                           ))}
                         </div>
                       ) : currentTab === 'saved' ? (
-                        filteredFeedItems.length > 0 ? (
-                          filteredFeedItems.map((item: any) => (
-                            <PostCard key={item.id} post={item} />
-                          ))
+                        savedPosts.length > 0 ? (
+                          savedPosts.map((item: any) => <PostCard key={item.id} post={item} />)
                         ) : (
                           <div className="glass-card rounded-xl p-12 text-center" data-testid="empty-state">
                             <div className="text-6xl mb-4">🌟</div>
-                            <h3 className="text-xl font-display font-semibold mb-2 text-foreground">
-                              No saved posts yet
-                            </h3>
-                            <p className="text-muted-foreground mb-4">
-                              Start saving posts by clicking the heart icon on posts you like!
-                            </p>
+                            <h3 className="text-xl font-display font-semibold mb-2 text-foreground">No saved posts yet</h3>
+                            <p className="text-muted-foreground mb-4">Start saving posts by clicking the heart icon on posts you like!</p>
                           </div>
                         )
                       ) : filteredFeedItems.length > 0 ? (
-                        filteredFeedItems.map((post) => (
-                          <PostCard key={post.id} post={post} />
-                        ))
+                        filteredFeedItems.map((post) => <PostCard key={post.id} post={post} />)
                       ) : (
                         <div className="glass-card rounded-xl p-12 text-center" data-testid="empty-state">
                           <div className="text-6xl mb-4">🌟</div>
                           {selectedPlatforms.length > 0 ? (
-                            // Platform-specific empty state
                             <>
                               <h3 className="text-xl font-display font-semibold mb-2 text-foreground">
                                 No posts yet for {PLATFORMS.find(p => p.key === selectedPlatforms[0])?.label || selectedPlatforms[0]}
                               </h3>
-                              <p className="text-muted-foreground mb-4">
-                                Be the first to start a thread for this platform.
-                              </p>
+                              <p className="text-muted-foreground mb-4">Be the first to start a thread for this platform.</p>
                               <Button
                                 onClick={() => {
                                   setCreateModalType('regular');
@@ -503,14 +404,9 @@ const CommunityPage: React.FC = () => {
                               </Button>
                             </>
                           ) : (
-                            // General empty state
                             <>
-                              <h3 className="text-xl font-display font-semibold mb-2 text-foreground">
-                                No posts or polls found
-                              </h3>
-                              <p className="text-muted-foreground mb-4">
-                                Be the first to create a post or poll for the community!
-                              </p>
+                              <h3 className="text-xl font-display font-semibold mb-2 text-foreground">No posts or polls found</h3>
+                              <p className="text-muted-foreground mb-4">Be the first to create a post or poll for the community!</p>
                               <div className="flex gap-3 justify-center">
                                 <Button
                                   onClick={() => {
@@ -561,10 +457,9 @@ const CommunityPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Footer */}
       <Footer />
 
-      {/* Floating Action Button */}
+      {/* FAB */}
       <Button
         onClick={() => {
           if (!user) {
@@ -582,33 +477,23 @@ const CommunityPage: React.FC = () => {
       </Button>
 
       {/* Auth Modal */}
-      <AuthModal 
-        open={authModalOpen} 
-        onOpenChange={setAuthModalOpen}
-        defaultMode={authModalMode}
-      />
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} defaultMode={authModalMode} />
 
       {/* Create Post Modal */}
       <NewCreatePostModal
         open={isCreatePostModalOpen}
         onOpenChange={(open) => {
           setIsCreatePostModalOpen(open);
-          // COMPOSER ROUTING - Clear category and clean up URL when modal closes
           if (!open) {
             setComposerCategory(undefined);
             setCreateModalType('regular');
-            // Clean up URL params after modal closes
             setLocation('/community', { replace: true });
           }
         }}
-        onPostCreated={() => {
-          setFeedRefresh(prev => prev + 1);
-          setPulsePollsRefresh(prev => prev + 1);
-        }}
+        onPostCreated={() => setFeedRefresh(prev => prev + 1)}
         initialCategory={composerCategory}
         initialSubtype={createModalType === 'pulse' ? 'poll' : 'thread'}
       />
-      
     </div>
   );
 };

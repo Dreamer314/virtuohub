@@ -1,8 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
-import { Moon, Sun, Box, MessageCircle, Bell, Plus, Menu, X, LogOut, User } from "lucide-react";
+import {
+  Moon,
+  Sun,
+  Box,
+  MessageCircle,
+  Bell,
+  Plus,
+  Menu,
+  X,
+  LogOut,
+  User,
+  Shield
+} from "lucide-react";
 import { useLocation, Link } from "wouter";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/providers/AuthProvider";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { supabase } from "@/lib/supabaseClient";
@@ -16,21 +28,35 @@ export function Header({ onCreatePost }: HeaderProps) {
   const [location] = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
-  const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup'>('signin');
+  const [authModalMode, setAuthModalMode] = useState<"signin" | "signup">(
+    "signin"
+  );
   const { user, loading } = useAuth();
 
+  // Admin flag
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      if (user?.id) {
+        const { data, error } = await supabase.rpc("is_admin", { uid: user.id });
+        if (!cancelled) setIsAdmin(Boolean(data) && !error);
+      } else {
+        if (!cancelled) setIsAdmin(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
+
   const toggleTheme = () => {
-    // Handle theme cycling including system theme
+    // Light -> Dark -> Charcoal -> Light
     let nextTheme: "light" | "dark" | "charcoal";
-    
-    if (theme === "system" || theme === "light") {
-      nextTheme = "dark";
-    } else if (theme === "dark") {
-      nextTheme = "charcoal";
-    } else {
-      nextTheme = "light"; // charcoal → light
-    }
-    
+    if (theme === "system" || theme === "light") nextTheme = "dark";
+    else if (theme === "dark") nextTheme = "charcoal";
+    else nextTheme = "light";
     setTheme(nextTheme);
   };
 
@@ -38,11 +64,11 @@ export function Header({ onCreatePost }: HeaderProps) {
     try {
       await supabase.auth.signOut();
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error("Error signing out:", error);
     }
   };
 
-  const openAuthModal = (mode: 'signin' | 'signup') => {
+  const openAuthModal = (mode: "signin" | "signup") => {
     setAuthModalMode(mode);
     setAuthModalOpen(true);
   };
@@ -58,27 +84,77 @@ export function Header({ onCreatePost }: HeaderProps) {
                 <Box className="text-white text-sm" size={16} />
               </div>
             </div>
-            <span className="text-xl font-display font-bold text-foreground ml-2 hidden sm:block">VirtuoHub</span>
-            <span className="text-lg font-display font-bold text-foreground ml-2 sm:hidden">VHub</span>
+            <span className="text-xl font-display font-bold text-foreground ml-2 hidden sm:block">
+              VirtuoHub
+            </span>
+            <span className="text-lg font-display font-bold text-foreground ml-2 sm:hidden">
+              VHub
+            </span>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden lg:flex items-center justify-center space-x-8">
-            <Link href="/home" className={`vh-nav-item px-3 py-2 rounded-lg font-medium text-base ${
-              location === '/home' ? 'active' : ''
-            }`} data-testid="nav-home">Home</Link>
-            <a href="#" className="vh-nav-item px-3 py-2 rounded-lg font-medium text-base" data-testid="nav-learn">Learn</a>
-            <a href="#" className="vh-nav-item px-3 py-2 rounded-lg font-medium text-base" data-testid="nav-earn">Earn</a>
-            <a href="#" className="vh-nav-item px-3 py-2 rounded-lg font-medium text-base" data-testid="nav-connect">Connect</a>
-            <Link href="/" className={`vh-nav-item px-3 py-2 rounded-lg font-medium text-base ${
-              location === '/' ? 'active' : ''
-            }`} data-testid="nav-community">Community</Link>
+            <Link
+              href="/home"
+              className={`vh-nav-item px-3 py-2 rounded-lg font-medium text-base ${
+                location === "/home" ? "active" : ""
+              }`}
+              data-testid="nav-home"
+            >
+              Home
+            </Link>
+            <a
+              href="#"
+              className="vh-nav-item px-3 py-2 rounded-lg font-medium text-base"
+              data-testid="nav-learn"
+            >
+              Learn
+            </a>
+            <a
+              href="#"
+              className="vh-nav-item px-3 py-2 rounded-lg font-medium text-base"
+              data-testid="nav-earn"
+            >
+              Earn
+            </a>
+            <a
+              href="#"
+              className="vh-nav-item px-3 py-2 rounded-lg font-medium text-base"
+              data-testid="nav-connect"
+            >
+              Connect
+            </a>
+            <Link
+              href="/"
+              className={`vh-nav-item px-3 py-2 rounded-lg font-medium text-base ${
+                location === "/" ? "active" : ""
+              }`}
+              data-testid="nav-community"
+            >
+              Community
+            </Link>
+
+            {/* Admin link for real admins */}
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className={`vh-nav-item px-3 py-2 rounded-lg font-medium text-base ${
+                  location === "/admin" ? "active" : ""
+                }`}
+                data-testid="nav-admin"
+              >
+                <span className="inline-flex items-center gap-1">
+                  <Shield className="w-4 h-4" />
+                  Admin
+                </span>
+              </Link>
+            )}
           </nav>
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-3">
             {/* Community Page Actions */}
-            {location === '/' && (
+            {location === "/" && (
               <>
                 <Button
                   variant="ghost"
@@ -88,7 +164,7 @@ export function Header({ onCreatePost }: HeaderProps) {
                 >
                   <MessageCircle className="w-4 h-4" />
                 </Button>
-                
+
                 <Button
                   variant="ghost"
                   size="icon"
@@ -101,7 +177,7 @@ export function Header({ onCreatePost }: HeaderProps) {
                     1
                   </span>
                 </Button>
-                
+
                 <Button
                   onClick={onCreatePost}
                   className="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg font-medium text-sm transition-all flex items-center gap-2"
@@ -112,7 +188,7 @@ export function Header({ onCreatePost }: HeaderProps) {
                 </Button>
               </>
             )}
-            
+
             {/* Theme Toggle */}
             <Button
               variant="ghost"
@@ -121,9 +197,11 @@ export function Header({ onCreatePost }: HeaderProps) {
               className="w-9 h-9 rounded-full vh-button-ghost"
               data-testid="theme-toggle"
               aria-label={
-                theme === "light" ? "Switch to dark mode" : 
-                theme === "dark" ? "Switch to charcoal mode" : 
-                "Switch to light mode"
+                theme === "light"
+                  ? "Switch to dark mode"
+                  : theme === "dark"
+                  ? "Switch to charcoal mode"
+                  : "Switch to light mode"
               }
             >
               {theme === "light" ? (
@@ -136,7 +214,7 @@ export function Header({ onCreatePost }: HeaderProps) {
                 <Moon className="h-4 w-4" />
               )}
             </Button>
-            
+
             {/* Auth Buttons */}
             {!loading && (
               <>
@@ -144,13 +222,16 @@ export function Header({ onCreatePost }: HeaderProps) {
                   <div className="flex items-center space-x-2">
                     <div className="hidden lg:flex items-center space-x-2 px-3 py-1 rounded-lg bg-muted/50">
                       <User className="w-4 h-4" />
-                      <span className="text-sm font-medium" data-testid="user-display-name">
+                      <span
+                        className="text-sm font-medium"
+                        data-testid="user-display-name"
+                      >
                         {user.user_metadata?.full_name || user.email}
                       </span>
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={handleSignOut}
                       className="text-sm font-medium px-3 hidden lg:inline-flex"
                       data-testid="logout-button"
@@ -161,17 +242,17 @@ export function Header({ onCreatePost }: HeaderProps) {
                   </div>
                 ) : (
                   <>
-                    <Button 
-                      variant="ghost" 
-                      className="text-sm font-medium px-3 hidden lg:inline-flex" 
-                      onClick={() => openAuthModal('signin')}
+                    <Button
+                      variant="ghost"
+                      className="text-sm font-medium px-3 hidden lg:inline-flex"
+                      onClick={() => openAuthModal("signin")}
                       data-testid="login-button"
                     >
                       Log In
                     </Button>
-                    <Button 
-                      className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full hover:from-purple-700 hover:to-blue-700 transition-all hidden lg:inline-flex" 
-                      onClick={() => openAuthModal('signup')}
+                    <Button
+                      className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full hover:from-purple-700 hover:to-blue-700 transition-all hidden lg:inline-flex"
+                      onClick={() => openAuthModal("signup")}
                       data-testid="signup-button"
                     >
                       Sign Up
@@ -185,7 +266,7 @@ export function Header({ onCreatePost }: HeaderProps) {
           {/* Mobile Actions */}
           <div className="flex items-center space-x-2 md:hidden">
             {/* Mobile Create Button */}
-            {location === '/' && (
+            {location === "/" && (
               <Button
                 onClick={onCreatePost}
                 size="icon"
@@ -195,7 +276,7 @@ export function Header({ onCreatePost }: HeaderProps) {
                 <Plus className="w-4 h-4" />
               </Button>
             )}
-            
+
             {/* Theme Toggle */}
             <Button
               variant="ghost"
@@ -236,12 +317,56 @@ export function Header({ onCreatePost }: HeaderProps) {
         {isMobileMenuOpen && (
           <div className="lg:hidden border-t border-border bg-background/95 backdrop-blur-sm">
             <nav className="flex flex-col space-y-1 py-4">
-              <a href="#" className="vh-nav-item px-4 py-3 font-medium rounded-lg mx-2" data-testid="mobile-nav-home">Home</a>
-              <a href="#" className="vh-nav-item px-4 py-3 font-medium rounded-lg mx-2" data-testid="mobile-nav-learn">Learn</a>
-              <a href="#" className="vh-nav-item px-4 py-3 font-medium rounded-lg mx-2" data-testid="mobile-nav-earn">Earn</a>
-              <a href="#" className="vh-nav-item px-4 py-3 font-medium rounded-lg mx-2" data-testid="mobile-nav-connect">Connect</a>
-              <a href="#" className="vh-nav-item active px-4 py-3 font-medium rounded-lg mx-2" data-testid="mobile-nav-community">Community</a>
-              
+              <a
+                href="#"
+                className="vh-nav-item px-4 py-3 font-medium rounded-lg mx-2"
+                data-testid="mobile-nav-home"
+              >
+                Home
+              </a>
+              <a
+                href="#"
+                className="vh-nav-item px-4 py-3 font-medium rounded-lg mx-2"
+                data-testid="mobile-nav-learn"
+              >
+                Learn
+              </a>
+              <a
+                href="#"
+                className="vh-nav-item px-4 py-3 font-medium rounded-lg mx-2"
+                data-testid="mobile-nav-earn"
+              >
+                Earn
+              </a>
+              <a
+                href="#"
+                className="vh-nav-item px-4 py-3 font-medium rounded-lg mx-2"
+                data-testid="mobile-nav-connect"
+              >
+                Connect
+              </a>
+              <a
+                href="#"
+                className="vh-nav-item active px-4 py-3 font-medium rounded-lg mx-2"
+                data-testid="mobile-nav-community"
+              >
+                Community
+              </a>
+
+              {/* Admin (mobile) */}
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  className="vh-nav-item px-4 py-3 font-medium rounded-lg mx-2"
+                  data-testid="mobile-nav-admin"
+                >
+                  <span className="inline-flex items-center gap-2">
+                    <Shield className="w-4 h-4" />
+                    Admin
+                  </span>
+                </Link>
+              )}
+
               {/* Mobile Auth Buttons */}
               <div className="flex flex-col space-y-2 pt-4 px-2">
                 {!loading && (
@@ -250,13 +375,16 @@ export function Header({ onCreatePost }: HeaderProps) {
                       <div className="space-y-2">
                         <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-muted/50">
                           <User className="w-4 h-4" />
-                          <span className="text-sm font-medium" data-testid="mobile-user-display-name">
+                          <span
+                            className="text-sm font-medium"
+                            data-testid="mobile-user-display-name"
+                          >
                             {user.user_metadata?.full_name || user.email}
                           </span>
                         </div>
-                        <Button 
-                          variant="ghost" 
-                          className="justify-start" 
+                        <Button
+                          variant="ghost"
+                          className="justify-start"
                           onClick={handleSignOut}
                           data-testid="mobile-logout-button"
                         >
@@ -266,17 +394,17 @@ export function Header({ onCreatePost }: HeaderProps) {
                       </div>
                     ) : (
                       <>
-                        <Button 
-                          variant="ghost" 
-                          className="justify-start" 
-                          onClick={() => openAuthModal('signin')}
+                        <Button
+                          variant="ghost"
+                          className="justify-start"
+                          onClick={() => openAuthModal("signin")}
                           data-testid="mobile-login-button"
                         >
                           Log In
                         </Button>
-                        <Button 
-                          className="bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 transition-all" 
-                          onClick={() => openAuthModal('signup')}
+                        <Button
+                          className="bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 transition-all"
+                          onClick={() => openAuthModal("signup")}
                           data-testid="mobile-signup-button"
                         >
                           Sign Up
@@ -288,7 +416,7 @@ export function Header({ onCreatePost }: HeaderProps) {
               </div>
 
               {/* Mobile Community Actions */}
-              {location === '/' && (
+              {location === "/" && (
                 <div className="flex items-center justify-center space-x-4 pt-4 border-t border-border mt-4">
                   <Button
                     variant="ghost"
@@ -298,7 +426,7 @@ export function Header({ onCreatePost }: HeaderProps) {
                   >
                     <MessageCircle className="w-5 h-5" />
                   </Button>
-                  
+
                   <Button
                     variant="ghost"
                     size="icon"
@@ -317,9 +445,9 @@ export function Header({ onCreatePost }: HeaderProps) {
           </div>
         )}
       </div>
-      
-      <AuthModal 
-        open={authModalOpen} 
+
+      <AuthModal
+        open={authModalOpen}
         onOpenChange={setAuthModalOpen}
         defaultMode={authModalMode}
       />

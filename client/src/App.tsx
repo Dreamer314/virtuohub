@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import ErrorBoundary from "@/components/error-boundary";
+
+/* Pages */
 import Community from "@/pages/community";
 import HomePage from "@/pages/home";
 import ArticlePage from "@/pages/article";
@@ -23,9 +25,13 @@ import ListsPage from "@/pages/lists";
 import ListDetailPage from "@/pages/list-detail";
 import NotFound from "@/pages/not-found";
 
+/* New: Admin Dashboard */
+import AdminPage from "@/pages/admin";
+
 function Router() {
   return (
     <Switch>
+      {/* Public site routes */}
       <Route path="/" component={Community} />
       <Route path="/home" component={HomePage} />
       <Route path="/community" component={Community} />
@@ -47,6 +53,11 @@ function Router() {
       <Route path="/article/:slug" component={ArticlePage} />
       <Route path="/insights" component={InsightsPage} />
       <Route path="/thread/:postId" component={ThreadPage} />
+
+      {/* Admin */}
+      <Route path="/admin" component={AdminPage} />
+
+      {/* 404 */}
       <Route component={NotFound} />
     </Switch>
   );
