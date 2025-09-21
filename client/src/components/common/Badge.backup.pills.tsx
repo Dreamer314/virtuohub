@@ -8,14 +8,14 @@ interface BadgeProps {
 }
 
 export function Badge({ variant, value, className }: BadgeProps) {
-  const baseClasses = "inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full vh-pill";
+  const baseClasses = "inline-flex items-center gap-1 px-2 py-1 text-xs font-medium rounded-full";
   
   switch (variant) {
     case 'new':
       return (
         <span className={cn(
           baseClasses,
-          "bg-green-500/20 text-green-700 dark:text-green-400 border border-green-500/30 vh-pill--success",
+          "bg-green-500/20 text-green-700 dark:text-green-400 border border-green-500/30",
           className
         )}>
           <Sparkles className="h-3 w-3" />
@@ -31,7 +31,7 @@ export function Badge({ variant, value, className }: BadgeProps) {
         <span className={cn(
           baseClasses,
           isPositive 
-            ? "bg-green-500/20 text-green-700 dark:text-green-400 border border-green-500/30 vh-pill--success"
+            ? "bg-green-500/20 text-green-700 dark:text-green-400 border border-green-500/30"
             : "bg-red-500/20 text-red-700 dark:text-red-400 border border-red-500/30",
           className
         )}>
@@ -50,7 +50,7 @@ export function Badge({ variant, value, className }: BadgeProps) {
       return (
         <span className={cn(
           baseClasses,
-          "bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 border border-yellow-500/30 vh-pill--info",
+          "bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 border border-yellow-500/30",
           className
         )}>
           <Crown className="h-3 w-3" />
@@ -62,7 +62,7 @@ export function Badge({ variant, value, className }: BadgeProps) {
       return (
         <span className={cn(
           baseClasses,
-          "bg-purple-500/20 text-purple-700 dark:text-purple-400 border border-purple-500/30 vh-pill--info",
+          "bg-purple-500/20 text-purple-700 dark:text-purple-400 border border-purple-500/30",
           className
         )}>
           <Crown className="h-3 w-3" />
@@ -74,7 +74,7 @@ export function Badge({ variant, value, className }: BadgeProps) {
       return (
         <span className={cn(
           baseClasses,
-          "bg-blue-500/20 text-blue-700 dark:text-blue-400 border border-blue-500/30 vh-pill--info",
+          "bg-blue-500/20 text-blue-700 dark:text-blue-400 border border-blue-500/30",
           className
         )}>
           <Users className="h-3 w-3" />

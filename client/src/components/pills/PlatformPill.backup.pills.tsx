@@ -44,7 +44,7 @@ export const PlatformPill: React.FC<PlatformPillProps> = ({
     lg: 'vh-body px-4 py-2'
   };
 
-  const baseClasses = 'vh-platform-pill inline-flex items-center font-medium rounded-full border transition-vh-fast vh-pill vh-pill--info';
+  const baseClasses = 'vh-platform-pill inline-flex items-center font-medium rounded-full border transition-vh-fast';
   
   const variantClasses = {
     default: getPlatformColor(platform),
