@@ -171,15 +171,15 @@ const PulsePage: React.FC = () => {
                             <article key={r.id} className="vh-card" data-testid={`report-card-${r.id}`}>
                               <div className="flex items-center justify-between mb-4">
                                 {r.access_level === "free" && (
-                                  <span className="inline-block px-3 py-1 text-xs font-medium bg-green-500/20 text-green-300 border border-green-500/30 rounded-full vh-pill vh-pill--success">FREE</span>
+                                  <span className="inline-block px-3 py-1 text-xs font-medium bg-green-500/20 text-green-300 border border-green-500/30 rounded-full">FREE</span>
                                 )}
                                 {r.access_level === "paid" && (
-                                  <span className="inline-block px-3 py-1 text-xs font-medium bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 rounded-full vh-pill vh-pill--price">
+                                  <span className="inline-block px-3 py-1 text-xs font-medium bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 rounded-full">
                                     ${((r.price_cents ?? 0) / 100).toFixed(0)}
                                   </span>
                                 )}
                                 {r.access_level === "private" && (
-                                  <span className="inline-block px-3 py-1 text-xs font-medium bg-red-500/20 text-red-300 border border-red-500/30 rounded-full vh-pill vh-pill--info">PRIVATE</span>
+                                  <span className="inline-block px-3 py-1 text-xs font-medium bg-red-500/20 text-red-300 border border-red-500/30 rounded-full">PRIVATE</span>
                                 )}
                                 <span className="text-sm text-muted-foreground">
                                   {r.release_at
@@ -196,7 +196,7 @@ const PulsePage: React.FC = () => {
                               {r.tags?.length ? (
                                 <div className="flex flex-wrap gap-2 mb-4">
                                   {r.tags.map((badge, idx) => (
-                                    <span key={idx} className="px-2 py-1 text-xs bg-primary/10 text-primary rounded-full vh-pill vh-pill--info">
+                                    <span key={idx} className="px-2 py-1 text-xs bg-primary/10 text-primary rounded-full">
                                       {badge}
                                     </span>
                                   ))}

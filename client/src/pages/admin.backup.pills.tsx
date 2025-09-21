@@ -499,15 +499,15 @@ function PollsCard({
                     {p.status === "closed" ? (
                       <span className="inline-flex items-center px-2 py-1 text-xs rounded bg-muted text-muted-foreground">Closed</span>
                     ) : (
-                      <span className="inline-flex items-center px-2 py-1 text-xs rounded bg-green-500/15 text-green-300 border border-green-500/20 vh-pill vh-pill--success">Active</span>
+                      <span className="inline-flex items-center px-2 py-1 text-xs rounded bg-green-500/15 text-green-300 border border-green-500/20">Active</span>
                     )}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-wrap gap-2">
-                      <span className="inline-flex items-center px-2 py-1 text-xs rounded bg-muted text-muted-foreground vh-pill vh-pill--info">
+                      <span className="inline-flex items-center px-2 py-1 text-xs rounded bg-muted text-muted-foreground">
                         {onReports ? "On Reports" : "Hidden on Reports"}
                       </span>
-                      <span className="inline-flex items-center px-2 py-1 text-xs rounded bg-muted text-muted-foreground vh-pill vh-pill--info">
+                      <span className="inline-flex items-center px-2 py-1 text-xs rounded bg-muted text-muted-foreground">
                         {onCommunity ? "On Community" : "Hidden on Community"}
                       </span>
                       <span className="inline-flex items-center px-2 py-1 text-xs rounded bg-muted text-muted-foreground">
@@ -799,11 +799,11 @@ function ReportsCard() {
                 </td>
                 <td className="px-6 py-4">
                   <div className="text-sm">{r.access_level}</div>
-                  {r.access_level === "paid" && <div className="text-xs opacity-70 vh-pill vh-pill--price">{dollars(r.price_cents)}</div>}
+                  {r.access_level === "paid" && <div className="text-xs opacity-70">{dollars(r.price_cents)}</div>}
                 </td>
                 <td className="px-6 py-4">{fmt(r.release_at)}</td>
                 <td className="px-6 py-4">
-                  <span className="inline-flex items-center px-2 py-1 text-xs rounded bg-muted text-muted-foreground vh-pill vh-pill--info">
+                  <span className="inline-flex items-center px-2 py-1 text-xs rounded bg-muted text-muted-foreground">
                     {r.show_on_reports ? "Shown on Reports" : "Hidden on Reports"}
                   </span>
                 </td>
