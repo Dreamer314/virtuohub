@@ -238,3 +238,57 @@ body.light .select-trigger:focus {
   outline-offset: 2px;
   border-color: #c7d2fe !important;
 }
+
+/* TARGETED FIXES: Override specific Tailwind classes actually used in components */
+
+/* Fix Admin "Active" pills (green) - make them readable in light theme */
+:root[data-theme="light"] .bg-green-500\/15.text-green-300,
+[data-theme="light"] .bg-green-500\/15.text-green-300,
+.theme-light .bg-green-500\/15.text-green-300,
+html.light .bg-green-500\/15.text-green-300,
+body.light .bg-green-500\/15.text-green-300 {
+  background: var(--pill-success-bg) !important;
+  color: var(--pill-success-fg) !important;
+  border-color: var(--pill-success-border) !important;
+}
+
+/* Fix Price pills (yellow/amber) - make them readable in light theme */
+:root[data-theme="light"] .bg-yellow-500\/20.text-yellow-300,
+[data-theme="light"] .bg-yellow-500\/20.text-yellow-300,
+.theme-light .bg-yellow-500\/20.text-yellow-300,
+html.light .bg-yellow-500\/20.text-yellow-300,
+body.light .bg-yellow-500\/20.text-yellow-300 {
+  background: var(--pill-price-bg) !important;
+  color: var(--pill-price-fg) !important;
+  border-color: var(--pill-price-border) !important;
+}
+
+/* Alternative approach: Target by text content and background class */
+:root[data-theme="light"] span.bg-green-500\/15:has-text("Active"),
+[data-theme="light"] span.bg-green-500\/15:has-text("Active"),
+.theme-light span.bg-green-500\/15:has-text("Active"),
+html.light span.bg-green-500\/15:has-text("Active"),
+body.light span.bg-green-500\/15:has-text("Active") {
+  background: var(--pill-success-bg) !important;
+  color: var(--pill-success-fg) !important;
+  border-color: var(--pill-success-border) !important;
+}
+
+/* More robust approach: Target common pill patterns */
+:root[data-theme="light"] span.bg-green-500\/15,
+[data-theme="light"] span.bg-green-500\/15,
+.theme-light span.bg-green-500\/15,
+html.light span.bg-green-500\/15,
+body.light span.bg-green-500\/15 {
+  background: var(--pill-success-bg) !important;
+  color: var(--pill-success-fg) !important;
+}
+
+:root[data-theme="light"] span.bg-yellow-500\/20,
+[data-theme="light"] span.bg-yellow-500\/20,
+.theme-light span.bg-yellow-500\/20,
+html.light span.bg-yellow-500\/20,
+body.light span.bg-yellow-500\/20 {
+  background: var(--pill-price-bg) !important;
+  color: var(--pill-price-fg) !important;
+}
