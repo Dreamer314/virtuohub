@@ -28,23 +28,25 @@ app.post("/api/stripe/webhook", express.raw({type: 'application/json'}), async (
       
       // Only process pulse report purchases
       if (paymentIntent.metadata.type === 'pulse_report_purchase') {
-        const { reportId } = paymentIntent.metadata;
+        const { reportId, userId } = paymentIntent.metadata;
         
-        // Insert purchase record into Supabase using service role to bypass RLS
+        // Upsert purchase record into Supabase using service role to bypass RLS
         const { data, error } = await supabaseAdmin
           .from('pulse_report_purchases')
-          .insert({
+          .upsert({
             report_id: reportId,
-            user_id: paymentIntent.metadata.userId || null,
+            user_id: userId,
             stripe_session_id: null,
             stripe_payment_intent: paymentIntent.id,
             amount_cents: paymentIntent.amount,
             currency: paymentIntent.currency,
-            status: 'completed'
+            status: 'succeeded'
+          }, {
+            onConflict: 'stripe_payment_intent'
           });
 
         if (error) {
-          console.error('Error inserting purchase record:', error);
+          console.error('Error upserting purchase record:', error);
         } else {
           console.log('Purchase recorded successfully:', data);
         }
