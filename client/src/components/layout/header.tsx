@@ -52,12 +52,8 @@ export function Header({ onCreatePost }: HeaderProps) {
   }, [user?.id]);
 
   const toggleTheme = () => {
-    // Light -> Dark -> Charcoal -> Light
-    let nextTheme: "light" | "dark" | "charcoal";
-    if (theme === "system" || theme === "light") nextTheme = "dark";
-    else if (theme === "dark") nextTheme = "charcoal";
-    else nextTheme = "light";
-    setTheme(nextTheme);
+    // Single-theme mode: charcoal only
+    setTheme?.("charcoal");
   };
 
   const handleSignOut = async () => {
@@ -196,23 +192,9 @@ export function Header({ onCreatePost }: HeaderProps) {
               onClick={toggleTheme}
               className="w-9 h-9 rounded-full vh-button-ghost"
               data-testid="theme-toggle"
-              aria-label={
-                theme === "light"
-                  ? "Switch to dark mode"
-                  : theme === "dark"
-                  ? "Switch to charcoal mode"
-                  : "Switch to light mode"
-              }
+              aria-label="Charcoal theme (locked)"
             >
-              {theme === "light" ? (
-                <Moon className="h-4 w-4" />
-              ) : theme === "dark" ? (
-                <div className="h-4 w-4 bg-gradient-to-br from-gray-600 to-gray-800 rounded-sm border border-gray-500" />
-              ) : theme === "charcoal" ? (
-                <Sun className="h-4 w-4 text-yellow-500" />
-              ) : (
-                <Moon className="h-4 w-4" />
-              )}
+              <Sun className="h-4 w-4 text-yellow-500" />
             </Button>
 
             {/* Auth Buttons */}
@@ -285,15 +267,7 @@ export function Header({ onCreatePost }: HeaderProps) {
               className="w-9 h-9 rounded-full vh-button-ghost"
               data-testid="mobile-theme-toggle"
             >
-              {theme === "light" ? (
-                <Moon className="h-4 w-4" />
-              ) : theme === "dark" ? (
-                <div className="h-4 w-4 bg-gradient-to-br from-gray-600 to-gray-800 rounded-sm border border-gray-500" />
-              ) : theme === "charcoal" ? (
-                <Sun className="h-4 w-4 text-yellow-500" />
-              ) : (
-                <Moon className="h-4 w-4" />
-              )}
+              <Sun className="h-4 w-4 text-yellow-500" />
             </Button>
 
             {/* Mobile Menu Button */}
