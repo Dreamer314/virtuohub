@@ -51,6 +51,9 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
           payment_method_data: {
             billing_details: {
               name: 'Customer', // You might want to get this from user session
+              address: {
+                postal_code: '10001', // Default postal code for testing
+              },
             },
           },
         },
@@ -100,7 +103,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
             fields: {
               billingDetails: {
                 address: {
-                  postalCode: 'auto'
+                  postalCode: 'never'
                 }
               }
             }

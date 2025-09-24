@@ -9,7 +9,7 @@ import Stripe from "stripe";
 const stripe = new Stripe(process.env.TESTING_STRIPE_SECRET_KEY!, {
   apiVersion: "2025-08-27.basil",
 });
-import { supabase } from "./supabaseClient";
+import { supabase, supabaseAdmin } from "./supabaseClient";
 
 app.post("/api/stripe/webhook", express.raw({type: 'application/json'}), async (req, res) => {
   try {
@@ -30,8 +30,8 @@ app.post("/api/stripe/webhook", express.raw({type: 'application/json'}), async (
       if (paymentIntent.metadata.type === 'pulse_report_purchase') {
         const { reportId } = paymentIntent.metadata;
         
-        // Insert purchase record into Supabase (using snake_case for database columns)
-        const { data, error } = await supabase
+        // Insert purchase record into Supabase using service role to bypass RLS
+        const { data, error } = await supabaseAdmin
           .from('pulse_report_purchases')
           .insert({
             report_id: reportId,

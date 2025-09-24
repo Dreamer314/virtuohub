@@ -430,9 +430,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // For now, use fallback user ID if no auth (in real app, require auth)
+      // Require authentication for purchases
       if (!userId) {
-        userId = 'user1'; // Fallback for demo purposes
+        return res.status(401).json({ message: "Authentication required" });
       }
       
       // Fetch report from database to get server-side price
@@ -499,9 +499,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // For now, use fallback user ID if no auth (in real app, require auth)
+      // Require authentication for purchases
       if (!userId) {
-        userId = 'user1'; // Fallback for demo purposes
+        return res.status(401).json({ message: "Authentication required" });
       }
       
       const { data, error } = await supabase
@@ -730,9 +730,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
-      // For now, use fallback user ID if no auth (in real app, require auth)
+      // Require authentication for purchases
       if (!userId) {
-        userId = 'user1'; // Fallback for demo purposes
+        return res.status(401).json({ message: "Authentication required" });
       }
 
       // Check if user has purchased the report
