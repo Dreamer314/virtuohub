@@ -1,0 +1,114 @@
+Single theme only (Charcoal)
+
+Goal: Keep Charcoal as the only theme. Use one theme flag. Stop any light style leaks. Make buttons, pills, inputs, and text readable. No layout changes. No refactors.
+
+Before any edits, audit and report:
+
+Theme flags in code. List file paths and exact lines where you set or read any of: .dark, .charcoal, [data-theme], or theme values in localStorage. Include toggle handlers that add or remove classes on html or body.
+
+Theme selectors in styles. List files that contain selectors like .dark …, .charcoal …, :root:not(.dark) …, [data-theme="…"] ….
+
+Tailwind config. Paste the value of darkMode from tailwind.config.*.
+
+CSS import order. Confirm index.css (Tailwind) loads before any custom CSS. List where custom CSS files are imported.
+
+Stop and wait for my YES.
+
+If I approve, make only these changes:
+
+A) Single theme flag for Charcoal
+
+Ensure the app sets one class on the html element at startup: html.classList.add('dark').
+
+Remove runtime usage of .charcoal and [data-theme]. Replace those with the single .dark class.
+
+Disable or no-op theme toggles so .dark stays present.
+
+B) Central tokens for Charcoal
+
+Create client/src/styles/theme-tokens.css if missing. Import it after index.css in the app entry.
+
+Add these tokens:
+
+:root {
+  --radius: 0.75rem;
+  --background: #0b1220;
+  --foreground: #e5e7eb;
+  --muted: #141b2a;
+  --muted-foreground: #9ca3af;
+  --border: #293245;
+  --card: #0f172a;
+  --card-foreground: #e5e7eb;
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --secondary: #1b2333;
+  --secondary-foreground: #e5e7eb;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --ring: #7c3aed;
+  --input: #141b2a;
+}
+
+
+C) Stop light style leaks
+
+In client/src/styles/light-contrast.css, scope every rule that changes pills, buttons, nav, or download CTA to not charcoal:
+
+html:not(.dark) .vh-pill { … }
+html:not(.dark) .vh-btn { … }
+html:not(.dark) [data-cta="download"] { … }
+html:not(.dark) .sidebar [aria-current="page"],
+html:not(.dark) .sidebar [aria-current="true"] { … }
+
+
+D) Ensure readability in Charcoal
+
+In a custom CSS file loaded after index.css (can be the same contrast file), add or confirm:
+
+/* Buttons */
+html.dark .vh-btn { font-weight: 700; border-width: 1px; }
+
+/* Inputs */
+html.dark input:not([type="checkbox"]):not([type="radio"]),
+html.dark textarea,
+html.dark select {
+  background-color: var(--input) !important;
+  color: var(--foreground) !important;
+  border-color: var(--border) !important;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: var(--muted-foreground) !important;
+  opacity: 1;
+}
+
+/* Pills */
+html.dark .vh-pill {
+  --pill-bg: #1f2937; --pill-br: #334155; --pill-fg: #e5e7eb;
+  background-color: var(--pill-bg) !important;
+  color: var(--pill-fg) !important;
+  border-color: var(--pill-br) !important;
+}
+
+/* Download CTA */
+html.dark [data-cta="download"] {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+  border-color: #059669 !important;
+}
+html.dark [data-cta="download"]:hover { background-color: #059669 !important; }
+
+
+Guardrails:
+
+No layout changes. No component refactors. Do not remove existing Tailwind classes. Keep edits minimal and reversible.
+
+Acceptance:
+
+App mounts with <html class="dark"> and no other theme flags.
+
+Buttons, pills, inputs, and text are readable across Home, Community, Pulse (Download), Interviews, and Admin.
+
+No white text on white backgrounds in Charcoal.
+
+Build is clean. Provide before and after screenshots for: Home hero buttons, Community create post button, Pulse Download button, and one Admin input.
