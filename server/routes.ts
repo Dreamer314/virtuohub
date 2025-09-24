@@ -571,14 +571,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Set Cache-Control: no-store
       res.set('Cache-Control', 'no-store');
 
-      // Check if user has purchased the report
-      const { data, error } = await supabase
+      // Check if user has purchased the report using admin client to bypass RLS
+      const { data, error } = await supabaseAdmin
         .from('pulse_report_purchases')
         .select('*')
         .eq('report_id', reportId)
         .eq('user_id', userId)
-        .eq('status', 'succeeded')
-        .single();
+        .in('status', ['succeeded', 'completed'])
+        .limit(1)
+        .maybeSingle();
 
       if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
         console.error('Error checking access:', error);
