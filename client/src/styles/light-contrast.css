@@ -1,10 +1,5 @@
-/* High-contrast tweaks for LIGHT theme only.
-   We support multiple light-mode markers so this works with any theme system. */
-:root[data-theme="light"],
-[data-theme="light"],
-.theme-light,
-html.light,
-body.light {
+/* Light-only overrides. Disabled in single-theme mode because html has .dark */
+html:not(.dark) {
   /* Generic chip / pill tokens */
   --pill-radius: 10px;
 
@@ -29,36 +24,12 @@ body.light {
   --pill-muted-border: #e5e7eb;
 }
 
-/* Helper: build a selector list that matches ANY light marker */
-:root[data-theme="light"] .__light-scope, [data-theme="light"] .__light-scope,
-.theme-light .__light-scope, html.light .__light-scope, body.light .__light-scope {}
-
 /* Pills / badges (generic) */
-:root[data-theme="light"] .vh-pill,
-[data-theme="light"] .vh-pill,
-.theme-light .vh-pill,
-html.light .vh-pill,
-body.light .vh-pill,
-:root[data-theme="light"] .vh-badge,
-[data-theme="light"] .vh-badge,
-.theme-light .vh-badge,
-html.light .vh-badge,
-body.light .vh-badge,
-:root[data-theme="light"] .vh-chip,
-[data-theme="light"] .vh-chip,
-.theme-light .vh-chip,
-html.light .vh-chip,
-body.light .vh-chip,
-:root[data-theme="light"] .status-pill,
-[data-theme="light"] .status-pill,
-.theme-light .status-pill,
-html.light .status-pill,
-body.light .status-pill,
-:root[data-theme="light"] .tag-pill,
-[data-theme="light"] .tag-pill,
-.theme-light .tag-pill,
-html.light .tag-pill,
-body.light .tag-pill {
+html:not(.dark) .vh-pill,
+html:not(.dark) .vh-badge,
+html:not(.dark) .vh-chip,
+html:not(.dark) .status-pill,
+html:not(.dark) .tag-pill {
   border-radius: var(--pill-radius);
   border: 1px solid var(--pill-muted-border);
   background: var(--pill-muted-bg);
@@ -66,174 +37,70 @@ body.light .tag-pill {
 }
 
 /* Success (Active) */
-:root[data-theme="light"] .vh-pill--success,
-[data-theme="light"] .vh-pill--success,
-.theme-light .vh-pill--success,
-html.light .vh-pill--success,
-body.light .vh-pill--success,
-:root[data-theme="light"] .status-pill--active,
-[data-theme="light"] .status-pill--active,
-.theme-light .status-pill--active,
-html.light .status-pill--active,
-body.light .status-pill--active {
+html:not(.dark) .vh-pill--success,
+html:not(.dark) .status-pill--active {
   background: var(--pill-success-bg) !important;
   color: var(--pill-success-fg) !important;
   border-color: var(--pill-success-border) !important;
 }
 
 /* Info/secondary (tags, metadata) */
-:root[data-theme="light"] .vh-pill--info,
-[data-theme="light"] .vh-pill--info,
-.theme-light .vh-pill--info,
-html.light .vh-pill--info,
-body.light .vh-pill--info,
-:root[data-theme="light"] .vh-chip--info,
-[data-theme="light"] .vh-chip--info,
-.theme-light .vh-chip--info,
-html.light .vh-chip--info,
-body.light .vh-chip--info {
+html:not(.dark) .vh-pill--info,
+html:not(.dark) .vh-chip--info {
   background: var(--pill-info-bg) !important;
   color: var(--pill-info-fg) !important;
   border-color: var(--pill-info-border) !important;
 }
 
 /* Price pill */
-:root[data-theme="light"] .vh-pill--price,
-[data-theme="light"] .vh-pill--price,
-.theme-light .vh-pill--price,
-html.light .vh-pill--price,
-body.light .vh-pill--price,
-:root[data-theme="light"] .price-pill,
-[data-theme="light"] .price-pill,
-.theme-light .price-pill,
-html.light .price-pill,
-body.light .price-pill {
+html:not(.dark) .vh-pill--price,
+html:not(.dark) .price-pill {
   background: var(--pill-price-bg) !important;
   color: var(--pill-price-fg) !important;
   border-color: var(--pill-price-border) !important;
 }
 
 /* Dropdown surfaces (Radix/shadcn and native fallbacks) */
-:root[data-theme="light"] .select-content,
-[data-theme="light"] .select-content,
-.theme-light .select-content,
-html.light .select-content,
-body.light .select-content,
-:root[data-theme="light"] .dropdown-content,
-[data-theme="light"] .dropdown-content,
-.theme-light .dropdown-content,
-html.light .dropdown-content,
-body.light .dropdown-content,
-:root[data-theme="light"] .radix-themes__select__content,
-[data-theme="light"] .radix-themes__select__content,
-.theme-light .radix-themes__select__content,
-html.light .radix-themes__select__content,
-body.light .radix-themes__select__content,
-:root[data-theme="light"] [role="listbox"],
-[data-theme="light"] [role="listbox"],
-.theme-light [role="listbox"],
-html.light [role="listbox"],
-body.light [role="listbox"],
-:root[data-theme="light"] .vh-menu,
-[data-theme="light"] .vh-menu,
-.theme-light .vh-menu,
-html.light .vh-menu,
-body.light .vh-menu,
-:root[data-theme="light"] .vh-dropdown,
-[data-theme="light"] .vh-dropdown,
-.theme-light .vh-dropdown,
-html.light .vh-dropdown,
-body.light .vh-dropdown {
+html:not(.dark) .select-content,
+html:not(.dark) .dropdown-content,
+html:not(.dark) .radix-themes__select__content,
+html:not(.dark) [role="listbox"],
+html:not(.dark) .vh-menu,
+html:not(.dark) .vh-dropdown {
   color: #111827 !important;
   background: #ffffff !important;
   border: 1px solid #e5e7eb !important;
 }
 
 /* Dropdown items */
-:root[data-theme="light"] .select-item,
-[data-theme="light"] .select-item,
-.theme-light .select-item,
-html.light .select-item,
-body.light .select-item,
-:root[data-theme="light"] .dropdown-item,
-[data-theme="light"] .dropdown-item,
-.theme-light .dropdown-item,
-html.light .dropdown-item,
-body.light .dropdown-item,
-:root[data-theme="light"] [role="option"],
-[data-theme="light"] [role="option"],
-.theme-light [role="option"],
-html.light [role="option"],
-body.light [role="option"] {
+html:not(.dark) .select-item,
+html:not(.dark) .dropdown-item,
+html:not(.dark) [role="option"] {
   color: #111827 !important;
   background: #ffffff !important;
 }
-:root[data-theme="light"] .select-item[data-highlighted],
-[data-theme="light"] .select-item[data-highlighted],
-.theme-light .select-item[data-highlighted],
-html.light .select-item[data-highlighted],
-body.light .select-item[data-highlighted],
-:root[data-theme="light"] .dropdown-item[data-highlighted],
-[data-theme="light"] .dropdown-item[data-highlighted],
-.theme-light .dropdown-item[data-highlighted],
-html.light .dropdown-item[data-highlighted],
-body.light .dropdown-item[data-highlighted],
-:root[data-theme="light"] [role="option"][data-highlighted="true"],
-[data-theme="light"] [role="option"][data-highlighted="true"],
-.theme-light [role="option"][data-highlighted="true"],
-html.light [role="option"][data-highlighted="true"],
-body.light [role="option"][data-highlighted="true"] {
+html:not(.dark) .select-item[data-highlighted],
+html:not(.dark) .dropdown-item[data-highlighted],
+html:not(.dark) [role="option"][data-highlighted="true"] {
   background: #eef2ff !important;
   color: #1e3a8a !important;
 }
 
 /* Inputs in light theme */
-:root[data-theme="light"] input[type="text"],
-[data-theme="light"] input[type="text"],
-.theme-light input[type="text"],
-html.light input[type="text"],
-body.light input[type="text"],
-:root[data-theme="light"] input[type="number"],
-[data-theme="light"] input[type="number"],
-.theme-light input[type="number"],
-html.light input[type="number"],
-body.light input[type="number"],
-:root[data-theme="light"] input[type="datetime-local"],
-[data-theme="light"] input[type="datetime-local"],
-.theme-light input[type="datetime-local"],
-html.light input[type="datetime-local"],
-body.light input[type="datetime-local"],
-:root[data-theme="light"] textarea,
-[data-theme="light"] textarea,
-.theme-light textarea,
-html.light textarea,
-body.light textarea,
-:root[data-theme="light"] .vh-input,
-[data-theme="light"] .vh-input,
-.theme-light .vh-input,
-html.light .vh-input,
-body.light .vh-input,
-:root[data-theme="light"] .select-trigger,
-[data-theme="light"] .select-trigger,
-.theme-light .select-trigger,
-html.light .select-trigger,
-body.light .select-trigger {
+html:not(.dark) input[type="text"],
+html:not(.dark) input[type="number"],
+html:not(.dark) input[type="datetime-local"],
+html:not(.dark) textarea,
+html:not(.dark) .vh-input,
+html:not(.dark) .select-trigger {
   border: 1px solid #e5e7eb !important;
   background: #ffffff !important;
   color: #111827 !important;
 }
 
 /* Focus states */
-:root[data-theme="light"] .vh-input:focus,
-[data-theme="light"] .vh-input:focus,
-.theme-light .vh-input:focus,
-html.light .vh-input:focus,
-body.light .vh-input:focus,
-:root[data-theme="light"] .select-trigger:focus,
-[data-theme="light"] .select-trigger:focus,
-.theme-light .select-trigger:focus,
-html.light .select-trigger:focus,
-body.light .select-trigger:focus {
+html:not(.dark) .vh-input:focus,
+html:not(.dark) .select-trigger:focus {
   outline: 2px solid #c7d2fe;
   outline-offset: 2px;
   border-color: #c7d2fe !important;
@@ -242,53 +109,33 @@ body.light .select-trigger:focus {
 /* TARGETED FIXES: Override specific Tailwind classes actually used in components */
 
 /* Fix Admin "Active" pills (green) - make them readable in light theme */
-:root[data-theme="light"] .bg-green-500\/15.text-green-300,
-[data-theme="light"] .bg-green-500\/15.text-green-300,
-.theme-light .bg-green-500\/15.text-green-300,
-html.light .bg-green-500\/15.text-green-300,
-body.light .bg-green-500\/15.text-green-300 {
+html:not(.dark) .bg-green-500\/15.text-green-300 {
   background: var(--pill-success-bg) !important;
   color: var(--pill-success-fg) !important;
   border-color: var(--pill-success-border) !important;
 }
 
 /* Fix Price pills (yellow/amber) - make them readable in light theme */
-:root[data-theme="light"] .bg-yellow-500\/20.text-yellow-300,
-[data-theme="light"] .bg-yellow-500\/20.text-yellow-300,
-.theme-light .bg-yellow-500\/20.text-yellow-300,
-html.light .bg-yellow-500\/20.text-yellow-300,
-body.light .bg-yellow-500\/20.text-yellow-300 {
+html:not(.dark) .bg-yellow-500\/20.text-yellow-300 {
   background: var(--pill-price-bg) !important;
   color: var(--pill-price-fg) !important;
   border-color: var(--pill-price-border) !important;
 }
 
 /* Alternative approach: Target by text content and background class */
-:root[data-theme="light"] span.bg-green-500\/15:has-text("Active"),
-[data-theme="light"] span.bg-green-500\/15:has-text("Active"),
-.theme-light span.bg-green-500\/15:has-text("Active"),
-html.light span.bg-green-500\/15:has-text("Active"),
-body.light span.bg-green-500\/15:has-text("Active") {
+html:not(.dark) span.bg-green-500\/15:has-text("Active") {
   background: var(--pill-success-bg) !important;
   color: var(--pill-success-fg) !important;
   border-color: var(--pill-success-border) !important;
 }
 
 /* More robust approach: Target common pill patterns */
-:root[data-theme="light"] span.bg-green-500\/15,
-[data-theme="light"] span.bg-green-500\/15,
-.theme-light span.bg-green-500\/15,
-html.light span.bg-green-500\/15,
-body.light span.bg-green-500\/15 {
+html:not(.dark) span.bg-green-500\/15 {
   background: var(--pill-success-bg) !important;
   color: var(--pill-success-fg) !important;
 }
 
-:root[data-theme="light"] span.bg-yellow-500\/20,
-[data-theme="light"] span.bg-yellow-500\/20,
-.theme-light span.bg-yellow-500\/20,
-html.light span.bg-yellow-500\/20,
-body.light span.bg-yellow-500\/20 {
+html:not(.dark) span.bg-yellow-500\/20 {
   background: var(--pill-price-bg) !important;
   color: var(--pill-price-fg) !important;
 }
