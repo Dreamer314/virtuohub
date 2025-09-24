@@ -5,7 +5,7 @@ import { insertPostSchema, insertSavedPostSchema, insertArticleSchema, insertCom
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { validateSession } from "./middleware/auth";
 import Stripe from "stripe";
-import { supabase } from "./supabaseClient";
+import { supabase, supabaseAdmin } from "./supabaseClient";
 
 // Initialize Stripe with test key
 if (!process.env.TESTING_STRIPE_SECRET_KEY) {
@@ -475,6 +475,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error creating payment intent:", error);
       res.status(500).json({ 
         message: "Error creating payment intent: " + error.message 
+      });
+    }
+  });
+
+  // Manual purchase recording endpoint (for development when webhooks don't work)
+  app.post("/api/pulse/reports/:reportId/record-purchase", async (req, res) => {
+    try {
+      const { reportId } = req.params;
+      const { paymentIntentId } = req.body;
+      
+      // Get authenticated user from session
+      const authHeader = req.headers.authorization;
+      const token = authHeader?.replace('Bearer ', '');
+      let userId = null;
+      
+      if (token) {
+        try {
+          const { data: { user } } = await supabase.auth.getUser(token);
+          userId = user?.id || null;
+        } catch (authError) {
+          console.warn('Auth verification failed:', authError);
+        }
+      }
+      
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      if (!paymentIntentId) {
+        return res.status(400).json({ message: "Payment intent ID required" });
+      }
+
+      // Verify the payment intent exists and is successful
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      
+      if (paymentIntent.status !== 'succeeded') {
+        return res.status(400).json({ message: "Payment not successful" });
+      }
+
+      // Verify the payment is for this report and user
+      if (paymentIntent.metadata.reportId !== reportId || paymentIntent.metadata.userId !== userId) {
+        return res.status(400).json({ message: "Payment verification failed" });
+      }
+
+      // Check if purchase record already exists
+      const { data: existingPurchase } = await supabase
+        .from('pulse_report_purchases')
+        .select('id')
+        .eq('stripe_payment_intent', paymentIntentId)
+        .single();
+
+      if (existingPurchase) {
+        return res.json({ success: true, message: "Purchase already recorded" });
+      }
+
+      // Insert purchase record into Supabase using service role to bypass RLS
+      const { data, error } = await supabaseAdmin
+        .from('pulse_report_purchases')
+        .insert({
+          report_id: reportId,
+          user_id: userId,
+          stripe_payment_intent: paymentIntentId,
+          amount_cents: paymentIntent.amount,
+          currency: paymentIntent.currency,
+          status: 'completed'
+        });
+
+      if (error) {
+        console.error('Error recording purchase:', error);
+        return res.status(500).json({ message: "Error recording purchase" });
+      }
+
+      console.log('Purchase recorded successfully via manual endpoint:', data);
+      res.json({ success: true, message: "Purchase recorded successfully" });
+
+    } catch (error: any) {
+      console.error("Error in record-purchase endpoint:", error);
+      res.status(500).json({ 
+        message: "Error recording purchase: " + error.message 
       });
     }
   });

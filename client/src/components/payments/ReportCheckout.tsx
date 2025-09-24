@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
+import { useQueryClient } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 
 // Initialize Stripe with test key  
@@ -33,6 +34,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
   const elements = useElements();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -44,39 +46,78 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
     setIsLoading(true);
 
     try {
-      const { error } = await stripe.confirmPayment({
+      // Confirm payment without redirect
+      const { error: confirmError, paymentIntent } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          return_url: `${window.location.origin}/pulse?payment=success&report=${reportId}`,
           payment_method_data: {
             billing_details: {
-              name: 'Customer', // You might want to get this from user session
+              name: 'Customer',
               address: {
                 postal_code: '10001', // Default postal code for testing
               },
             },
           },
         },
+        redirect: 'if_required',
       });
 
-      if (error) {
-        console.error('Payment failed:', error);
+      if (confirmError) {
+        console.error('Payment failed:', confirmError);
         toast({
           title: "Payment Failed",
-          description: error.message || "An unexpected error occurred.",
+          description: confirmError.message || "An unexpected error occurred.",
           variant: "destructive",
         });
+        return;
+      }
+
+      if (paymentIntent && paymentIntent.status === 'succeeded') {
+        console.log('Payment succeeded:', paymentIntent.id);
+        
+        // Record the purchase in our database
+        try {
+          const response = await apiRequest('POST', `/api/pulse/reports/${reportId}/record-purchase`, {
+            paymentIntentId: paymentIntent.id
+          });
+          
+          if (response.ok) {
+            // Invalidate query cache to refresh purchase status
+            queryClient.invalidateQueries({ 
+              queryKey: ['/api/pulse/reports', reportId, 'purchase-status'] 
+            });
+            
+            toast({
+              title: "Payment Successful",
+              description: `Thank you for purchasing ${reportTitle}!`,
+            });
+            onSuccess();
+          } else {
+            console.error('Failed to record purchase');
+            toast({
+              title: "Payment Processed",
+              description: "Payment was successful, but there was an issue recording your purchase. Please contact support.",
+              variant: "destructive",
+            });
+          }
+        } catch (recordError) {
+          console.error('Error recording purchase:', recordError);
+          toast({
+            title: "Payment Processed",
+            description: "Payment was successful, but there was an issue recording your purchase. Please contact support.",
+            variant: "destructive",
+          });
+        }
       } else {
+        console.error('Payment status:', paymentIntent?.status);
         toast({
-          title: "Payment Successful",
-          description: `Thank you for purchasing ${reportTitle}!`,
+          title: "Payment Status Unknown",
+          description: "Payment status could not be confirmed. Please check your account or contact support.",
+          variant: "destructive",
         });
-        onSuccess();
       }
     } catch (error) {
       console.error('Payment error details:', error);
-      console.error('Error type:', typeof error);
-      console.error('Error message:', error instanceof Error ? error.message : String(error));
       toast({
         title: "Payment Error",
         description: `Payment failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
