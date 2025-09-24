@@ -558,6 +558,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // New access endpoint with Cache-Control: no-store
+  app.get("/api/pulse/reports/:reportId/access", async (req, res) => {
+    try {
+      const { reportId } = req.params;
+      const { userId } = req.query;
+      
+      if (!userId) {
+        return res.status(400).json({ message: "userId parameter required" });
+      }
+
+      // Set Cache-Control: no-store
+      res.set('Cache-Control', 'no-store');
+
+      // Check if user has purchased the report
+      const { data, error } = await supabase
+        .from('pulse_report_purchases')
+        .select('*')
+        .eq('report_id', reportId)
+        .eq('user_id', userId)
+        .eq('status', 'succeeded')
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+        console.error('Error checking access:', error);
+        return res.status(500).json({ message: "Error checking access" });
+      }
+
+      const canDownload = !!data;
+      res.json({ canDownload });
+
+    } catch (error) {
+      console.error('Error in access endpoint:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
 
   // Check if user has purchased a report
   app.get("/api/pulse/reports/:reportId/purchase-status", async (req, res) => {
