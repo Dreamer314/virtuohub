@@ -1,0 +1,18 @@
+:root {
+  --radius: 0.75rem;
+  --background: #0b1220;
+  --foreground: #e5e7eb;
+  --muted: #141b2a;
+  --muted-foreground: #9ca3af;
+  --border: #293245;
+  --card: #0f172a;
+  --card-foreground: #e5e7eb;
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --secondary: #1b2333;
+  --secondary-foreground: #e5e7eb;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --ring: #7c3aed;
+  --input: #141b2a;
+}
