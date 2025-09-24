@@ -1,0 +1,116 @@
+make all pills readable in light mode and make the active left-nav item clearly visible.
+
+Before you edit anything:
+
+List the exact files you will change.
+
+For each file, give a one-line plan.
+
+Show small diff previews.
+
+Wait for my YES.
+
+Scope:
+
+Only add classes or small CSS.
+
+Do not remove existing Tailwind classes.
+
+Do not change layouts, copy, or component logic.
+
+Tasks:
+
+A) Ensure the contrast stylesheet loads after Tailwind
+
+If not already imported, add import './styles/light-contrast.css'; at the end of client/src/main.tsx or the app’s top entry file, after the Tailwind import.
+
+B) Strengthen pill styles so they win over conflicting utilities
+
+Edit client/src/styles/light-contrast.css (create it if missing). Append these rules:
+
+/* Base hook for all pills */
+.vh-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 9999px;
+  padding: 0.125rem 0.5rem;
+  font-weight: 600;
+  border: 1px solid var(--pill-br, #e2e8f0);
+  background-color: var(--pill-bg, #f1f5f9) !important;
+  color: var(--pill-fg, #0f172a) !important;
+}
+
+/* Variants */
+.vh-pill--success {
+  --pill-bg: #dcfce7;
+  --pill-br: #86efac;
+  --pill-fg: #065f46;
+}
+.vh-pill--info {
+  --pill-bg: #e0f2fe;
+  --pill-br: #bae6fd;
+  --pill-fg: #075985;
+}
+.vh-pill--price {
+  --pill-bg: #fff7ed;
+  --pill-br: #fed7aa;
+  --pill-fg: #9a3412;
+}
+
+/* Dark theme safety */
+.dark .vh-pill {
+  --pill-bg: #1f2937;
+  --pill-br: #334155;
+  --pill-fg: #e2e8f0;
+}
+
+
+C) Make sure all pills actually carry the hooks
+
+In client/src/pages/pulse.tsx: for price chips add vh-pill vh-pill--price. For tag chips add vh-pill vh-pill--info. Leave existing Tailwind classes in place.
+
+In client/src/pages/community.tsx: same approach for status, tags, and price chips.
+
+If there is a shared Badge/Tag component (search for Badge, Tag, Pill): append vh-pill to its root className. If it has a variant prop, map it to vh-pill--info or vh-pill--success as appropriate.
+
+D) Fix the left-nav active item contrast in light mode only
+
+In the same light-contrast.css, append:
+
+/* Light mode active state for side nav */
+:root:not(.dark) .sidebar a[aria-current="page"],
+:root:not(.dark) .sidebar .active {
+  background-color: #eef2ff !important; /* soft indigo */
+  color: #1f2937 !important;            /* slate-800 text */
+  border-radius: 0.5rem;
+  font-weight: 700;
+  outline: 0;
+}
+
+/* Hover and focus visible */
+:root:not(.dark) .sidebar a:hover {
+  background-color: #e5e7eb;            /* slate-200 */
+}
+
+
+E) Coverage check
+
+Search the repo for pill elements that still lack vh-pill. Update those spots only if they are visible in Pulse or Community. Do not change unrelated areas.
+
+Acceptance:
+
+Pills on report cards and in Community have clear text on colored backgrounds in light mode.
+
+Active nav item in light mode is clearly highlighted with a colored background.
+
+No layout shifts. No removed classes. Build is clean.
+
+Reply now with:
+
+File list you plan to edit.
+
+One-line plan per file.
+
+Diff previews.
+Wait for my YES.
