@@ -144,10 +144,22 @@ export async function hasAccess(reportId: string): Promise<boolean> {
  */
 export async function hasPurchased(reportId: string): Promise<boolean> {
   try {
-    // For now, using fallback user ID (in real app, get from auth)
-    const userId = 'user1'; // TODO: Get from actual auth session
+    // Get the current session and user
+    const { data: sessionRes } = await supabase.auth.getSession();
+    const token = sessionRes?.session?.access_token;
     
-    const response = await fetch(`/api/pulse/reports/${reportId}/purchase-status?userId=${userId}`);
+    if (!token) {
+      // No authentication, can't have purchased anything
+      return false;
+    }
+    
+    const response = await fetch(`/api/pulse/reports/${reportId}/purchase-status`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      }
+    });
+    
     if (!response.ok) {
       console.error("hasPurchased: API error", response.status);
       return false;
