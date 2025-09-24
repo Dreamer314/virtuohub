@@ -67,10 +67,12 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
         onSuccess();
       }
     } catch (error) {
-      console.error('Payment error:', error);
+      console.error('Payment error details:', error);
+      console.error('Error type:', typeof error);
+      console.error('Error message:', error instanceof Error ? error.message : String(error));
       toast({
         title: "Payment Error",
-        description: "An unexpected error occurred during payment.",
+        description: `Payment failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
         variant: "destructive",
       });
     } finally {
