@@ -1,5 +1,4 @@
 import type { Express } from "express";
-import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertPostSchema, insertSavedPostSchema, insertArticleSchema, insertCommentSchema, insertProfileSchema, CATEGORIES, PLATFORMS } from "@shared/schema";
@@ -517,53 +516,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Stripe webhook to handle successful payments - needs raw body
-  app.post("/api/stripe/webhook", express.raw({type: 'application/json'}), async (req, res) => {
-    try {
-      const sig = req.headers['stripe-signature'];
-      let event;
-
-      try {
-        event = stripe.webhooks.constructEvent(req.body, sig!, process.env.STRIPE_WEBHOOK_SECRET!);
-      } catch (err: any) {
-        console.log(`Webhook signature verification failed.`, err.message);
-        return res.status(400).send(`Webhook Error: ${err.message}`);
-      }
-
-      if (event.type === 'payment_intent.succeeded') {
-        const paymentIntent = event.data.object as Stripe.PaymentIntent;
-        
-        // Only process pulse report purchases
-        if (paymentIntent.metadata.type === 'pulse_report_purchase') {
-          const { reportId } = paymentIntent.metadata;
-          
-          // Insert purchase record into Supabase
-          const { data, error } = await supabase
-            .from('pulse_report_purchases')
-            .insert({
-              report_id: reportId,
-              user_id: paymentIntent.metadata.userId || null, // Will be set from frontend
-              stripe_session_id: null, // We're using payment intents, not sessions
-              stripe_payment_intent: paymentIntent.id,
-              amount_cents: paymentIntent.amount,
-              currency: paymentIntent.currency,
-              status: 'completed'
-            });
-
-          if (error) {
-            console.error('Error inserting purchase record:', error);
-          } else {
-            console.log('Purchase recorded successfully:', data);
-          }
-        }
-      }
-
-      res.json({ received: true });
-    } catch (error: any) {
-      console.error('Webhook error:', error);
-      res.status(500).json({ message: "Webhook processing failed" });
-    }
-  });
 
   // Check if user has purchased a report
   app.get("/api/pulse/reports/:reportId/purchase-status", async (req, res) => {

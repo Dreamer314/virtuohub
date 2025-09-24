@@ -3,6 +3,62 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
+
+// Handle Stripe webhook BEFORE JSON parsing (needs raw body)
+import Stripe from "stripe";
+const stripe = new Stripe(process.env.TESTING_STRIPE_SECRET_KEY!, {
+  apiVersion: "2025-08-27.basil",
+});
+import { supabase } from "./supabaseClient";
+
+app.post("/api/stripe/webhook", express.raw({type: 'application/json'}), async (req, res) => {
+  try {
+    const sig = req.headers['stripe-signature'];
+    let event;
+
+    try {
+      event = stripe.webhooks.constructEvent(req.body, sig!, process.env.STRIPE_WEBHOOK_SECRET!);
+    } catch (err: any) {
+      console.log(`Webhook signature verification failed.`, err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    if (event.type === 'payment_intent.succeeded') {
+      const paymentIntent = event.data.object as Stripe.PaymentIntent;
+      
+      // Only process pulse report purchases
+      if (paymentIntent.metadata.type === 'pulse_report_purchase') {
+        const { reportId } = paymentIntent.metadata;
+        
+        // Insert purchase record into Supabase
+        const { data, error } = await supabase
+          .from('pulse_report_purchases')
+          .insert({
+            report_id: reportId,
+            user_id: paymentIntent.metadata.userId || null,
+            stripe_session_id: null,
+            stripe_payment_intent: paymentIntent.id,
+            amount_cents: paymentIntent.amount,
+            currency: paymentIntent.currency,
+            status: 'completed'
+          });
+
+        if (error) {
+          console.error('Error inserting purchase record:', error);
+        } else {
+          console.log('Purchase recorded successfully:', data);
+        }
+      }
+    }
+
+    res.json({ received: true });
+  } catch (error: any) {
+    console.error('Webhook error:', error);
+    res.status(500).json({ message: "Webhook processing failed" });
+  }
+});
+
+// NOW apply JSON parsing to all other routes
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
