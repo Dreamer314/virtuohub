@@ -1,0 +1,135 @@
+YES. Proceed exactly as follows (no refactors, only append hooks + CSS):
+
+A) Tag the shared Button root
+
+File: client/src/components/ui/button.tsx
+
+Append a hook class and data attrs to the root element. Keep everything else unchanged.
+
+-      <Comp
+-        className={cn(buttonVariants({ variant, size, className }))}
++      <Comp
++        className={cn(buttonVariants({ variant, size, className }), "vh-btn")}
++        data-variant={variant ?? "default"}
++        data-size={size}
+         ref={ref}
+         {...props}
+       />
+
+B) Light-mode button contrast CSS
+
+File: client/src/styles/light-contrast.css
+Append these rules at the end. Do not alter existing ones.
+
+/* -------- Buttons: light mode only -------- */
+:root:not(.dark) .vh-btn {
+  font-weight: 700;
+  border-width: 1px;
+}
+
+/* default (primary) */
+:root:not(.dark) .vh-btn[data-variant="default"] {
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  border-color: color-mix(in srgb, var(--primary) 85%, black 15%) !important;
+}
+
+/* secondary */
+:root:not(.dark) .vh-btn[data-variant="secondary"] {
+  background-color: var(--secondary) !important;
+  color: var(--secondary-foreground) !important;
+  border-color: color-mix(in srgb, var(--secondary) 85%, black 15%) !important;
+}
+
+/* outline */
+:root:not(.dark) .vh-btn[data-variant="outline"] {
+  background-color: #ffffff !important;
+  color: var(--foreground) !important;
+  border-color: var(--border) !important;
+}
+
+/* ghost */
+:root:not(.dark) .vh-btn[data-variant="ghost"] {
+  background-color: transparent !important;
+  color: var(--foreground) !important;
+  border-color: var(--muted) !important;
+}
+
+/* destructive */
+:root:not(.dark) .vh-btn[data-variant="destructive"] {
+  background-color: var(--destructive, #ef4444) !important;
+  color: var(--destructive-foreground, #ffffff) !important;
+  border-color: color-mix(in srgb, var(--destructive, #ef4444) 85%, black 15%) !important;
+}
+
+/* link */
+:root:not(.dark) .vh-btn[data-variant="link"] {
+  color: var(--primary) !important;
+}
+
+/* interaction states */
+:root:not(.dark) .vh-btn:hover { filter: brightness(0.95); }
+:root:not(.dark) .vh-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+:root:not(.dark) .vh-btn[disabled],
+:root:not(.dark) .vh-btn[aria-disabled="true"] {
+  opacity: 1;
+  background-color: var(--muted) !important;
+  color: var(--muted-foreground) !important;
+  border-color: var(--muted) !important;
+}
+
+
+Note: color-mix is supported in modern browsers; if it warns, keep it—browsers will fall back gracefully.
+
+C) Tag the 3 non-shared buttons found in the audit
+
+Append the hook + variant only. Keep existing classes.
+
+Community hero (“Join the Community”)
+
+- <button className="px-8 py-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold text-xl transition-all hover:scale-105 drop-shadow-lg">
++ <button className="px-8 py-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold text-xl transition-all hover:scale-105 drop-shadow-lg vh-btn"
++   data-variant="default">
+
+
+Community create-post faux input
+
+- <button
++ <button
++   className="w-full text-left px-4 py-3 bg-muted/50 hover:bg-muted/70 rounded-xl border border-border/50 hover:border-primary/30 transition-all duration-200 text-muted-foreground hover:text-foreground vh-btn"
++   data-variant="secondary"
+
+
+Events “Clear filters”
+
+- <button 
++ <button 
++   className="ml-2 text-primary hover:text-primary/80 underline vh-btn"
++   data-variant="link"
+
+D) Guardrails
+
+Do not remove or reorder existing Tailwind classes.
+
+Do not refactor components.
+
+Do not touch dark mode styles.
+
+light-contrast.css must remain imported after Tailwind (already true).
+
+Acceptance
+
+In light mode, all buttons have high-contrast text on solid backgrounds.
+
+“Download PDF” is white text on solid green with visible hover/focus.
+
+The three non-shared buttons adopt the new contrast without layout changes.
+
+Dark mode looks unchanged.
+
+Build clean. Provide before/after screenshots for the Pulse Download button and the Community hero button.
+
+Stop after these edits and report.

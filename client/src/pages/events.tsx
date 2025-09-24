@@ -196,7 +196,8 @@ const EventsPage: React.FC = () => {
                       {filterStore.hasActiveFilters() && (
                         <button 
                           onClick={actions.clearFilters}
-                          className="ml-2 text-primary hover:text-primary/80 underline"
+                          className="ml-2 text-primary hover:text-primary/80 underline vh-btn"
+                          data-variant="link"
                           data-testid="button-clear-filters"
                         >
                           Clear filters

@@ -326,3 +326,63 @@ body.light span.bg-yellow-500\/20 {
 :root:not(.dark) [data-sidebar] [role="button"]:hover {
   background-color: #e5e7eb;
 }
+
+/* -------- Buttons: light mode only -------- */
+:root:not(.dark) .vh-btn {
+  font-weight: 700;
+  border-width: 1px;
+}
+
+/* default (primary) */
+:root:not(.dark) .vh-btn[data-variant="default"] {
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  border-color: color-mix(in srgb, var(--primary) 85%, black 15%) !important;
+}
+
+/* secondary */
+:root:not(.dark) .vh-btn[data-variant="secondary"] {
+  background-color: var(--secondary) !important;
+  color: var(--secondary-foreground) !important;
+  border-color: color-mix(in srgb, var(--secondary) 85%, black 15%) !important;
+}
+
+/* outline */
+:root:not(.dark) .vh-btn[data-variant="outline"] {
+  background-color: #ffffff !important;
+  color: var(--foreground) !important;
+  border-color: var(--border) !important;
+}
+
+/* ghost */
+:root:not(.dark) .vh-btn[data-variant="ghost"] {
+  background-color: transparent !important;
+  color: var(--foreground) !important;
+  border-color: var(--muted) !important;
+}
+
+/* destructive */
+:root:not(.dark) .vh-btn[data-variant="destructive"] {
+  background-color: var(--destructive, #ef4444) !important;
+  color: var(--destructive-foreground, #ffffff) !important;
+  border-color: color-mix(in srgb, var(--destructive, #ef4444) 85%, black 15%) !important;
+}
+
+/* link */
+:root:not(.dark) .vh-btn[data-variant="link"] {
+  color: var(--primary) !important;
+}
+
+/* interaction states */
+:root:not(.dark) .vh-btn:hover { filter: brightness(0.95); }
+:root:not(.dark) .vh-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+:root:not(.dark) .vh-btn[disabled],
+:root:not(.dark) .vh-btn[aria-disabled="true"] {
+  opacity: 1;
+  background-color: var(--muted) !important;
+  color: var(--muted-foreground) !important;
+  border-color: var(--muted) !important;
+}

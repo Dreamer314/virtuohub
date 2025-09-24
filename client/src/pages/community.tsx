@@ -169,7 +169,8 @@ const CommunityPage: React.FC = () => {
                     <h1 className="text-9xl font-display font-bold text-white mb-6 drop-shadow-lg">VirtuoHub Community</h1>
                     <h2 className="text-5xl font-display font-bold text-white mb-4 drop-shadow-lg">Your Immersive Economy HQ</h2>
                     <p className="text-3xl text-white/90 drop-shadow-md mb-8">Discover, connect, and build together.</p>
-                    <button className="px-8 py-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold text-xl transition-all hover:scale-105 drop-shadow-lg">
+                    <button className="px-8 py-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-semibold text-xl transition-all hover:scale-105 drop-shadow-lg vh-btn"
+                      data-variant="default">
                       Join the Community
                     </button>
                   </div>
@@ -300,7 +301,8 @@ const CommunityPage: React.FC = () => {
                                 setCreateModalType('regular');
                                 setIsCreatePostModalOpen(true);
                               }}
-                              className="w-full text-left px-4 py-3 bg-muted/50 hover:bg-muted/70 rounded-xl border border-border/50 hover:border-primary/30 transition-all duration-200 text-muted-foreground hover:text-foreground"
+                              className="w-full text-left px-4 py-3 bg-muted/50 hover:bg-muted/70 rounded-xl border border-border/50 hover:border-primary/30 transition-all duration-200 text-muted-foreground hover:text-foreground vh-btn"
+                              data-variant="secondary"
                               data-testid="create-post-input"
                             >
                               What's happening in your virtual world?
