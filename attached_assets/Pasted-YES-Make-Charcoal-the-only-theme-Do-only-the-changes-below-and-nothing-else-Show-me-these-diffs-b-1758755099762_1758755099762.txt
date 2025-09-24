@@ -1,0 +1,157 @@
+YES. Make Charcoal the only theme. Do only the changes below and nothing else. Show me these diffs before committing.
+
+1) Theme provider: force Charcoal, one flag
+
+File: client/src/components/theme-provider.tsx
+File: client/src/components/theme/theme-provider.tsx
+
+Remove cycling among themes. Always set Charcoal.
+
+On mount: add both dark and charcoal classes to <html> for legacy selectors, and set data-theme="charcoal".
+
+Keep writing "charcoal" to localStorage for compatibility.
+
+- type Theme = "dark" | "light" | "charcoal" | "system"
++ type Theme = "charcoal"
+
+  useEffect(() => {
+-   const stored = (localStorage.getItem(storageKey) as Theme) || defaultTheme
+-   const theme = stored === "system" ? systemTheme : stored
+-   root.classList.remove("light", "dark", "charcoal")
+-   root.setAttribute("data-theme", theme)
+-   if (theme === "dark") root.classList.add("dark")
+-   if (theme === "charcoal") root.classList.add("charcoal")
+-   localStorage.setItem(storageKey, theme)
++   const theme: Theme = "charcoal"
++   root.classList.add("dark", "charcoal")
++   root.setAttribute("data-theme", "charcoal")
++   localStorage.setItem(storageKey, "charcoal")
+  }, [])
+
+2) Header toggle: disable theme switching
+
+File: client/src/components/layout/header.tsx
+
+Make the toggle a no-op so users can’t flip out of Charcoal.
+
+- function toggleTheme() {
+-   if (theme === "light") setTheme("dark")
+-   else if (theme === "dark") setTheme("charcoal")
+-   else setTheme("light")
+- }
++ function toggleTheme() {
++   // Single-theme mode: charcoal only
++   setTheme?.("charcoal")
++ }
+
+3) Tokens for Charcoal
+
+New file: client/src/styles/theme-tokens.css
+File: client/src/main.tsx (import after index.css and before any other custom CSS)
+
+ // main.tsx
+ import "./index.css"
++import "./styles/theme-tokens.css"
+ import "./styles/light-contrast.css"
+
+/* theme-tokens.css */
+:root {
+  --radius: 0.75rem;
+  --background: #0b1220;
+  --foreground: #e5e7eb;
+  --muted: #141b2a;
+  --muted-foreground: #9ca3af;
+  --border: #293245;
+  --card: #0f172a;
+  --card-foreground: #e5e7eb;
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --secondary: #1b2333;
+  --secondary-foreground: #e5e7eb;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --ring: #7c3aed;
+  --input: #141b2a;
+}
+
+4) Stop light-style leaks completely
+
+File: client/src/styles/light-contrast.css
+
+Scope all overrides to “not charcoal.”
+
+Wrap the existing light rules with html:not(.dark) so they never run now.
+
+- /* existing rules scattered with :root:not(.dark) / html.light / [data-theme="light"] */
++ /* Light-only overrides. Disabled in single-theme mode because html has .dark */
++ html:not(.dark) .vh-pill { /* keep existing declarations here */ }
++ html:not(.dark) .vh-pill--success { /* ... */ }
++ html:not(.dark) .vh-btn { /* ... */ }
++ html:not(.dark) .vh-btn[data-variant="default"] { /* ... */ }
++ html:not(.dark) [data-cta="download"] { /* ... */ }
++ html:not(.dark) .sidebar [aria-current="page"],
++ html:not(.dark) .sidebar [aria-current="true"] { /* ... */ }
+
+
+If the file has many separate blocks, add html:not(.dark) to each top selector. Do not change declarations inside.
+
+5) Charcoal readability pass (buttons, inputs, pills)
+
+If not already present, append these at the end of light-contrast.css or a new charcoal-contrast.css imported after tokens.
+
+/* Charcoal buttons */
+html.dark .vh-btn {
+  font-weight: 700;
+  border-width: 1px;
+}
+
+/* Charcoal inputs */
+html.dark input:not([type="checkbox"]):not([type="radio"]),
+html.dark textarea,
+html.dark select {
+  background-color: --input !important;
+  background-color: var(--input) !important; /* fallback */
+  color: var(--foreground) !important;
+  border-color: var(--border) !important;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: var(--muted-foreground) !important;
+  opacity: 1;
+}
+
+/* Charcoal pills */
+html.dark .vh-pill {
+  --pill-bg: #1f2937;
+  --pill-br: #334155;
+  --pill-fg: #e5e7eb;
+  background-color: var(--pill-bg) !important;
+  color: var(--pill-fg) !important;
+  border-color: var(--pill-br) !important;
+}
+
+/* Charcoal download CTA */
+html.dark [data-cta="download"] {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+  border-color: #059669 !important;
+}
+html.dark [data-cta="download"]:hover { background-color: #059669 !important; }
+
+6) Tailwind config stays as is
+
+File: tailwind.config.ts
+
+darkMode: ["class"] is correct. No changes.
+
+Acceptance
+
+App mounts with <html class="dark charcoal" data-theme="charcoal">. No other theme flags are used.
+
+Buttons, pills, inputs, and text are readable everywhere in Charcoal. No white-on-white. No unintended white buttons.
+
+Light rules are fully disabled by selector.
+
+Build is clean. Provide before/after screenshots for: Home hero buttons, Community create post area, Pulse “Download PDF,” Admin form input.
+
+Do not modify layouts, copy, or component logic. Only apply the diffs above.
