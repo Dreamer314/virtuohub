@@ -67,12 +67,16 @@ const PulsePage: React.FC = () => {
         setReports(rows);
         setLoadingReports(false);
         
+        // Get current user for purchase checks
+        const { data: sessionRes } = await supabase.auth.getSession();
+        const userId = sessionRes?.session?.user?.id ?? null;
+        
         // Check purchase status for paid reports
         const purchaseChecks = await Promise.all(
           rows
             .filter(r => r.access_level === 'paid')
             .map(async r => {
-              const purchased = await hasPurchased(r.id);
+              const purchased = userId ? await hasPurchased(r.id, userId) : false;
               return { id: r.id, purchased };
             })
         );

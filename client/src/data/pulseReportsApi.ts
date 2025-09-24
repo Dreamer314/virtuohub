@@ -130,22 +130,10 @@ export async function hasAccess(reportId: string): Promise<boolean> {
  * Check if user has purchased a specific report.
  * Now calls our local API endpoint instead of Supabase directly.
  */
-export async function hasPurchased(reportId: string): Promise<boolean> {
+export async function hasPurchased(reportId: string, userId: string): Promise<boolean> {
   try {
-    // Get the current session and user
-    const { data: sessionRes } = await supabase.auth.getSession();
-    const token = sessionRes?.session?.access_token;
-    
-    if (!token) {
-      // No authentication, can't have purchased anything
-      return false;
-    }
-    
-    const response = await fetch(`/api/pulse/reports/${reportId}/purchase-status`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      }
+    const response = await fetch(`/api/pulse/reports/${reportId}/access?userId=${userId}`, { 
+      cache: 'no-store' 
     });
     
     if (!response.ok) {
@@ -154,7 +142,7 @@ export async function hasPurchased(reportId: string): Promise<boolean> {
     }
     
     const data = await response.json();
-    return data.hasPurchased || false;
+    return Boolean(data.canDownload);
   } catch (error) {
     console.error("hasPurchased:", error);
     return false;
