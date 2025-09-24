@@ -519,27 +519,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Payment verification failed" });
       }
 
-      // Check if purchase record already exists
-      const { data: existingPurchase } = await supabase
-        .from('pulse_report_purchases')
-        .select('id')
-        .eq('stripe_payment_intent', paymentIntentId)
-        .single();
-
-      if (existingPurchase) {
-        return res.json({ success: true, message: "Purchase already recorded" });
-      }
-
-      // Insert purchase record into Supabase using service role to bypass RLS
+      // Use upsert to handle duplicate payment intents gracefully
       const { data, error } = await supabaseAdmin
         .from('pulse_report_purchases')
-        .insert({
+        .upsert({
           report_id: reportId,
           user_id: userId,
           stripe_payment_intent: paymentIntentId,
           amount_cents: paymentIntent.amount,
           currency: paymentIntent.currency,
           status: 'completed'
+        }, {
+          onConflict: 'stripe_payment_intent'
         });
 
       if (error) {
