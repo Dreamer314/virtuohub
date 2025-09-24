@@ -1,0 +1,85 @@
+You will make a very small client-side change so the “Purchase” button flips to “Download” after payment.
+
+Context
+
+The server endpoint /api/pulse/reports/:reportId/access?userId=:userId already works and returns {"canDownload": true} for the paid report.
+
+The UI is still calling /api/pulse/reports/:reportId/purchase-status and therefore never sees the canDownload flag.
+
+We will update the client to call the working /access endpoint and pass the current user id.
+
+Your tasks (read fully, then confirm understanding before any edits)
+
+Locate the client function that checks access:
+
+File to inspect first: client/src/data/pulseReportsApi.ts
+
+Function name: hasPurchased (or similarly named)
+
+Locate where that function is used to build the set of purchased reports:
+
+File to inspect first: client/src/pages/pulse.tsx
+
+There is a Promise.all(...) that maps reports and calls hasPurchased(r.id) then builds a Set of purchased ids.
+
+Planned change
+A) Replace the current hasPurchased(reportId: string) so it calls the working endpoint and returns a boolean from canDownload. It must accept userId because the endpoint requires it.
+
+// in client/src/data/pulseReportsApi.ts
+
+export async function hasPurchased(reportId: string, userId: string): Promise<boolean> {
+  const res = await fetch(`/api/pulse/reports/${reportId}/access?userId=${userId}`, { cache: 'no-store' });
+  const j = await res.json();
+  return Boolean(j.canDownload);
+}
+
+
+B) Update the call site so userId is passed. Use the project’s existing auth pattern to get the current user id. Prefer whatever the app already uses in other files, for example Supabase auth.getUser() or an auth context hook. Example pattern to follow if no helper exists in scope:
+
+// inside the Pulse page component, before loading checks
+// Adjust to the project’s existing auth utilities
+import { createClient } from '@supabase/supabase-js';
+const supabase = createClient(import.meta.env.VITE_SUPABASE_URL!, import.meta.env.VITE_SUPABASE_ANON_KEY!);
+const { data: auth } = await supabase.auth.getUser();
+const userId = auth?.user?.id ?? null;
+
+// when building purchaseChecks
+const purchaseChecks = await Promise.all(
+  reports.map(async (r) => {
+    const purchased = userId ? await hasPurchased(r.id, userId) : false;
+    return { id: r.id, purchased };
+  })
+);
+
+const purchasedSet = new Set(purchaseChecks.filter(p => p.purchased).map(p => p.id));
+setPurchasedReports(purchasedSet);
+
+
+C) Do not change any server files, webhook code, or database schema.
+
+Acceptance criteria
+
+Build succeeds.
+
+When loading the page for the paid report, the Network tab shows a GET to /api/pulse/reports/<id>/access?userId=<uuid> and the JSON response is {"canDownload": true}.
+
+The report card flips from “Purchase” to “Download” without manual refresh after the access fetch returns.
+
+No other files are modified.
+
+Guardrails
+
+Make no unrelated edits. Do not rename endpoints. Do not add or remove env vars. Do not change Stripe code. Do not change server routes. Only the two client places described above.
+
+If you cannot find the exact files or the function names differ, search the repo and reply with the found paths and a short plan, then wait for my “YES” before changing anything.
+
+Before making edits
+Reply with:
+
+The exact file paths you will edit.
+
+A 2-line summary of the changes.
+
+A diff preview of the small edits you intend.
+
+Wait for my “YES” to proceed.
