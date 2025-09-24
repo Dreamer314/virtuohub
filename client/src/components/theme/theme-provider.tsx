@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react"
 
-type Theme = "light" | "dark" | "charcoal"
+type Theme = "charcoal"
 
 type ThemeProviderProps = {
   children: React.ReactNode
@@ -14,7 +14,7 @@ type ThemeProviderState = {
 }
 
 const initialState: ThemeProviderState = {
-  theme: "light",
+  theme: "charcoal",
   setTheme: () => null,
 }
 
@@ -22,24 +22,19 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
 export function VHThemeProvider({
   children,
-  defaultTheme = "light",
+  defaultTheme = "charcoal",
   storageKey = "vh-ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
-  )
+  const [theme, setTheme] = useState<Theme>("charcoal")
 
   useEffect(() => {
     const root = window.document.documentElement
-    
-    // Remove all theme classes
-    root.classList.remove("light", "dark", "charcoal")
-    
-    // Set the new theme attribute and class
-    root.setAttribute("data-theme", theme)
-    root.classList.add(theme)
-  }, [theme])
+    const theme: Theme = "charcoal"
+    root.classList.add("dark", "charcoal")
+    root.setAttribute("data-theme", "charcoal")
+    localStorage.setItem(storageKey, "charcoal")
+  }, [])
 
   const value = {
     theme,
@@ -65,42 +60,17 @@ export const useVHTheme = () => {
   return context
 }
 
-// Theme toggle component
+// Theme toggle component (disabled in single-theme mode)
 export function ThemeToggle() {
   const { theme, setTheme } = useVHTheme()
 
   return (
     <div className="flex items-center gap-2 p-2 bg-vh-surface rounded-lg border border-vh-border">
       <button
-        onClick={() => setTheme("light")}
-        className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-          theme === "light"
-            ? "bg-vh-accent1 text-white"
-            : "text-vh-text-muted hover:text-vh-accent1"
-        }`}
-        aria-label="Switch to light theme"
-      >
-        Light
-      </button>
-      <button
-        onClick={() => setTheme("dark")}
-        className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-          theme === "dark"
-            ? "bg-vh-accent1 text-white"
-            : "text-vh-text-muted hover:text-vh-accent1"
-        }`}
-        aria-label="Switch to dark theme"
-      >
-        Dark
-      </button>
-      <button
         onClick={() => setTheme("charcoal")}
-        className={`px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-          theme === "charcoal"
-            ? "bg-vh-accent1 text-white"
-            : "text-vh-text-muted hover:text-vh-accent1"
-        }`}
-        aria-label="Switch to charcoal theme"
+        className="px-3 py-1.5 text-sm font-medium rounded-md bg-vh-accent1 text-white"
+        aria-label="Charcoal theme (locked)"
+        disabled
       >
         Charcoal
       </button>

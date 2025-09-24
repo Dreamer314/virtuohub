@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "dark" | "light" | "charcoal" | "system";
+type Theme = "charcoal";
 
 type ThemeProviderProps = {
   children: React.ReactNode;
@@ -14,7 +14,7 @@ type ThemeProviderState = {
 };
 
 const initialState: ThemeProviderState = {
-  theme: "system",
+  theme: "charcoal",
   setTheme: () => null,
 };
 
@@ -22,34 +22,19 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
 export function ThemeProvider({
   children,
-  defaultTheme = "system",
+  defaultTheme = "charcoal",
   storageKey = "vite-ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
-  );
+  const [theme, setTheme] = useState<Theme>("charcoal");
 
   useEffect(() => {
     const root = window.document.documentElement;
-
-    // Remove any legacy class-based themes
-    root.classList.remove("light", "dark", "charcoal");
-
-    if (theme === "system") {
-      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)")
-        .matches
-        ? "dark"
-        : "light";
-
-      // Only use data-theme attribute for unified theme system
-      root.setAttribute("data-theme", systemTheme);
-      return;
-    }
-
-    // Only use data-theme attribute for unified theme system
-    root.setAttribute("data-theme", theme);
-  }, [theme]);
+    const theme: Theme = "charcoal";
+    root.classList.add("dark", "charcoal");
+    root.setAttribute("data-theme", "charcoal");
+    localStorage.setItem(storageKey, "charcoal");
+  }, []);
 
   const value = {
     theme,
