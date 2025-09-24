@@ -17,8 +17,12 @@ import {
   listVisibleReports,
   getSignedDownloadUrl,
   hasAccess,
+  hasPurchased,
   type ReportRow,
 } from "@/data/pulseReportsApi";
+
+// Payment components
+import { ReportCheckout } from "@/components/payments/ReportCheckout";
 
 function daysDiffFromNow(iso: string | null) {
   if (!iso) return 0;
@@ -32,6 +36,11 @@ const PulsePage: React.FC = () => {
   const [refreshTick, setRefreshTick] = useState(0);
   const [reports, setReports] = useState<ReportRow[]>([]);
   const [loadingReports, setLoadingReports] = useState(true);
+  
+  // Payment checkout state
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<ReportRow | null>(null);
+  const [purchasedReports, setPurchasedReports] = useState<Set<string>>(new Set());
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
@@ -48,7 +57,7 @@ const PulsePage: React.FC = () => {
     return () => { off = true; };
   }, []);
 
-  // Load reports
+  // Load reports and check purchase status
   useEffect(() => {
     let off = false;
     (async () => {
@@ -57,6 +66,23 @@ const PulsePage: React.FC = () => {
       if (!off) {
         setReports(rows);
         setLoadingReports(false);
+        
+        // Check purchase status for paid reports
+        const purchaseChecks = await Promise.all(
+          rows
+            .filter(r => r.access_level === 'paid')
+            .map(async r => {
+              const purchased = await hasPurchased(r.id);
+              return { id: r.id, purchased };
+            })
+        );
+        
+        const purchased = new Set(
+          purchaseChecks
+            .filter(p => p.purchased)
+            .map(p => p.id)
+        );
+        setPurchasedReports(purchased);
       }
     })();
     return () => { off = true; };
@@ -85,6 +111,14 @@ const PulsePage: React.FC = () => {
   // Placeholder purchase flow (kept intentionally so nothing breaks)
   function handlePurchase(r: ReportRow) {
     alert(`Purchase flow goes here for “${r.title}”. Current price: $${((r.price_cents ?? 0) / 100).toFixed(2)}.`);
+  }
+
+  // Handle successful payment
+  function handlePaymentSuccess() {
+    if (selectedReport) {
+      setPurchasedReports(prev => new Set([...prev, selectedReport.id]));
+      setRefreshTick(t => t + 1); // Refresh to update access
+    }
   }
 
   // Placeholder request access (private)
@@ -266,6 +300,21 @@ const PulsePage: React.FC = () => {
       </div>
 
       <Footer />
+      
+      {/* Payment Checkout Modal */}
+      {selectedReport && (
+        <ReportCheckout
+          isOpen={checkoutOpen}
+          onClose={() => {
+            setCheckoutOpen(false);
+            setSelectedReport(null);
+          }}
+          reportId={selectedReport.id}
+          reportTitle={selectedReport.title}
+          amount={selectedReport.price_cents || 0}
+          onSuccess={handlePaymentSuccess}
+        />
+      )}
     </div>
   );
 };

@@ -60,7 +60,8 @@ export async function getSignedDownloadUrl(storagePath: string): Promise<string 
  * True if:
  *  - user is admin, OR
  *  - report.access_level = 'free', OR
- *  - pulse_report_access has a row for (report_id, user_id)
+ *  - pulse_report_access has a row for (report_id, user_id), OR
+ *  - pulse_report_purchases has a completed purchase for (report_id, user_id)
  */
 export async function hasAccess(reportId: string): Promise<boolean> {
   // Get session
@@ -107,5 +108,46 @@ export async function hasAccess(reportId: string): Promise<boolean> {
     return false;
   }
 
-  return Boolean(acc);
+  if (acc) return true;
+
+  // Check if user has purchased this report
+  const { data: purchase, error: purchaseErr } = await supabase
+    .from("pulse_report_purchases")
+    .select("id")
+    .eq("report_id", reportId)
+    .eq("user_id", uid)
+    .eq("status", "completed")
+    .maybeSingle();
+
+  if (purchaseErr) {
+    console.error("hasAccess: purchase check failed", purchaseErr.message);
+    return false;
+  }
+
+  return Boolean(purchase);
+}
+
+/**
+ * Check if user has purchased a specific report
+ */
+export async function hasPurchased(reportId: string): Promise<boolean> {
+  const { data: sessionRes } = await supabase.auth.getSession();
+  const uid = sessionRes?.session?.user?.id ?? null;
+
+  if (!uid) return false;
+
+  const { data: purchase, error } = await supabase
+    .from("pulse_report_purchases")
+    .select("id")
+    .eq("report_id", reportId)
+    .eq("user_id", uid)
+    .eq("status", "completed")
+    .maybeSingle();
+
+  if (error) {
+    console.error("hasPurchased: check failed", error.message);
+    return false;
+  }
+
+  return Boolean(purchase);
 }
