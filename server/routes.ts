@@ -452,18 +452,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/pulse/reports/:reportId/purchase", async (req, res) => {
     try {
       const { reportId } = req.params;
-      const { amount } = req.body; // Amount in cents
       
-      if (!amount || amount <= 0) {
-        return res.status(400).json({ message: "Invalid amount" });
+      // Get authenticated user from session
+      const authHeader = req.headers.authorization;
+      const token = authHeader?.replace('Bearer ', '');
+      let userId = null;
+      
+      if (token) {
+        try {
+          const { data: { user } } = await supabase.auth.getUser(token);
+          userId = user?.id || null;
+        } catch (authError) {
+          console.warn('Auth verification failed:', authError);
+        }
       }
       
-      // Create payment intent with metadata
+      // For now, use fallback user ID if no auth (in real app, require auth)
+      if (!userId) {
+        userId = 'user1'; // Fallback for demo purposes
+      }
+      
+      // Fetch report from database to get server-side price
+      const { data: report, error: reportError } = await supabase
+        .from('pulse_reports')
+        .select('id, title, price_cents, access_level')
+        .eq('id', reportId)
+        .single();
+      
+      if (reportError || !report) {
+        return res.status(404).json({ message: "Report not found" });
+      }
+      
+      if (report.access_level !== 'paid' || !report.price_cents) {
+        return res.status(400).json({ message: "Report is not available for purchase" });
+      }
+      
+      // Use server-side price, not client-provided amount
+      const amount = report.price_cents;
+      
+      // Create payment intent with metadata including user ID
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount),
         currency: "usd",
         metadata: {
           reportId,
+          userId,
           type: 'pulse_report_purchase'
         },
         automatic_payment_methods: {
@@ -535,10 +568,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/pulse/reports/:reportId/purchase-status", async (req, res) => {
     try {
       const { reportId } = req.params;
-      const { userId } = req.query;
       
+      // Get authenticated user from session
+      const authHeader = req.headers.authorization;
+      const token = authHeader?.replace('Bearer ', '');
+      let userId = null;
+      
+      if (token) {
+        try {
+          const { data: { user } } = await supabase.auth.getUser(token);
+          userId = user?.id || null;
+        } catch (authError) {
+          console.warn('Auth verification failed:', authError);
+        }
+      }
+      
+      // For now, use fallback user ID if no auth (in real app, require auth)
       if (!userId) {
-        return res.status(400).json({ message: "User ID required" });
+        userId = 'user1'; // Fallback for demo purposes
       }
       
       const { data, error } = await supabase

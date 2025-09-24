@@ -90,7 +90,14 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
         
         <PaymentElement 
           options={{
-            layout: 'tabs'
+            layout: 'tabs',
+            fields: {
+              billingDetails: {
+                address: {
+                  postalCode: 'never'
+                }
+              }
+            }
           }}
         />
       </div>
@@ -151,10 +158,11 @@ export const ReportCheckout: React.FC<ReportCheckoutProps> = ({
     if (isOpen && reportId && amount > 0) {
       setLoading(true);
       
-      // Create payment intent
-      apiRequest('POST', `/api/pulse/reports/${reportId}/purchase`, { amount })
-        .then((response) => {
-          setClientSecret(response.clientSecret);
+      // Create payment intent (server determines price from report)
+      apiRequest('POST', `/api/pulse/reports/${reportId}/purchase`, {})
+        .then(async (response) => {
+          const data = await response.json();
+          setClientSecret(data.clientSecret);
         })
         .catch((error) => {
           console.error('Error creating payment intent:', error);
