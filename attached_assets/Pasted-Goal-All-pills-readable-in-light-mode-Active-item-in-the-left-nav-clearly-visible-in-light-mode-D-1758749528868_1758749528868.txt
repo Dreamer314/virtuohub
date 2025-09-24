@@ -1,0 +1,87 @@
+Goal: All pills readable in light mode. Active item in the left nav clearly visible in light mode. Do not affect dark mode.
+
+Before any edits, audit and report:
+
+Repo search for pill or badge renderers. Search terms: Badge, Tag, Pill, Chip, badge, tag, chip, pill, rounded-full, px-2, text-xs.
+
+Produce a list of file paths and component names that render pill-like UI on Pulse, Community, and Events.
+
+For each, say whether .vh-pill is already on the element.
+
+Find the left nav component. Paste the exact JSX for an active item. State which attribute or class indicates active, for example aria-current="page", .active, or data-active="true".
+
+Confirm where light-contrast.css is imported. It must load after Tailwind. If it already does, say so.
+
+Stop and wait for my YES.
+
+If I approve, make only these changes:
+
+A) CSS strength and variants
+Append to client/src/styles/light-contrast.css:
+
+/* Base pill */
+.vh-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 9999px;
+  padding: 0.125rem 0.5rem;
+  font-weight: 600;
+  border: 1px solid var(--pill-br, #e2e8f0);
+  background-color: var(--pill-bg, #f1f5f9) !important;
+  color: var(--pill-fg, #0f172a) !important;
+}
+
+/* Variants */
+.vh-pill--success { --pill-bg:#dcfce7; --pill-br:#86efac; --pill-fg:#065f46; }
+.vh-pill--info    { --pill-bg:#e0f2fe; --pill-br:#bae6fd; --pill-fg:#075985; }
+.vh-pill--price   { --pill-bg:#fff7ed; --pill-br:#fed7aa; --pill-fg:#9a3412; }
+
+/* Dark mode safety */
+.dark .vh-pill { --pill-bg:#1f2937; --pill-br:#334155; --pill-fg:#e2e8f0; }
+
+/* Light mode left nav active. Replace selectors to match our actual markup from the audit. */
+:root:not(.dark) .sidebar a[aria-current="page"],
+:root:not(.dark) .sidebar .active,
+:root:not(.dark) .sidebar [data-active="true"],
+:root:not(.dark) .sidebar .router-link-active {
+  background-color:#eef2ff !important;
+  color:#1f2937 !important;
+  border-radius:0.5rem;
+  font-weight:700;
+}
+:root:not(.dark) .sidebar a:hover { background-color:#e5e7eb; }
+
+
+B) Add missing hooks
+Only on Pulse, Community, Events, and any shared Badge or Tag component they use:
+
+Price chips: add vh-pill vh-pill--price
+
+Tag chips or category pills: add vh-pill vh-pill--info
+
+Positive status pills, for example Published or Active: add vh-pill vh-pill--success
+Keep existing Tailwind classes. Do not remove anything.
+
+C) Ensure import order
+If light-contrast.css is not imported after Tailwind in client/src/main.tsx (or the app entry), import it last.
+
+Acceptance:
+
+Pills on Pulse, Community, and Events are readable in light mode.
+
+Active left nav item has a visible background in light mode.
+
+Dark mode unchanged.
+
+Build clean. Provide before and after screenshots for one pill and the left nav.
+
+Guardrails:
+
+Do not change layouts, copy, routing, or logic.
+
+Only append classes or CSS.
+
+Touch no unrelated pages.
+
+Reply with: file list, one-line plan per file, and diff previews. Wait for my YES.
