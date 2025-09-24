@@ -1,4 +1,5 @@
 import type { Express } from "express";
+import express from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertPostSchema, insertSavedPostSchema, insertArticleSchema, insertCommentSchema, insertProfileSchema, CATEGORIES, PLATFORMS } from "@shared/schema";
@@ -516,8 +517,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Stripe webhook to handle successful payments
-  app.post("/api/stripe/webhook", async (req, res) => {
+  // Stripe webhook to handle successful payments - needs raw body
+  app.post("/api/stripe/webhook", express.raw({type: 'application/json'}), async (req, res) => {
     try {
       const sig = req.headers['stripe-signature'];
       let event;
