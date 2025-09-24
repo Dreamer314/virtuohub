@@ -1,0 +1,124 @@
+Goal: make all buttons readable in light mode across the app. Do not affect dark mode. Do not remove existing Tailwind classes.
+
+Before edits, audit and report:
+
+Locate the shared Button component file (likely client/src/components/ui/button.tsx). Paste its export and the element it renders. Confirm its variant prop values (default, secondary, ghost, destructive, link).
+
+List any buttons not using the shared Button component that appear on Pulse, Community, Events, and Report detail pages. Paste one JSX sample for each unique case.
+
+Stop and wait for my YES.
+
+If I approve, make only these changes:
+
+A) Tag the shared Button root element
+
+In the Button component, append a hook class and data attributes. Do not remove existing classes.
+
+Add className hook: append "vh-btn" to the existing className.
+
+Add data-variant={variant ?? 'default'} and data-size={size} to the root element.
+
+Example shape (keep existing code, just add the hooks):
+
+// inside Button component render
+<button
+  {...props}
+  className={cn(buttonVariants({ variant, size, className }), "vh-btn")}
+  data-variant={variant ?? "default"}
+  data-size={size}
+/>
+
+
+B) Style light-mode button contrast
+
+In client/src/styles/light-contrast.css, append these rules:
+
+/* Light mode only */
+:root:not(.dark) .vh-btn {
+  font-weight: 700;
+  border-width: 1px;
+}
+
+/* Primary/default */
+:root:not(.dark) .vh-btn[data-variant="default"] {
+  background-color: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  border-color: color-mix(in srgb, var(--primary) 85%, black 15%) !important;
+}
+
+/* Secondary */
+:root:not(.dark) .vh-btn[data-variant="secondary"] {
+  background-color: var(--secondary) !important;
+  color: var(--secondary-foreground) !important;
+  border-color: color-mix(in srgb, var(--secondary) 85%, black 15%) !important;
+}
+
+/* Ghost: keep transparent, but ensure readable text */
+:root:not(.dark) .vh-btn[data-variant="ghost"] {
+  background-color: transparent !important;
+  color: var(--foreground) !important;
+  border-color: var(--muted) !important;
+}
+
+/* Destructive */
+:root:not(.dark) .vh-btn[data-variant="destructive"] {
+  background-color: var(--destructive, #ef4444) !important;
+  color: var(--destructive-foreground, #fff) !important;
+  border-color: color-mix(in srgb, var(--destructive, #ef4444) 85%, black 15%) !important;
+}
+
+/* Link variant stays link-colored but readable */
+:root:not(.dark) .vh-btn[data-variant="link"] {
+  color: var(--primary) !important;
+}
+
+/* States */
+:root:not(.dark) .vh-btn:hover {
+  filter: brightness(0.95);
+}
+:root:not(.dark) .vh-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+:root:not(.dark) .vh-btn[disabled],
+:root:not(.dark) .vh-btn[aria-disabled="true"] {
+  opacity: 1;
+  background-color: var(--muted) !important;
+  color: var(--muted-foreground) !important;
+  border-color: var(--muted) !important;
+}
+
+
+Notes:
+
+These use shadcn variables --primary, --primary-foreground, --secondary, etc, so they match your theme.
+
+color-mix is supported in modern browsers; if unsupported in your test, fall back to a solid border color like #cbd5e1.
+
+C) Cover non-shared buttons
+
+For any button not using the shared component, append className="vh-btn" and, if applicable, add data-variant="default" or "secondary" to match its intent. No other changes.
+
+D) Import order check
+
+Confirm light-contrast.css is still imported after Tailwind in the app entry.
+
+Acceptance:
+
+In light mode, every button has readable text on a solid background, including “Download PDF”.
+
+Hover and focus are visible.
+
+Dark mode looks the same.
+
+Build is clean. Provide before and after screenshots of the Pulse Download button and one primary action button elsewhere.
+
+Guardrails:
+
+Do not edit layouts or button copy.
+
+Do not remove existing Tailwind classes or change cva variants.
+
+Only append the vh-btn hook and data attributes, plus the CSS above.
+
+Reply with the file list to edit and small diffs, then wait for my YES.
