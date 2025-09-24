@@ -7,12 +7,12 @@ import { validateSession } from "./middleware/auth";
 import Stripe from "stripe";
 import { supabase } from "./supabaseClient";
 
-// Initialize Stripe with restricted key
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
+// Initialize Stripe with test key
+if (!process.env.TESTING_STRIPE_SECRET_KEY) {
+  throw new Error('Missing required Stripe secret: TESTING_STRIPE_SECRET_KEY');
 }
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-10-16",
+const stripe = new Stripe(process.env.TESTING_STRIPE_SECRET_KEY, {
+  apiVersion: "2025-08-27.basil",
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {

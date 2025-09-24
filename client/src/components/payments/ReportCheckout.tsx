@@ -7,8 +7,12 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { Loader2 } from 'lucide-react';
 
-// Initialize Stripe
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
+// Initialize Stripe with test key  
+const publicKey = import.meta.env.VITE_TESTING_STRIPE_PUBLIC_KEY || import.meta.env.TESTING_VITE_STRIPE_PUBLIC_KEY;
+if (!publicKey) {
+  console.error('Missing VITE_TESTING_STRIPE_PUBLIC_KEY or TESTING_VITE_STRIPE_PUBLIC_KEY environment variable');
+}
+const stripePromise = publicKey ? loadStripe(publicKey) : null;
 
 interface CheckoutFormProps {
   reportId: string;
