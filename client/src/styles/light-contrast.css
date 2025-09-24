@@ -173,3 +173,41 @@ html:not(.dark) span.bg-yellow-500\/20 {
 :root:not(.dark) [data-sidebar] [role="button"]:hover {
   background-color: #e5e7eb;
 }
+
+/* Charcoal buttons */
+html.dark .vh-btn {
+  font-weight: 700;
+  border-width: 1px;
+}
+
+/* Charcoal inputs */
+html.dark input:not([type="checkbox"]):not([type="radio"]),
+html.dark textarea,
+html.dark select {
+  background-color: var(--input) !important;
+  color: var(--foreground) !important;
+  border-color: var(--border) !important;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: var(--muted-foreground) !important;
+  opacity: 1;
+}
+
+/* Charcoal pills */
+html.dark .vh-pill {
+  --pill-bg: #1f2937;
+  --pill-br: #334155;
+  --pill-fg: #e5e7eb;
+  background-color: var(--pill-bg) !important;
+  color: var(--pill-fg) !important;
+  border-color: var(--pill-br) !important;
+}
+
+/* Charcoal download CTA */
+html.dark [data-cta="download"] {
+  background-color: #10b981 !important;
+  color: #ffffff !important;
+  border-color: #059669 !important;
+}
+html.dark [data-cta="download"]:hover { background-color: #059669 !important; }
