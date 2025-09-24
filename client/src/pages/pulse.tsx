@@ -1,5 +1,5 @@
 // client/src/pages/pulse.tsx
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Zap, Download, CreditCard, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Header } from "@/components/layout/header";
@@ -7,17 +7,16 @@ import { LeftSidebar } from "@/components/layout/left-sidebar";
 import { RightSidebar } from "@/components/layout/right-sidebar";
 import { Footer } from "@/components/layout/footer";
 
-// Polls (unchanged)
+// Polls (keep exactly as in your app)
 import PollList from "@/components/polls/PollList";
 import AdminNewPoll from "@/components/polls/AdminNewPoll";
 import { supabase } from "@/lib/supabaseClient";
 
-// Reports (Supabase)
+// Reports API (the file above)
 import {
   listVisibleReports,
   getSignedDownloadUrl,
   hasAccess,
-  requestAccess,
   type ReportRow,
 } from "@/data/pulseReportsApi";
 
@@ -36,6 +35,7 @@ const PulsePage: React.FC = () => {
 
   useEffect(() => { window.scrollTo(0, 0); }, []);
 
+  // Admin check (uses your is_admin RPC)
   useEffect(() => {
     let off = false;
     (async () => {
@@ -48,6 +48,7 @@ const PulsePage: React.FC = () => {
     return () => { off = true; };
   }, []);
 
+  // Load reports
   useEffect(() => {
     let off = false;
     (async () => {
@@ -61,13 +62,14 @@ const PulsePage: React.FC = () => {
     return () => { off = true; };
   }, [refreshTick]);
 
+  // Called after a new poll is created from AdminNewPoll
   function handleCreated() {
     setRefreshTick(t => t + 1);
   }
 
+  // Download logic for free/authorized users
   async function handleDownload(r: ReportRow) {
     if (!r.storage_path) return alert("This report does not have a file yet.");
-    // For paid/private, confirm access. For free we allow direct.
     if (r.access_level !== "free") {
       const allowed = await hasAccess(r.id);
       if (!allowed) {
@@ -80,18 +82,14 @@ const PulsePage: React.FC = () => {
     window.open(url, "_blank", "noopener,noreferrer");
   }
 
-  async function handlePurchase(r: ReportRow) {
-    // MVP: manual. Later you can wire Stripe and grant access on webhook.
+  // Placeholder purchase flow (kept intentionally so nothing breaks)
+  function handlePurchase(r: ReportRow) {
     alert(`Purchase flow goes here for “${r.title}”. Current price: $${((r.price_cents ?? 0) / 100).toFixed(2)}.`);
   }
 
-  async function handleRequest(r: ReportRow) {
-    const email = prompt("Enter your email for access:");
-    if (!email) return;
-    const message = prompt("Optional message to the team:") || "";
-    const res = await requestAccess(r.id, email, message);
-    if (res.ok) alert("Request submitted. You will be notified if approved.");
-    else alert("Could not submit your request right now.");
+  // Placeholder request access (private)
+  function handleRequest(_r: ReportRow) {
+    alert("Request access flow coming soon.");
   }
 
   return (
@@ -99,18 +97,21 @@ const PulsePage: React.FC = () => {
       <Header onCreatePost={() => {}} />
 
       <div className="community-grid">
+        {/* Left rail */}
         <div className="grid-left hidden xl:block bg-background/95 backdrop-blur-sm border-r border-border sticky top-[var(--header-height)] h-[calc(100vh-var(--header-height))] z-10 overflow-y-auto">
           <div className="p-4">
             <LeftSidebar currentTab="all" onTabChange={() => {}} />
           </div>
         </div>
 
+        {/* Right rail */}
         <div className="grid-right hidden lg:block bg-background/95 backdrop-blur-sm border-l border-border sticky top-[var(--header-height)] h-[calc(100vh-var(--header-height))] z-10 overflow-y-auto">
           <div className="p-4">
             <RightSidebar />
           </div>
         </div>
 
+        {/* Main */}
         <div className="grid-main relative z-0">
           <div className="py-8 relative z-10 px-4 lg:px-8">
             <div className="w-full">
@@ -126,7 +127,10 @@ const PulsePage: React.FC = () => {
                       <div className="flex items-center space-x-2 w-full max-w-4xl mx-auto">
                         <div className="h-px bg-gradient-to-r from-transparent via-primary to-transparent flex-1"></div>
                         <div className="flex items-center space-x-4">
-                          <Zap className="w-8 h-8 text-transparent bg-gradient-cosmic bg-clip-text" style={{ backgroundImage: "var(--gradient-cosmic)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }} />
+                          <Zap
+                            className="w-8 h-8 text-transparent bg-gradient-cosmic bg-clip-text"
+                            style={{ backgroundImage: "var(--gradient-cosmic)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+                          />
                           <h1 className="text-3xl md:text-4xl font-bold text-foreground">Pulse Reports</h1>
                         </div>
                         <div className="h-px bg-gradient-to-r from-primary via-transparent to-transparent flex-1"></div>
@@ -141,11 +145,12 @@ const PulsePage: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Always visible headings */}
+                  {/* Polls */}
                   <section className="mb-12" key={refreshTick}>
                     <h2 className="text-2xl font-bold text-foreground mb-6">Active Polls</h2>
                     <PollList reportsOnly />
-                    <h2 className="text-2xl font-bold text-foreground mt-12">Closed Polls</h2>
+                    <h2 className="text-2xl font-bold text-foreground mt-12 mb-6">Closed Polls</h2>
+                    <div className="vh-card p-4 text-sm text-muted-foreground">No closed polls to show.</div>
                   </section>
 
                   {/* Published Reports */}
@@ -165,13 +170,16 @@ const PulsePage: React.FC = () => {
                       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                         {reports.map((r) => {
                           const diff = daysDiffFromNow(r.release_at);
-                          const available = r.status === "published" && diff >= 0;
+                          const isPublished = r.status === "published";
+                          const available = isPublished && diff >= 0;
 
                           return (
                             <article key={r.id} className="vh-card" data-testid={`report-card-${r.id}`}>
                               <div className="flex items-center justify-between mb-4">
                                 {r.access_level === "free" && (
-                                  <span className="inline-block px-3 py-1 text-xs font-medium bg-green-500/20 text-green-300 border border-green-500/30 rounded-full vh-pill vh-pill--success">FREE</span>
+                                  <span className="inline-block px-3 py-1 text-xs font-medium bg-green-500/20 text-green-300 border border-green-500/30 rounded-full vh-pill vh-pill--success">
+                                    FREE
+                                  </span>
                                 )}
                                 {r.access_level === "paid" && (
                                   <span className="inline-block px-3 py-1 text-xs font-medium bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 rounded-full vh-pill vh-pill--price">
@@ -179,7 +187,9 @@ const PulsePage: React.FC = () => {
                                   </span>
                                 )}
                                 {r.access_level === "private" && (
-                                  <span className="inline-block px-3 py-1 text-xs font-medium bg-red-500/20 text-red-300 border border-red-500/30 rounded-full vh-pill vh-pill--info">PRIVATE</span>
+                                  <span className="inline-block px-3 py-1 text-xs font-medium bg-red-500/20 text-red-300 border border-red-500/30 rounded-full vh-pill vh-pill--info">
+                                    PRIVATE
+                                  </span>
                                 )}
                                 <span className="text-sm text-muted-foreground">
                                   {r.release_at
@@ -204,7 +214,7 @@ const PulsePage: React.FC = () => {
                               ) : null}
 
                               {/* CTA logic */}
-                              {r.status === "scheduled" && diff < 0 && (
+                              {!available && r.status === "scheduled" && (
                                 <Button
                                   disabled
                                   className="w-full bg-muted text-muted-foreground cursor-not-allowed"
@@ -213,7 +223,7 @@ const PulsePage: React.FC = () => {
                                 </Button>
                               )}
 
-                              {r.status === "published" && r.access_level === "free" && (
+                              {available && r.access_level === "free" && (
                                 <Button
                                   onClick={() => handleDownload(r)}
                                   className="w-full bg-green-500/20 hover:bg-green-500/30 border border-green-500/50 hover:border-green-500 text-green-300 transition-colors"
@@ -223,7 +233,7 @@ const PulsePage: React.FC = () => {
                                 </Button>
                               )}
 
-                              {r.status === "published" && r.access_level === "paid" && (
+                              {available && r.access_level === "paid" && (
                                 <Button
                                   onClick={() => handlePurchase(r)}
                                   className="w-full bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/50 hover:border-yellow-500 text-yellow-300 transition-colors"
@@ -233,7 +243,7 @@ const PulsePage: React.FC = () => {
                                 </Button>
                               )}
 
-                              {r.status === "published" && r.access_level === "private" && (
+                              {available && r.access_level === "private" && (
                                 <Button
                                   onClick={() => handleRequest(r)}
                                   className="w-full bg-red-500/20 hover:bg-red-500/30 border border-red-500/50 hover:border-red-500 text-red-300 transition-colors"

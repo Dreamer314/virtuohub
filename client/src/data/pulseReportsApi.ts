@@ -1,93 +1,111 @@
 // client/src/data/pulseReportsApi.ts
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabaseClient";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-export type AccessLevel = "free" | "paid" | "private";
-export type ReportStatus = "draft" | "scheduled" | "published" | "archived";
-
+/** Database row shape for reports (matches your pulse_reports table) */
 export type ReportRow = {
   id: string;
-  slug: string;
+  slug: string | null;
   title: string;
   subtitle: string | null;
   tags: string[] | null;
-  access_level: AccessLevel;
+  access_level: "free" | "paid" | "private";
   price_cents: number | null;
-  status: ReportStatus;
-  release_at: string | null;
+  status: "draft" | "scheduled" | "published" | "archived";
+  release_at: string | null;       // ISO
   storage_path: string | null;
-  cover_image_url: string | null;
   show_on_reports: boolean | null;
-  created_at?: string | null;
-  updated_at?: string | null;
+  created_at: string | null;
 };
 
-export async function currentUserId(): Promise<string | null> {
-  const { data } = await supabase.auth.getUser();
-  return data.user?.id ?? null;
-}
-
-// Published + Scheduled, visible
+/**
+ * List reports that should appear on the Pulse page.
+ * - show_on_reports = true
+ * - status in ('published','scheduled') so you can tease scheduled ones
+ * - Most recent first
+ */
 export async function listVisibleReports(): Promise<ReportRow[]> {
   const { data, error } = await supabase
     .from("pulse_reports")
-    .select("*")
+    .select(
+      "id, slug, title, subtitle, tags, access_level, price_cents, status, release_at, storage_path, show_on_reports, created_at"
+    )
     .in("status", ["published", "scheduled"])
     .eq("show_on_reports", true)
     .order("release_at", { ascending: false });
 
-  if (error || !data) return [];
-  return data as ReportRow[];
+  if (error) {
+    console.error("listVisibleReports:", error.message);
+    return [];
+  }
+  return (data ?? []) as ReportRow[];
 }
 
-// True if current user has access to a paid/private report
+/**
+ * Return a short-lived signed URL for a file in the `reports` bucket.
+ * Caller is responsible for access checks *before* calling this.
+ */
+export async function getSignedDownloadUrl(storagePath: string): Promise<string | null> {
+  const { data, error } = await supabase.storage
+    .from("reports")
+    .createSignedUrl(storagePath, 60 * 60); // 1 hour
+
+  if (error) {
+    console.error("getSignedDownloadUrl:", error.message);
+    return null;
+  }
+  return data?.signedUrl ?? null;
+}
+
+/**
+ * True if:
+ *  - user is admin, OR
+ *  - report.access_level = 'free', OR
+ *  - pulse_report_access has a row for (report_id, user_id)
+ */
 export async function hasAccess(reportId: string): Promise<boolean> {
-  const uid = await currentUserId();
+  // Get session
+  const { data: sessionRes } = await supabase.auth.getSession();
+  const uid = sessionRes?.session?.user?.id ?? null;
+
+  // If no user, only allow access when report is free
+  // (We still need to read the report access level.)
+  const { data: r, error: rErr } = await supabase
+    .from("pulse_reports")
+    .select("access_level")
+    .eq("id", reportId)
+    .maybeSingle();
+
+  if (rErr || !r) {
+    console.error("hasAccess: report lookup failed", rErr?.message);
+    return false;
+  }
+
+  // Free reports are downloadable by anyone
+  if (r.access_level === "free") return true;
+
+  // If not logged in, not allowed for paid/private
   if (!uid) return false;
-  const { data, error } = await supabase
+
+  // Admins always allowed
+  try {
+    const { data: isAdmin, error: adminErr } = await supabase.rpc("is_admin", { uid });
+    if (!adminErr && Boolean(isAdmin)) return true;
+  } catch (e) {
+    // non-fatal
+  }
+
+  // Check explicit access grant
+  const { data: acc, error: accErr } = await supabase
     .from("pulse_report_access")
-    .select("report_id")
+    .select("id")
     .eq("report_id", reportId)
     .eq("user_id", uid)
-    .limit(1);
-  if (error) return false;
-  return !!(data && data.length);
-}
+    .maybeSingle();
 
-// For private reports: create a request row
-export async function requestAccess(reportId: string, email: string, message: string) {
-  const uid = await currentUserId();
-  const { error } = await supabase.from("pulse_report_requests").insert({
-    report_id: reportId,
-    user_id: uid,
-    email,
-    message,
-  });
-  return { ok: !error, error };
-}
+  if (accErr) {
+    console.error("hasAccess: access check failed", accErr.message);
+    return false;
+  }
 
-// Get a short-lived link to download the PDF
-export async function getSignedDownloadUrl(storagePath: string): Promise<string | null> {
-  const { data, error } = await supabase
-    .storage
-    .from("reports")
-    .createSignedUrl(storagePath, 60); // 60 seconds
-  if (error || !data?.signedUrl) return null;
-  return data.signedUrl;
-}
-
-/* ------------------ Admin helpers (optional) ------------------ */
-
-export async function adminUploadPdf(file: File): Promise<string | null> {
-  const safeName = file.name.replace(/[^a-z0-9.\-_]+/gi, "_").toLowerCase();
-  const storagePath = `${Date.now()}_${safeName}`;
-  const { error } = await supabase.storage.from("reports").upload(storagePath, file, {
-    upsert: false,
-    contentType: "application/pdf",
-  });
-  if (error) return null;
-  return storagePath;
+  return Boolean(acc);
 }

@@ -4,6 +4,16 @@ import { storage } from "./storage";
 import { insertPostSchema, insertSavedPostSchema, insertArticleSchema, insertCommentSchema, insertProfileSchema, CATEGORIES, PLATFORMS } from "@shared/schema";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
 import { validateSession } from "./middleware/auth";
+import Stripe from "stripe";
+import { supabase } from "./supabaseClient";
+
+// Initialize Stripe with restricted key
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
+}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2024-06-20",
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
   
@@ -438,32 +448,119 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Create Stripe payment intent for report purchase
   app.post("/api/pulse/reports/:reportId/purchase", async (req, res) => {
     try {
       const { reportId } = req.params;
-      const userId = req.body.userId || 'user1';
-      const { paymentMethod } = req.body;
+      const { amount } = req.body; // Amount in cents
       
-      console.log(`User ${userId} purchasing report ${reportId} with ${paymentMethod}`);
+      if (!amount || amount <= 0) {
+        return res.status(400).json({ message: "Invalid amount" });
+      }
       
-      // In a real app, this would:
-      // 1. Process payment via Stripe/PayPal
-      // 2. Update user access permissions
-      // 3. Send confirmation email
-      // 4. Generate download link
-      
-      res.json({
-        success: true,
-        message: 'Purchase successful! Download link sent to your email.',
-        transactionId: `txn_${reportId}_${Date.now()}`,
-        downloadUrl: `/objects/reports/${reportId}.pdf`,
-        reportId,
-        userId,
-        amount: 2900, // cents
-        timestamp: new Date().toISOString()
+      // Create payment intent with metadata
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(amount),
+        currency: "usd",
+        metadata: {
+          reportId,
+          type: 'pulse_report_purchase'
+        },
+        automatic_payment_methods: {
+          enabled: true,
+        },
       });
-    } catch (error) {
-      res.status(500).json({ message: "Failed to process purchase", error: error });
+      
+      res.json({ 
+        clientSecret: paymentIntent.client_secret,
+        paymentIntentId: paymentIntent.id
+      });
+    } catch (error: any) {
+      console.error("Error creating payment intent:", error);
+      res.status(500).json({ 
+        message: "Error creating payment intent: " + error.message 
+      });
+    }
+  });
+
+  // Stripe webhook to handle successful payments
+  app.post("/api/stripe/webhook", async (req, res) => {
+    try {
+      const sig = req.headers['stripe-signature'];
+      let event;
+
+      try {
+        event = stripe.webhooks.constructEvent(req.body, sig!, process.env.STRIPE_WEBHOOK_SECRET!);
+      } catch (err: any) {
+        console.log(`Webhook signature verification failed.`, err.message);
+        return res.status(400).send(`Webhook Error: ${err.message}`);
+      }
+
+      if (event.type === 'payment_intent.succeeded') {
+        const paymentIntent = event.data.object as Stripe.PaymentIntent;
+        
+        // Only process pulse report purchases
+        if (paymentIntent.metadata.type === 'pulse_report_purchase') {
+          const { reportId } = paymentIntent.metadata;
+          
+          // Insert purchase record into Supabase
+          const { data, error } = await supabase
+            .from('pulse_report_purchases')
+            .insert({
+              report_id: reportId,
+              user_id: paymentIntent.metadata.userId || null, // Will be set from frontend
+              stripe_session_id: null, // We're using payment intents, not sessions
+              stripe_payment_intent: paymentIntent.id,
+              amount_cents: paymentIntent.amount,
+              currency: paymentIntent.currency,
+              status: 'completed'
+            });
+
+          if (error) {
+            console.error('Error inserting purchase record:', error);
+          } else {
+            console.log('Purchase recorded successfully:', data);
+          }
+        }
+      }
+
+      res.json({ received: true });
+    } catch (error: any) {
+      console.error('Webhook error:', error);
+      res.status(500).json({ message: "Webhook processing failed" });
+    }
+  });
+
+  // Check if user has purchased a report
+  app.get("/api/pulse/reports/:reportId/purchase-status", async (req, res) => {
+    try {
+      const { reportId } = req.params;
+      const { userId } = req.query;
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID required" });
+      }
+      
+      const { data, error } = await supabase
+        .from('pulse_report_purchases')
+        .select('*')
+        .eq('report_id', reportId)
+        .eq('user_id', userId)
+        .eq('status', 'completed')
+        .single();
+      
+      if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
+        console.error('Error checking purchase status:', error);
+        return res.status(500).json({ message: "Error checking purchase status" });
+      }
+      
+      res.json({ 
+        hasPurchased: !!data,
+        purchase: data || null
+      });
+    } catch (error: any) {
+      console.error('Error checking purchase status:', error);
+      res.status(500).json({ message: "Failed to check purchase status" });
     }
   });
 
