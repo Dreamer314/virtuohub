@@ -382,44 +382,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // PULSE API ROUTES - Published reports
-  app.get("/api/pulse/reports", async (req, res) => {
-    try {
-      // In a real app, this would query the database
-      const mockReports = [
-        {
-          id: 'report_q4_trends',
-          title: 'Q4 2024 Platform Usage Trends',
-          summary: 'Analysis of user engagement patterns across major virtual world platforms. Based on 15,000+ creator responses.',
-          releasedAt: new Date().toISOString(),
-          priceType: 'free',
-          badges: ['Platform Data', 'Usage Analytics'],
-          downloadUrl: '/api/pulse/reports/report_q4_trends/download'
-        },
-        {
-          id: 'report_2025_forecast',
-          title: '2025 Immersive Economy Forecast',
-          summary: 'Comprehensive market analysis with revenue projections, emerging platform insights, and strategic recommendations for creators.',
-          releasedAt: new Date().toISOString(),
-          priceType: 'paid',
-          priceCents: 2900,
-          badges: ['Market Analysis', 'Forecasting']
-        },
-        {
-          id: 'report_enterprise_insights',
-          title: 'Enterprise Adoption Patterns',
-          summary: 'Confidential analysis of how Fortune 500 companies are integrating virtual world technologies into their operations.',
-          releasedAt: new Date().toISOString(),
-          priceType: 'private',
-          badges: ['Enterprise', 'Confidential']
-        }
-      ];
-      
-      res.json(mockReports);
-    } catch (error) {
-      res.status(500).json({ message: "Failed to fetch reports", error: error });
-    }
-  });
+  // PULSE API ROUTES - Published reports (removed - using admin system endpoint below)
 
   app.post("/api/pulse/reports/:reportId/download", async (req, res) => {
     try {
@@ -704,13 +667,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // List all pulse reports (for the pulse page)
+  // List all pulse reports (for the pulse page) - uses admin system data
   app.get("/api/pulse/reports", async (req, res) => {
     try {
       const { data: reports, error } = await supabase
         .from('pulse_reports')
         .select('*')
-        .order('published_at', { ascending: false });
+        .eq('show_on_reports', true)  // Only show reports marked for display
+        .in('status', ['published', 'scheduled'])  // Only published/scheduled reports
+        .order('release_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching reports:', error);

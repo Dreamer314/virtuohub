@@ -30,19 +30,19 @@ export async function listVisibleReports(): Promise<ReportRow[]> {
     }
     const data = await response.json();
     
-    // Transform the data to match the expected ReportRow format
+    // Transform the admin system data to match the expected ReportRow format
     return data.map((report: any) => ({
       id: report.id,
-      slug: null, // not in our schema yet
+      slug: report.slug,
       title: report.title,
-      subtitle: report.description,
-      tags: [],
-      access_level: report.price > 0 ? "paid" : "free",
-      price_cents: report.price,
-      status: "published", // assuming all returned reports are published
-      release_at: report.published_at,
-      storage_path: report.file_url,
-      show_on_reports: true,
+      subtitle: report.subtitle,
+      tags: report.tags || [],
+      access_level: report.access_level,
+      price_cents: report.price_cents,
+      status: report.status,
+      release_at: report.release_at,
+      storage_path: report.storage_path,
+      show_on_reports: report.show_on_reports,
       created_at: report.created_at,
     })) as ReportRow[];
   } catch (error) {
