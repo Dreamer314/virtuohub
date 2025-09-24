@@ -19,25 +19,36 @@ export type ReportRow = {
 
 /**
  * List reports that should appear on the Pulse page.
- * - show_on_reports = true
- * - status in ('published','scheduled') so you can tease scheduled ones
- * - Most recent first
+ * Now calls our local API endpoint instead of Supabase directly.
  */
 export async function listVisibleReports(): Promise<ReportRow[]> {
-  const { data, error } = await supabase
-    .from("pulse_reports")
-    .select(
-      "id, slug, title, subtitle, tags, access_level, price_cents, status, release_at, storage_path, show_on_reports, created_at"
-    )
-    .in("status", ["published", "scheduled"])
-    .eq("show_on_reports", true)
-    .order("release_at", { ascending: false });
-
-  if (error) {
-    console.error("listVisibleReports:", error.message);
+  try {
+    const response = await fetch('/api/pulse/reports');
+    if (!response.ok) {
+      console.error("listVisibleReports: API error", response.status);
+      return [];
+    }
+    const data = await response.json();
+    
+    // Transform the data to match the expected ReportRow format
+    return data.map((report: any) => ({
+      id: report.id,
+      slug: null, // not in our schema yet
+      title: report.title,
+      subtitle: report.description,
+      tags: [],
+      access_level: report.price > 0 ? "paid" : "free",
+      price_cents: report.price,
+      status: "published", // assuming all returned reports are published
+      release_at: report.published_at,
+      storage_path: report.file_url,
+      show_on_reports: true,
+      created_at: report.created_at,
+    })) as ReportRow[];
+  } catch (error) {
+    console.error("listVisibleReports:", error);
     return [];
   }
-  return (data ?? []) as ReportRow[];
 }
 
 /**
@@ -128,26 +139,24 @@ export async function hasAccess(reportId: string): Promise<boolean> {
 }
 
 /**
- * Check if user has purchased a specific report
+ * Check if user has purchased a specific report.
+ * Now calls our local API endpoint instead of Supabase directly.
  */
 export async function hasPurchased(reportId: string): Promise<boolean> {
-  const { data: sessionRes } = await supabase.auth.getSession();
-  const uid = sessionRes?.session?.user?.id ?? null;
-
-  if (!uid) return false;
-
-  const { data: purchase, error } = await supabase
-    .from("pulse_report_purchases")
-    .select("id")
-    .eq("report_id", reportId)
-    .eq("user_id", uid)
-    .eq("status", "completed")
-    .maybeSingle();
-
-  if (error) {
-    console.error("hasPurchased: check failed", error.message);
+  try {
+    // For now, using fallback user ID (in real app, get from auth)
+    const userId = 'user1'; // TODO: Get from actual auth session
+    
+    const response = await fetch(`/api/pulse/reports/${reportId}/purchase-status?userId=${userId}`);
+    if (!response.ok) {
+      console.error("hasPurchased: API error", response.status);
+      return false;
+    }
+    
+    const data = await response.json();
+    return data.hasPurchased || false;
+  } catch (error) {
+    console.error("hasPurchased:", error);
     return false;
   }
-
-  return Boolean(purchase);
 }

@@ -30,7 +30,7 @@ app.post("/api/stripe/webhook", express.raw({type: 'application/json'}), async (
       if (paymentIntent.metadata.type === 'pulse_report_purchase') {
         const { reportId } = paymentIntent.metadata;
         
-        // Insert purchase record into Supabase
+        // Insert purchase record into Supabase (using snake_case for database columns)
         const { data, error } = await supabase
           .from('pulse_report_purchases')
           .insert({

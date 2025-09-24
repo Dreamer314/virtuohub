@@ -77,6 +77,38 @@ export const profiles = pgTable("profiles", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const pulseReports = pgTable("pulse_reports", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: varchar("title").notNull(),
+  description: text("description"),
+  price: integer("price").notNull(), // in cents
+  fileUrl: varchar("file_url"),
+  fileName: varchar("file_name"),
+  publishedAt: timestamp("published_at").defaultNow(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const pulseReportPurchases = pgTable("pulse_report_purchases", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  reportId: varchar("report_id").notNull().references(() => pulseReports.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "cascade" }),
+  stripeSessionId: varchar("stripe_session_id"),
+  stripePaymentIntent: varchar("stripe_payment_intent"),
+  amountCents: integer("amount_cents").notNull(),
+  currency: varchar("currency").notNull().default("usd"),
+  status: varchar("status").notNull().default("completed"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const pulseReportAccess = pgTable("pulse_report_access", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  reportId: varchar("report_id").notNull().references(() => pulseReports.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  grantedAt: timestamp("granted_at").defaultNow(),
+  grantedBy: varchar("granted_by"), // for manual admin grants
+});
+
 export const comments = pgTable("comments", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   postId: varchar("post_id"), // for post comments
@@ -143,6 +175,30 @@ export const insertProfileSchema = createInsertSchema(profiles).pick({
   avatarUrl: true,
 });
 
+export const insertPulseReportSchema = createInsertSchema(pulseReports).pick({
+  title: true,
+  description: true,
+  price: true,
+  fileUrl: true,
+  fileName: true,
+});
+
+export const insertPulseReportPurchaseSchema = createInsertSchema(pulseReportPurchases).pick({
+  reportId: true,
+  userId: true,
+  stripeSessionId: true,
+  stripePaymentIntent: true,
+  amountCents: true,
+  currency: true,
+  status: true,
+});
+
+export const insertPulseReportAccessSchema = createInsertSchema(pulseReportAccess).pick({
+  reportId: true,
+  userId: true,
+  grantedBy: true,
+});
+
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
 
@@ -160,6 +216,15 @@ export type Comment = typeof comments.$inferSelect;
 
 export type InsertProfile = z.infer<typeof insertProfileSchema>;
 export type Profile = typeof profiles.$inferSelect;
+
+export type InsertPulseReport = z.infer<typeof insertPulseReportSchema>;
+export type PulseReport = typeof pulseReports.$inferSelect;
+
+export type InsertPulseReportPurchase = z.infer<typeof insertPulseReportPurchaseSchema>;
+export type PulseReportPurchase = typeof pulseReportPurchases.$inferSelect;
+
+export type InsertPulseReportAccess = z.infer<typeof insertPulseReportAccessSchema>;
+export type PulseReportAccess = typeof pulseReportAccess.$inferSelect;
 
 export interface PostWithAuthor extends Post {
   author: User;

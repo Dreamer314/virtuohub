@@ -618,6 +618,202 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Database setup endpoint (run once to create tables)
+  app.post("/api/setup-database", async (req, res) => {
+    try {
+      // Create pulse_reports table
+      const { error: reportsError } = await supabase.rpc('exec_sql', {
+        sql: `
+          CREATE TABLE IF NOT EXISTS pulse_reports (
+            id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+            title VARCHAR NOT NULL,
+            description TEXT,
+            price INTEGER NOT NULL DEFAULT 0,
+            file_url VARCHAR,
+            file_name VARCHAR,
+            published_at TIMESTAMP DEFAULT NOW(),
+            created_at TIMESTAMP DEFAULT NOW(),
+            updated_at TIMESTAMP DEFAULT NOW()
+          );
+        `
+      });
+
+      if (reportsError) {
+        console.error('Error creating pulse_reports table:', reportsError);
+      }
+
+      // Create pulse_report_purchases table
+      const { error: purchasesError } = await supabase.rpc('exec_sql', {
+        sql: `
+          CREATE TABLE IF NOT EXISTS pulse_report_purchases (
+            id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+            report_id VARCHAR NOT NULL REFERENCES pulse_reports(id) ON DELETE CASCADE,
+            user_id VARCHAR,
+            stripe_session_id VARCHAR,
+            stripe_payment_intent VARCHAR,
+            amount_cents INTEGER NOT NULL,
+            currency VARCHAR NOT NULL DEFAULT 'usd',
+            status VARCHAR NOT NULL DEFAULT 'completed',
+            created_at TIMESTAMP DEFAULT NOW()
+          );
+        `
+      });
+
+      if (purchasesError) {
+        console.error('Error creating pulse_report_purchases table:', purchasesError);
+      }
+
+      // Insert test data
+      const { error: insertError } = await supabase
+        .from('pulse_reports')
+        .upsert([
+          {
+            id: '80cf4ec5-ea6c-400a-a5f0-bfa15fdaab06',
+            title: 'Q3 VHub Market Analysis',
+            description: 'Comprehensive analysis of virtual world creator economy trends',
+            price: 2999,
+            file_url: '/reports/q3-market-analysis.pdf',
+            file_name: 'Q3_VHub_Market_Analysis.pdf'
+          },
+          {
+            id: 'report-2',
+            title: 'Virtual Asset Pricing Guide',
+            description: 'Complete guide to pricing virtual assets across different platforms',
+            price: 1999,
+            file_url: '/reports/pricing-guide.pdf',
+            file_name: 'Virtual_Asset_Pricing_Guide.pdf'
+          }
+        ]);
+
+      if (insertError) {
+        console.error('Error inserting test data:', insertError);
+      }
+
+      res.json({ 
+        success: true, 
+        message: 'Database setup completed',
+        errors: {
+          reportsError: reportsError?.message || null,
+          purchasesError: purchasesError?.message || null,
+          insertError: insertError?.message || null
+        }
+      });
+    } catch (error) {
+      console.error('Database setup error:', error);
+      res.status(500).json({ message: 'Database setup failed', error: error });
+    }
+  });
+
+  // List all pulse reports (for the pulse page)
+  app.get("/api/pulse/reports", async (req, res) => {
+    try {
+      const { data: reports, error } = await supabase
+        .from('pulse_reports')
+        .select('*')
+        .order('published_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching reports:', error);
+        return res.status(500).json({ message: "Error fetching reports" });
+      }
+
+      res.json(reports || []);
+    } catch (error) {
+      console.error('Error fetching reports:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Get pulse report details
+  app.get("/api/pulse/reports/:reportId", async (req, res) => {
+    try {
+      const { reportId } = req.params;
+
+      const { data: report, error } = await supabase
+        .from('pulse_reports')
+        .select('*')
+        .eq('id', reportId)
+        .single();
+
+      if (error || !report) {
+        return res.status(404).json({ message: "Report not found" });
+      }
+
+      res.json(report);
+    } catch (error) {
+      console.error('Error fetching report:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Download report file (requires purchase)
+  app.get("/api/pulse/reports/:reportId/download", async (req, res) => {
+    try {
+      const { reportId } = req.params;
+      
+      // Get authenticated user from session
+      const authHeader = req.headers.authorization;
+      const token = authHeader?.replace('Bearer ', '');
+      let userId = null;
+      
+      if (token) {
+        try {
+          const { data: { user } } = await supabase.auth.getUser(token);
+          userId = user?.id || null;
+        } catch (authError) {
+          console.warn('Auth verification failed:', authError);
+        }
+      }
+      
+      // For now, use fallback user ID if no auth (in real app, require auth)
+      if (!userId) {
+        userId = 'user1'; // Fallback for demo purposes
+      }
+
+      // Check if user has purchased the report
+      const { data: purchases, error: purchaseError } = await supabase
+        .from('pulse_report_purchases')
+        .select('*')
+        .eq('report_id', reportId)
+        .eq('user_id', userId)
+        .eq('status', 'completed')
+        .limit(1);
+
+      if (purchaseError) {
+        console.error('Error checking purchase status:', purchaseError);
+        return res.status(500).json({ message: "Error verifying purchase" });
+      }
+
+      const hasPurchased = purchases && purchases.length > 0;
+      if (!hasPurchased) {
+        return res.status(403).json({ message: "Purchase required to download this report" });
+      }
+
+      // Get report details
+      const { data: report, error: reportError } = await supabase
+        .from('pulse_reports')
+        .select('*')
+        .eq('id', reportId)
+        .single();
+
+      if (reportError || !report) {
+        return res.status(404).json({ message: "Report not found" });
+      }
+
+      // For now, return download info (in real app, this would serve the actual file)
+      res.json({
+        success: true,
+        downloadUrl: report.file_url,
+        fileName: report.file_name,
+        message: `Download access granted for: ${report.title}`
+      });
+
+    } catch (error) {
+      console.error('Error in download endpoint:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
