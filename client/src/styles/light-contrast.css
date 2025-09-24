@@ -292,3 +292,37 @@ body.light span.bg-yellow-500\/20 {
   background: var(--pill-price-bg) !important;
   color: var(--pill-price-fg) !important;
 }
+
+/* Base pill */
+.vh-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 9999px;
+  padding: 0.125rem 0.5rem;
+  font-weight: 600;
+  border: 1px solid var(--pill-br, #e2e8f0);
+  background-color: var(--pill-bg, #f1f5f9) !important;
+  color: var(--pill-fg, #0f172a) !important;
+}
+
+/* Variants */
+.vh-pill--success { --pill-bg:#dcfce7; --pill-br:#86efac; --pill-fg:#065f46; }
+.vh-pill--info    { --pill-bg:#e0f2fe; --pill-br:#bae6fd; --pill-fg:#075985; }
+.vh-pill--price   { --pill-bg:#fff7ed; --pill-br:#fed7aa; --pill-fg:#9a3412; }
+
+/* Dark mode safety */
+.dark .vh-pill { --pill-bg:#1f2937; --pill-br:#334155; --pill-fg:#e2e8f0; }
+
+/* Light mode left nav active */
+:root:not(.dark) [data-sidebar] [aria-current="page"],
+:root:not(.dark) [data-sidebar] [aria-current="true"] {
+  background-color: #eef2ff !important;
+  color: #1f2937 !important;
+  border-radius: 0.5rem;
+  font-weight: 700;
+}
+
+:root:not(.dark) [data-sidebar] [role="button"]:hover {
+  background-color: #e5e7eb;
+}

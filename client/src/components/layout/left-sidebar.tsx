@@ -135,7 +135,7 @@ export function LeftSidebar({
   };
 
   return (
-    <aside className="w-full">
+    <aside className="w-full" data-sidebar="true">
       <div className="sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto">
         <div className="bg-sidebar enhanced-card glow-border rounded-xl p-6 border border-sidebar-border" data-testid="community-navigation">
           {/* Header */}
@@ -167,6 +167,7 @@ export function LeftSidebar({
                           : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                       }`}
                       data-testid={`nav-${section.id}`}
+                      aria-current={section.active ? "page" : undefined}
                     >
                       <div className="flex items-center">
                         <Icon className="w-4 h-4 mr-3" />
