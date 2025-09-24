@@ -129,9 +129,32 @@ const PulsePage: React.FC = () => {
   }
 
   // Handle successful payment
-  function handlePaymentSuccess() {
+  async function handlePaymentSuccess() {
     if (selectedReport) {
-      setPurchasedReports(prev => new Set([...Array.from(prev), selectedReport.id]));
+      // Immediately refetch access for this report using the new endpoint
+      const { data: sessionRes } = await supabase.auth.getSession();
+      const uid = sessionRes?.session?.user?.id;
+      
+      if (uid) {
+        try {
+          const response = await fetch(`/api/pulse/reports/${selectedReport.id}/access?userId=${uid}`, {
+            cache: 'no-store',
+            headers: {
+              'Cache-Control': 'no-store'
+            }
+          });
+          
+          if (response.ok) {
+            const data = await response.json();
+            if (data.canDownload) {
+              setPurchasedReports(prev => new Set([...Array.from(prev), selectedReport.id]));
+            }
+          }
+        } catch (error) {
+          console.error('Error refetching access after payment:', error);
+        }
+      }
+      
       setRefreshTick(t => t + 1); // Refresh to update access
     }
   }

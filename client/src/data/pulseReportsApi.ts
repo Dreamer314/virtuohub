@@ -106,36 +106,24 @@ export async function hasAccess(reportId: string): Promise<boolean> {
     // non-fatal
   }
 
-  // Check explicit access grant
-  const { data: acc, error: accErr } = await supabase
-    .from("pulse_report_access")
-    .select("id")
-    .eq("report_id", reportId)
-    .eq("user_id", uid)
-    .maybeSingle();
-
-  if (accErr) {
-    console.error("hasAccess: access check failed", accErr.message);
-    return false;
+  // Use new access endpoint with Cache-Control: no-store
+  try {
+    const response = await fetch(`/api/pulse/reports/${reportId}/access?userId=${uid}`, {
+      cache: 'no-store',
+      headers: {
+        'Cache-Control': 'no-store'
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      return data.canDownload || false;
+    }
+  } catch (error) {
+    console.error("hasAccess: access endpoint failed", error);
   }
 
-  if (acc) return true;
-
-  // Check if user has purchased this report
-  const { data: purchase, error: purchaseErr } = await supabase
-    .from("pulse_report_purchases")
-    .select("id")
-    .eq("report_id", reportId)
-    .eq("user_id", uid)
-    .eq("status", "completed")
-    .maybeSingle();
-
-  if (purchaseErr) {
-    console.error("hasAccess: purchase check failed", purchaseErr.message);
-    return false;
-  }
-
-  return Boolean(purchase);
+  return false;
 }
 
 /**
