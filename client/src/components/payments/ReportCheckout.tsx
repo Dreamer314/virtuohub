@@ -96,7 +96,7 @@ const CheckoutForm: React.FC<CheckoutFormProps> = ({
             fields: {
               billingDetails: {
                 address: {
-                  postalCode: 'never'
+                  postalCode: 'auto'
                 }
               }
             }
