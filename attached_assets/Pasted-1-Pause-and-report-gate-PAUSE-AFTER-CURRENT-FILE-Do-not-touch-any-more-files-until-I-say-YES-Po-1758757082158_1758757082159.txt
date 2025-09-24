@@ -1,0 +1,73 @@
+1) Pause-and-report gate
+PAUSE AFTER CURRENT FILE.
+
+Do not touch any more files until I say YES.
+
+Post:
+1) The exact diff you just applied.
+2) The list of files you still plan to change.
+3) Run these four checks and paste results:
+
+   a) In browser console:
+      document.documentElement.className
+      document.documentElement.getAttribute('data-theme')
+
+   b) Verify CSS order in the built app:
+      Confirm index.css loads before styles/theme-tokens.css and light-contrast.css.
+
+   c) Visual check, charcoal mode:
+      - Home hero buttons
+      - Community create-post area button
+      - Pulse “Download PDF” button
+      - One Admin input field
+      Provide before/after screenshots.
+
+   d) Network build check:
+      No TypeScript or PostCSS errors, and bundle includes theme-tokens.css.
+
+Wait for my YES before any further edits.
+
+2) If you want it to finish the planned diffs but make no new ones
+FINISH ONLY the diffs already shown. Then STOP.
+
+Do not open new files. Do not add new selectors.
+
+After finishing, run the same four checks (a–d) and post screenshots. Wait for my YES.
+
+3) Kill switch if something looks wrong
+STOP. Revert the last commit or file change you made. Do not proceed.
+
+Post the revert diff and a screenshot of the UI in charcoal mode for:
+Home hero button, Community create-post, Pulse Download, Admin input.
+
+Wait for my YES.
+
+Quick checks you can do in 15 seconds
+
+Open DevTools Console on any page and run:
+
+document.documentElement.className
+document.documentElement.getAttribute('data-theme')
+
+
+Expected right now:
+
+Class string contains dark and charcoal.
+
+Data theme is "charcoal".
+
+If not, tell me what you see and we’ll correct that first.
+
+What “done” looks like
+
+<html> has class="dark charcoal" and data-theme="charcoal".
+
+Buttons in charcoal are readable. No white text on white or invisible borders.
+
+Pills are readable.
+
+Admin inputs show dark fields with light text and visible placeholders.
+
+No light-mode CSS leaking. We scoped all light-only rules under html:not(.dark) so they never run while charcoal is the only theme.
+
+Build is clean.
