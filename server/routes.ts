@@ -687,13 +687,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get current user profile (protected)
+  // Get current user profile (protected) - reads from Supabase for consistency
   app.get("/api/profile", validateSession, async (req, res) => {
     try {
-      const profile = await storage.getProfile(req.user!.id);
-      if (!profile) {
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', req.user!.id)
+        .single();
+
+      if (profileError && profileError.code !== 'PGRST116') {
+        throw new Error(`Failed to fetch profile: ${profileError.message}`);
+      }
+
+      if (!profileData) {
         return res.status(404).json({ message: "Profile not found" });
       }
+
+      // Convert Supabase profile to API format (snake_case -> camelCase)
+      const profile = {
+        id: profileData.id,
+        handle: profileData.handle,
+        displayName: profileData.display_name || profileData.id,
+        avatarUrl: profileData.avatar_url,
+        role: profileData.role,
+        onboardingComplete: profileData.onboarding_complete || false,
+        createdAt: profileData.created_at,
+        updatedAt: profileData.updated_at
+      };
+
       res.json(profile);
     } catch (error) {
       console.error("Profile fetch error:", error);

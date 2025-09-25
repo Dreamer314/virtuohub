@@ -161,6 +161,23 @@ const OnboardingPage = () => {
     setSubmitting(true);
 
     try {
+      // Check if onboarding is already complete
+      const { data: currentProfile, error: fetchError } = await supabase
+        .from('profiles')
+        .select('onboarding_complete')
+        .eq('id', user.id)
+        .single();
+
+      if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = not found
+        throw new Error(`Failed to check profile status: ${fetchError.message}`);
+      }
+
+      if (currentProfile?.onboarding_complete) {
+        // Already completed, redirect to community
+        setLocation('/community');
+        return;
+      }
+
       let avatarUrl = null;
 
       // Upload avatar if provided
@@ -184,26 +201,66 @@ const OnboardingPage = () => {
         avatarUrl = data.publicUrl;
       }
 
-      // Update profile
-      const token = (await supabase.auth.getSession()).data.session?.access_token;
-      
-      const response = await fetch('/api/profile/update', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          handle,
-          displayName: displayName || null,
-          avatarUrl,
-          role: null // Can be set later
-        })
-      });
+      // Update profile with onboarding completion
+      const updatePayload: any = {
+        handle,
+        onboarding_complete: true
+      };
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to update profile');
+      if (displayName) {
+        updatePayload.display_name = displayName;
+      }
+
+      if (avatarUrl) {
+        updatePayload.avatar_url = avatarUrl;
+      }
+
+      // Add user ID to payload for upsert
+      const upsertPayload = {
+        id: user.id, // Required for upsert
+        ...updatePayload
+      };
+
+      const { data: upsertResult, error: upsertError } = await supabase
+        .from('profiles')
+        .upsert(upsertPayload)
+        .select(); // Return the upserted row
+
+      if (upsertError) {
+        throw new Error(`Failed to upsert profile: ${upsertError.message}`);
+      }
+
+      if (!upsertResult || upsertResult.length === 0) {
+        throw new Error('Profile upsert returned no results');
+      }
+
+      // Integration test: Re-fetch profile to verify onboarding_complete is true
+      const { data: updatedProfiles, error: verifyError } = await supabase
+        .from('profiles')
+        .select('onboarding_complete')
+        .eq('id', user.id);
+
+      if (verifyError) {
+        throw new Error(`Failed to verify profile update: ${verifyError.message}`);
+      }
+
+      if (!updatedProfiles || updatedProfiles.length === 0) {
+        toast({
+          title: 'Profile verification failed',
+          description: 'Could not find updated profile. Please try again.',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      const updatedProfile = updatedProfiles[0];
+      if (!updatedProfile.onboarding_complete) {
+        toast({
+          title: 'Profile update verification failed',
+          description: 'Profile was not properly marked as complete. Please try again.',
+          variant: 'destructive'
+        });
+        return;
       }
 
       toast({

@@ -36,51 +36,39 @@ const OnboardingGuard: React.FC<OnboardingGuardProps> = ({ children }) => {
       setProfileError(null);
 
       try {
-        // Get current session
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (!session?.access_token) {
-          setProfileError('No valid session');
-          return;
+        // Fetch profile directly from Supabase for consistency with onboarding submission
+        const { data: profileData, error: profileFetchError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (profileFetchError && profileFetchError.code !== 'PGRST116') {
+          throw new Error(`Failed to fetch profile: ${profileFetchError.message}`);
         }
 
-        // Fetch profile with cache-busting to ensure fresh data
-        const response = await fetch('/api/profile', {
-          method: 'GET',
-          cache: 'no-cache',
-          headers: {
-            'Authorization': `Bearer ${session.access_token}`,
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache'
-          }
-        });
-
-        if (response.ok) {
-          const profileData = await response.json();
+        if (profileData) {
           setProfile(profileData);
 
           // Handle onboarding logic based on current location and completion status
           if (location === '/onboarding') {
             // If user is on onboarding page and has completed onboarding, redirect to community
-            if (profileData.onboardingComplete) {
+            if (profileData.onboarding_complete) {
               setLocation('/community');
               return;
             }
             // Otherwise, allow access to onboarding page (user has incomplete onboarding)
           } else {
             // If user is NOT on onboarding page and has incomplete onboarding, redirect to onboarding
-            if (!profileData.onboardingComplete) {
+            if (!profileData.onboarding_complete) {
               setLocation('/onboarding');
               return;
             }
             // Otherwise, allow access to regular pages (user has completed onboarding)
           }
-        } else if (response.status === 404) {
+        } else {
           // Profile doesn't exist, redirect to onboarding
           setLocation('/onboarding');
-          return;
-        } else {
-          throw new Error(`Failed to fetch profile: ${response.statusText}`);
         }
       } catch (error: any) {
         console.error('Onboarding check error:', error);
