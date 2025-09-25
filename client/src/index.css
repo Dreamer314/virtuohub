@@ -130,6 +130,7 @@
   }
 }
 
+
 @layer utilities {
   .glass-card {
     background-color: hsl(var(--background) / 0.9);
@@ -188,31 +189,7 @@
     color: #ffffff !important;
   }
 
-  /* Enhanced dark theme card styling with ambient effects */
-  .dark .enhanced-card {
-    box-shadow: 
-      0 4px 20px rgba(0, 0, 0, 0.6),
-      0 1px 3px rgba(255, 255, 255, 0.05),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    background: linear-gradient(135deg, 
-      hsl(var(--sidebar)) 0%,
-      color-mix(in srgb, hsl(var(--sidebar)), rgba(255, 255, 255, 0.08)) 50%,
-      color-mix(in srgb, hsl(var(--sidebar)), rgba(0, 0, 0, 0.1)) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .dark .enhanced-card:hover {
-    box-shadow: 
-      0 8px 30px rgba(0, 0, 0, 0.7),
-      0 2px 8px rgba(255, 255, 255, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15);
-    transform: translateY(-1px);
-    background: linear-gradient(135deg, 
-      color-mix(in srgb, hsl(var(--sidebar)), rgba(255, 255, 255, 0.12)) 0%,
-      color-mix(in srgb, hsl(var(--sidebar)), rgba(255, 255, 255, 0.06)) 50%,
-      color-mix(in srgb, hsl(var(--sidebar)), rgba(0, 0, 0, 0.05)) 100%);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-  }
+  /* Enhanced dark theme removed - charcoal only */
 
   .charcoal .enhanced-card {
     box-shadow: 
@@ -266,12 +243,7 @@
     border: none !important;
   }
 
-  .dark .enhanced-card.group:hover {
-    transform: none !important;
-    box-shadow: none !important;
-    background: none !important;  
-    border: none !important;
-  }
+  /* Dark theme group hover removed - charcoal only */
 
   .charcoal .enhanced-card.group:hover {
     transform: none !important;
