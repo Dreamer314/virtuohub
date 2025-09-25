@@ -1,5 +1,5 @@
-/* Light-only overrides. Disabled in single-theme mode because html has .dark */
-html:not(.dark) {
+/* Light-only overrides. Disabled in single-theme mode because html has .charcoal */
+html:not(.charcoal) {
   /* Generic chip / pill tokens */
   --pill-radius: 10px;
 
@@ -25,11 +25,11 @@ html:not(.dark) {
 }
 
 /* Pills / badges (generic) */
-html:not(.dark) .vh-pill,
-html:not(.dark) .vh-badge,
-html:not(.dark) .vh-chip,
-html:not(.dark) .status-pill,
-html:not(.dark) .tag-pill {
+html:not(.charcoal) .vh-pill,
+html:not(.charcoal) .vh-badge,
+html:not(.charcoal) .vh-chip,
+html:not(.charcoal) .status-pill,
+html:not(.charcoal) .tag-pill {
   border-radius: var(--pill-radius);
   border: 1px solid var(--pill-muted-border);
   background: var(--pill-muted-bg);
@@ -37,70 +37,70 @@ html:not(.dark) .tag-pill {
 }
 
 /* Success (Active) */
-html:not(.dark) .vh-pill--success,
-html:not(.dark) .status-pill--active {
+html:not(.charcoal) .vh-pill--success,
+html:not(.charcoal) .status-pill--active {
   background: var(--pill-success-bg) !important;
   color: var(--pill-success-fg) !important;
   border-color: var(--pill-success-border) !important;
 }
 
 /* Info/secondary (tags, metadata) */
-html:not(.dark) .vh-pill--info,
-html:not(.dark) .vh-chip--info {
+html:not(.charcoal) .vh-pill--info,
+html:not(.charcoal) .vh-chip--info {
   background: var(--pill-info-bg) !important;
   color: var(--pill-info-fg) !important;
   border-color: var(--pill-info-border) !important;
 }
 
 /* Price pill */
-html:not(.dark) .vh-pill--price,
-html:not(.dark) .price-pill {
+html:not(.charcoal) .vh-pill--price,
+html:not(.charcoal) .price-pill {
   background: var(--pill-price-bg) !important;
   color: var(--pill-price-fg) !important;
   border-color: var(--pill-price-border) !important;
 }
 
 /* Dropdown surfaces (Radix/shadcn and native fallbacks) */
-html:not(.dark) .select-content,
-html:not(.dark) .dropdown-content,
-html:not(.dark) .radix-themes__select__content,
-html:not(.dark) [role="listbox"],
-html:not(.dark) .vh-menu,
-html:not(.dark) .vh-dropdown {
+html:not(.charcoal) .select-content,
+html:not(.charcoal) .dropdown-content,
+html:not(.charcoal) .radix-themes__select__content,
+html:not(.charcoal) [role="listbox"],
+html:not(.charcoal) .vh-menu,
+html:not(.charcoal) .vh-dropdown {
   color: #111827 !important;
   background: #ffffff !important;
   border: 1px solid #e5e7eb !important;
 }
 
 /* Dropdown items */
-html:not(.dark) .select-item,
-html:not(.dark) .dropdown-item,
-html:not(.dark) [role="option"] {
+html:not(.charcoal) .select-item,
+html:not(.charcoal) .dropdown-item,
+html:not(.charcoal) [role="option"] {
   color: #111827 !important;
   background: #ffffff !important;
 }
-html:not(.dark) .select-item[data-highlighted],
-html:not(.dark) .dropdown-item[data-highlighted],
-html:not(.dark) [role="option"][data-highlighted="true"] {
+html:not(.charcoal) .select-item[data-highlighted],
+html:not(.charcoal) .dropdown-item[data-highlighted],
+html:not(.charcoal) [role="option"][data-highlighted="true"] {
   background: #eef2ff !important;
   color: #1e3a8a !important;
 }
 
 /* Inputs in light theme */
-html:not(.dark) input[type="text"],
-html:not(.dark) input[type="number"],
-html:not(.dark) input[type="datetime-local"],
-html:not(.dark) textarea,
-html:not(.dark) .vh-input,
-html:not(.dark) .select-trigger {
+html:not(.charcoal) input[type="text"],
+html:not(.charcoal) input[type="number"],
+html:not(.charcoal) input[type="datetime-local"],
+html:not(.charcoal) textarea,
+html:not(.charcoal) .vh-input,
+html:not(.charcoal) .select-trigger {
   border: 1px solid #e5e7eb !important;
   background: #ffffff !important;
   color: #111827 !important;
 }
 
 /* Focus states */
-html:not(.dark) .vh-input:focus,
-html:not(.dark) .select-trigger:focus {
+html:not(.charcoal) .vh-input:focus,
+html:not(.charcoal) .select-trigger:focus {
   outline: 2px solid #c7d2fe;
   outline-offset: 2px;
   border-color: #c7d2fe !important;
@@ -109,33 +109,33 @@ html:not(.dark) .select-trigger:focus {
 /* TARGETED FIXES: Override specific Tailwind classes actually used in components */
 
 /* Fix Admin "Active" pills (green) - make them readable in light theme */
-html:not(.dark) .bg-green-500\/15.text-green-300 {
+html:not(.charcoal) .bg-green-500\/15.text-green-300 {
   background: var(--pill-success-bg) !important;
   color: var(--pill-success-fg) !important;
   border-color: var(--pill-success-border) !important;
 }
 
 /* Fix Price pills (yellow/amber) - make them readable in light theme */
-html:not(.dark) .bg-yellow-500\/20.text-yellow-300 {
+html:not(.charcoal) .bg-yellow-500\/20.text-yellow-300 {
   background: var(--pill-price-bg) !important;
   color: var(--pill-price-fg) !important;
   border-color: var(--pill-price-border) !important;
 }
 
 /* Alternative approach: Target by text content and background class */
-html:not(.dark) span.bg-green-500\/15:has-text("Active") {
+html:not(.charcoal) span.bg-green-500\/15:has-text("Active") {
   background: var(--pill-success-bg) !important;
   color: var(--pill-success-fg) !important;
   border-color: var(--pill-success-border) !important;
 }
 
 /* More robust approach: Target common pill patterns */
-html:not(.dark) span.bg-green-500\/15 {
+html:not(.charcoal) span.bg-green-500\/15 {
   background: var(--pill-success-bg) !important;
   color: var(--pill-success-fg) !important;
 }
 
-html:not(.dark) span.bg-yellow-500\/20 {
+html:not(.charcoal) span.bg-yellow-500\/20 {
   background: var(--pill-price-bg) !important;
   color: var(--pill-price-fg) !important;
 }
@@ -158,44 +158,44 @@ html:not(.dark) span.bg-yellow-500\/20 {
 .vh-pill--info    { --pill-bg:#e0f2fe; --pill-br:#bae6fd; --pill-fg:#075985; }
 .vh-pill--price   { --pill-bg:#fff7ed; --pill-br:#fed7aa; --pill-fg:#9a3412; }
 
-/* Dark mode safety */
-.dark .vh-pill { --pill-bg:#1f2937; --pill-br:#334155; --pill-fg:#e2e8f0; }
+/* Charcoal mode safety */
+.charcoal .vh-pill { --pill-bg:#1f2937; --pill-br:#334155; --pill-fg:#e2e8f0; }
 
 /* Light mode left nav active */
-:root:not(.dark) [data-sidebar] [aria-current="page"],
-:root:not(.dark) [data-sidebar] [aria-current="true"] {
+html:not(.charcoal) [data-sidebar] [aria-current="page"],
+html:not(.charcoal) [data-sidebar] [aria-current="true"] {
   background-color: #eef2ff !important;
   color: #1f2937 !important;
   border-radius: 0.5rem;
   font-weight: 700;
 }
 
-:root:not(.dark) [data-sidebar] [role="button"]:hover {
+html:not(.charcoal) [data-sidebar] [role="button"]:hover {
   background-color: #e5e7eb;
 }
 
 /* Charcoal buttons */
-html.dark .vh-btn {
+html.charcoal .vh-btn {
   font-weight: 700;
   border-width: 1px;
 }
 
 /* Charcoal inputs */
-html.dark input:not([type="checkbox"]):not([type="radio"]),
-html.dark textarea,
-html.dark select {
+html.charcoal input:not([type="checkbox"]):not([type="radio"]),
+html.charcoal textarea,
+html.charcoal select {
   background-color: var(--input) !important;
   color: var(--foreground) !important;
   border-color: var(--border) !important;
 }
-html.dark input::placeholder,
-html.dark textarea::placeholder {
+html.charcoal input::placeholder,
+html.charcoal textarea::placeholder {
   color: var(--muted-foreground) !important;
   opacity: 1;
 }
 
 /* Charcoal pills */
-html.dark .vh-pill {
+html.charcoal .vh-pill {
   --pill-bg: #1f2937;
   --pill-br: #334155;
   --pill-fg: #e5e7eb;
@@ -205,9 +205,9 @@ html.dark .vh-pill {
 }
 
 /* Charcoal download CTA */
-html.dark [data-cta="download"] {
+html.charcoal [data-cta="download"] {
   background-color: #10b981 !important;
   color: #ffffff !important;
   border-color: #059669 !important;
 }
-html.dark [data-cta="download"]:hover { background-color: #059669 !important; }
+html.charcoal [data-cta="download"]:hover { background-color: #059669 !important; }

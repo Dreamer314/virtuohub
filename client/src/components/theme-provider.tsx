@@ -31,7 +31,7 @@ export function ThemeProvider({
   useEffect(() => {
     const root = window.document.documentElement;
     const theme: Theme = "charcoal";
-    root.classList.add("dark", "charcoal");
+    root.classList.add("charcoal");
     root.setAttribute("data-theme", "charcoal");
     localStorage.setItem(storageKey, "charcoal");
   }, []);
