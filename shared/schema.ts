@@ -71,8 +71,11 @@ export const articles = pgTable("articles", {
 
 export const profiles = pgTable("profiles", {
   id: varchar("id").primaryKey(), // Matches Supabase Auth user ID
-  displayName: text("display_name").notNull(),
+  handle: text("handle").unique(), // unique username for onboarding
+  displayName: text("display_name"),
   avatarUrl: text("avatar_url"),
+  role: text("role"),
+  onboardingComplete: boolean("onboarding_complete").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -171,8 +174,11 @@ export const insertCommentSchema = createInsertSchema(comments).pick({
 
 export const insertProfileSchema = createInsertSchema(profiles).pick({
   id: true,
+  handle: true,
   displayName: true,
   avatarUrl: true,
+  role: true,
+  onboardingComplete: true,
 });
 
 export const insertPulseReportSchema = createInsertSchema(pulseReports).pick({

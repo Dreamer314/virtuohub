@@ -72,8 +72,11 @@ export class MemStorage implements IStorage {
       // Create corresponding profile
       const profile: Profile = {
         id: user.id,
+        handle: user.username, // Use username as default handle
         displayName: user.displayName,
         avatarUrl: user.avatar,
+        role: user.role,
+        onboardingComplete: true, // Seeded users are already complete
         createdAt: user.createdAt,
         updatedAt: user.createdAt,
       };
@@ -539,14 +542,25 @@ As the lines between physical and digital continue to blur, virtual fashion stan
     
     const profile: Profile = {
       id: insertProfile.id,
-      displayName: insertProfile.displayName,
-      avatarUrl: insertProfile.avatarUrl || null,
+      handle: insertProfile.handle ?? null,
+      displayName: insertProfile.displayName ?? null,
+      avatarUrl: insertProfile.avatarUrl ?? null,
+      role: insertProfile.role ?? null,
+      onboardingComplete: insertProfile.onboardingComplete ?? false,
       createdAt: existingProfile?.createdAt || new Date(),
       updatedAt: new Date(),
     };
     
     this.profiles.set(insertProfile.id, profile);
     return profile;
+  }
+
+  async isHandleAvailable(handle: string): Promise<boolean> {
+    const profiles = Array.from(this.profiles.values());
+    const lowercaseHandle = handle.toLowerCase();
+    return !profiles.some(profile => 
+      profile.handle && profile.handle.toLowerCase() === lowercaseHandle
+    );
   }
 
   async createPost(postData: InsertPost & { authorId: string }): Promise<Post> {

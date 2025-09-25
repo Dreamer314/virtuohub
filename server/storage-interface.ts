@@ -9,6 +9,7 @@ export interface IStorage {
   // Profile methods  
   getProfile(id: string): Promise<Profile | undefined>;
   upsertProfile(profile: InsertProfile): Promise<Profile>;
+  isHandleAvailable(handle: string): Promise<boolean>;
 
   // Post methods
   createPost(post: InsertPost & { authorId: string }): Promise<Post>;
