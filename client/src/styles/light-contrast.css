@@ -211,3 +211,13 @@ html.charcoal [data-cta="download"] {
   border-color: #059669 !important;
 }
 html.charcoal [data-cta="download"]:hover { background-color: #059669 !important; }
+
+/* enforce charcoal tokens everywhere */
+html.charcoal {
+  --background: #0e1014;
+  --foreground: #e6e7e9;
+  --card: #111318;
+  --border: #2a2f36;
+  --primary: #374151;
+  --primary-foreground: #f9fafb;
+}
