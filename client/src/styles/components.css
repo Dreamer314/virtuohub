@@ -309,11 +309,7 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-[data-theme="light"] .vh-glass {
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
+/* Light theme glass removed - charcoal only */
 
 /* Animations */
 @keyframes fadeIn {
@@ -365,10 +361,7 @@
     --vh-text-muted: hsl(215, 16%, 30%);
   }
   
-  [data-theme="dark"] {
-    --vh-border: hsl(215, 20%, 30%);
-    --vh-text-muted: hsl(215, 20%, 80%);
-  }
+  /* Dark theme removed - charcoal only */
   
   [data-theme="charcoal"] {
     --vh-border: hsl(210, 11%, 35%);

@@ -7,7 +7,7 @@
  * - client/src/index.css theme sections (DEPRECATED - migrated here)
  * 
  * THEME ARCHITECTURE:
- * - Uses [data-theme="light"], [data-theme="dark"], [data-theme="charcoal"] selectors
+ * - Uses single charcoal theme on :root selector only
  * - Provides both VH-prefixed tokens and shadcn-compatible fallbacks
  * - All contrast ratios meet WCAG AA standards (4.5:1 minimum)
  */
@@ -44,230 +44,9 @@
   --vh-transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ===== LIGHT THEME ===== */
-:root,
-[data-theme="light"] {
-  /* Core VH Design Tokens */
-  --vh-bg: hsl(0, 0%, 100%);           /* Main background */
-  --vh-surface: hsl(0, 0%, 98%);       /* Card/panel background */
-  --vh-border: hsl(220, 13%, 91%);     /* Border color */
-  --vh-text: hsl(222, 84%, 5%);        /* Primary text */
-  --vh-text-muted: hsl(215, 16%, 47%);  /* Secondary text */
-  
-  /* Accent System */
-  --vh-accent1: hsl(263, 70%, 50%);    /* Primary purple */
-  --vh-accent2: hsl(200, 98%, 39%);    /* Secondary blue */
-  
-  /* Shadow System */
-  --vh-shadow-1: 0 2px 8px rgba(0, 0, 0, 0.1);
-  --vh-shadow-2: 0 4px 16px rgba(0, 0, 0, 0.15);
-  
-  /* Overlay System */
-  --vh-overlay-soft: linear-gradient(135deg, var(--vh-accent1) 0%, var(--vh-accent2) 100%);
-  
-  /* Extended VH Tokens (from base-colors.css) */
-  --vh-bg-primary: hsl(0, 0%, 100%);
-  --vh-bg-secondary: hsl(0, 0%, 98%);
-  --vh-bg-tertiary: hsl(210, 40%, 96%);
-  --vh-bg-hover: hsl(210, 40%, 94%);
-  --vh-bg-active: hsl(210, 40%, 92%);
-  --vh-bg-selected: hsl(263, 70%, 96%);
-  
-  --vh-text-primary: hsl(222, 84%, 5%);
-  --vh-text-secondary: hsl(215, 16%, 35%);
-  --vh-text-tertiary: hsl(215, 16%, 47%);
-  --vh-text-disabled: hsl(215, 20%, 65%);
-  --vh-text-subtle: hsl(215, 20%, 65%);
-  
-  --vh-border-primary: hsl(220, 13%, 91%);
-  --vh-border-secondary: hsl(220, 13%, 85%);
-  --vh-border-hover: hsl(220, 13%, 80%);
-  
-  --vh-accent-primary: hsl(263, 70%, 50%);
-  --vh-accent-secondary: hsl(200, 98%, 39%);
-  --vh-accent1-hover: hsl(263, 70%, 45%);
-  --vh-accent1-light: hsl(263, 70%, 96%);
-  --vh-accent2-hover: hsl(200, 98%, 35%);
-  --vh-accent2-light: hsl(200, 98%, 95%);
-  
-  /* Semantic Colors */
-  --vh-success: hsl(142, 76%, 36%);
-  --vh-success-light: hsl(142, 76%, 96%);
-  --vh-warning: hsl(38, 92%, 50%);
-  --vh-warning-light: hsl(38, 92%, 95%);
-  --vh-error: hsl(0, 72%, 51%);
-  --vh-error-light: hsl(0, 72%, 96%);
-  --vh-info: hsl(217, 91%, 60%);
-  --vh-info-light: hsl(217, 91%, 96%);
-  
-  /* Extended Shadows (from theme.css) */
-  --vh-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --vh-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --vh-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --vh-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  
-  /* Surface System (compatibility) */
-  --vh-surface-hover: hsl(0, 0%, 96%);
-  
-  /* Legacy Shadcn Compatibility Variables */
-  --background: var(--vh-bg);
-  --foreground: var(--vh-text);
-  --card: var(--vh-surface);
-  --card-foreground: var(--vh-text);
-  --popover: var(--vh-bg);
-  --popover-foreground: var(--vh-text);
-  --primary: var(--vh-accent1);
-  --primary-foreground: hsl(210 40% 98%);
-  --secondary: var(--vh-bg-tertiary);
-  --secondary-foreground: var(--vh-text);
-  --muted: var(--vh-bg-hover);
-  --muted-foreground: var(--vh-text-muted);
-  --accent: var(--vh-bg-hover);
-  --accent-foreground: var(--vh-text);
-  --destructive: var(--vh-error);
-  --destructive-foreground: hsl(0 0% 100%);
-  --border: var(--vh-border);
-  --input: var(--vh-border);
-  --ring: var(--vh-accent1);
-  --sidebar: var(--vh-bg);
-  --sidebar-foreground: var(--vh-text);
-  --sidebar-primary: var(--vh-accent1);
-  --sidebar-primary-foreground: hsl(210 40% 98%);
-  --sidebar-accent: var(--vh-bg-tertiary);
-  --sidebar-accent-foreground: var(--vh-text);
-  --sidebar-border: var(--vh-border);
-  --sidebar-ring: var(--vh-accent1);
-  --surface: var(--vh-surface);
-  
-  /* Chart Colors */
-  --chart-1: hsl(203.8863 88.2845% 53.1373%);
-  --chart-2: hsl(159.7826 100% 36.0784%);
-  --chart-3: hsl(42.0290 92.8251% 56.2745%);
-  --chart-4: hsl(147.1429 78.5047% 41.9608%);
-  --chart-5: hsl(341.4894 75.2000% 50.9804%);
-  
-  /* Fonts */
-  --font-sans: 'Inter', system-ui, sans-serif;
-  --font-display: 'Poppins', system-ui, sans-serif;
-  --font-tech: 'Orbitron', monospace;
-  --font-serif: Georgia, serif;
-  --font-mono: Menlo, monospace;
-  --radius: 12px;
-  --header-height: 80px;
-  
-  /* VirtuoHub Gradient Design System */
-  --gradient-cosmic: linear-gradient(135deg, #8B5CF6 0%, #06B6D4 100%);
-  --gradient-cosmic-hover: linear-gradient(135deg, #7C3AED 0%, #0891B2 100%);
-  --gradient-nebula: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
-  --gradient-nebula-hover: linear-gradient(135deg, #9333EA 0%, #DB2777 100%);
-  --gradient-aurora: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
-  --gradient-aurora-hover: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
-  --gradient-mist: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%);
-  --gradient-mist-hover: linear-gradient(135deg, #E2E8F0 0%, #CBD5E1 100%);
-  --gradient-dawn: linear-gradient(135deg, #FDF2F8 0%, #F3E8FF 100%);
-  --gradient-dawn-hover: linear-gradient(135deg, #FAE8FF 0%, #EDE9FE 100%);
-  --gradient-dusk: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%);
-  --gradient-dusk-hover: linear-gradient(135deg, #DBEAFE 0%, #E0F2FE 100%);
-}
-
-/* ===== DARK THEME ===== */
-[data-theme="dark"] {
-  /* Core VH Design Tokens */
-  --vh-bg: hsl(222, 84%, 5%);          /* Main background */
-  --vh-surface: hsl(215, 28%, 9%);     /* Card/panel background */
-  --vh-border: hsl(215, 20%, 15%);     /* Border color */
-  --vh-text: hsl(210, 40%, 98%);       /* Primary text */
-  --vh-text-muted: hsl(215, 20%, 65%); /* Secondary text */
-  
-  /* Accent System */
-  --vh-accent1: hsl(263, 70%, 55%);    /* Primary purple */
-  --vh-accent2: hsl(200, 98%, 45%);    /* Secondary blue */
-  
-  /* Shadow System */
-  --vh-shadow-1: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --vh-shadow-2: 0 4px 16px rgba(0, 0, 0, 0.4);
-  
-  /* Overlay System */
-  --vh-overlay-soft: linear-gradient(135deg, var(--vh-accent1) 0%, var(--vh-accent2) 100%);
-  
-  /* Extended VH Tokens */
-  --vh-bg-primary: hsl(222, 84%, 5%);
-  --vh-bg-secondary: hsl(215, 28%, 9%);
-  --vh-bg-tertiary: hsl(215, 20%, 15%);
-  --vh-bg-hover: hsl(215, 20%, 18%);
-  --vh-bg-active: hsl(215, 20%, 22%);
-  --vh-bg-selected: hsl(263, 70%, 15%);
-  
-  --vh-text-primary: hsl(210, 40%, 98%);
-  --vh-text-secondary: hsl(215, 20%, 80%);
-  --vh-text-tertiary: hsl(215, 20%, 65%);
-  --vh-text-disabled: hsl(215, 16%, 47%);
-  --vh-text-subtle: hsl(215, 16%, 47%);
-  
-  --vh-border-primary: hsl(215, 20%, 15%);
-  --vh-border-secondary: hsl(215, 20%, 20%);
-  --vh-border-hover: hsl(215, 20%, 25%);
-  
-  --vh-accent-primary: hsl(263, 70%, 60%);
-  --vh-accent-secondary: hsl(200, 98%, 50%);
-  --vh-accent1-hover: hsl(263, 70%, 60%);
-  --vh-accent1-light: hsl(263, 70%, 15%);
-  --vh-accent2-hover: hsl(200, 98%, 50%);
-  --vh-accent2-light: hsl(200, 98%, 12%);
-  
-  /* Semantic Colors */
-  --vh-success: hsl(142, 76%, 50%);
-  --vh-success-light: hsl(142, 76%, 12%);
-  --vh-warning: hsl(38, 92%, 55%);
-  --vh-warning-light: hsl(38, 92%, 12%);
-  --vh-error: hsl(0, 72%, 60%);
-  --vh-error-light: hsl(0, 72%, 12%);
-  --vh-info: hsl(217, 91%, 65%);
-  --vh-info-light: hsl(217, 91%, 12%);
-  
-  /* Extended Shadows */
-  --vh-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.1);
-  --vh-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2);
-  --vh-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.2), 0 4px 6px -4px rgb(0 0 0 / 0.2);
-  --vh-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.2);
-  
-  /* Surface System */
-  --vh-surface-hover: hsl(215, 28%, 12%);
-  
-  /* Legacy Shadcn Compatibility Variables */
-  --background: var(--vh-bg);
-  --foreground: var(--vh-text);
-  --card: var(--vh-surface);
-  --card-foreground: var(--vh-text);
-  --popover: var(--vh-surface);
-  --popover-foreground: var(--vh-text);
-  --primary: var(--vh-accent1);
-  --primary-foreground: hsl(210 40% 98%);
-  --secondary: var(--vh-bg-tertiary);
-  --secondary-foreground: var(--vh-text);
-  --muted: var(--vh-bg-hover);
-  --muted-foreground: var(--vh-text-muted);
-  --accent: var(--vh-bg-hover);
-  --accent-foreground: var(--vh-text);
-  --destructive: var(--vh-error);
-  --destructive-foreground: hsl(0 0% 100%);
-  --border: var(--vh-border);
-  --input: var(--vh-border);
-  --ring: var(--vh-accent1);
-  --sidebar: var(--vh-surface);
-  --sidebar-foreground: var(--vh-text);
-  --sidebar-primary: var(--vh-accent1);
-  --sidebar-primary-foreground: hsl(210 40% 98%);
-  --sidebar-accent: var(--vh-bg-tertiary);
-  --sidebar-accent-foreground: var(--vh-text);
-  --sidebar-border: var(--vh-border);
-  --sidebar-ring: var(--vh-accent1);
-  --surface: var(--vh-surface);
-}
-
-/* ===== CHARCOAL THEME ===== */
-[data-theme="charcoal"] {
-  /* Core VH Design Tokens */
+/* ===== CHARCOAL THEME (ONLY THEME) ===== */
+:root {
+  /* Core VH Design Tokens - CHARCOAL THEME ONLY */
   --vh-bg: hsl(210, 11%, 8%);          /* Main background */
   --vh-surface: hsl(210, 11%, 11%);    /* Card/panel background */
   --vh-border: hsl(210, 11%, 18%);     /* Border color */
@@ -334,10 +113,10 @@
   --foreground: var(--vh-text);
   --card: var(--vh-surface);
   --card-foreground: var(--vh-text);
-  --popover: var(--vh-surface);
+  --popover: var(--vh-bg);
   --popover-foreground: var(--vh-text);
   --primary: var(--vh-accent1);
-  --primary-foreground: hsl(210 25% 95%);
+  --primary-foreground: hsl(210 40% 98%);
   --secondary: var(--vh-bg-tertiary);
   --secondary-foreground: var(--vh-text);
   --muted: var(--vh-bg-hover);
@@ -349,16 +128,48 @@
   --border: var(--vh-border);
   --input: var(--vh-border);
   --ring: var(--vh-accent1);
-  --sidebar: var(--vh-surface);
+  --sidebar: var(--vh-bg);
   --sidebar-foreground: var(--vh-text);
   --sidebar-primary: var(--vh-accent1);
-  --sidebar-primary-foreground: hsl(210 25% 95%);
+  --sidebar-primary-foreground: hsl(210 40% 98%);
   --sidebar-accent: var(--vh-bg-tertiary);
   --sidebar-accent-foreground: var(--vh-text);
   --sidebar-border: var(--vh-border);
   --sidebar-ring: var(--vh-accent1);
   --surface: var(--vh-surface);
+  
+  /* Chart Colors */
+  --chart-1: hsl(203.8863 88.2845% 53.1373%);
+  --chart-2: hsl(159.7826 100% 36.0784%);
+  --chart-3: hsl(42.0290 92.8251% 56.2745%);
+  --chart-4: hsl(147.1429 78.5047% 41.9608%);
+  --chart-5: hsl(341.4894 75.2000% 50.9804%);
+  
+  /* Fonts */
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-display: 'Poppins', system-ui, sans-serif;
+  --font-tech: 'Orbitron', monospace;
+  --font-serif: Georgia, serif;
+  --font-mono: Menlo, monospace;
+  --radius: 12px;
+  --header-height: 80px;
+  
+  /* VirtuoHub Gradient Design System */
+  --gradient-cosmic: linear-gradient(135deg, #8B5CF6 0%, #06B6D4 100%);
+  --gradient-cosmic-hover: linear-gradient(135deg, #7C3AED 0%, #0891B2 100%);
+  --gradient-nebula: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
+  --gradient-nebula-hover: linear-gradient(135deg, #9333EA 0%, #DB2777 100%);
+  --gradient-aurora: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+  --gradient-aurora-hover: linear-gradient(135deg, #2563EB 0%, #7C3AED 100%);
+  --gradient-mist: linear-gradient(135deg, #F1F5F9 0%, #E2E8F0 100%);
+  --gradient-mist-hover: linear-gradient(135deg, #E2E8F0 0%, #CBD5E1 100%);
+  --gradient-dawn: linear-gradient(135deg, #FDF2F8 0%, #F3E8FF 100%);
+  --gradient-dawn-hover: linear-gradient(135deg, #FAE8FF 0%, #EDE9FE 100%);
+  --gradient-dusk: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%);
+  --gradient-dusk-hover: linear-gradient(135deg, #DBEAFE 0%, #E0F2FE 100%);
 }
+
+
 
 /* ===== COMPONENT STYLES ===== */
 /* Component classes that integrate with the theme system */

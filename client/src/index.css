@@ -1,8 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 /* Import Unified Theme System */
 @import './styles/theme.css';
-/* Import Legacy Styles (DEPRECATED) */
-@import './styles/base-colors.css';
+/* Legacy Styles Import Removed - Consolidated into theme.css */
 
 /* Tailwind CSS */
 @tailwind base;
@@ -153,14 +152,7 @@
     border-color: hsl(var(--border));
   }
 
-  .dark .enhanced-card {
-    background-color: hsl(var(--card));
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  }
-
-  .dark .enhanced-card:hover {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-  }
+  /* Dark theme enhanced-card removed - charcoal only */
 
   .charcoal .enhanced-card {
     background-color: hsl(var(--card));
@@ -183,16 +175,7 @@
     color: hsl(var(--foreground)) !important;
   }
 
-  .dark select {
-    background-color: #1c1c20 !important;
-    color: #ffffff !important;
-    border: 1px solid #374151 !important;
-  }
-
-  .dark select option {
-    background-color: #1c1c20 !important;
-    color: #ffffff !important;
-  }
+  /* Dark theme select styling removed - charcoal only */
 
   .charcoal select {
     background-color: #1c1c20 !important;
