@@ -235,7 +235,7 @@ export function Header({ onCreatePost }: HeaderProps) {
                       variant="ghost"
                       size="sm"
                       onClick={handleSignOut}
-                      className="text-sm font-medium px-3 hidden md:inline-flex"
+                      className="text-sm font-medium px-3"
                       data-testid="logout-button"
                     >
                       <LogOut className="w-4 h-4 mr-1" />
@@ -246,14 +246,14 @@ export function Header({ onCreatePost }: HeaderProps) {
                   <>
                     <Button
                       variant="ghost"
-                      className="text-sm font-medium px-3 hidden md:inline-flex"
+                      className="text-sm font-medium px-3"
                       onClick={() => openAuthModal("signin")}
                       data-testid="login-button"
                     >
                       Log In
                     </Button>
                     <Button
-                      className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full hover:from-purple-700 hover:to-blue-700 transition-all hidden md:inline-flex"
+                      className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full hover:from-purple-700 hover:to-blue-700 transition-all"
                       onClick={() => openAuthModal("signup")}
                       data-testid="signup-button"
                     >
