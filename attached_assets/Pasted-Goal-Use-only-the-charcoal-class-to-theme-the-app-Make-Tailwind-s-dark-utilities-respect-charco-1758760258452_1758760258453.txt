@@ -1,0 +1,130 @@
+Goal: Use only the .charcoal class to theme the app. Make Tailwind’s dark: utilities respect .charcoal. Remove .dark from runtime. Ensure our custom CSS targets .charcoal. Scope any light-only rules to html:not(.charcoal) so they never apply now.
+
+Before editing, show diff previews and wait for my YES.
+
+Changes
+
+Theme providers: remove .dark, keep only .charcoal
+
+Files:
+
+client/src/components/theme-provider.tsx
+
+client/src/components/theme/theme-provider.tsx
+
+Edits:
+
+- root.classList.add("dark", "charcoal")
++ root.classList.add("charcoal")
+
+- root.classList.remove("light", "dark", "charcoal")
++ root.classList.remove("light", "charcoal")  // do not mention "dark" anymore if not used elsewhere
+
+- type Theme = "dark" | "light" | "charcoal" | "system"
++ type Theme = "charcoal"
+
+  // on mount
+- root.setAttribute("data-theme", "charcoal")
+- localStorage.setItem(storageKey, "charcoal")
++ root.setAttribute("data-theme", "charcoal")
++ localStorage.setItem(storageKey, "charcoal")
+
+
+Also make the toggle a no-op that sets "charcoal".
+
+Tailwind config: make dark: respond to .charcoal
+
+File: tailwind.config.ts
+
+Edits:
+
+- darkMode: ["class"],
++ darkMode: ["class", ".charcoal"],
+
+
+This keeps all existing dark:* classes working when <html class="charcoal"> is present. We do not need to add .dark anywhere in markup.
+
+Custom CSS: retarget to .charcoal and fix light scoping
+
+Files:
+
+client/src/styles/light-contrast.css
+
+any other CSS using html.dark or .dark .vh-pill etc
+
+Edits:
+
+Replace selectors that start with html.dark or .dark … with the .charcoal version:
+
+- html.dark .vh-btn { … }
++ html.charcoal .vh-btn { … }
+
+- html.dark .vh-pill { … }
++ html.charcoal .vh-pill { … }
+
+- html.dark [data-cta="download"] { … }
++ html.charcoal [data-cta="download"] { … }
+
+
+Scope every light-only block to html:not(.charcoal) instead of :root:not(.dark):
+
+- :root:not(.dark) .vh-btn { … }
++ html:not(.charcoal) .vh-btn { … }
+
+- :root:not(.dark) .vh-pill { … }
++ html:not(.charcoal) .vh-pill { … }
+
+- :root:not(.dark) [data-cta="download"] { … }
++ html:not(.charcoal) [data-cta="download"] { … }
+
+- :root:not(.dark) .sidebar [aria-current="page"] { … }
++ html:not(.charcoal) .sidebar [aria-current="page"] { … }
+
+
+Tokens file
+
+Keep client/src/styles/theme-tokens.css as is. It defines the charcoal colors at :root, which is fine since Charcoal is our only theme right now.
+
+Sanity checks to run after changes
+
+In browser console:
+
+document.documentElement.className should contain only charcoal (and no dark)
+
+document.documentElement.getAttribute('data-theme') should be "charcoal"
+
+Tailwind dark: utilities should apply when .charcoal is present because of step 2
+
+Visual:
+
+Buttons readable
+
+Pills readable
+
+Inputs readable with visible placeholder
+
+No white text on white anywhere
+
+Build clean
+
+Guardrails
+
+Do not add .dark in any file
+
+Do not change layouts or copy
+
+Do not remove Tailwind classes
+
+Only apply the diffs above
+
+Stop and wait for my YES with the diff previews.
+
+When it shows the diffs, check that:
+
+Tailwind darkMode now has ["class", ".charcoal"]
+
+No code adds .dark to <html>
+
+CSS selectors now use html.charcoal and html:not(.charcoal)
+
+If that matches, reply YES. If you want, paste the diff previews here and I’ll sanity-check them fast.
