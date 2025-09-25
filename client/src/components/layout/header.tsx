@@ -214,7 +214,7 @@ export function Header({ onCreatePost }: HeaderProps) {
           </nav>
 
           {/* Desktop Actions - ALWAYS VISIBLE */}
-          <div className="flex items-center space-x-3">
+          <div className="hidden md:flex items-center space-x-3">
             {/* Community Page Actions */}
             {location === "/" && (
               <>
@@ -292,7 +292,7 @@ export function Header({ onCreatePost }: HeaderProps) {
           </div>
 
           {/* Mobile Actions */}
-          <div className="flex items-center space-x-2 md:hidden">
+          <div className="flex md:hidden items-center space-x-2">
             {/* Mobile Create Button */}
             {location === "/" && (
               <Button
