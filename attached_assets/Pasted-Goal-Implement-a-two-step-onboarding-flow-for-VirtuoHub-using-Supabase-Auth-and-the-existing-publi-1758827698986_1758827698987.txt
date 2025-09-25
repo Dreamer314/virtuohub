@@ -1,0 +1,55 @@
+Goal:
+Implement a two-step onboarding flow for VirtuoHub using Supabase Auth and the existing public.profiles table.
+
+Context:
+- Auth is working. Users can sign up or sign in.
+- public.profiles columns: id (uuid, FK to auth.users), handle (unique username), display_name, avatar_url, role, created_at, onboarding_complete (bool, default false), updated_at.
+- We must require new users to complete onboarding (set handle and optional avatar) before accessing the app.
+
+Requirements:
+
+1) Route guard
+- Add a server-side check that runs on every request from an authenticated user.
+- If the user is logged in and profiles.onboarding_complete = false and the path is not /onboarding, redirect to /onboarding.
+- If onboarding_complete = true, allow normal navigation.
+
+2) /onboarding page
+- Protected route. Only visible to logged-in users.
+- UI content:
+  - Title: "Welcome to VirtuoHub"
+  - Subtitle: "Choose your handle and set your profile"
+  - Text input for handle with live validation:
+      * only letters, numbers, underscore, 3–20 chars
+      * case-insensitive uniqueness check against public.profiles.handle
+      * show inline success or error state
+  - Optional file upload for avatar:
+      * upload to Supabase Storage bucket 'avatars' with key pattern: {userId}/{filename}
+      * set avatar_url to the public URL
+  - Optional display_name text input
+  - Primary button: "Complete profile" disabled until handle is valid and not taken
+
+- On submit:
+  - Update public.profiles where id = auth.user().id with { handle, avatar_url?, display_name? }
+  - Set onboarding_complete = true
+  - Redirect to /community
+
+3) Minimal API utilities
+- Create helper functions for:
+  - getCurrentProfile(): fetches profiles row for auth.user().id
+  - isHandleAvailable(handle): returns boolean by querying lower(handle)
+  - updateMyProfile(payload): updates my row with RLS-safe call
+
+4) UX polish
+- If a user already completed onboarding, visiting /onboarding should redirect to /community.
+- Show small avatar preview if uploaded.
+- Handle and display server errors with toasts.
+
+5) Security notes
+- Use Row Level Security. Do not use service role keys on the client.
+- All profile updates must execute as the logged-in user and affect only their row.
+
+Deliverables:
+- Route guard impl
+- /onboarding page with described UI and helpers
+- Storage config for avatars and public URL handling
+- Redirects working end to end
