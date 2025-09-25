@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabaseClient'
+import { useLocation } from 'wouter'
 
 interface AuthContextType {
   user: User | null
@@ -26,6 +27,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [, setLocation] = useLocation()
 
   useEffect(() => {
     // Get initial session
@@ -49,9 +51,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(session?.user || null)
         setLoading(false)
 
-        // Attempt profile upsert after successful sign in
+        // Handle new user onboarding after successful sign in
         if (event === 'SIGNED_IN' && session?.user) {
           try {
+            // Check if user has completed onboarding
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('onboarding_complete')
+              .eq('id', session.user.id)
+              .single();
+
+            // If no profile exists or onboarding is incomplete, redirect to onboarding
+            if (!profileData || !profileData.onboarding_complete) {
+              setLocation('/onboarding');
+            }
+
+            // Attempt profile upsert for basic data
             const response = await fetch('/api/profile-upsert', {
               method: 'POST',
               headers: {
@@ -68,6 +83,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
             }
           } catch (error) {
             console.warn('Profile upsert attempt failed (this is expected if profiles table does not exist):', error)
+            // On error, redirect to onboarding to be safe
+            setLocation('/onboarding');
           }
         }
       }

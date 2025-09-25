@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import ErrorBoundary from "@/components/error-boundary";
-import OnboardingGuard from "@/components/OnboardingGuard";
+import { AuthProvider } from "@/providers/AuthProvider";
 
 /* Pages */
 import Community from "@/pages/community";
@@ -74,10 +74,10 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <TooltipProvider>
-            <Toaster />
-            <OnboardingGuard>
+            <AuthProvider>
+              <Toaster />
               <Router />
-            </OnboardingGuard>
+            </AuthProvider>
           </TooltipProvider>
         </ThemeProvider>
       </QueryClientProvider>
