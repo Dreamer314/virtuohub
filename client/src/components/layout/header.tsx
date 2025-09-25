@@ -78,9 +78,17 @@ export function Header({ onCreatePost }: HeaderProps) {
 
   const handleSignOut = async () => {
     try {
-      await supabase.auth.signOut();
+      console.log("Attempting to sign out...");
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error("Supabase signOut error:", error);
+        throw error;
+      }
+      console.log("Sign out successful");
     } catch (error) {
       console.error("Error signing out:", error);
+      // Show user feedback
+      alert("Error signing out. Please try again.");
     }
   };
 
