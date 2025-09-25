@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import ErrorBoundary from "@/components/error-boundary";
+import OnboardingGuard from "@/components/OnboardingGuard";
 
 /* Pages */
 import Community from "@/pages/community";
@@ -74,7 +75,9 @@ function App() {
         <ThemeProvider>
           <TooltipProvider>
             <Toaster />
-            <Router />
+            <OnboardingGuard>
+              <Router />
+            </OnboardingGuard>
           </TooltipProvider>
         </ThemeProvider>
       </QueryClientProvider>
