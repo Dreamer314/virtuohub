@@ -43,8 +43,8 @@
   --vh-accent-error: hsl(0, 72%, 51%);        /* Red */
 }
 
-/* ===== DARK THEME BASE COLORS ===== */
-[data-theme="dark"] {
+/* ===== DARK THEME BASE COLORS - DISABLED ===== */
+html:not(.charcoal) [data-theme="dark"] {
   /* Primary Background System */
   --vh-bg-primary: hsl(222, 84%, 5%);         /* Very dark blue-gray */
   --vh-bg-secondary: hsl(215, 28%, 9%);       /* Slightly lighter cards */
@@ -182,8 +182,8 @@
   background-color: var(--vh-bg-hover) !important;
 }
 
-[data-theme="dark"] .vh-nav-item:hover,
-[data-theme="dark"] .vh-button-ghost:hover {
+html:not(.charcoal) [data-theme="dark"] .vh-nav-item:hover,
+html:not(.charcoal) [data-theme="dark"] .vh-button-ghost:hover {
   background-color: var(--vh-bg-hover) !important;
 }
 
@@ -206,12 +206,12 @@
 }
 
 /* Debug styles - these should never be light in dark themes */
-[data-theme="dark"] *:hover,
+html:not(.charcoal) [data-theme="dark"] *:hover,
 [data-theme="charcoal"] *:hover {
   /* Prevent any light backgrounds in dark themes */
 }
 
-[data-theme="dark"] .vh-nav-item:hover {
+html:not(.charcoal) [data-theme="dark"] .vh-nav-item:hover {
   background-color: hsl(215, 20%, 18%) !important;
 }
 

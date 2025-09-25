@@ -232,7 +232,7 @@
   }
 
   .hover-lift:hover {
-    @apply border-gray-300 dark:border-gray-600;
+    @apply border-gray-300;
   }
 
   /* Override enhanced-card hover effects to allow custom hover effects */
@@ -257,7 +257,7 @@
   }
 
   .platform-tag:hover {
-    @apply border-gray-300 dark:border-gray-600;
+    @apply border-gray-300;
   }
 
   .floating-element {

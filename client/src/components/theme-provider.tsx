@@ -30,8 +30,9 @@ export function ThemeProvider({
 
   useEffect(() => {
     const root = window.document.documentElement;
-    const theme: Theme = "charcoal";
+    root.classList.remove("dark", "light");
     root.classList.add("charcoal");
+    root.removeAttribute("data-theme");
     root.setAttribute("data-theme", "charcoal");
     localStorage.setItem(storageKey, "charcoal");
   }, []);
@@ -39,7 +40,8 @@ export function ThemeProvider({
   const value = {
     theme,
     setTheme: (theme: Theme) => {
-      localStorage.setItem(storageKey, theme);
+      // No-op: always charcoal
+      localStorage.setItem(storageKey, "charcoal");
       setTheme(theme);
     },
   };
