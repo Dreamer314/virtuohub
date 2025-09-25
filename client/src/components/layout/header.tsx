@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { useLocation, Link } from "wouter";
 import { useState, useEffect } from "react";
-import { useAuth } from "@/providers/AuthProvider";
+import { Session } from "@supabase/supabase-js";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { supabase } from "@/lib/supabaseClient";
 
@@ -31,45 +31,69 @@ export function Header({ onCreatePost }: HeaderProps) {
   const [authModalMode, setAuthModalMode] = useState<"signin" | "signup">(
     "signin"
   );
-  const { user, loading } = useAuth();
-
-  // Admin flag
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [session, setSession] = useState<Session | null>(null);
+  const [profileRole, setProfileRole] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
-      if (user?.id) {
-        try {
-          // Try to call the admin API endpoint
-          const response = await fetch('/api/users/check-admin', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: user.id })
-          });
-          
-          if (response.ok) {
-            const result = await response.json();
-            if (!cancelled) setIsAdmin(Boolean(result.isAdmin));
-          } else {
-            // Fallback: simple admin check based on email/id for development
-            const adminEmails = ['admin@virtuohub.com', 'admin@test.com'];
-            const isDevAdmin = adminEmails.includes(user.email || '') || user.id === 'admin-user-id';
-            if (!cancelled) setIsAdmin(isDevAdmin);
-            console.log('Admin check endpoint not available, using fallback:', { isDevAdmin, email: user.email });
+
+    const fetchSessionAndProfile = async () => {
+      try {
+        // Fetch current session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) {
+          console.error('Error fetching session:', sessionError);
+          if (!cancelled) {
+            setSession(null);
+            setProfileRole(null);
+            setLoading(false);
           }
-        } catch (error) {
-          console.error('Admin check failed:', error);
-          if (!cancelled) setIsAdmin(false);
+          return;
         }
-      } else {
-        if (!cancelled) setIsAdmin(false);
+
+        if (!cancelled) setSession(session);
+
+        // If session exists, fetch user's profile role from DB
+        if (session?.user?.id) {
+          const { data: profileData, error: profileError } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', session.user.id)
+            .single();
+
+          if (profileError) {
+            console.error('Error fetching profile:', profileError);
+            if (!cancelled) setProfileRole(null);
+          } else {
+            if (!cancelled) setProfileRole(profileData?.role || null);
+          }
+        } else {
+          if (!cancelled) setProfileRole(null);
+        }
+      } catch (error) {
+        console.error('Error in fetchSessionAndProfile:', error);
+        if (!cancelled) {
+          setSession(null);
+          setProfileRole(null);
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
       }
-    })();
+    };
+
+    fetchSessionAndProfile();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async () => {
+      await fetchSessionAndProfile();
+    });
+
     return () => {
       cancelled = true;
+      subscription.unsubscribe();
     };
-  }, [user?.id]);
+  }, []);
 
   const toggleTheme = () => {
     // Single-theme mode: charcoal only
@@ -78,17 +102,31 @@ export function Header({ onCreatePost }: HeaderProps) {
 
   const handleSignOut = async () => {
     try {
-      console.log("Attempting to sign out...");
-      const { error } = await supabase.auth.signOut();
+      console.log("Sign out button clicked - attempting to sign out...");
+      
+      // Add timeout to catch hanging signOut calls
+      const signOutPromise = supabase.auth.signOut();
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Sign out timeout after 5 seconds')), 5000)
+      );
+      
+      const result = await Promise.race([signOutPromise, timeoutPromise]);
+      const { error } = result as { error: any };
+      
+      console.log("Supabase signOut result:", { error });
+      
       if (error) {
         console.error("Supabase signOut error:", error);
         throw error;
       }
-      console.log("Sign out successful");
+      
+      console.log("Sign out successful, reloading page...");
+      window.location.reload();
     } catch (error) {
       console.error("Error signing out:", error);
-      // Show user feedback
-      alert("Error signing out. Please try again.");
+      // Force reload anyway since the function was called
+      console.log("Forcing page reload after error...");
+      window.location.reload();
     }
   };
 
@@ -158,8 +196,8 @@ export function Header({ onCreatePost }: HeaderProps) {
               Community
             </Link>
 
-            {/* Admin link for real admins */}
-            {isAdmin && (
+            {/* Admin link only when session exists AND profile.role === 'admin' */}
+            {session && profileRole === 'admin' && (
               <Link
                 href="/admin"
                 className={`vh-nav-item px-3 py-2 rounded-lg font-medium text-base ${
@@ -228,46 +266,26 @@ export function Header({ onCreatePost }: HeaderProps) {
             {/* Auth Buttons */}
             {!loading && (
               <>
-                {user ? (
-                  <div className="flex items-center space-x-2">
-                    <div className="flex items-center space-x-2 px-3 py-1 rounded-lg bg-muted/50">
-                      <User className="w-4 h-4" />
-                      <span
-                        className="text-sm font-medium"
-                        data-testid="user-display-name"
-                      >
-                        {user.user_metadata?.full_name || user.email}
-                      </span>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleSignOut}
-                      className="text-sm font-medium px-3"
-                      data-testid="logout-button"
-                    >
-                      <LogOut className="w-4 h-4 mr-1" />
-                      Log Out
-                    </Button>
-                  </div>
+                {session ? (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleSignOut}
+                    className="text-sm font-medium px-3"
+                    data-testid="signout-button"
+                  >
+                    <LogOut className="w-4 h-4 mr-1" />
+                    Sign Out
+                  </Button>
                 ) : (
-                  <>
-                    <Button
-                      variant="ghost"
-                      className="text-sm font-medium px-3 border-2 border-red-500"
-                      onClick={() => openAuthModal("signin")}
-                      data-testid="login-button"
-                    >
-                      Log In
-                    </Button>
-                    <Button
-                      className="px-4 py-2 text-sm font-medium bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full hover:from-purple-700 hover:to-blue-700 transition-all border-2 border-green-500"
-                      onClick={() => openAuthModal("signup")}
-                      data-testid="signup-button"
-                    >
-                      Sign Up
-                    </Button>
-                  </>
+                  <Button
+                    variant="ghost"
+                    className="text-sm font-medium px-3"
+                    onClick={() => openAuthModal("signin")}
+                    data-testid="signin-button"
+                  >
+                    Sign In
+                  </Button>
                 )}
               </>
             )}
@@ -356,7 +374,7 @@ export function Header({ onCreatePost }: HeaderProps) {
               </a>
 
               {/* Admin (mobile) */}
-              {isAdmin && (
+              {session && profileRole === 'admin' && (
                 <Link
                   href="/admin"
                   className="vh-nav-item px-4 py-3 font-medium rounded-lg mx-2"
@@ -373,45 +391,25 @@ export function Header({ onCreatePost }: HeaderProps) {
               <div className="flex flex-col space-y-2 pt-4 px-2">
                 {!loading && (
                   <>
-                    {user ? (
-                      <div className="space-y-2">
-                        <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-muted/50">
-                          <User className="w-4 h-4" />
-                          <span
-                            className="text-sm font-medium"
-                            data-testid="mobile-user-display-name"
-                          >
-                            {user.user_metadata?.full_name || user.email}
-                          </span>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          className="justify-start"
-                          onClick={handleSignOut}
-                          data-testid="mobile-logout-button"
-                        >
-                          <LogOut className="w-4 h-4 mr-2" />
-                          Log Out
-                        </Button>
-                      </div>
+                    {session ? (
+                      <Button
+                        variant="ghost"
+                        className="justify-start"
+                        onClick={handleSignOut}
+                        data-testid="mobile-signout-button"
+                      >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Sign Out
+                      </Button>
                     ) : (
-                      <>
-                        <Button
-                          variant="ghost"
-                          className="justify-start"
-                          onClick={() => openAuthModal("signin")}
-                          data-testid="mobile-login-button"
-                        >
-                          Log In
-                        </Button>
-                        <Button
-                          className="bg-gradient-to-r from-purple-600 to-blue-600 text-white hover:from-purple-700 hover:to-blue-700 transition-all"
-                          onClick={() => openAuthModal("signup")}
-                          data-testid="mobile-signup-button"
-                        >
-                          Sign Up
-                        </Button>
-                      </>
+                      <Button
+                        variant="ghost"
+                        className="justify-start"
+                        onClick={() => openAuthModal("signin")}
+                        data-testid="mobile-signin-button"
+                      >
+                        Sign In
+                      </Button>
                     )}
                   </>
                 )}
