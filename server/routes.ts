@@ -687,6 +687,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get current user profile (protected)
+  app.get("/api/profile", validateSession, async (req, res) => {
+    try {
+      const profile = await storage.getProfile(req.user!.id);
+      if (!profile) {
+        return res.status(404).json({ message: "Profile not found" });
+      }
+      res.json(profile);
+    } catch (error) {
+      console.error("Profile fetch error:", error);
+      res.status(500).json({ message: "Failed to fetch profile" });
+    }
+  });
+
+  // Check handle availability
+  app.post("/api/profile/handle/check", async (req, res) => {
+    try {
+      const { handle } = req.body;
+      
+      if (!handle || typeof handle !== 'string') {
+        return res.status(400).json({ message: "Handle is required" });
+      }
+      
+      // Validate handle format: letters, numbers, underscore, 3-20 chars
+      const handleRegex = /^[a-zA-Z0-9_]{3,20}$/;
+      if (!handleRegex.test(handle)) {
+        return res.status(400).json({ 
+          message: "Handle must be 3-20 characters and contain only letters, numbers, and underscores" 
+        });
+      }
+      
+      const available = await storage.isHandleAvailable(handle);
+      res.json({ available });
+    } catch (error) {
+      console.error("Handle check error:", error);
+      res.status(500).json({ message: "Failed to check handle availability" });
+    }
+  });
+
+  // Update current user profile (protected)
+  app.patch("/api/profile/update", validateSession, async (req, res) => {
+    try {
+      const { handle, displayName, avatarUrl, role } = req.body;
+      
+      // Validate handle if provided
+      if (handle) {
+        const handleRegex = /^[a-zA-Z0-9_]{3,20}$/;
+        if (!handleRegex.test(handle)) {
+          return res.status(400).json({ 
+            message: "Handle must be 3-20 characters and contain only letters, numbers, and underscores" 
+          });
+        }
+        
+        const available = await storage.isHandleAvailable(handle);
+        if (!available) {
+          return res.status(400).json({ message: "Handle is already taken" });
+        }
+      }
+
+      // Get current profile to preserve existing data
+      const currentProfile = await storage.getProfile(req.user!.id);
+      
+      const updateData = {
+        id: req.user!.id,
+        handle: handle ?? currentProfile?.handle,
+        displayName: displayName ?? currentProfile?.displayName,
+        avatarUrl: avatarUrl ?? currentProfile?.avatarUrl,
+        role: role ?? currentProfile?.role,
+        onboardingComplete: true, // Mark as complete when updating
+      };
+
+      const profile = await storage.upsertProfile(updateData);
+      res.json({ success: true, profile });
+    } catch (error) {
+      console.error("Profile update error:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
   // Database setup endpoint (run once to create tables)
   app.post("/api/setup-database", async (req, res) => {
     try {
