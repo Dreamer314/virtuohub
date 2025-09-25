@@ -44,34 +44,7 @@ const OnboardingPage = () => {
     }
   }, [user, loading, setLocation]);
 
-  // Check if user already completed onboarding
-  useEffect(() => {
-    const checkOnboardingStatus = async () => {
-      if (!user) return;
-      
-      try {
-        // Get the current session to extract the access token
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        const response = await fetch('/api/profile', {
-          headers: {
-            'Authorization': `Bearer ${session?.access_token}`
-          }
-        });
-        
-        if (response.ok) {
-          const profile = await response.json();
-          if (profile.onboardingComplete) {
-            setLocation('/community');
-          }
-        }
-      } catch (error) {
-        console.error('Error checking onboarding status:', error);
-      }
-    };
-
-    checkOnboardingStatus();
-  }, [user, setLocation]);
+  // OnboardingGuard now handles all redirect logic for completed users
 
   // Handle validation with debouncing
   useEffect(() => {

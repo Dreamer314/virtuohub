@@ -25,19 +25,10 @@ const OnboardingGuard: React.FC<OnboardingGuardProps> = ({ children }) => {
   const [profileLoading, setProfileLoading] = useState(false);
   const [profileError, setProfileError] = useState<string | null>(null);
 
-  // Paths that don't require onboarding check
-  const publicPaths = ['/onboarding'];
-  const isPublicPath = publicPaths.some(path => location.startsWith(path));
-
   useEffect(() => {
     const checkOnboardingStatus = async () => {
       // Skip check if auth is still loading or user is not authenticated
       if (authLoading || !user) {
-        return;
-      }
-
-      // Skip check for public paths
-      if (isPublicPath) {
         return;
       }
 
@@ -53,10 +44,14 @@ const OnboardingGuard: React.FC<OnboardingGuardProps> = ({ children }) => {
           return;
         }
 
-        // Fetch profile
+        // Fetch profile with cache-busting to ensure fresh data
         const response = await fetch('/api/profile', {
+          method: 'GET',
+          cache: 'no-cache',
           headers: {
-            'Authorization': `Bearer ${session.access_token}`
+            'Authorization': `Bearer ${session.access_token}`,
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache'
           }
         });
 
@@ -64,15 +59,24 @@ const OnboardingGuard: React.FC<OnboardingGuardProps> = ({ children }) => {
           const profileData = await response.json();
           setProfile(profileData);
 
-          // Check if onboarding is incomplete
-          if (!profileData.onboardingComplete) {
-            console.log('User has not completed onboarding, redirecting to /onboarding');
-            setLocation('/onboarding');
-            return;
+          // Handle onboarding logic based on current location and completion status
+          if (location === '/onboarding') {
+            // If user is on onboarding page and has completed onboarding, redirect to community
+            if (profileData.onboardingComplete) {
+              setLocation('/community');
+              return;
+            }
+            // Otherwise, allow access to onboarding page (user has incomplete onboarding)
+          } else {
+            // If user is NOT on onboarding page and has incomplete onboarding, redirect to onboarding
+            if (!profileData.onboardingComplete) {
+              setLocation('/onboarding');
+              return;
+            }
+            // Otherwise, allow access to regular pages (user has completed onboarding)
           }
         } else if (response.status === 404) {
           // Profile doesn't exist, redirect to onboarding
-          console.log('Profile not found, redirecting to /onboarding');
           setLocation('/onboarding');
           return;
         } else {
@@ -90,18 +94,17 @@ const OnboardingGuard: React.FC<OnboardingGuardProps> = ({ children }) => {
     };
 
     checkOnboardingStatus();
-  }, [user, authLoading, location, isPublicPath, setLocation]);
+  }, [user, authLoading, location, setLocation]);
 
   // Additional check: if user is not authenticated and trying to access /onboarding, redirect to home
   useEffect(() => {
     if (!authLoading && !user && location === '/onboarding') {
-      console.log('User not authenticated, redirecting from /onboarding to /');
       setLocation('/');
     }
   }, [user, authLoading, location, setLocation]);
 
   // Show loading state while checking
-  if (authLoading || (user && !isPublicPath && profileLoading)) {
+  if (authLoading || (user && profileLoading)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center">
@@ -113,7 +116,7 @@ const OnboardingGuard: React.FC<OnboardingGuardProps> = ({ children }) => {
   }
 
   // Show error state if there was an error checking profile
-  if (profileError && user && !isPublicPath) {
+  if (profileError && user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center max-w-md">
