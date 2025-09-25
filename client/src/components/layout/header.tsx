@@ -222,7 +222,7 @@ export function Header({ onCreatePost }: HeaderProps) {
               <>
                 {user ? (
                   <div className="flex items-center space-x-2">
-                    <div className="hidden lg:flex items-center space-x-2 px-3 py-1 rounded-lg bg-muted/50">
+                    <div className="hidden md:flex items-center space-x-2 px-3 py-1 rounded-lg bg-muted/50">
                       <User className="w-4 h-4" />
                       <span
                         className="text-sm font-medium"
