@@ -748,6 +748,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Check if user is admin
+  app.post("/api/users/check-admin", async (req, res) => {
+    try {
+      const { userId } = req.body;
+      
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+      
+      // For development: check hardcoded admin emails and IDs
+      const adminEmails = ['admin@virtuohub.com', 'admin@test.com'];
+      const adminIds = ['admin-user-id'];
+      
+      // Try to get user from Supabase
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        const userEmail = user?.email || '';
+        
+        const isAdmin = adminEmails.includes(userEmail) || adminIds.includes(userId);
+        
+        res.json({ isAdmin });
+      } catch (authError) {
+        // Fallback to simple ID/email check
+        const isAdmin = adminIds.includes(userId);
+        res.json({ isAdmin });
+      }
+    } catch (error) {
+      console.error("Admin check error:", error);
+      res.status(500).json({ message: "Failed to check admin status" });
+    }
+  });
+
   // Update current user profile (protected)
   app.patch("/api/profile/update", validateSession, async (req, res) => {
     try {
