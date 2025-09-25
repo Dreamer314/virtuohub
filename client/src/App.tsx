@@ -27,6 +27,7 @@ import NotFound from "@/pages/not-found";
 
 /* New: Admin Dashboard */
 import AdminPage from "@/pages/admin";
+import OnboardingPage from "@/pages/onboarding";
 
 function Router() {
   return (
@@ -56,6 +57,9 @@ function Router() {
 
       {/* Admin */}
       <Route path="/admin" component={AdminPage} />
+
+      {/* Onboarding */}
+      <Route path="/onboarding" component={OnboardingPage} />
 
       {/* 404 */}
       <Route component={NotFound} />
