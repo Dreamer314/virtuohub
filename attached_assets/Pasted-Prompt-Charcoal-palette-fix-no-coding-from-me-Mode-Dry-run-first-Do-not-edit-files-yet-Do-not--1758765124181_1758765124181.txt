@@ -1,0 +1,78 @@
+Prompt: Charcoal palette fix, no coding from me
+
+Mode: Dry run first. Do not edit files yet. Do not open a browser or take screenshots.
+
+Goal: The site still looks blue because the color tokens are blue. Keep Charcoal as the only theme, then switch the palette to true charcoal neutrals. Touch as few files as possible. Do not change layouts or logic.
+
+Phase 1 — audit and propose, then wait
+
+Open client/src/styles/theme-tokens.css and paste the full current :root { … } block.
+
+List any CSS files that set or override color CSS variables after theme-tokens.css is imported. Show the import order from client/src/main.tsx.
+
+Search for hard-coded blue family utilities in client/src and paste counts with top paths:
+
+rg -n --stats 'bg-(blue|indigo|violet|sky|cyan)-' client/src || true
+
+rg -n --stats 'text-(blue|indigo|violet|sky|cyan)-' client/src || true
+
+rg -n --stats 'ring-(blue|indigo|violet|sky|cyan)-' client/src || true
+
+Prepare, but do not apply, these diffs:
+
+Diff A: Replace only variable values in client/src/styles/theme-tokens.css with a neutral charcoal palette:
+
+:root {
+-  --radius: 0.75rem;
+-  --background: #0b1220;
+-  --foreground: #e5e7eb;
+-  --muted: #141b2a;
+-  --muted-foreground: #9ca3af;
+-  --border: #293245;
+-  --card: #0f172a;
+-  --card-foreground: #e5e7eb;
+-  --primary: #7c3aed;
+-  --primary-foreground: #ffffff;
+-  --secondary: #1b2333;
+-  --secondary-foreground: #e5e7eb;
+-  --destructive: #ef4444;
+-  --destructive-foreground: #ffffff;
+-  --ring: #7c3aed;
+-  --input: #141b2a;
++  --radius: 0.75rem;
++  /* true charcoal neutrals */
++  --background: #0e1014;
++  --foreground: #e6e7e9;
++  --muted: #161a20;
++  --muted-foreground: #a1a6ad;
++  --border: #2a2f36;
++  --card: #111318;
++  --card-foreground: #e6e7e9;
++  /* neutral primary, not blue or violet */
++  --primary: #374151;
++  --primary-foreground: #f9fafb;
++  --secondary: #1f2937;
++  --secondary-foreground: #e6e7e9;
++  --destructive: #ef4444;
++  --destructive-foreground: #ffffff;
++  --ring: #94a3b8;
++  --input: #1a1f27;
+}
+
+
+Diff B: At the very end of client/src/styles/light-contrast.css, append a small, safe override so Charcoal wins even if another file still sets old values:
+
++ /* enforce charcoal tokens everywhere */
++ html.charcoal {
++   --background: #0e1014;
++   --foreground: #e6e7e9;
++   --card: #111318;
++   --border: #2a2f36;
++   --primary: #374151;
++   --primary-foreground: #f9fafb;
++}
+
+
+Do not change any other files in this phase.
+
+Stop here and wait for my YES.
