@@ -27,8 +27,16 @@ const OnboardingGuard: React.FC<OnboardingGuardProps> = ({ children }) => {
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {
-      // Skip check if auth is still loading or user is not authenticated
-      if (authLoading || !user) {
+      // Always check session first - client-side only
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      // If no session, render children immediately - never redirect anonymous users
+      if (!session?.access_token) {
+        return;
+      }
+
+      // Skip if auth is still loading
+      if (authLoading) {
         return;
       }
 
@@ -36,14 +44,6 @@ const OnboardingGuard: React.FC<OnboardingGuardProps> = ({ children }) => {
       setProfileError(null);
 
       try {
-        // Get current session
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        if (!session?.access_token) {
-          setProfileError('No valid session');
-          return;
-        }
-
         // Fetch profile with cache-busting to ensure fresh data
         const response = await fetch('/api/profile', {
           method: 'GET',
@@ -76,7 +76,7 @@ const OnboardingGuard: React.FC<OnboardingGuardProps> = ({ children }) => {
             // Otherwise, allow access to regular pages (user has completed onboarding)
           }
         } else if (response.status === 404) {
-          // Profile doesn't exist, redirect to onboarding
+          // Profile doesn't exist, redirect to onboarding (only for authenticated users)
           setLocation('/onboarding');
           return;
         } else {
@@ -86,7 +86,7 @@ const OnboardingGuard: React.FC<OnboardingGuardProps> = ({ children }) => {
         console.error('Onboarding check error:', error);
         setProfileError(error.message);
         
-        // On error, redirect to onboarding to be safe
+        // On error, redirect to onboarding to be safe (only for authenticated users)
         setLocation('/onboarding');
       } finally {
         setProfileLoading(false);
@@ -94,7 +94,7 @@ const OnboardingGuard: React.FC<OnboardingGuardProps> = ({ children }) => {
     };
 
     checkOnboardingStatus();
-  }, [user, authLoading, location, setLocation]);
+  }, [authLoading, location, setLocation]);
 
   // Additional check: if user is not authenticated and trying to access /onboarding, redirect to home
   useEffect(() => {
