@@ -29,9 +29,10 @@ const OnboardingGuard: React.FC<OnboardingGuardProps> = ({ children }) => {
     const checkOnboardingStatus = async () => {
       // Always check session first - client-side only
       const { data: { session } } = await supabase.auth.getSession();
+      const isAuthed = !!session?.user?.id;   // must have a real user id
       
-      // If no session, render children immediately - never redirect anonymous users
-      if (!session?.access_token) {
+      // If not authenticated, render children immediately - never redirect anonymous users
+      if (!isAuthed) {
         return;
       }
 
@@ -49,7 +50,7 @@ const OnboardingGuard: React.FC<OnboardingGuardProps> = ({ children }) => {
           method: 'GET',
           cache: 'no-cache',
           headers: {
-            'Authorization': `Bearer ${session.access_token}`,
+            'Authorization': `Bearer ${session!.access_token}`,
             'Cache-Control': 'no-cache, no-store, must-revalidate',
             'Pragma': 'no-cache'
           }
@@ -77,8 +78,10 @@ const OnboardingGuard: React.FC<OnboardingGuardProps> = ({ children }) => {
           }
         } else if (response.status === 404) {
           // Profile doesn't exist, redirect to onboarding (only for authenticated users)
-          setLocation('/onboarding');
-          return;
+          if (isAuthed) {
+            setLocation('/onboarding');
+            return;
+          }
         } else {
           throw new Error(`Failed to fetch profile: ${response.statusText}`);
         }
@@ -87,7 +90,9 @@ const OnboardingGuard: React.FC<OnboardingGuardProps> = ({ children }) => {
         setProfileError(error.message);
         
         // On error, redirect to onboarding to be safe (only for authenticated users)
-        setLocation('/onboarding');
+        if (isAuthed) {
+          setLocation('/onboarding');
+        }
       } finally {
         setProfileLoading(false);
       }
