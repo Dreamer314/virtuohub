@@ -11,13 +11,15 @@ import {
   X,
   LogOut,
   User,
-  Shield
+  Shield,
+  UserCircle
 } from "lucide-react";
 import { useLocation, Link } from "wouter";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/providers/AuthProvider";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { supabase } from "@/lib/supabaseClient";
+import { useDisplayIdentity } from "@/hooks/useDisplayIdentity";
 
 interface HeaderProps {
   onCreatePost?: () => void;
@@ -32,6 +34,7 @@ export function Header({ onCreatePost }: HeaderProps) {
     "signin"
   );
   const { user, loading } = useAuth();
+  const { displayName, isTemporary } = useDisplayIdentity();
 
   // Admin flag
   const [isAdmin, setIsAdmin] = useState(false);
@@ -208,9 +211,20 @@ export function Header({ onCreatePost }: HeaderProps) {
                         className="text-sm font-medium"
                         data-testid="user-display-name"
                       >
-                        {user.user_metadata?.full_name || user.email}
+                        {displayName}
                       </span>
                     </div>
+                    {isTemporary && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-sm font-medium px-3 hidden lg:inline-flex"
+                        data-testid="complete-profile-button"
+                      >
+                        <UserCircle className="w-4 h-4 mr-1" />
+                        Complete your profile
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       size="sm"

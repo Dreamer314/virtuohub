@@ -49,7 +49,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(session?.user || null)
         setLoading(false)
 
-        // Attempt profile upsert after successful sign in
+        // Ensure profile row exists after successful sign in
         if (event === 'SIGNED_IN' && session?.user) {
           try {
             const response = await fetch('/api/profile-upsert', {
@@ -59,7 +59,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
               },
               body: JSON.stringify({
                 id: session.user.id,
-                display_name: session.user.user_metadata?.full_name || session.user.email,
               }),
             })
             
