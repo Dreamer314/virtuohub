@@ -18,6 +18,8 @@ import { POST_CATEGORIES } from '@/constants/postCategories';
 import { useAuth } from '@/providers/AuthProvider';
 import { AuthModal } from '@/components/auth/AuthModal';
 import { CreatePostModal as NewCreatePostModal } from '@/components/composer/CreatePostModal';
+import { useIntentContext, registerReplayHandlers } from '@/contexts/IntentContext';
+import { useToast } from '@/hooks/use-toast';
 
 /** NEW: use the real Supabase-backed polls */
 import PollList from '@/components/polls/PollList';
@@ -41,6 +43,8 @@ const CommunityPage: React.FC = () => {
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup'>('signin');
   const { user } = useAuth();
+  const { setIntent, registerAuthModalController } = useIntentContext();
+  const { toast } = useToast();
 
   // Posts
   const { data: posts = [], isLoading } = useQuery<PostWithAuthor[]>({
@@ -93,6 +97,48 @@ const CommunityPage: React.FC = () => {
       })
     : allFeedItems;
 
+  // Register auth modal controller and replay handlers
+  useEffect(() => {
+    registerAuthModalController({
+      openAuthModal: (mode) => {
+        setAuthModalMode(mode);
+        setAuthModalOpen(true);
+      }
+    });
+
+    const unregister = registerReplayHandlers({
+      createPost: (data) => {
+        setComposerCategory(data.category);
+        setCreateModalType(data.subtype === 'poll' ? 'pulse' : 'regular');
+        setIsCreatePostModalOpen(true);
+      }
+    });
+    
+    return unregister; // Cleanup on unmount
+  }, []);
+
+  // Helper to gate create post action
+  const handleCreatePost = (type: 'regular' | 'pulse' | 'insight', category?: string) => {
+    if (!user) {
+      // Capture intent
+      setIntent({
+        action: 'create_post',
+        data: {
+          category,
+          subtype: type === 'pulse' ? 'poll' : 'thread'
+        }
+      });
+      toast({ description: "You need to sign in to do that." });
+      setAuthModalMode('signin');
+      setAuthModalOpen(true);
+      return;
+    }
+    // Authenticated: proceed normally
+    setCreateModalType(type);
+    if (category) setComposerCategory(category);
+    setIsCreatePostModalOpen(true);
+  };
+
   // Simple card-entrance animation observer (posts only)
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -115,10 +161,7 @@ const CommunityPage: React.FC = () => {
         <div className="floating-element absolute bottom-20 left-1/4 w-20 h-20 bg-primary/15 rounded-full blur-xl" style={{ animationDelay: '-4s' }}></div>
       </div>
 
-      <Header onCreatePost={() => {
-        setCreateModalType('regular');
-        setIsCreatePostModalOpen(true);
-      }} />
+      <Header onCreatePost={() => handleCreatePost('regular')} />
 
       <div className="community-grid">
         {/* Left Sidebar */}
@@ -461,15 +504,7 @@ const CommunityPage: React.FC = () => {
 
       {/* FAB */}
       <Button
-        onClick={() => {
-          if (!user) {
-            setAuthModalMode('signin');
-            setAuthModalOpen(true);
-            return;
-          }
-          setCreateModalType('regular');
-          setIsCreatePostModalOpen(true);
-        }}
+        onClick={() => handleCreatePost('regular')}
         className="fixed bottom-8 right-8 w-14 h-14 bg-transparent text-primary rounded-full border border-primary/30 hover:border-primary hover:border-2 transition-all z-40 p-0"
         data-testid="floating-action-button"
       >

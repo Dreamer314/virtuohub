@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "wouter";
 import { Header } from "@/components/layout/header";
@@ -15,6 +15,10 @@ import type { PostWithAuthor } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { ObjectUploader } from "@/components/ObjectUploader";
 import EmojiPicker from "emoji-picker-react";
+import { useAuth } from "@/providers/AuthProvider";
+import { useIntentContext, registerReplayHandlers } from "@/contexts/IntentContext";
+import { useToast } from "@/hooks/use-toast";
+import { AuthModal } from "@/components/auth/AuthModal";
 
 export default function ThreadPage() {
   const { postId } = useParams<{ postId: string }>();
@@ -23,7 +27,13 @@ export default function ThreadPage() {
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [shareSuccess, setShareSuccess] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup'>('signin');
+  const [isReplaying, setIsReplaying] = useState(false);
   const queryClient = useQueryClient();
+  const { user } = useAuth();
+  const { setIntent, registerAuthModalController } = useIntentContext();
+  const { toast } = useToast();
 
   // Fetch the specific post
   const { data: post, isLoading: postLoading } = useQuery<PostWithAuthor>({
@@ -55,13 +65,64 @@ export default function ThreadPage() {
     },
   });
 
+  // Register auth modal controller and replay handlers
+  useEffect(() => {
+    registerAuthModalController({
+      openAuthModal: (mode) => {
+        setAuthModalMode(mode);
+        setAuthModalOpen(true);
+      }
+    });
+
+    const unregister = registerReplayHandlers({
+      addComment: (data) => {
+        // Prevent double-submit during replay
+        if (isReplaying) return;
+        setIsReplaying(true);
+        
+        // Restore comment text and images from intent
+        if (data.commentText) setCommentText(data.commentText);
+        if (data.commentImages) setUploadedImages(data.commentImages);
+        
+        // Submit the comment
+        commentMutation.mutate({
+          content: data.commentText || '',
+          images: data.commentImages || []
+        }, {
+          onSettled: () => setIsReplaying(false)
+        });
+      }
+    });
+    
+    return unregister; // Cleanup on unmount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleSubmitComment = () => {
-    if (commentText.trim() || uploadedImages.length > 0) {
-      commentMutation.mutate({ 
-        content: commentText, 
-        images: uploadedImages 
+    if (!commentText.trim() && uploadedImages.length === 0) return;
+    if (commentMutation.isPending || isReplaying) return; // Prevent double-submit
+
+    // Soft-gate: require auth
+    if (!user) {
+      setIntent({
+        action: 'add_comment',
+        data: {
+          postId,
+          commentText,
+          commentImages: uploadedImages
+        }
       });
+      toast({ description: "You need to sign in to do that." });
+      setAuthModalMode('signin');
+      setAuthModalOpen(true);
+      return;
     }
+
+    // Authenticated: proceed
+    commentMutation.mutate({ 
+      content: commentText, 
+      images: uploadedImages 
+    });
   };
 
   if (postLoading) {
@@ -328,6 +389,9 @@ export default function ThreadPage() {
           </div>
         </div>
       </div>
+
+      {/* Auth Modal */}
+      <AuthModal open={authModalOpen} onOpenChange={setAuthModalOpen} defaultMode={authModalMode} />
     </div>
   );
 }

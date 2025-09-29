@@ -1,0 +1,63 @@
+YES — proceed with Phase 3A per your plan, with these decisions and tiny adjustments:
+
+Decisions on your questions
+
+AuthModal state management: keep it decentralized. Don’t lift it globally. Expose a minimal helper from IntentContext that can request “open-auth-modal(mode)”, and have each page/component wire that to its local state. Less blast radius.
+
+Voting behavior: require auth to vote. Apply the same soft-gate + intent resume to polls.
+
+Header “Create” button: gate it the same way as the FAB.
+
+Tiny adjustments to the plan (please include)
+
+Clear intent after replay even on failure paths to avoid loops. If the resumed action rejects, show a toast and clear intent.
+
+Preserve user input:
+
+For create post, capture any existing draft data (category, title, body) in the intent so the composer reopens prefilled after login.
+
+For comment, stash the current textarea text and attachments in the intent so it posts exactly what they typed.
+
+Double-submit guard: during replay, disable the target action’s submit until the mutation resolves to prevent accidental duplicates.
+
+No auth modal on authed users: gate() must return true immediately if a session exists (including temporary identity).
+
+No redirects anywhere and no schema/policy changes (as you already noted).
+
+Scope confirmation (unchanged)
+
+NEW: client/src/contexts/IntentContext.tsx
+
+MODIFY:
+
+client/src/pages/community.tsx (FAB + any header create button in this file)
+
+client/src/components/composer/CreatePostModal.tsx
+
+client/src/pages/thread.tsx (comment submit)
+
+client/src/components/polls/PollCard.tsx (vote click)
+
+client/src/components/auth/AuthModal.tsx (resume on success)
+
+Do not touch admin logic, routes, analytics, or styling beyond what’s needed.
+
+Acceptance tests (report PASS/FAIL)
+
+Logged out → Create Post → AuthModal opens → after login, composer opens with prior draft.
+
+Logged out → Vote → AuthModal → after login, vote casts and counts update.
+
+Logged out → Add Comment → AuthModal → after login, the typed comment posts.
+
+Logged in without handle → can post/comment/vote as user_<shortId>.
+
+Logged in with handle → normal behavior.
+
+Anonymous browsing unaffected, no redirects.
+
+No duplicate submits on replay.
+
+No regressions in header/nav/feed.
+
+Proceed with minimal diffs and wait to show me the PASS/FAIL report before moving to 3B.

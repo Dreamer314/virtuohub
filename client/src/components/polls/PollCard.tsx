@@ -1,6 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/providers/AuthProvider";
+import { useIntentContext, registerReplayHandlers } from "@/contexts/IntentContext";
+import { useToast } from "@/hooks/use-toast";
 
 type Poll = {
   id: string;
@@ -53,12 +56,16 @@ export default function PollCard({
 
   const canVote = !isClosed && labels.length >= 2;
 
+  const { user } = useAuth();
+  const { setIntent, requestAuth } = useIntentContext();
+  const { toast } = useToast();
+
   // Load pulse_choices (if available) so we can fall back to choice_id schema
   useEffect(() => {
     let off = false;
     (async () => {
       const { data, error } = await supabase
-        .from<ChoiceRow>("pulse_choices")
+        .from("pulse_choices")
         .select("id,poll_id,label,position")
         .eq("poll_id", poll.id)
         .order("position", { ascending: true });
@@ -88,7 +95,7 @@ export default function PollCard({
   async function fetchCounts() {
     // Read all votes for this poll and derive counts for either schema.
     const { data, error } = await supabase
-      .from<VoteRow>("pulse_votes")
+      .from("pulse_votes")
       .select("*")
       .eq("poll_id", poll.id);
 
@@ -121,7 +128,7 @@ export default function PollCard({
     // Check a user-scoped vote first (either schema)
     if (uid) {
       const { data, error } = await supabase
-        .from<VoteRow>("pulse_votes")
+        .from("pulse_votes")
         .select("*")
         .eq("poll_id", poll.id)
         .eq("user_id", uid)
@@ -151,14 +158,25 @@ export default function PollCard({
     }
   }
 
+  // Register replay handler for poll voting
+  useEffect(() => {
+    const unregister = registerReplayHandlers({
+      castVote: async (data: { pollId?: string; optionIndex?: number }) => {
+        if (data.pollId === poll.id && typeof data.optionIndex === 'number') {
+          await submitVote(data.optionIndex);
+        }
+      }
+    });
+    return unregister; // Cleanup on unmount or dependency change
+  }, [poll.id, choiceByIndex, indexByChoiceId]);
+
   useEffect(() => {
     fetchMyVote();
     fetchCounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [poll.id, indexByChoiceId]);
 
-  async function handleVote(idx: number) {
-    if (!canVote || submitting) return;
+  async function submitVote(idx: number) {
     setSubmitting(true);
 
     const { data: userRes } = await supabase.auth.getUser();
@@ -207,6 +225,27 @@ export default function PollCard({
     setMyChoice(idx);
     await fetchCounts();
     onChanged?.();
+  }
+
+  function handleVote(idx: number) {
+    if (!canVote || submitting) return;
+
+    // Soft-gate: require auth
+    if (!user) {
+      setIntent({
+        action: 'cast_vote',
+        data: {
+          pollId: poll.id,
+          optionIndex: idx
+        }
+      });
+      toast({ description: "You need to sign in to do that." });
+      requestAuth('signin');
+      return;
+    }
+
+    // Authenticated: proceed with vote
+    submitVote(idx);
   }
 
   return (

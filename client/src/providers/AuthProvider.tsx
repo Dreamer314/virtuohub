@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabaseClient'
+import { useIntentContext } from '@/contexts/IntentContext'
 
 interface AuthContextType {
   user: User | null
@@ -29,6 +30,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
   const [showWelcome, setShowWelcome] = useState(false)
+  const { replayIntent } = useIntentContext()
 
   useEffect(() => {
     let previousUser: User | null = null
@@ -82,6 +84,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
             if (!welcomed && !previousUser) {
               setShowWelcome(true)
             }
+            
+            // Replay any pending intent after successful sign-in
+            // This happens for both new and returning users
+            replayIntent()
           } catch (error) {
             console.warn('Profile upsert attempt failed (this is expected if profiles table does not exist):', error)
           }
