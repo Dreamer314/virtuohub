@@ -1,0 +1,111 @@
+Title: Plan only. Soft-profile system with temporary identities and a working community feed. Do not edit until I say YES.
+
+Goal
+Design an account-first flow with optional profiles and a fully working community feed and thread view. Visitors can browse freely. Interaction requires login. After signup, show a Welcome screen to choose a username and optional avatar. If the user closes it, they can continue using a temporary identity. Add gentle nudges to complete the profile later. Wire the feed, thread page, comments, and voting to live APIs.
+
+Important do-nots
+• Do not change any files yet. Plan only.
+• Do not add libraries or run migrations.
+• Do not reintroduce any global redirect to onboarding.
+• Do not change admin logic, analytics, or styles outside the edited files.
+• Do not change database schema or storage policies.
+• Minimal diffs when we implement later.
+
+What I want you to deliver now (plan only)
+
+A) Current state summary
+
+Where auth state is sourced on the client and how session is read.
+
+Where the community feed is rendered and how posts are created now. Call out any mock API usage.
+
+Where onboarding lives and how it is currently invoked.
+
+Where the header reads and displays the current identity.
+
+Which server routes power profiles, posts, comments, and votes.
+
+B) Proposed architecture
+
+Temporary identity approach that needs no schema change. Format: user_<shortId> from auth user id.
+
+Single source of truth for display identity used in header, feed bylines, and comments. Priority: handle, then user_<shortId>. Never email or real name for chrome.
+
+Welcome onboarding after signup. Show a full screen card. Do not block browsing.
+
+Intent preservation so a user who clicked post or vote resumes that action after login or onboarding close.
+
+C) Exact file list to touch
+List each file you will modify with one line per file describing the change. Keep this list minimal. If a file outside the list is needed, call it out and wait for my approval.
+Examples you will likely include: App.tsx, AuthProvider.tsx, OnboardingGuard.tsx, header.tsx, community.tsx, the active Create Post modal, AuthModal.tsx, SignupModal.tsx, OAuthButtons.tsx, onboarding.tsx.
+List any new small utilities you would add, such as useDisplayIdentity, WelcomeModal, IntentContext, or a thread page if missing.
+
+D) User flows you will implement
+
+Anonymous browse: no redirects.
+
+Anonymous click on Create Post or Vote: open auth modal in place, no navigation; after login resume the intent.
+
+New signup: show Welcome card to choose handle and optional avatar; closing it allows continued use with a temporary identity.
+
+Logged in with no handle: can post, comment, vote as user_<shortId>.
+
+Logged in with handle: normal posting and voting.
+
+Header identity refresh after onboarding completes.
+
+E) Copy and tone (modern and casual)
+Provide exact strings you will use:
+• Welcome title: “Welcome to VirtuoHub”
+• Welcome subtitle: “Pick a username and photo so people know it’s you.”
+• Primary button: “Complete profile”
+• Close confirm title: “Leave setup for now?”
+• Close confirm body: “You can keep browsing and posting with a temporary identity. You can finish your profile anytime.”
+• Close confirm buttons: “Finish now” and “Do it later”
+• Composer nudge: “Add a username to stand out. Finish setup.”
+• Banner nudge: “A handle helps people recognize you. Complete your profile.”
+• Menu item: “Complete your profile”
+
+F) Community feed and thread specifics
+
+Replace any mock API calls with live endpoints for create, list, paginate posts.
+
+Add thread page at /thread/:id if missing. Fetch single post and comments.
+
+Comment submit follows the same soft gate.
+
+Voting calls the live endpoint. Use optimistic update, then reconcile.
+
+Handle moderated or deleted content without breaking UI.
+
+G) Risks and rollback
+
+Identify any redirect loop risks and how you will avoid them.
+
+Confirm no admin or navbar regressions.
+
+Confirm no schema or policy changes. If you believe changes are required, explain them and stop.
+
+H) Acceptance tests you will run
+
+Anonymous can browse all pages without redirects.
+
+Anonymous clicking Create Post or Vote opens auth modal in place. After login, the action resumes.
+
+After signup, Welcome card appears. Closing it with the X shows the confirm and “Do it later” returns to the same context.
+
+With no handle, user can post and vote as user_<shortId>.
+
+Completing profile sets handle and header updates immediately.
+
+Feed shows posts from the live API. Creating a post adds to feed.
+
+Thread page loads post and comments. Adding a comment works.
+
+Voting updates instantly and persists on refresh.
+
+Nudges show only when no handle.
+
+No loops, redirects, or admin/nav regressions.
+
+Stop here. Do not implement yet. Return the full plan for A through H. After I review and say YES, you can proceed with minimal diffs as described.
