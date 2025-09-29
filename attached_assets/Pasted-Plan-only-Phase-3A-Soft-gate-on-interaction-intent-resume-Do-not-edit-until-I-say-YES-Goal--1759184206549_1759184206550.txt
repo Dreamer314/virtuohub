@@ -1,0 +1,112 @@
+Plan only — Phase 3A “Soft-gate on interaction + intent resume.” Do not edit until I say YES.
+
+Goal
+
+Browsing the site remains open to everyone. But if a user tries to post, comment, or vote while logged out, they should see the AuthModal.
+After login, the original action resumes automatically (intent preservation).
+Logged-in users (with or without a handle) can interact normally. No redirects, no hard blocking.
+
+Do NOT (plan-only right now)
+
+Do not change any files yet.
+
+Do not add redirects for anonymous users.
+
+Do not alter the community feed browsing.
+
+No schema/policy changes.
+
+No layout/styling changes.
+
+No large refactors. Minimal diffs only when we implement.
+
+What to deliver now (your plan)
+
+A) Current state confirmation
+
+Where create-post, comment, and vote actions are currently handled (likely CreatePostModal.tsx, community.tsx, thread.tsx, PollCard.tsx).
+
+Where AuthModal success callback lives.
+
+Where React Query invalidation happens for posts and votes.
+
+B) Proposed design
+
+IntentContext (new): Provide a context to capture { action, data } when a logged-out user interacts.
+
+Soft-gate logic:
+
+If !session: set intent, open AuthModal, stop the action.
+
+On Auth success: replay intent → clear intent.
+
+Affected actions:
+
+Create post
+
+Add comment
+
+Cast vote
+
+(Future: anything interactive should call the same helper).
+
+No redirects: Flow must be modal only.
+
+Identity rules: Even if user has only a temporary identity (user_xxxxx), allow interaction. Profile completion is optional.
+
+C) Files to touch (minimal)
+
+NEW: client/src/contexts/IntentContext.tsx
+
+MODIFY:
+
+client/src/components/composer/CreatePostModal.tsx (gating)
+
+client/src/pages/community.tsx (create post trigger)
+
+client/src/pages/thread.tsx (comment submit)
+
+client/src/components/polls/PollCard.tsx (vote click)
+
+client/src/components/auth/AuthModal.tsx (resume intent on success)
+
+If you think other files need changes, list them and WAIT.
+
+D) Copy (use exactly this)
+
+When gating: “You need to sign in to do that.”
+
+AuthModal already provides buttons (“Log in” / “Sign up”), keep them unchanged.
+
+No new UI strings except the one above.
+
+E) Acceptance tests you will run (and report PASS/FAIL)
+
+Logged out → click Create Post → AuthModal opens. After login, post composer reopens with preserved text.
+
+Logged out → click Vote → AuthModal opens. After login, vote is cast and count updates.
+
+Logged out → add Comment → AuthModal opens. After login, comment is posted.
+
+Logged in without handle → all interactions work as user_xxxxx.
+
+Logged in with handle → interactions normal as @handle.
+
+Anonymous browsing remains unaffected. No redirects.
+
+No regressions in header, nav, or feed.
+
+F) Guard rails
+
+Modal only, no redirects.
+
+Minimal diffs.
+
+No schema changes.
+
+No new deps.
+
+Don’t touch admin logic or unrelated routes.
+
+Deliverable now:
+Return your plan for A–F, listing the exact files and minimal diffs you intend to make. Wait for my YES before coding anything.
