@@ -1,0 +1,128 @@
+Yes — proceed, with these conditions and phases so nothing gets over-touched.
+
+Guard rails (must follow)
+
+Minimal diffs only. No schema or policy changes.
+
+Do not reintroduce any anonymous redirects.
+
+Never show email or real name in the chrome.
+
+Before each phase, list exact files and what you will change. Wait for my YES.
+
+After each phase, run the acceptance checks for that phase and report PASS/FAIL.
+
+Phases
+Phase 1 — Identity + Header (smallest safe slice)
+
+Goal: Single source of truth for identity and a clean header.
+
+Add useDisplayIdentity hook with priority: @handle then user_<shortId>.
+
+Update header.tsx to use this hook and show the small “Complete your profile” menu nudge when no handle.
+
+Ensure header refreshes right after profile save.
+
+Acceptance (report):
+
+Logged in with handle → header shows @handle.
+
+Logged in without handle → header shows user_<shortId> and the nudge.
+
+Never shows email or real name.
+
+Phase 2 — Welcome card after signup (non-blocking)
+
+Goal: Full-screen Welcome that can be closed.
+
+Implement WelcomeModal shown only after first signup session.
+
+Add the X with confirmation: “Finish now” or “Do it later.”
+
+No URL changes. No global guards.
+
+Acceptance:
+
+New signup → Welcome appears.
+
+Closing shows confirm. “Do it later” returns to where I was.
+
+Completing profile updates header immediately.
+
+Phase 3 — Soft gate on interaction (auth only)
+
+Goal: Browsing stays open. Interactions require login, not profile.
+
+Add the small auth wrapper that opens the existing Auth modal if not logged in, then resumes the original intent.
+
+Wire it to Create Post, Create Poll, Comment, and Vote.
+
+Do not force onboarding here.
+
+Acceptance:
+
+Logged out click Create Post → Auth modal opens in place. After login the composer opens.
+
+Logged out click Vote → Auth modal. After login the vote goes through.
+
+Logged in without handle can post or vote as user_<shortId>.
+
+Phase 4 — Feed and composer use live API
+
+Goal: Replace mock calls and keep the UI responsive.
+
+Replace mock create calls in the composer with the live /api/posts.
+
+Invalidate or update the feed so the new post appears.
+
+Keep optimistic updates where relevant.
+
+Acceptance:
+
+Create a post → it appears in the feed.
+
+Refresh the page → post persists.
+
+Phase 5 — Thread page and comments polish
+
+Goal: Solid thread view and comments with the same identity rules.
+
+Confirm /thread/:id shows the full post, comments, and voting.
+
+Comment submit uses the same auth soft gate.
+
+Handle moderated or deleted content without breaking UI.
+
+Acceptance:
+
+Load a thread → post and comments render with correct identities.
+
+Add a comment → appears immediately and persists on refresh.
+
+Vote updates instantly and persists.
+
+Copy to use (exact)
+
+Welcome title: “Welcome to VirtuoHub”
+
+Welcome subtitle: “Pick a username and photo so people know it’s you.”
+
+Primary button: “Complete profile”
+
+Close confirm title: “Leave setup for now?”
+
+Close confirm body: “You can keep browsing and posting with a temporary identity. You can finish your profile anytime.”
+
+Close confirm buttons: “Finish now” and “Do it later”
+
+Composer nudge: “Add a username to stand out. Finish setup.”
+
+Banner nudge: “A handle helps people recognize you. Complete your profile.”
+
+Menu item: “Complete your profile”
+
+One red-flag to avoid
+
+Do not delete modules yet. If you want to remove OnboardingGuard, first remove its usage. Only delete the file after the site runs clean without imports.
+
+Start with Phase 1. List the exact files you will change in Phase 1 and what lines you will touch. Wait for my YES.
