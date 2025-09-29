@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
 import ErrorBoundary from "@/components/error-boundary";
-import OnboardingGuard from "@/components/OnboardingGuard";
 
 /* Pages */
 import Community from "@/pages/community";
@@ -26,8 +25,10 @@ import ListsPage from "@/pages/lists";
 import ListDetailPage from "@/pages/list-detail";
 import NotFound from "@/pages/not-found";
 
-/* New: Admin Dashboard */
+/* Admin Dashboard */
 import AdminPage from "@/pages/admin";
+
+/* Onboarding page (route stays public for this test) */
 import OnboardingPage from "@/pages/onboarding";
 
 function Router() {
@@ -59,7 +60,7 @@ function Router() {
       {/* Admin */}
       <Route path="/admin" component={AdminPage} />
 
-      {/* Onboarding */}
+      {/* Onboarding (still routable) */}
       <Route path="/onboarding" component={OnboardingPage} />
 
       {/* 404 */}
@@ -75,9 +76,8 @@ function App() {
         <ThemeProvider>
           <TooltipProvider>
             <Toaster />
-            <OnboardingGuard>
-              <Router />
-            </OnboardingGuard>
+            {/* Guard removed for diagnostics */}
+            <Router />
           </TooltipProvider>
         </ThemeProvider>
       </QueryClientProvider>

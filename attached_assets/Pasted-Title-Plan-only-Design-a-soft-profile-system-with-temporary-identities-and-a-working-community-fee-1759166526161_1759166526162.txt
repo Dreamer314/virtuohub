@@ -1,0 +1,95 @@
+Title: Plan only. Design a soft-profile system with temporary identities and a working community feed. No edits until I say YES.
+
+Goal
+I want an account-first flow with optional profiles and a fully working community feed. Visitors can browse freely. Interaction requires an account, not a profile. After signup, show a Welcome screen to choose a username and optional avatar. If the user closes it, they can still interact using a temporary identity. Add gentle nudges to complete profile later.
+
+Do not do anything yet
+Look through all files in the repo. Do not change or create any files. Do not run migrations. Do not install dependencies. Produce a plan only. Wait for my YES before any change.
+
+Key behavior I want
+
+Browsing stays open to everyone. No redirects for anonymous visitors.
+
+Interaction requires login. If a visitor tries to post, comment, or vote and is not logged in, show the auth modal in place.
+
+After signup, show a full screen Welcome card for handle and optional avatar. If the user closes it, they can keep using the site with a temporary identity like user_3f2a and a default avatar.
+
+A user with a handle can interact normally. A user without a handle can also interact, but we add casual nudges to complete profile.
+
+Identity in the header and bylines should prefer @handle. If no handle exists, show user_3f2a. Never show email or real name in the chrome unless explicitly chosen.
+
+What I need from you in the plan
+A) Current state summary
+
+Where auth state is sourced in the client.
+
+Where the community feed compose and submit flows live.
+
+Where the onboarding screen lives and how it is currently invoked.
+
+Where the header reads the current identity.
+
+Any server routes or API files used for profiles and posts.
+
+B) Proposed architecture
+
+The minimal way to add a temporary identity without changing the database schema.
+
+The single source of truth for display identity in the header and bylines.
+
+How you will trigger Welcome onboarding after signup without blocking browsing.
+
+How you will reopen the user’s original intent after auth or after completing onboarding.
+
+C) Exact files you would touch
+
+List each file path you plan to modify with a one line purpose per file.
+
+List any files you would add, with a one line purpose each.
+
+Keep the list minimal. If you think a file outside this list is needed, call it out and wait.
+
+D) User flows you will implement
+
+Anonymous browse.
+
+Anonymous click on Create Post or Vote.
+
+New signup to Welcome card to either Complete Profile or close.
+
+Logged in user with no handle posting or voting.
+
+Logged in user with handle posting or voting.
+
+Header identity refresh after onboarding completion.
+
+E) Copy and tone
+
+Provide the exact short copy strings for the onboarding card title, button labels, the close confirmation, and the gentle nudges. Tone should be modern and casual. No hype. Friendly and clear.
+
+F) Risk and rollback
+
+Identify any places where redirects could loop and how you will prevent that.
+
+Identify any changes that could affect admin or nav and how you will avoid them.
+
+Confirm no schema or policy changes are required. If you believe they are, explain and wait.
+
+G) Acceptance tests
+
+List the manual checks you will run to verify the behavior above. Keep them short and concrete.
+
+Important constraints
+
+Do not reintroduce any global onboarding guard that redirects anonymous visitors.
+
+Do not change database schema or storage policies without asking first.
+
+Do not change admin logic or styles.
+
+Do not add dependencies or do large refactors.
+
+Minimal diffs only.
+
+Deliverable now
+Return a structured plan covering A through G. Do not make edits. Wait for my YES before implementing.
