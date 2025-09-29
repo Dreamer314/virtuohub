@@ -20,6 +20,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { supabase } from "@/lib/supabaseClient";
 import { useDisplayIdentity } from "@/hooks/useDisplayIdentity";
+import { WelcomeModal } from "@/components/welcome/WelcomeModal";
 
 interface HeaderProps {
   onCreatePost?: () => void;
@@ -33,8 +34,9 @@ export function Header({ onCreatePost }: HeaderProps) {
   const [authModalMode, setAuthModalMode] = useState<"signin" | "signup">(
     "signin"
   );
-  const { user, loading } = useAuth();
+  const { user, loading, showWelcome, setShowWelcome } = useAuth();
   const { displayName, isTemporary } = useDisplayIdentity();
+  const [welcomeModalOpen, setWelcomeModalOpen] = useState(false);
 
   // Admin flag
   const [isAdmin, setIsAdmin] = useState(false);
@@ -218,6 +220,7 @@ export function Header({ onCreatePost }: HeaderProps) {
                       <Button
                         variant="ghost"
                         size="sm"
+                        onClick={() => setWelcomeModalOpen(true)}
                         className="text-sm font-medium px-3 hidden lg:inline-flex"
                         data-testid="complete-profile-button"
                       >
@@ -367,9 +370,23 @@ export function Header({ onCreatePost }: HeaderProps) {
                             className="text-sm font-medium"
                             data-testid="mobile-user-display-name"
                           >
-                            {user.user_metadata?.full_name || user.email}
+                            {displayName}
                           </span>
                         </div>
+                        {isTemporary && (
+                          <Button
+                            variant="ghost"
+                            className="justify-start"
+                            onClick={() => {
+                              setWelcomeModalOpen(true);
+                              setIsMobileMenuOpen(false);
+                            }}
+                            data-testid="mobile-complete-profile-button"
+                          >
+                            <UserCircle className="w-4 h-4 mr-2" />
+                            Complete your profile
+                          </Button>
+                        )}
                         <Button
                           variant="ghost"
                           className="justify-start"
@@ -438,6 +455,13 @@ export function Header({ onCreatePost }: HeaderProps) {
         open={authModalOpen}
         onOpenChange={setAuthModalOpen}
         defaultMode={authModalMode}
+      />
+      <WelcomeModal 
+        open={showWelcome || welcomeModalOpen} 
+        onOpenChange={(open) => {
+          setShowWelcome(open);
+          setWelcomeModalOpen(open);
+        }} 
       />
     </header>
   );

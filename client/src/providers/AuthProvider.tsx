@@ -6,6 +6,8 @@ interface AuthContextType {
   user: User | null
   session: Session | null
   loading: boolean
+  showWelcome: boolean
+  setShowWelcome: (show: boolean) => void
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -26,8 +28,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [showWelcome, setShowWelcome] = useState(false)
 
   useEffect(() => {
+    let previousUser: User | null = null
+
     // Get initial session
     const getSession = async () => {
       const { data: { session }, error } = await supabase.auth.getSession()
@@ -36,6 +41,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } else {
         setSession(session)
         setUser(session?.user || null)
+        previousUser = session?.user || null
       }
       setLoading(false)
     }
@@ -45,13 +51,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        const currentUser = session?.user || null
         setSession(session)
-        setUser(session?.user || null)
+        setUser(currentUser)
         setLoading(false)
 
         // Ensure profile row exists after successful sign in
+        // Only trigger welcome on FRESH SIGNED_IN (when previousUser was null AND user not welcomed before)
+        // This prevents showing modal on page refresh/token refresh
         if (event === 'SIGNED_IN' && session?.user) {
           try {
+            // Check localStorage FIRST to prevent showing modal on refresh
+            const welcomed = localStorage.getItem(`welcomed_${session.user.id}`)
+            
             const response = await fetch('/api/profile-upsert', {
               method: 'POST',
               headers: {
@@ -65,10 +77,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
             if (!response.ok) {
               throw new Error(`Profile upsert failed: ${response.statusText}`)
             }
+
+            // Only show welcome if: not welcomed before AND this is a fresh signup (previousUser was null)
+            if (!welcomed && !previousUser) {
+              setShowWelcome(true)
+            }
           } catch (error) {
             console.warn('Profile upsert attempt failed (this is expected if profiles table does not exist):', error)
           }
         }
+
+        // Update previousUser for next event
+        previousUser = currentUser
       }
     )
 
@@ -78,8 +98,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const value = {
     user,
     session,
-    loading
+    loading,
+    showWelcome,
+    setShowWelcome
   }
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  )
 }

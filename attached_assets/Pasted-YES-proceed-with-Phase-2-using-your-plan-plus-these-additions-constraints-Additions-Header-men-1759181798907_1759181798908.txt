@@ -1,0 +1,75 @@
+YES — proceed with Phase 2 using your plan, plus these additions/constraints:
+
+Additions
+
+Header menu entry
+
+When isTemporary === true, add a “Complete your profile” item in the account menu that opens the same WelcomeModal.
+
+This must be implemented now in Phase 2.
+
+Event gating
+
+Trigger the WelcomeModal only on the first SIGNED_IN for a user without localStorage['welcomed_<userId>'].
+
+Ignore non-interactive auth events like TOKEN_REFRESH or rehydration so the modal doesn’t pop unexpectedly.
+
+Identity refresh
+
+After successful submit, invalidate/refetch the ['/api/profile'] query so the header flips from user_<shortId> to @handle immediately.
+
+Never show email/real name in chrome.
+
+No routing/redirects
+
+Keep the modal purely client state. No setLocation/navigation.
+
+Do not change /onboarding routing; leave that page as a manual/fallback path for now.
+
+Avatar upload robustness
+
+Use the existing avatars bucket. If upload fails, show a small non-blocking error and allow submit with just the handle.
+
+Copy (use exactly)
+
+Welcome title: “Welcome to VirtuoHub”
+
+Welcome subtitle: “Pick a username and photo so people know it’s you.”
+
+Primary button: “Complete profile”
+
+Close confirm title: “Leave setup for now?”
+
+Close confirm body: “You can keep browsing and posting with a temporary identity. You can finish your profile anytime.”
+
+Close confirm buttons: “Finish now” (stay) / “Do it later” (close)
+
+Header menu item: “Complete your profile”
+
+Guard rails
+
+Minimal diffs only.
+
+No schema or storage policy changes.
+
+No anonymous redirects.
+
+Don’t touch admin logic, analytics, or unrelated routes/styles.
+
+Do not remove OnboardingGuard.tsx yet; don’t import it anywhere new.
+
+Report back (PASS/FAIL)
+
+Fresh signup → Welcome appears once (no URL change).
+
+X → confirm dialog → “Do it later” closes; user continues with temp identity.
+
+“Complete profile” with unique handle → modal closes; header shows @handle immediately.
+
+When isTemporary === true, header menu shows “Complete your profile” and opens the modal.
+
+Anonymous browsing never triggers the modal.
+
+No regressions in admin/nav. No new deps.
+
+Wait for my confirmation after your report before moving on.
