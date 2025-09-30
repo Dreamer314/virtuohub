@@ -56,17 +56,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Create a new post
   app.post("/api/posts", validateSession, async (req, res) => {
+    // --- begin normalization shim ---
+    const raw = req.body ?? {};
+    const title = (raw.title ?? '').trim();
+
+    // accept either `content` or `body`
+    const content = (raw.content ?? raw.body ?? '').trim();
+
+    // accept either `platforms` or `platform_tags`
+    const platforms = Array.isArray(raw.platforms) ? raw.platforms
+                      : Array.isArray(raw.platform_tags) ? raw.platform_tags
+                      : [];
+
+    // other optional fields with safe defaults
+    const category = (raw.category ?? 'general').trim();
+    const links = Array.isArray(raw.links) ? raw.links : [];
+    const files = Array.isArray(raw.files) ? raw.files : [];
+    const images = Array.isArray(raw.images) ? raw.images : [];
+    const price = raw.price ?? null;
+    const subtype = (raw.subtype ?? 'thread').trim();
+    const subtypeData = raw.subtypeData ?? null;
+    // --- end normalization shim ---
+
+    if (!title || !content) {
+      return res.status(400).json({ error: 'TITLE_AND_CONTENT_REQUIRED' });
+    }
+
     try {
-      const validatedData = insertPostSchema.parse(req.body);
-      // Use authenticated user ID from session
-      const authorId = req.user!.id;
-      
-      const post = await storage.createPost({ ...validatedData, authorId });
-      const postWithAuthor = await storage.getPost(post.id);
-      
-      res.status(201).json(postWithAuthor);
-    } catch (error) {
-      res.status(400).json({ message: "Invalid post data", error: error });
+      const post = await storage.createPost({
+        authorId: req.user!.id,
+        title,
+        body: content,
+        tags: [category],
+        platforms,
+        links,
+        files,
+        images,
+        price,
+        subtype,
+        subtypeData
+      });
+
+      return res.status(201).json(post);
+    } catch (e: any) {
+      console.error('POST /api/posts failed:', e?.message || e);
+      return res.status(500).json({
+        error: 'CREATE_POST_FAILED',
+        detail: e?.message || String(e)
+      });
     }
   });
 

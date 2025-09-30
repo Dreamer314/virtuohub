@@ -658,7 +658,7 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !title.trim() || !body.trim()}
               data-testid="post-submit-button"
             >
               {isSubmitting
