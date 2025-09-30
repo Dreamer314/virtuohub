@@ -752,7 +752,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updateData = {
         id: req.user!.id,
         handle: handle ?? currentProfile?.handle,
-        displayName: displayName ?? currentProfile?.displayName,
+        // Auto-set displayName to handle if displayName not provided but handle is
+        displayName: displayName ?? (handle || currentProfile?.displayName),
         avatarUrl: avatarUrl ?? currentProfile?.avatarUrl,
         role: role ?? currentProfile?.role,
         onboardingComplete: onboardingComplete ?? currentProfile?.onboardingComplete ?? false,
