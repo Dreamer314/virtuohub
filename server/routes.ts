@@ -729,7 +729,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Update current user profile (protected)
   app.patch("/api/profile/update", validateSession, async (req, res) => {
     try {
-      const { handle, displayName, avatarUrl, role } = req.body;
+      const { handle, displayName, avatarUrl, role, onboardingComplete } = req.body;
       
       // Validate handle if provided
       if (handle) {
@@ -755,7 +755,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         displayName: displayName ?? currentProfile?.displayName,
         avatarUrl: avatarUrl ?? currentProfile?.avatarUrl,
         role: role ?? currentProfile?.role,
-        onboardingComplete: true, // Mark as complete when updating
+        onboardingComplete: onboardingComplete ?? currentProfile?.onboardingComplete ?? false,
       };
 
       const profile = await storage.upsertProfile(updateData);

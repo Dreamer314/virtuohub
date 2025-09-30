@@ -22,7 +22,7 @@ export const posts = pgTable("posts", {
   summary: text("summary"), // brief description/excerpt
   body: text("body").notNull(), // renamed from content for clarity
   tags: text("tags").array().default([]),
-  platforms: text("platforms").array().notNull(),
+  platforms: text("platforms").array().default([]),
   imageUrl: text("image_url").default(''),
   images: text("images").array().default([]),
   files: text("files").array().default([]),
@@ -233,7 +233,7 @@ export type InsertPulseReportAccess = z.infer<typeof insertPulseReportAccessSche
 export type PulseReportAccess = typeof pulseReportAccess.$inferSelect;
 
 export interface PostWithAuthor extends Post {
-  author: User;
+  author: Profile;
   isSaved?: boolean;
 }
 

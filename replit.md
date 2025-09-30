@@ -12,6 +12,15 @@ VirtuoHub is a modern community platform designed for virtual world creators, fe
 
 ## Recent Changes
 
+**September 2024 - Post Creation Hotfixes**
+- Made platform selection optional for post creation (label, validation, button)
+- Fixed apiRequest signature: changed from object syntax to positional params
+- Fixed feed queryKey bug: removed feedRefresh state that was causing /api/posts/0
+- Updated storage layer: getPost/getPosts now use getProfile instead of getUser
+- Changed PostWithAuthor type: author field now uses Profile instead of User
+- Posts successfully created with or without platform selection
+- Feed correctly fetches and displays posts with author data
+
 **December 2024 - Onboarding System Implementation**
 - Implemented comprehensive two-step onboarding flow using Supabase Auth
 - Added OnboardingGuard component for client-side route protection  

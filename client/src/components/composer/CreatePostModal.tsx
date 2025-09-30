@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { X, Upload, Plus, Link as LinkIcon, Heart, BarChart3, Users, Clock } from 'lucide-react';
 import { PlatformKey, CATEGORIES, PLATFORMS } from '@/types/content';
-import { createFeedPost, createPoll, getCurrentUser } from '@/data/mockApi';
+import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
 const createPostSchema = z.object({
@@ -20,7 +20,7 @@ const createPostSchema = z.object({
   body: z.string().min(1, 'Content is required').max(5000, 'Content too long'),
   category: z.string().min(1, 'Category is required'),
   price: z.string().optional(),
-  platforms: z.array(z.string()).min(1, 'Select at least one platform'),
+  platforms: z.array(z.string()).optional(),
   links: z.array(z.string().url('Invalid URL')).max(10, 'Max 10 links'),
   // Poll-specific fields
   pollQuestion: z.string().optional(),
@@ -78,13 +78,10 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
 
   // COMPOSER ROUTING - Sync initialCategory prop changes into form when modal opens
   useEffect(() => {
-    console.log('Modal useEffect triggered:', { open, initialCategory, currentFormCategory: form.getValues('category') });
     if (!open) return;
     const nextCategory = initialCategory || 'General';
-    console.log('Setting category to:', nextCategory);
     if (form.getValues('category') !== nextCategory) {
       form.setValue('category', nextCategory, { shouldDirty: false, shouldValidate: true });
-      console.log('Category updated to:', form.getValues('category'));
     }
   }, [initialCategory, open, form]);
 
@@ -214,7 +211,7 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
       setIsSubmitting(true);
       
       if (data.subtype === 'poll') {
-        // Create poll using existing Poll API
+        // Create poll
         const pollOptions = data.pollOptions?.filter(opt => opt.trim()).map((label, index) => ({
           id: `opt${index + 1}`,
           label,
@@ -225,33 +222,39 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
           throw new Error('Polls must have at least 2 options');
         }
 
-        createPoll({
-          type: 'poll',
-          question: data.pollQuestion || '',
-          options: pollOptions,
-          allowMultiple: false,
-          showResults: 'after-vote',
-          closesAt: Date.now() + (data.pollDurationDays || 7) * 24 * 60 * 60 * 1000,
-          category: data.category,
-          platforms: selectedPlatforms,
-          author: getCurrentUser()
-        });
+        const pollData = {
+          subtype: 'poll',
+          title: data.pollQuestion || '',
+          body: data.pollQuestion || '',
+          platforms: selectedPlatforms.length > 0 ? selectedPlatforms : [],
+          subtypeData: {
+            question: data.pollQuestion || '',
+            choices: pollOptions,
+            closesAt: Date.now() + (data.pollDurationDays || 7) * 24 * 60 * 60 * 1000,
+            oneVotePerUser: true
+          }
+        };
+
+        await apiRequest('POST', '/api/posts', pollData);
       } else {
-        // Create thread using existing Post API
-        createFeedPost({
-          type: 'post',
+        // Create thread
+        const postData = {
+          subtype: 'thread',
           title: data.title,
           body: data.body,
-          category: data.category,
-          platforms: selectedPlatforms,
+          platforms: selectedPlatforms.length > 0 ? selectedPlatforms : [],
           imageUrl: images[0] || '',
           images,
           files: files,
           links: data.links || [],
           price: data.price || '',
-          author: getCurrentUser()
-        });
+        };
+
+        await apiRequest('POST', '/api/posts', postData);
       }
+
+      // Invalidate posts query to refresh feed
+      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
 
       const postTypeLabel = data.subtype === 'poll' ? 'Poll' : 'Thread';
       toast({
@@ -515,7 +518,7 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
 
           {/* Platforms */}
           <div className="space-y-2">
-            <Label>Platforms *</Label>
+            <Label>Platforms (optional)</Label>
             <div className="flex flex-wrap gap-2">
               {PLATFORMS.map((platform) => (
                 <Badge
@@ -655,7 +658,7 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
             </Button>
             <Button
               type="submit"
-              disabled={isSubmitting || selectedPlatforms.length === 0}
+              disabled={isSubmitting}
               data-testid="post-submit-button"
             >
               {isSubmitting

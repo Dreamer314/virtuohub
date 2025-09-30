@@ -38,7 +38,6 @@ const CommunityPage: React.FC = () => {
   const [selectedPlatforms, setSelectedPlatforms] = useState<PlatformKey[]>([]);
   const [isCreatePostModalOpen, setIsCreatePostModalOpen] = useState(false);
   const [createModalType, setCreateModalType] = useState<'regular' | 'pulse' | 'insight'>('regular');
-  const [feedRefresh, setFeedRefresh] = useState(0);
   const [composerCategory, setComposerCategory] = useState<string | undefined>(undefined);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalMode, setAuthModalMode] = useState<'signin' | 'signup'>('signin');
@@ -48,7 +47,7 @@ const CommunityPage: React.FC = () => {
 
   // Posts
   const { data: posts = [], isLoading } = useQuery<PostWithAuthor[]>({
-    queryKey: ['/api/posts', feedRefresh],
+    queryKey: ['/api/posts'],
   });
 
   const { data: savedPosts = [], isLoading: savedLoading } = useQuery<PostWithAuthor[]>({
@@ -525,7 +524,6 @@ const CommunityPage: React.FC = () => {
             setLocation('/community', { replace: true });
           }
         }}
-        onPostCreated={() => setFeedRefresh(prev => prev + 1)}
         initialCategory={composerCategory}
         initialSubtype={createModalType === 'pulse' ? 'poll' : 'thread'}
       />

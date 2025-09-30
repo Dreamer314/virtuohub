@@ -611,7 +611,7 @@ As the lines between physical and digital continue to blur, virtual fashion stan
     // Add author information
     const postsWithAuthors = await Promise.all(
       posts.map(async (post) => {
-        const author = await this.getUser(post.authorId);
+        const author = await this.getProfile(post.authorId);
         return {
           ...post,
           author: author!,
@@ -626,7 +626,7 @@ As the lines between physical and digital continue to blur, virtual fashion stan
     const post = this.posts.get(id);
     if (!post) return undefined;
     
-    const author = await this.getUser(post.authorId);
+    const author = await this.getProfile(post.authorId);
     if (!author) return undefined;
     
     return {
