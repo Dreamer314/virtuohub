@@ -1,0 +1,135 @@
+Task: Migrate Profiles and Posts from in-memory storage to Supabase so handles and posts persist across restarts. Leave Comments as is for now. Keep the current UI and API shapes stable.
+
+Plan first. Do not change any files until I say YES.
+
+Hard constraints
+
+Anonymous visitors must browse freely. Do not add redirects.
+
+Keep soft-gate on interact exactly as is.
+
+Do not touch admin logic, analytics, routing, or styles.
+
+Minimal diffs. No new dependencies.
+
+Reuse existing Supabase project and public.profiles table. Add or align fields only if needed.
+
+Use Row Level Security with least privilege. Users can update only their own profile and their own posts.
+
+Target data model
+
+public.profiles
+
+id uuid primary key references auth.users(id)
+
+handle text unique
+
+display_name text
+
+avatar_url text
+
+onboarding_complete boolean default false
+
+updated_at timestamptz default now()
+
+public.posts
+
+id bigint primary key generated always as identity
+
+created_at timestamptz default now()
+
+author_id uuid references public.profiles(id) on delete set null
+
+title text not null
+
+content text
+
+category text
+
+platform_tags text[]
+
+links text[]
+
+image_urls text[]
+
+subtype text // e.g. "thread" or "poll"
+
+poll_options text[] // keep optional for existing poll UI; can be null for threads
+
+RLS requirements
+
+profiles:
+
+Select: anyone can read public profile fields.
+
+Update: user can update where id = auth.uid().
+
+posts:
+
+Select: anyone can read.
+
+Insert: only authenticated, author_id = auth.uid().
+
+Update/Delete: only where author_id = auth.uid(). Keep a simple admin override only if an admin role already exists in profiles.role.
+
+What to keep stable
+
+Response shapes expected by the frontend. Post items in feed and thread view must still include author object with handle, display_name, avatar_url.
+
+The create post UI must work with platforms optional.
+
+The identity display rule remains: show @handle if present, else user_<last5 of auth id>.
+
+Deliverables you must list before making any changes (then wait for my YES)
+
+Exact SQL for table creation or alteration and all RLS policies. Include enables for RLS and policies text.
+
+Exact files you will modify and a one-line reason for each. Example: server/routes.ts switch to Supabase selects/inserts, server/storage.ts remove MemStorage for profiles and posts, client/src/pages/community.tsx no API shape changes, only query invalidation if needed.
+
+How each API endpoint will change internally while keeping the same external contract:
+
+GET /api/profile
+
+PATCH /api/profile
+
+POST /api/profile-upsert (if present)
+
+GET /api/posts
+
+POST /api/posts
+
+GET /api/posts/:id
+
+How post author hydration will work:
+
+After inserting a post, select it with a join to profiles on author_id and return author with handle, display_name, avatar_url.
+
+A rollback plan:
+
+How to toggle a flag or branch back to in-memory reads without breaking the UI if something fails.
+
+Acceptance tests you will run and how you will verify them in logs.
+
+Acceptance tests (must all pass)
+
+Create account, complete profile with handle, refresh: header still shows @handle.
+
+Create a post with no platforms, publish: success toast appears, post shows in feed with @handle, persists after refresh.
+
+Open a post page: author byline shows @handle. Refresh: still @handle.
+
+Poll subtype still posts successfully with subtype="poll" and poll_options set. Feed and thread show it without errors.
+
+Anonymous browsing unchanged: no redirects, can view feed and threads.
+
+Update profile avatar and display name: changes reflect immediately and after refresh.
+
+Guardrails
+
+No schema changes to comments in this phase.
+
+No client navigation changes.
+
+Minimal logging. Remove temporary logs after verification.
+
+After you present the plan, wait for my YES before touching code.
