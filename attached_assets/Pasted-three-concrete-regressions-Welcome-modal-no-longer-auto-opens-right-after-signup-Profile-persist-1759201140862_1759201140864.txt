@@ -1,0 +1,92 @@
+three concrete regressions:
+
+Welcome modal no longer auto-opens right after signup.
+
+Profile persistence: after you complete the profile, a refresh falls back to user_xxxxx and posts show Anonymous.
+
+Soft-gates for create/comment/vote work (nice!).
+
+Here’s a tight “Plan-first, wait-for-YES” prompt you can paste to the Replit agent to fix just those:
+
+PLAN FIRST — DO NOT CHANGE CODE UNTIL I SAY YES
+
+Please prepare a surgical plan to fix these 3 issues (minimal diffs, no schema changes, no new deps):
+
+A) Welcome modal doesn’t auto-open after signup
+
+Inspect where the welcome modal is triggered:
+
+client/src/providers/AuthProvider.tsx (SIGNED_IN listener + localStorage guard)
+
+client/src/components/welcome/WelcomeModal.tsx
+
+Goal: On fresh signup (not session restore), open Welcome once unless localStorage['welcomed_<userId>'] is set.
+
+Guard rails:
+
+No redirects; modal-only.
+
+Keep the “Complete your profile” header button working.
+
+B) Profile persistence lost after refresh (header shows user_xxxxx)
+
+Inspect:
+
+client/src/hooks/useDisplayIdentity.ts (field names & query enable flags)
+
+GET /api/profile handler on the server (verify it returns handle, display_name, avatar_url, onboarding_complete)
+
+React Query invalidation after profile save (WelcomeModal submit flow)
+
+Likely cause: field-name mismatch (onboarding_complete vs onboardingComplete) or query never runs after refresh.
+
+Fixes:
+
+Make sure the client reads the same casing the API returns (use snake_case if API is snake_case, or map consistently).
+
+Ensure /api/profile is fetched after refresh (no early return due to authLoading/enable flags).
+
+After successful profile update, invalidate ['/api/profile'] so header refreshes immediately.
+
+C) Posts show Anonymous instead of the handle
+
+Inspect:
+
+Server: post creation response & list endpoint (post includes author with Profile fields).
+
+Client: feed rendering component(s) that read post.author (make sure they use author.handle or your identity fallback).
+
+Fixes:
+
+Ensure POST /api/posts returns the newly created post with author populated from profiles, not auth user metadata.
+
+Ensure the feed/thread UI reads post.author.handle ?? 'user_…' (never “Anonymous” unless author truly missing).
+
+Invalidate ['/api/posts'] after create so the feed refetches with populated author.
+
+Acceptance tests (run & report PASS/FAIL)
+
+Fresh signup → Welcome appears once; dismiss or complete → refresh → Welcome does not reappear.
+
+Complete profile to @virtualhub → header shows @virtualhub; refresh → still @virtualhub; “Complete your profile” button is gone.
+
+Create a post (with/without platforms) → appears immediately; author byline shows @virtualhub (not Anonymous); persists on refresh.
+
+Safety rails
+
+Minimal diffs; list exact files/lines you’ll touch and WAIT for my YES.
+
+No schema/policy changes.
+
+No redirects; no admin/nav changes; no styling changes.
+
+Remove any temporary console logs before finishing.
+
+Reply with:
+
+Your proposed file-by-file edit plan (paths + 1-line change summary).
+
+Why you believe each change fixes the specific symptom.
+
+Anything risky you intend to touch.
+Then wait for my YES.
