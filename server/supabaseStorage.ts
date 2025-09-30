@@ -49,7 +49,7 @@ export class SupabaseStorage implements IStorage {
         handle: profile.handle ?? null,
         display_name: profile.displayName ?? null,
         avatar_url: profile.avatarUrl ?? null,
-        role: profile.role ?? null,
+        role: profile.role ?? 'user',
         onboarding_complete: profile.onboardingComplete ?? false,
         updated_at: new Date().toISOString(),
       }, {
