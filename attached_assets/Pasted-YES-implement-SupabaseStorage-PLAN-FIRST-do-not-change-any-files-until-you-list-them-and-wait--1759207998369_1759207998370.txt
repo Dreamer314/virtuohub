@@ -1,0 +1,53 @@
+YES, implement SupabaseStorage
+
+PLAN FIRST — do not change any files until you list them and wait for my YES.
+
+Scope:
+- Add a new storage backend that uses the existing Supabase DB tables we just created.
+- Keep MemStorage for comments (unchanged).
+- Preserve all API contracts and response shapes.
+
+Files to add/modify (list first, then wait):
+1) NEW: server/supabaseStorage.ts
+   - Class SupabaseStorage implements the same IStorage interface used by routes.
+   - Methods (profiles): getProfile, upsertProfile, isHandleAvailable.
+   - Methods (posts): createPost, getPosts, getPost.
+   - Use SELECTs that join posts → profiles via `profiles!author_uuid(...)`.
+   - When author join is null, return a fallback author `{ id: author_id, handle: null, displayName: null, avatarUrl: null, onboardingComplete: false }`.
+
+2) MODIFY: server/index.ts
+   - Add feature flag:
+     const useSupabase = process.env.USE_SUPABASE_STORAGE === 'true';
+     export const storage = useSupabase ? new SupabaseStorage() : new MemStorage();
+
+3) DO NOT TOUCH: server/routes.ts, server/storage.ts, comments code, admin logic, or client files.
+
+IMPORTANT constraints:
+- No navigation changes, no UI edits, no schema changes.
+- No new dependencies (use existing @supabase/supabase-js client that’s already configured).
+- Keep response shapes identical to what routes expect (PostWithAuthor with `author` matching Profile fields).
+
+Query examples (for reference only—match to code):
+- getPosts():
+  select(`
+    id, created_at, updated_at, author_id, title, content, category,
+    platform_tags, links, image_urls, file_urls, price, subtype, poll_options,
+    likes, comments, shares,
+    profiles!author_uuid(id, handle, display_name, avatar_url, onboarding_complete)
+  `).order('created_at', { ascending: false })
+
+- getPost(id): same select with `.eq('id', id).single()`
+
+- createPost(): insert returning row, then hydrate with a single select (as above).
+
+After you list the exact file edits and diffs, WAIT for my YES.
+
+Acceptance tests to run (and report PASS/FAIL):
+1) Profile persists: set handle, refresh → header shows @handle.
+2) Create thread (no platforms): success toast; appears in feed; persists on refresh; author shows @handle.
+3) Thread page: author shows @handle; persists after refresh.
+4) Poll create + render: no errors; voting still soft-gated by auth.
+5) Anonymous browse: no redirects; soft-gate opens auth modal on interact.
+6) Avatar/display name update: visible immediately and after refresh.
+
+Do not enable the flag yet. After you show the diffs, I’ll say YES and then you can set `USE_SUPABASE_STORAGE=true` and restart.
