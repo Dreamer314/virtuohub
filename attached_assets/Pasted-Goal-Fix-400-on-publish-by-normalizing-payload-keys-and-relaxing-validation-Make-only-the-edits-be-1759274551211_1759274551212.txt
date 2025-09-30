@@ -1,0 +1,110 @@
+Goal: Fix 400 on publish by normalizing payload keys and relaxing validation. Make only the edits below. Do not change any unrelated lines, files, styles, deps, or behavior.
+
+Files to edit (and only these):
+
+server/routes.ts
+
+client/src/components/composer/CreatePostModal.tsx
+
+1) server/routes.ts — inside the app.post('/api/posts' …) handler
+
+A. Normalize incoming body fields
+Add these at the top of the handler body (immediately after you have req and res, before any validation or calls to storage):
+
+// --- begin normalization shim ---
+const raw = req.body ?? {};
+const title = (raw.title ?? '').trim();
+
+// accept either `content` or `body`
+const content = (raw.content ?? raw.body ?? '').trim();
+
+// accept either `platforms` or `platform_tags`
+const platforms = Array.isArray(raw.platforms) ? raw.platforms
+                  : Array.isArray(raw.platform_tags) ? raw.platform_tags
+                  : [];
+
+// other optional fields with safe defaults
+const category = (raw.category ?? 'general').trim();
+const links = Array.isArray(raw.links) ? raw.links : [];
+const files = Array.isArray(raw.files) ? raw.files : [];
+const images = Array.isArray(raw.images) ? raw.images : [];
+const price = raw.price ?? null;
+const subtype = (raw.subtype ?? 'thread').trim();
+const subtypeData = raw.subtypeData ?? null;
+// --- end normalization shim ---
+
+
+B. Relax required-field validation
+Replace any existing validation that required platforms or other fields with this exact check:
+
+if (!title || !content) {
+  return res.status(400).json({ error: 'TITLE_AND_CONTENT_REQUIRED' });
+}
+
+
+C. Build the storage payload from the normalized vars
+When calling storage.createPost(...), use these exact mappings (replace any existing object construction):
+
+const post = await storage.createPost({
+  authorId: req.user.id, // existing auth middleware
+  title,
+  body: content,
+  tags: [category],
+  platforms,
+  links,
+  files,
+  images,
+  price,
+  subtype,
+  subtypeData
+});
+
+
+D. Wrap the create call in try/catch to surface errors
+Wrap the create-and-return block as shown:
+
+try {
+  const post = await storage.createPost({
+    authorId: req.user.id,
+    title,
+    body: content,
+    tags: [category],
+    platforms,
+    links,
+    files,
+    images,
+    price,
+    subtype,
+    subtypeData
+  });
+
+  return res.status(201).json(post);
+} catch (e: any) {
+  console.error('POST /api/posts failed:', e?.message || e);
+  return res.status(500).json({
+    error: 'CREATE_POST_FAILED',
+    detail: e?.message || String(e)
+  });
+}
+
+
+Do not modify any other handlers, middleware, or imports in this file.
+
+2) client/src/components/composer/CreatePostModal.tsx — enable publish without platforms
+
+Find the Publish button and ensure the disabled prop is only tied to submission state and the required fields (title/content). Replace its disabled with:
+
+disabled={isSubmitting || !title.trim() || !content.trim()}
+
+
+Do not add a platforms check here, and do not alter anything else in this component.
+
+Acceptance checks (run after the change)
+
+Create a post with no platforms → POST /api/posts returns 201, toast shows success, post appears in feed and persists on refresh.
+
+Create a post with platforms → still works.
+
+If something fails, the response JSON should contain { error: 'CREATE_POST_FAILED', detail: '...' } and the server log should show “POST /api/posts failed: …”.
+
+Scope guard: Make only the exact edits above. No other refactors, style changes, imports, dependencies, or schema changes.
