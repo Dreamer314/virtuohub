@@ -100,7 +100,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
           {/* Avatar */}
           <div className="flex-shrink-0">
             <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-vh-accent1 text-white font-medium text-lg">
-              {(post.author.displayName || post.author.username || 'U').charAt(0)}
+              {(post.author.handle || post.author.displayName || 'U').charAt(0)}
             </span>
           </div>
           
@@ -108,7 +108,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
             {/* Header */}
             <div className="flex items-center space-x-2 mb-1">
               <span className="vh-body font-medium" data-testid={`author-${post.id}`}>
-                {post.author.displayName || post.author.username || 'Anonymous'}
+                {post.author.handle ? `@${post.author.handle}` : post.author.displayName || `user_${post.authorId.slice(-5)}`}
               </span>
               {post.author.role && (
                 <Badge variant="secondary" className="text-xs">

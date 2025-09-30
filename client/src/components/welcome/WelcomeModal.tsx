@@ -205,8 +205,9 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
       // Mark as welcomed
       localStorage.setItem(`welcomed_${user.id}`, 'true');
 
-      // Invalidate profile query to refresh header immediately
+      // Invalidate queries to refresh header and feed immediately
       queryClient.invalidateQueries({ queryKey: ['/api/profile'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
 
       toast({
         title: 'Profile completed!',

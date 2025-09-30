@@ -59,8 +59,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setLoading(false)
 
         // Ensure profile row exists after successful sign in
-        // Only trigger welcome on FRESH SIGNED_IN (when previousUser was null AND user not welcomed before)
-        // This prevents showing modal on page refresh/token refresh
+        // Only trigger welcome on FRESH SIGNED_IN (event indicates fresh auth, localStorage prevents re-show)
         if (event === 'SIGNED_IN' && session?.user) {
           try {
             // Check localStorage FIRST to prevent showing modal on refresh
@@ -80,8 +79,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
               throw new Error(`Profile upsert failed: ${response.statusText}`)
             }
 
-            // Only show welcome if: not welcomed before AND this is a fresh signup (previousUser was null)
-            if (!welcomed && !previousUser) {
+            // Only show welcome if not welcomed before (SIGNED_IN event = fresh auth action)
+            if (!welcomed) {
               setShowWelcome(true)
             }
             

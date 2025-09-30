@@ -14,7 +14,7 @@ export function useDisplayIdentity(): DisplayIdentity {
   // If no session, return empty state
   const { data: profile } = useQuery<Profile>({
     queryKey: ['/api/profile'],
-    enabled: !!user && !authLoading,
+    enabled: !!user,
   });
 
   // Anonymous user
