@@ -59,6 +59,7 @@ export class SupabaseStorage implements IStorage {
       .single();
 
     if (error) {
+      console.error('[SUPABASE UPSERT ERROR]', JSON.stringify(error, null, 2));
       throw new Error(`Failed to upsert profile: ${error.message}`);
     }
 
