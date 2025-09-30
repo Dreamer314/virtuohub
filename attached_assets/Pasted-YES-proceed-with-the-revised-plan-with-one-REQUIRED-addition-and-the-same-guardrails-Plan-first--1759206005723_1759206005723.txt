@@ -1,0 +1,60 @@
+YES — proceed with the revised plan, with one REQUIRED addition and the same guardrails. Plan first, then implement.
+
+Required addition (author join):
+Add a generated UUID column on public.posts that mirrors author_id and create the FK so PostgREST can expose the author relation:
+
+-- Bridge text author_id to uuid for relational joins
+ALTER TABLE public.posts
+ADD COLUMN IF NOT EXISTS author_uuid uuid
+GENERATED ALWAYS AS (NULLIF(author_id, '')::uuid) STORED;
+
+-- Foreign key to profiles.id (now we can select author via relation)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.table_constraints
+    WHERE constraint_type = 'FOREIGN KEY'
+      AND table_schema = 'public'
+      AND table_name = 'posts'
+      AND constraint_name = 'posts_author_uuid_fkey'
+  ) THEN
+    ALTER TABLE public.posts
+    ADD CONSTRAINT posts_author_uuid_fkey
+    FOREIGN KEY (author_uuid) REFERENCES public.profiles(id) ON DELETE SET NULL;
+  END IF;
+END $$;
+
+
+Keep existing RLS as you proposed (compare auth.uid()::text = author_id for INSERT/UPDATE/DELETE).
+
+Select shape (no contract changes):
+Use the new FK for hydration in one query:
+
+.from('posts')
+.select(`
+  id, created_at, updated_at, author_id, title, content, category,
+  platform_tags, links, image_urls, file_urls, price, subtype, poll_options,
+  author:profiles(id, handle, display_name, avatar_url, onboarding_complete)
+`)
+.order('created_at', { ascending: false })
+
+
+If author is null, return a minimal fallback { id: author_id, handle: null, display_name: null, avatar_url: null, onboarding_complete: false }.
+
+Everything else stays as in your revised plan:
+
+No table drops.
+
+Add columns with ADD COLUMN IF NOT EXISTS.
+
+profiles table + RLS as listed.
+
+posts new columns as listed (keep current text author_id).
+
+No client changes in this phase.
+
+Feature flag USE_SUPABASE_STORAGE for rollback.
+
+Run the same 6 acceptance tests.
+
+Please list the final SQL (including the author_uuid/FK snippet above) you will run, then WAIT for my final “YES, execute SQL” before applying anything.
