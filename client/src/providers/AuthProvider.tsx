@@ -44,6 +44,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setSession(session)
         setUser(session?.user || null)
         previousUser = session?.user || null
+        
+        // Ensure profile exists on page load (handles in-memory storage resets)
+        if (session?.user) {
+          try {
+            await fetch('/api/profile-upsert', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ id: session.user.id }),
+            })
+          } catch (error) {
+            console.warn('Profile upsert on load failed:', error)
+          }
+        }
       }
       setLoading(false)
     }
