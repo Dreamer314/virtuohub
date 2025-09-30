@@ -1,0 +1,85 @@
+YES, with these changes. Plan first, then wait for my final YES before touching code.
+
+Do not drop any tables.
+No DROP TABLE. Use CREATE TABLE IF NOT EXISTS and ALTER TABLE ... ADD COLUMN IF NOT EXISTS. If existing column types don’t match, keep current types for now. We can do a follow-up migration later.
+
+Posts schema must match the current frontend names.
+Use exactly these columns so the UI works without code changes:
+
+id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY
+
+created_at TIMESTAMPTZ DEFAULT now()
+
+author_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL
+
+title TEXT NOT NULL
+
+content TEXT
+
+category TEXT
+
+platform_tags TEXT[]
+
+links TEXT[]
+
+image_urls TEXT[]
+
+file_urls TEXT[]
+
+price TEXT
+
+subtype TEXT -- “thread” or “poll”
+
+poll_options TEXT[] -- optional for polls
+
+Profiles schema is fine, but keep names aligned with the frontend:
+handle, display_name, avatar_url, onboarding_complete. Enable RLS as you proposed.
+
+RLS policies as proposed, but confirm these exact rules:
+
+profiles: SELECT for all. INSERT/UPDATE only when id = auth.uid().
+
+posts: SELECT for all. INSERT only when author_id = auth.uid(). UPDATE/DELETE only when author_id = auth.uid().
+
+API contracts must not change.
+
+GET /api/posts returns a list where each item includes author with { id, handle, display_name, avatar_url, onboarding_complete }.
+
+POST /api/posts inserts, then re-selects with a join to include the author object, not just author_id.
+
+GET /api/posts/:id returns the same shape.
+
+Supabase selects
+Use a single select with a relational join, for example:
+
+.from('posts')
+.select(`
+  id, created_at, author_id, title, content, category,
+  platform_tags, links, image_urls, file_urls, price, subtype, poll_options,
+  author:profiles(id, handle, display_name, avatar_url, onboarding_complete)
+`)
+
+
+If author is null, return a minimal fallback with just id: author_id.
+
+No client changes in this phase.
+Do not rename fields, do not change UI validation, and do not modify routing. We only switch storage from memory to Supabase.
+
+Rollback
+I approve the USE_SUPABASE_STORAGE flag approach. Keep the in-memory path intact behind the flag for quick fallback.
+
+Acceptance tests (must pass)
+
+Profile handle persists across refresh; header shows @handle.
+
+Create thread with no platforms. Success toast. Post appears in feed with @handle. Persists on refresh.
+
+Open thread page. Author byline shows @handle. Persists on refresh.
+
+Create a poll with subtype='poll' and poll_options. Feed and thread render without errors.
+
+Anonymous browsing unchanged.
+
+Updating avatar/display name reflects immediately and after refresh.
+
+List the exact ALTER statements you will run if the tables already exist, then wait for my final YES.
