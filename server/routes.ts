@@ -663,16 +663,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Profile upsert endpoint for Supabase Auth integration
+  // CRITICAL: Only creates profile if it doesn't exist. Never overwrites existing data.
   app.post("/api/profile-upsert", async (req, res) => {
     try {
       // TODO: Task 8 - Add proper Supabase session validation here
       // Currently trusting client-provided id - this is a security risk that needs to be fixed
       const { id, display_name, avatar_url } = req.body;
       
+      // Check if profile already exists
+      const existing = await storage.getProfile(id);
+      if (existing) {
+        console.log('[POST /api/profile-upsert] Profile already exists, skipping upsert to preserve data');
+        return res.json({ success: true, profile: existing });
+      }
+      
+      // Only create new profile if it doesn't exist
+      console.log('[POST /api/profile-upsert] Creating new profile for id:', id);
+      
       // Validate using Zod schema
       const profileData = insertProfileSchema.parse({
         id,
-        displayName: display_name,
+        displayName: display_name || null,
         avatarUrl: avatar_url || null,
       });
       

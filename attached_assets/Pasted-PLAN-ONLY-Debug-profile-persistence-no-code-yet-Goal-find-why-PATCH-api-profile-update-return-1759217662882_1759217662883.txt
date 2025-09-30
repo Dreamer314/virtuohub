@@ -1,0 +1,83 @@
+PLAN ONLY — Debug profile persistence (no code yet)
+
+Goal: find why PATCH /api/profile/update returns 200 but the profile row doesn’t persist in public.profiles.
+
+What I’ll instrument & verify
+
+Server route: /api/profile/update
+
+Log: route hit, authUserId from your session middleware, raw request body, and which storage class is active (storage.constructor.name).
+
+Ensure the handler actually calls await storage.upsertProfile({ id: authUserId, handle, displayName, avatarUrl, onboardingComplete }) and awaits it.
+
+Wrap in try/catch; on error, return 500 with error message (so failures aren’t “silent 200s”).
+
+GET /api/profile route
+
+Log: route hit, authUserId, storage class, and the returned profile object.
+
+Confirms we’re reading from the same place we write.
+
+SupabaseStorage.upsertProfile
+
+Confirm it uses:
+
+.upsert({ id, handle, display_name, avatar_url, role: 'user', onboarding_complete, updated_at })
+
+{ onConflict: 'id' }
+
+.select().single() (so errors surface)
+
+Add a one-line error log before throwing to capture Supabase’s response error.
+
+SupabaseStorage.getProfile
+
+Verify mapping snake_case → camelCase (no typos):
+
+display_name → displayName
+
+avatar_url → avatarUrl
+
+onboarding_complete → onboardingComplete
+
+Add a temporary log of the raw row to confirm fields actually come back.
+
+Client path that saves profile (WelcomeModal)
+
+Confirm it calls PATCH /api/profile/update (not POST or a different path) with:
+
+Authorization: Bearer <access_token>
+
+Body includes handle and onboardingComplete: true when finishing.
+
+After 200, immediately invalidate ['/api/profile'] (already planned) and also ['/api/posts'] so bylines refresh.
+
+Direct sanity check
+
+After a save, I’ll immediately call GET /api/profile (same client session) and log what comes back.
+
+Then query the DB for the user id to confirm the row exists.
+
+What I’ll fix if the logs reveal it
+
+If the route isn’t awaiting storage.upsertProfile: add await.
+
+If field names don’t match: adjust mapping (handle/displayName/avatarUrl/onboardingComplete).
+
+If the request isn’t reaching the route or has no auth header: fix the client call to include Authorization.
+
+If Supabase returns an error (constraint, etc.): patch the payload (e.g., ensure role: 'user', coerce onboarding_complete to boolean).
+
+If GET /api/profile was still reading MemStorage: point it to the same storage (it should already be via storage.config).
+
+Acceptance checks (I’ll run right after)
+
+Sign up → set handle → header shows @handle.
+
+Refresh page → header still shows @handle (no fallback to user_xxxxx).
+
+Create a post → author byline shows @handle.
+
+Refresh feed & open thread → still @handle.
+
+No other files, features, or styles touched. Minimal logs; I’ll remove them after we confirm.

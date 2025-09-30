@@ -12,6 +12,17 @@ VirtuoHub is a modern community platform designed for virtual world creators, fe
 
 ## Recent Changes
 
+**September 30, 2025 - Profile Persistence Bug Fix**
+- **CRITICAL FIX**: Resolved profile data not persisting across page refreshes
+- Modified POST /api/profile-upsert to prevent overwriting existing profile data
+  - Endpoint now checks if profile exists before upserting
+  - Returns existing profile without modification if found
+  - Only creates new profiles when they don't exist
+- Fixed default role value from null to 'user' to satisfy database NOT NULL constraint
+- Issue: AuthProvider was calling profile-upsert after onboarding, overwriting handle with null
+- Solution: Made profile-upsert truly idempotent and data-preserving
+- Verified: Handle and onboarding status now persist correctly after page refresh
+
 **September 2024 - Post Creation Hotfixes**
 - Made platform selection optional for post creation (label, validation, button)
 - Fixed apiRequest signature: changed from object syntax to positional params
