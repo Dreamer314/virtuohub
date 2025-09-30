@@ -10,7 +10,7 @@ import Stripe from "stripe";
 const stripe = new Stripe(process.env.TESTING_STRIPE_SECRET_KEY!, {
   apiVersion: "2025-08-27.basil",
 });
-import { supabase, supabaseAdmin } from "./supabaseClient";
+import { supabaseAdmin } from "./supabaseClient";
 
 app.post("/api/stripe/webhook", express.raw({type: 'application/json'}), async (req, res) => {
   try {

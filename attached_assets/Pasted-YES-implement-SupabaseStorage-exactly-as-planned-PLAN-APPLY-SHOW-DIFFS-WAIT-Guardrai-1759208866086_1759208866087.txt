@@ -1,0 +1,49 @@
+YES — implement SupabaseStorage exactly as planned.
+
+PLAN → APPLY → SHOW DIFFS → WAIT.
+
+Guardrails:
+- Only touch these files:
+  1) NEW: server/supabaseStorage.ts
+  2) MODIFY: server/index.ts (feature flag wiring)
+  3) MODIFY: server/routes.ts (import storage from ./index)
+- Do NOT enable the flag yet. Do NOT restart yet.
+- No UI changes, no new deps, no schema changes.
+
+Important join note (no FK on author_uuid):
+- If the `profiles!author_uuid(...)` embed does not work due to missing FK, hydrate authors with a 2-step approach:
+  • Step 1: fetch posts
+  • Step 2: collect unique author_id values that are valid UUIDs and fetch matching rows from `profiles` with `.in('id', [...])`
+  • Step 3: stitch author objects client-side. Fallback author when missing: 
+    { id: post.author_id, handle: null, displayName: null, avatarUrl: null, onboardingComplete: false }
+
+Mapping (keep response shape identical):
+- Profile ⇄ DB fields:
+  id ↔ id (uuid)
+  handle ↔ handle
+  displayName ↔ display_name
+  avatarUrl ↔ avatar_url
+  onboardingComplete ↔ onboarding_complete
+- Post ⇄ DB fields:
+  id, authorId ↔ author_id, title, body ↔ content, tags[0] ↔ category,
+  platforms ↔ platform_tags, images ↔ image_urls, files ↔ file_urls,
+  links, price, subtype, subtypeData ↔ poll_options, likes, comments, shares,
+  createdAt/updatedAt from created_at/updated_at.
+
+After implementing:
+1) Show the unified diffs for:
+   - server/supabaseStorage.ts
+   - server/index.ts
+   - server/routes.ts
+2) Confirm zero type errors and that routes still import `storage` from `./index`.
+3) WAIT for my “YES, enable flag”.
+
+Acceptance tests to run AFTER I approve enabling the flag:
+1) Profile persists across refresh (header shows @handle).
+2) Create thread (no platforms) → toast success → shows in feed with @handle → persists after refresh.
+3) Thread page byline shows @handle and persists after refresh.
+4) Poll create (subtype='poll', poll_options) renders and works (vote still soft-gated).
+5) Anonymous browsing unchanged; soft-gate opens auth modal on interact.
+6) Avatar/display name update reflects immediately and after refresh.
+
+Acknowledge when you’re ready to show the diffs (do NOT enable the flag yet).
