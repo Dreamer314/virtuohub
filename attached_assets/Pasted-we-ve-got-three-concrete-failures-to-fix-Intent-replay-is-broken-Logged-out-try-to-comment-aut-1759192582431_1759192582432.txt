@@ -1,0 +1,142 @@
+we’ve got three concrete failures to fix:
+
+Intent replay is broken
+Logged-out → try to comment → auth → you get dumped to Community; the comment/composer doesn’t reopen.
+
+Publishing doesn’t persist
+You can open the composer and even see a success toast, but nothing shows in the feed. Platform field is acting required when you don’t want it to be.
+
+Profile isn’t sticking after refresh
+Your handle shows, then after reload it disappears and “Complete your profile” returns — so the profile update likely isn’t being saved or isn’t being read.
+
+Let’s keep this tight and surgical. Here’s a paste-ready prompt for the agent that focuses only on these three issues, with guardrails and pass/fail checks.
+
+Title: Plan only — Hotfix batch: intent replay, post persistence, profile persistence. Do not edit until I say YES.
+
+Scope (problems to fix)
+
+Intent replay bug: After login, user is navigated back to Community and the intended action (open composer, post comment, cast vote) does not resume.
+
+Post publish not appearing: Composer says “Thread Published” but nothing appears in the feed. Also, make platform optional.
+
+Profile not sticking after refresh: After completing profile, header shows @handle, but on refresh it reverts to temporary and “Complete your profile” reappears.
+
+Do NOT (plan first)
+
+Do not change routing/redirects, admin logic, or styles.
+
+Do not add global guards or anonymous redirects.
+
+No schema or RLS policy editing unless you identify a concrete defect and list the exact change; then WAIT.
+
+Minimal diffs only. No new dependencies.
+
+A) Your plan (what to inspect + where)
+
+List the exact files/lines you will inspect for each issue before you touch anything.
+
+1) Intent replay
+
+client/src/contexts/IntentContext.tsx (setIntent, replayIntent, register/unregister, handler storage)
+
+client/src/components/auth/AuthModal.tsx (where success calls replayIntent; ensure no navigate/setLocation)
+
+client/src/providers/AuthProvider.tsx (any SIGNED_IN side effects that navigate)
+
+Entry points that register handlers:
+
+client/src/pages/community.tsx (Create Post trigger)
+
+client/src/components/composer/CreatePostModal.tsx (open/close logic)
+
+client/src/pages/thread.tsx (comment submit handler)
+
+client/src/components/polls/PollCard.tsx (vote click)
+
+2) Post publish
+
+client/src/components/composer/CreatePostModal.tsx and/or client/src/components/create-post-modal.tsx: verify the API call is live POST /api/posts and the payload matches server expectations.
+
+client/src/pages/community.tsx: confirm the feed query key (e.g., ['/api/posts']) and that we invalidate the exact same key on success.
+
+Server route for create post (wherever /api/posts is handled): confirm 201 response and persisted record shape.
+
+Validation: make platform optional client-side and ensure the server allows null/empty if that’s our rule.
+
+3) Profile persistence
+
+client/src/components/welcome/WelcomeModal.tsx: confirm it calls the correct route to save handle and onboardingComplete=true.
+
+Server profile update route (e.g., /api/profile/update): check for field name mismatches (handle vs username, onboardingComplete vs onboarding_complete, avatarUrl vs avatar_url).
+
+client/src/hooks/useDisplayIdentity.ts: confirm it reads from the same fields returned by /api/profile.
+
+/api/profile GET handler: confirm it returns handle and onboardingComplete correctly (casing and values).
+
+React Query invalidation after save.
+
+B) Proposed fixes (expected small diffs)
+
+1) Intent replay
+
+Ensure AuthModal success calls replayIntent() and does not navigate.
+
+Ensure AuthProvider doesn’t navigate on SIGNED_IN. If any navigate exists, remove it.
+
+Verify handler registration/unregistration and clearing of intent to prevent duplicates.
+
+For comment replay, make sure we re-open the thread context and post the exact buffered text + attachments.
+
+Add a minimal console debug in replayIntent during testing, then remove.
+
+2) Post publish
+
+Replace any mock call with live POST /api/posts.
+
+On success: queryClient.invalidateQueries({ queryKey: ['/api/posts'] }). Make sure this key matches the one used in community.tsx.
+
+Make platform optional in the composer validation and do not send it if empty.
+
+Confirm server accepts missing/empty platform without 4xx; if server requires it and we want optional, propose the minimal server change and WAIT.
+
+3) Profile persistence
+
+Normalize field names end-to-end. If server expects onboarding_complete, don’t send onboardingComplete (or map it server-side).
+
+After successful PATCH, invalidate /api/profile so header flips.
+
+Verify /api/profile GET returns the handle you just saved.
+
+If RLS or SELECT policy blocks reading profiles for the current user, surface the exact error; do not change policies without listing the minimum fix and WAIT.
+
+C) Acceptance tests you will run (report PASS/FAIL)
+
+Intent replay
+
+Logged out → type a comment → submit → AuthModal → after login, the same comment posts automatically.
+
+Logged out → click Create Post → AuthModal → after login, composer reopens with prior draft fields.
+
+Logged out → click Vote → AuthModal → after login, the same option is cast and counts update.
+
+No unexpected navigation to /community during replay; no double submits.
+
+Post publish
+5) Create a thread (no platform selected) → Publish → toast → post appears in feed immediately and persists on refresh.
+6) Creating with a platform still works.
+
+Profile persistence
+7) Complete profile in Welcome → header shows @handle → refresh page → header still shows @handle, “Complete your profile” is gone.
+8) /api/profile GET returns the saved handle and onboarding flag.
+
+D) Guardrails
+
+Minimal diffs.
+
+No redirects added.
+
+No schema changes unless you list the exact defect (field mismatch or policy) and WAIT for approval.
+
+Don’t touch admin, analytics, or unrelated routes.
+
+Deliverable now: return your plan for A–D (with file paths and the specific diffs you intend), then WAIT for my YES before making changes.
