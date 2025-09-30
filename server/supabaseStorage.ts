@@ -99,7 +99,6 @@ export class SupabaseStorage implements IStorage {
         category: post.tags?.[0] || 'general',
         platform_tags: post.platforms || [],
         image_urls: post.images || [],
-        file_urls: post.files || [],
         links: post.links || [],
         price: post.price || null,
         subtype: post.subtype || 'thread',
