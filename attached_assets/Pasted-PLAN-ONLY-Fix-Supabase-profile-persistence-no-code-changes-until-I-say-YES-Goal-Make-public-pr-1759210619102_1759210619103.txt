@@ -1,0 +1,84 @@
+PLAN ONLY — Fix Supabase profile persistence (no code changes until I say YES)
+
+Goal: Make public.profiles writes succeed so handles persist across refresh, and author bylines show @handle.
+
+Don’t touch: UI, routing, admin logic, styling, posts schema, or anything unrelated.
+
+What to inspect (read-only)
+
+server/supabaseClient.ts
+
+Confirm there is a supabaseAdmin client created with SUPABASE_SERVICE_ROLE_KEY (not the anon key).
+
+Environment
+
+Check Secrets: SUPABASE_SERVICE_ROLE_KEY exists and is non-empty.
+
+Confirm USE_SUPABASE_STORAGE=true is set.
+
+server/supabaseStorage.ts
+
+upsertProfile() and getProfile() use supabaseAdmin (service role), not the anon client.
+
+On error, the function should throw (no silent failures).
+
+Database
+
+public.profiles currently has RLS ENABLED and likely no policies. With service role, that’s fine; with anon, inserts fail.
+
+My proposed minimal fix (pick the first path that succeeds)
+
+Path A — Preferred (service role writes):
+
+If SUPABASE_SERVICE_ROLE_KEY is missing/blank, add it.
+
+Ensure supabaseAdmin uses that key.
+
+Keep RLS enabled; service role bypasses RLS.
+
+Add temporary logging in upsertProfile() to print error payloads if insert fails.
+
+Test: create account → set handle → SQL select * from public.profiles limit 5; should show the row.
+
+Path B — Temporary fallback (if service role not available today):
+
+Keep anon client, but disable RLS only on public.profiles:
+
+ALTER TABLE public.profiles DISABLE ROW LEVEL SECURITY;
+
+
+(Do not add any permissive policies that mention auth.uid() since auth schema isn’t present.)
+
+Test same as above.
+
+Note this is a temporary relaxation until service role is configured.
+
+Acceptance checks to run (after whichever path we implement)
+
+Create new account → set handle (e.g., testuserXYZ).
+
+Verify via SQL that public.profiles contains the row (handle, onboarding_complete=true).
+
+Refresh page: header shows @testuserXYZ (not user_xxxxx).
+
+Create a thread → feed byline shows @testuserXYZ; refresh → still @testuserXYZ.
+
+Existing soft-gate and onboarding modal behavior remain unchanged.
+
+Guardrails
+
+Minimal diffs.
+
+No schema drops.
+
+No UI changes.
+
+If anything fails, STOP and show the exact error text (from Supabase) and where it occurred.
+
+WAIT for my YES after you list:
+
+What you found (which client key was used),
+
+Which path (A or B) you propose to apply,
+
+The exact one-line code/SQL changes you intend to make.
