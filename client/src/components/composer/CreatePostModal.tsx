@@ -124,32 +124,25 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
   const uploadImages = async (files: File[]): Promise<string[]> => {
     // Request signed upload URLs from server
     const response = await apiRequest('POST', '/api/storage/sign-uploads', {
-      files: files.map(f => ({ 
-        name: f.name, 
-        type: f.type, 
-        size: f.size 
-      })),
+      files: files.map(f => ({ name: f.name, type: f.type, size: f.size }))
     });
     const { targets } = await response.json();
     
-    if (targets.length !== files.length) {
-      throw new Error('Server returned incorrect number of upload targets');
+    if (!Array.isArray(targets) || targets.length !== files.length) {
+      throw new Error('Server returned an invalid targets array');
     }
     
     // Upload each file using its signed URL
     const publicUrls: string[] = [];
     for (let i = 0; i < files.length; i++) {
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from('post-images')
         .uploadToSignedUrl(targets[i].path, targets[i].token, files[i]);
-      
       if (error) {
         throw new Error(`Upload failed for ${files[i].name}: ${error.message}`);
       }
-      
       publicUrls.push(targets[i].publicUrl);
     }
-    
     return publicUrls;
   };
 
@@ -251,6 +244,7 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
           poll_options: options,
         };
 
+        console.log('payload', pollData);
         await apiRequest('POST', '/api/posts', pollData);
       } else {
         // Upload images first and get URLs
@@ -277,6 +271,8 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
             return;
           }
         }
+
+        console.log('imageUrls at submit', imageUrls);
 
         // Create thread with image URLs only
         const postData = {
