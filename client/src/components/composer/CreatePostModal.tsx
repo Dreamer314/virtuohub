@@ -123,24 +123,13 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
   // Upload images to Supabase Storage using signed URLs
   const uploadImages = async (files: File[]): Promise<string[]> => {
     // Request signed upload URLs from server
-    const response = await fetch('/api/storage/sign-uploads', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-      body: JSON.stringify({
-        files: files.map(f => ({ 
-          name: f.name, 
-          type: f.type, 
-          size: f.size 
-        }))
-      })
+    const response = await apiRequest('POST', '/api/storage/sign-uploads', {
+      files: files.map(f => ({ 
+        name: f.name, 
+        type: f.type, 
+        size: f.size 
+      })),
     });
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'Failed to get upload URLs');
-    }
-    
     const { targets } = await response.json();
     
     if (targets.length !== files.length) {
