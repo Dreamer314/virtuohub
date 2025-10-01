@@ -1,0 +1,132 @@
+Prompt — “Stabilize Post Creation (Images + Polls)”
+
+Goal (do ONLY this):
+
+Make post creation work with client-side image upload to Supabase Storage (no base64 in the POST body).
+
+Make poll posts save and render correctly (persist subtype='poll' + poll_options[] and display vote buttons).
+
+Guardrails (must follow):
+
+Keep diffs minimal and scoped to the files below.
+
+Wait to list the exact files you will edit with a 1-line summary each. Do not make changes until I reply YES.
+
+Do not change routing, redirects, navbar styling, analytics, or any admin code.
+
+Do not add dependencies.
+
+Do not modify comments/threads features.
+
+Do not change database schema.
+
+What to implement (exactly)
+A) Image uploads (fix the “request entity too large” 413)
+
+Today, the composer tries to include file data in the POST body → server returns 413.
+Change: Upload images client-side to Supabase Storage first, then send only public URLs in the POST payload.
+
+Required behavior:
+
+Allow jpg/png/webp/gif, max 10MB per file, max 5 images.
+
+On failing validation, show a friendly toast:
+“Image is too large (max 10MB). Try a smaller file.”
+
+Use our existing supabase web client from client/src/lib/supabaseClient.ts.
+
+Bucket name: post-images. If it doesn’t exist, still implement the code; the upload call should gracefully surface a clear toast error (“Image upload failed. Please try again.”). Do not try to create the bucket in code.
+
+Upload path: posts/{userId}/{yyyymmdd}/{randomname.ext}.
+
+After upload, set each object to public and collect public URLs.
+
+In the POST /api/posts payload, include image_urls: string[] (URLs only). Never send raw file data.
+
+Where to wire:
+
+client/src/components/composer/CreatePostModal.tsx (or client/src/components/create-post-modal.tsx — whichever is actually used by the Community page).
+
+Replace any code that attaches file data to the POST body.
+
+Use a small helper (local function) called uploadImages(files: File[]): Promise<string[]> to return URLs and feed them to image_urls.
+
+Do not change the server’s 413 limits; we’re avoiding large requests by design.
+
+B) Poll posts
+
+Current issue: creating a poll doesn’t render as a poll; options not persisted.
+
+Do this:
+
+In the Create Poll flow (client/src/components/composer/CreatePostModal.tsx and/or client/src/components/composer/CreatePollModal.tsx), when the user selects Poll:
+
+Send subtype: 'poll'.
+
+Send poll_options: string[] with the non-empty option texts (trim whitespace, drop empties).
+
+Keep other fields unchanged (title, content, category, platform_tags, links, price).
+
+On the server side we already map poll_options → subtypeData; just ensure the client actually sends poll_options.
+
+Render:
+
+Confirm the poll card renders when post.subtype === 'poll'. If our PollCard already exists, make sure it reads from:
+
+post.subtype === 'poll', and
+
+post.subtypeData?.options or post.poll_options (normalize in the mapping if needed).
+
+If both are present, prefer subtypeData.options.
+
+Do not implement voting logic here—only ensure a poll renders with its options.
+
+Acceptance tests (the Agent must run and report PASS/FAIL for each)
+
+Text post with no files
+
+Publish → success toast, post appears in feed immediately, persists after refresh.
+
+Image post (one small image, e.g., ≤2MB jpg)
+
+Upload succeeds, publish works, and the image shows in feed + persists after refresh.
+
+Network panel: POST /api/posts body contains URLs only (no large base64).
+
+No 413 error.
+
+Oversized image (e.g., 15MB)
+
+Publish blocked client-side with toast: “Image is too large (max 10MB). Try a smaller file.”
+
+Poll post (two non-empty options)
+
+Publish → feed shows a poll post with the two options rendered as buttons (no vote needed yet).
+
+Refresh → still renders as a poll.
+
+Platform tags optional
+
+Creating a post with no platform selected still publishes and appears normally.
+
+Files you may touch (and nothing else)
+
+client/src/components/composer/CreatePostModal.tsx
+(and/or) client/src/components/create-post-modal.tsx — whichever powers the Community composer
+Change: upload images to Supabase Storage; send image_urls (URLs only); when building a poll, include subtype: 'poll' and poll_options: string[].
+
+client/src/components/composer/CreatePollModal.tsx (if present and used)
+Change: ensure it passes subtype and poll_options correctly to the same submit path.
+
+client/src/components/polls/PollCard.tsx (only if needed)
+Change: ensure it reads options from post.subtypeData?.options or post.poll_options and renders buttons; no voting logic changes.
+
+(Optional tiny util inside the modal file): a local uploadImages(files: File[]): Promise<string[]> helper that uses supabase from client/src/lib/supabaseClient.ts.
+
+Do not edit server files unless absolutely necessary. If you must, list the exact line and why before changing.
+
+Before you start
+
+List the exact files and the one-line change you’ll make in each.
+
+Wait for my YES. Then implement.
