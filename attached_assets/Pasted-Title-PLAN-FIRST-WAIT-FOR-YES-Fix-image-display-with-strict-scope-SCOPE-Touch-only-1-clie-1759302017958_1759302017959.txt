@@ -1,0 +1,45 @@
+Title: PLAN FIRST, WAIT FOR YES — Fix image display with strict scope
+
+SCOPE
+Touch only:
+1) client/src/components/composer/CreatePostModal.tsx
+2) client/src/components/cards/PostCard.tsx
+3) server/supabaseStorage.ts
+
+Do not touch any other files. If you previously added server/storageSetup.ts or edited server/index.ts for bucket init, propose a revert but do not change anything until I say YES.
+
+GOAL
+Make post images show in the Community feed. DB has public.posts.image_urls text[] set. Storage bucket and policies are done. Client already sends image_urls on create.
+
+FLOW (two step)
+Step 1 — PLAN ONLY. No edits yet.
+- Inspect current code.
+- Output a precise plan with:
+  a) The exact lines you will change in each allowed file.
+  b) Unified diff previews for each file.
+  c) A 3-item risk checklist.
+  d) A 4-step manual test checklist.
+- Then STOP and print: “WAITING FOR YES”
+
+Step 2 — Only if I reply YES.
+- Apply exactly the proposed changes. No extra edits. No formatting or lint changes outside touched lines.
+- Do not add files. Do not change deps. Do not change env. Do not modify routing, auth, styles, or server startup.
+- If reverting earlier scope creep is needed, revert only the specific lines you proposed.
+- After changes, output the final diffs and a short verification log of what you tested.
+
+TECH NOTES TO FOLLOW IN PLAN
+Server mapping:
+- Ensure post SELECT includes image_urls.
+- Map row.image_urls to images in the object returned by getPosts and getPost.
+- In createPost insert, include image_urls: Array.isArray((post as any).image_urls) ? (post as any).image_urls : [].
+
+Card render:
+- In PostCard, derive const images from post.images, with a fallback to post.image_urls.
+- Render first image if present.
+
+Composer payload:
+- Ensure payload sends image_urls: string[] and links is always an array.
+
+If any change outside the 3 files is truly required, STOP and explain why, with a minimal alternative that stays within scope.
+
+Now produce Step 1 only.
