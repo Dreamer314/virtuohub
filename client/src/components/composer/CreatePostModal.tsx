@@ -266,6 +266,7 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
       } else {
         // Upload images first and get URLs
         let imageUrls: string[] = [];
+        console.log('imageFiles at submit', imageFiles.length);
         if (imageFiles.length > 0) {
           if (!user) {
             toast({
@@ -652,7 +653,7 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
                   <span className="text-xs text-gray-500">Upload</span>
                   <input
                     type="file"
-                    accept=".jpg,.jpeg,.png,.webp,.gif"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
                     multiple
                     className="hidden"
                     onChange={handleImageUpload}
