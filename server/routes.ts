@@ -73,6 +73,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const links = Array.isArray(raw.links) ? raw.links : [];
     const files = Array.isArray(raw.files) ? raw.files : [];
     const images = Array.isArray(raw.images) ? raw.images : [];
+    const imageUrls = Array.isArray(raw.image_urls) ? raw.image_urls : [];
     const price = raw.price ?? null;
     const subtype = (raw.subtype ?? 'thread').trim();
     const subtypeData = raw.subtypeData ?? null;
@@ -81,6 +82,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!title || !content) {
       return res.status(400).json({ error: 'TITLE_AND_CONTENT_REQUIRED' });
     }
+
+    console.log('createPost payload (server):', {
+      subtype,
+      imageCount: imageUrls.length
+    });
 
     try {
       const post = await storage.createPost({
@@ -94,8 +100,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         images,
         price,
         subtype,
-        subtypeData
-      });
+        subtypeData,
+        image_urls: subtype === 'poll' ? [] : imageUrls,
+      } as any);
 
       return res.status(201).json(post);
     } catch (e: any) {

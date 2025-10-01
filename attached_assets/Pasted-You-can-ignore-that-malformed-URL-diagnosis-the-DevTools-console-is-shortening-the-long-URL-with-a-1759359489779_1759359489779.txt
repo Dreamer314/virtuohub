@@ -1,0 +1,67 @@
+You can ignore that “malformed URL” diagnosis—the DevTools console is shortening the long URL with an ellipsis. That v_… you see is just v1/object/public/post-images/... truncated by the console.What the logs prove is:
+
+the client uploads OK ✅
+
+image_urls is included in the payload ✅
+
+but the DB row still has image_urls = [] ❌
+
+So the bug is on the server: the POST /api/posts route is not passing image_urls through to the storage layer.
+
+Goal (tiny server fix): New posts are created with image_urls = [] even though the client sends image_urls. Please patch the existing POST /api/posts handler in server/routes.ts to forward req.body.image_urls into the payload passed to createPost.
+
+Scope/Guardrails:
+
+Touch only the POST /api/posts handler in server/routes.ts.
+
+Do not remove or refactor other logic, middleware, or routes.
+
+Do not change the signed upload route, CSP, or schema.
+
+Keep existing fields and behavior exactly as-is; just add the image_urls pass-through.
+
+Change to implement (minimal, additive):
+
+In server/routes.ts, inside POST /api/posts, before calling createPost, add:
+
+const body = req.body ?? {};
+const imageUrls = Array.isArray(body.image_urls) ? body.image_urls : [];
+
+
+When building the object passed to createPost, include image_urls for thread posts:
+
+// existing payload object … add this one line without removing anything:
+image_urls: body.subtype === 'poll' ? [] : imageUrls,
+
+
+(Polls should keep storing no images; threads should include the array.)
+
+Add a temporary log to verify:
+
+console.log('createPost payload (server):', {
+  subtype: body.subtype,
+  imageCount: imageUrls.length
+});
+
+
+Do not change server/supabaseStorage.ts unless you find it dropping the field. If you do touch it, only ensure it reads image_urls from the payload (it already should).
+
+Acceptance test:
+
+Create a thread with 1 image.
+
+Confirm the request body to /api/posts has image_urls: ["https://.../post-images/...jpg"].
+
+Run:
+
+SELECT id, title, image_urls
+FROM public.posts
+ORDER BY created_at DESC
+LIMIT 1;
+
+
+→ image_urls should contain that URL (length 1).
+
+The feed should render the image.
+
+Please keep the diff minimal (a few lines). No unrelated deletions or refactors.
