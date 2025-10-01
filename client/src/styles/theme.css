@@ -67,7 +67,7 @@
   /* Extended VH Tokens */
   --vh-bg-primary: hsl(210, 11%, 8%);
   --vh-bg-secondary: hsl(210, 11%, 11%);
-  --vh-bg-tertiary: hsl(210, 11%, 18%);
+  --vh-bg-tertiary: hsl(0, 0%, 18%);
   --vh-bg-hover: hsl(210, 11%, 21%);
   --vh-bg-active: hsl(210, 11%, 25%);
   --vh-bg-selected: hsl(263, 60%, 16%);
