@@ -98,10 +98,13 @@ export class SupabaseStorage implements IStorage {
         content: post.body,
         category: post.tags?.[0] || 'general',
         platform_tags: post.platforms || [],
-        links: post.links || [],
-        price: post.price || null,
+        links: Array.isArray((post as any).links) ? (post as any).links : [],
+        price: (post as any).price ?? null,
         subtype: post.subtype || 'thread',
-        poll_options: (post.subtypeData as any)?.options?.map((o: any) => o.text) || null,
+        poll_options: post.subtype === 'poll'
+          ? Array.isArray((post as any).poll_options) ? (post as any).poll_options : null
+          : null,
+        image_urls: Array.isArray((post as any).image_urls) ? (post as any).image_urls : [],
       })
       .select()
       .single();

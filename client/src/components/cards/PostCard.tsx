@@ -155,6 +155,24 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                     />
                   </div>
                 )}
+                
+                {/* Images from Supabase Storage */}
+                {Array.isArray(post.images) && post.images.length > 0 && (
+                  <div className="mb-3 rounded-vh-lg overflow-hidden">
+                    <img
+                      src={post.images[0]}
+                      alt={post.title || 'post image'}
+                      className="w-full h-auto object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
+                      data-testid={`storage-image-${post.id}`}
+                      loading="lazy"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setIsImageViewerOpen(true);
+                      }}
+                    />
+                  </div>
+                )}
               </Link>
             ) : (
               <div className="mb-3">
@@ -183,6 +201,24 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                       priority={true}
                       className="w-full h-auto max-h-96 object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
                       data-testid={`image-${post.id}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setIsImageViewerOpen(true);
+                      }}
+                    />
+                  </div>
+                )}
+                
+                {/* Images from Supabase Storage */}
+                {Array.isArray(post.images) && post.images.length > 0 && (
+                  <div className="mt-4 rounded-vh-lg overflow-hidden">
+                    <img
+                      src={post.images[0]}
+                      alt={post.title || 'post image'}
+                      className="w-full h-auto object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
+                      data-testid={`storage-image-${post.id}`}
+                      loading="lazy"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();

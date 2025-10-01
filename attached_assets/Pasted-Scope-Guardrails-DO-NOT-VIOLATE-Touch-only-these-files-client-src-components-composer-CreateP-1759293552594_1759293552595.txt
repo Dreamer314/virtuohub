@@ -1,0 +1,225 @@
+Scope & Guardrails (DO NOT VIOLATE)
+
+Touch only these files:
+
+client/src/components/composer/CreatePostModal.tsx
+
+client/src/components/cards/PostCard.tsx
+
+server/supabaseStorage.ts (or whichever server storage file implements createPost, getPosts, getPost)
+
+Do not modify routing, header, auth, admin, styles, or any unrelated files.
+
+Do not delete existing logic; only add what’s needed.
+
+Keep all existing features working.
+
+When done, list exactly what changed and show diffs.
+
+What to Implement
+1) Client: Upload images to Supabase Storage before posting
+
+File: client/src/components/composer/CreatePostModal.tsx
+
+Add a helper that uploads selected images to the Storage bucket post-images and returns public URLs.
+
+Validate client-side:
+
+Types allowed: image/jpeg, image/png, image/webp, image/gif
+
+Max size per file: 10MB
+
+Max count: 5
+
+On successful upload, send only image_urls: string[] in the /api/posts body (no base64).
+
+For polls, send subtype: 'poll' and poll_options: string[] (trim non-empty options).
+
+Show friendly toasts for validation failures (size/type/count) and for upload errors.
+
+Exact code to add/adjust (pseudo-structure; integrate into existing component):
+
+// at top of file
+import { supabase } from '@/lib/supabaseClient';
+
+// helper inside the component file (not exported)
+async function uploadImagesToSupabase(files: File[], userId: string): Promise<string[]> {
+  const MAX_MB = 10;
+  const ALLOWED = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif']);
+
+  const bucket = supabase.storage.from('post-images');
+  const urls: string[] = [];
+
+  for (const file of files) {
+    if (!ALLOWED.has(file.type)) {
+      throw new Error('Invalid image type. Use JPG, PNG, WEBP, or GIF.');
+    }
+    if (file.size > MAX_MB * 1024 * 1024) {
+      throw new Error(`Image is too large (max ${MAX_MB}MB). Try a smaller file.`);
+    }
+    const ext = file.name.split('.').pop() || 'jpg';
+    const path = `posts/${userId}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+
+    const { error: uploadErr } = await bucket.upload(path, file, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: file.type,
+    });
+    if (uploadErr) throw new Error(`Image upload failed: ${uploadErr.message}`);
+
+    const { data: pub } = bucket.getPublicUrl(path);
+    if (!pub?.publicUrl) throw new Error('Could not obtain public URL for image.');
+    urls.push(pub.publicUrl);
+  }
+
+  return urls;
+}
+
+
+In your publish/submit handler:
+
+// Pseudocode for your onSubmit handler; integrate into existing logic
+const files = selectedFiles /* however your component tracks files */;
+let imageUrls: string[] = [];
+
+if (files && files.length > 0) {
+  if (files.length > 5) {
+    toast({ description: 'Too many images. Max 5.' });
+    return;
+  }
+  if (!user?.id) {
+    toast({ description: 'You need to sign in to upload images.' });
+    return;
+  }
+  try {
+    imageUrls = await uploadImagesToSupabase(files, user.id);
+  } catch (e: any) {
+    toast({ description: e?.message || 'Image upload failed. Please try again.' });
+    return;
+  }
+}
+
+// Build request payload
+const payload: any = {
+  title,
+  content: body,
+  category,                 // keep your existing mapping
+  platform_tags: platforms, // array of strings or empty array
+  links: links ?? [],       // ALWAYS send an array (even if empty)
+  price: price ?? null,     // send null if not used
+  subtype: isPoll ? 'poll' : 'thread',
+  poll_options: isPoll ? pollOptions.filter(o => o && o.trim().length > 0) : null,
+  image_urls: imageUrls,    // <-- the public URLs from Storage
+};
+
+// then post as you already do:
+await apiRequest('POST', '/api/posts', payload);
+
+2) Client: Display images if present
+
+File: client/src/components/cards/PostCard.tsx
+
+Ensure the card renders the first image when post.images?.length > 0.
+
+Keep existing layout; just add a conditional <img> block using the URL.
+
+Example (add a simple conditional near the content):
+
+{Array.isArray(post.images) && post.images.length > 0 && (
+  <div className="mt-3">
+    <img
+      src={post.images[0]}
+      alt={post.title || 'post image'}
+      className="rounded-md w-full h-auto object-cover"
+      loading="lazy"
+    />
+  </div>
+)}
+
+
+Note: Our server mapping (below) sets post.images from DB image_urls, so the card only needs to read post.images.
+
+3) Server: Accept image_urls and map them out as images
+
+File: server/supabaseStorage.ts
+(If your storage wrapper has a different filename, use that.)
+
+In createPost, include image_urls in the insert (default to [] if missing).
+
+In the post mappers (getPosts, getPost, mapping helper), return images: data.image_urls || [].
+
+Ensure links is always an array (empty array if not provided).
+
+Ensure poll_options is null for threads and an array for polls.
+
+Exact adjustments to make (keep everything else unchanged):
+
+// In createPost insert:
+const { data, error } = await supabaseAdmin
+  .from('posts')
+  .insert({
+    author_id: post.authorId,
+    title: post.title,
+    content: post.body,
+    category: post.tags?.[0] || post.category || 'general',
+    platform_tags: post.platforms ?? [],
+    links: Array.isArray((post as any).links) ? (post as any).links : [],
+    price: (post as any).price ?? null,
+    subtype: post.subtype || 'thread',
+    poll_options: post.subtype === 'poll'
+      ? Array.isArray((post as any).poll_options) ? (post as any).poll_options : null
+      : null,
+    image_urls: Array.isArray((post as any).image_urls) ? (post as any).image_urls : [],
+  })
+  .select()
+  .single();
+
+// In your mapping helper used by getPosts/getPost:
+return {
+  id: data.id,
+  authorId: data.author_id,
+  title: data.title,
+  summary: null,
+  body: data.content,
+  tags: [data.category].filter(Boolean),
+  platforms: data.platform_tags || [],
+  imageUrl: '', // keep legacy field if present in types
+  images: data.image_urls || [],               // <-- important
+  files: data.file_urls || [],
+  links: data.links || [],
+  price: data.price ?? '',
+  status: 'published',
+  subtype: data.subtype || 'thread',
+  subtypeData: data.poll_options
+    ? { options: data.poll_options.map((text: string) => ({ text, votes: 0, percentage: 0 })) }
+    : null,
+  likes: data.likes || 0,
+  comments: data.comments || 0,
+  shares: data.shares || 0,
+  views: 0,
+  createdAt: new Date(data.created_at),
+  updatedAt: new Date(data.updated_at || data.created_at),
+  author: /* keep your existing author stitching */
+};
+
+One-time database check (no destructive changes)
+
+In the Supabase SQL editor, run these additive statements only if needed:
+
+-- Make sure the 'post-images' bucket exists and is public
+select storage.create_bucket('post-images', public => true);
+
+-- Open public read
+create policy if not exists "Public read post-images"
+on storage.objects for select
+to public
+using (bucket_id = 'post-images');
+
+-- Allow authenticated users to upload to this bucket
+create policy if not exists "Authenticated upload post-images"
+on storage.objects for insert
+to authenticated
+with check (bucket_id = 'post-images');
+
+
+You already have image_urls on public.posts. No further table changes are needed.
