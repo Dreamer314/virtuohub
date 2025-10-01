@@ -1,0 +1,72 @@
+Title: PLAN FIRST, WAIT FOR YES — Fix create-post payload to send image_urls so images appear in the feed
+
+Problem we are fixing
+
+Uploads succeed and we receive Supabase public URLs.
+
+The network request for POST /api/posts shows the client sending images or imageUrls.
+
+The server only reads image_urls and ignores images or imageUrls.
+
+Result: image_urls is saved as an empty array, so the community feed does not render images.
+
+Goal
+Always send image_urls: string[] in every create-post submit branch, and never send images or imageUrls. Keep all other behavior and validations unchanged.
+
+Scope
+Touch only:
+
+client/src/components/composer/CreatePostModal.tsx
+
+Do not modify server files, routes, storage, styles, routing, auth, or unrelated components. Do not refactor outside of what is required for this fix.
+
+STEP 1 — PLAN ONLY
+
+Inspect CreatePostModal.tsx and list all submit branches that create a post and call apiRequest('POST', '/api/posts', postData). For example, a normal post with subtype thread, and if present a post with subtype poll. Report the branches you find and where the payload is built.
+
+For each branch:
+
+Confirm that when imageFiles.length > 0 we already call the upload step and get an array of public URLs, usually in a variable like imageUrls.
+
+Update the payload to use image_urls: imageUrls.
+
+Remove any images or imageUrls properties from the payload object.
+
+Keep all other properties the same. Keep arrays and defaults: platforms as an array, links as an array, price defaulting to an empty string or null, poll_options only for polls, subtype unchanged, title, content or body, category.
+
+Add a debug line just before apiRequest in each branch:
+
+console.log('payload', postData);
+
+Provide a unified diff for CreatePostModal.tsx only. Do not apply yet. Stop and print: WAITING FOR YES.
+
+STEP 2 — APPLY AFTER APPROVAL
+After I say YES, apply exactly those changes.
+
+Success criteria
+
+In DevTools:
+
+POST /api/storage/sign-uploads returns 200 and signed uploads run.
+
+POST /api/posts shows image_urls: ["https://<supabase>/storage/v1/object/public/post-images/..."] in the request payload.
+
+In SQL:
+
+SELECT id, title, image_urls
+FROM public.posts
+ORDER BY created_at DESC
+LIMIT 5;
+
+
+The newest row has a non empty image_urls.
+
+The community feed renders the image for the new post.
+
+Notes
+
+If there is no poll path, say so and patch only the thread path.
+
+Do not change validation, toasts, or unrelated logic.
+
+Signed upload already uses apiRequest; leave that intact.
