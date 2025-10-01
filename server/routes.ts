@@ -699,6 +699,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Sign upload URLs for post images
+  app.post("/api/storage/sign-uploads", validateSession, async (req, res) => {
+    try {
+      const userId = req.user?.id;
+      if (!userId) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      const { files } = req.body;
+      
+      // Validate request
+      if (!Array.isArray(files)) {
+        return res.status(400).json({ message: "Invalid request: files array required" });
+      }
+      
+      if (files.length > 5) {
+        return res.status(400).json({ message: "Maximum 5 files allowed" });
+      }
+      
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      
+      // Validate each file
+      for (const file of files) {
+        if (!allowedTypes.includes(file.type)) {
+          return res.status(400).json({ 
+            message: `Invalid file type: ${file.type}. Allowed: jpeg, png, webp, gif` 
+          });
+        }
+        if (file.size && file.size > maxSize) {
+          return res.status(400).json({ 
+            message: `File too large: ${file.name}. Max 10MB` 
+          });
+        }
+      }
+      
+      // Generate signed upload URLs
+      const targets = [];
+      const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+      
+      for (const file of files) {
+        const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+        const randomId = Math.random().toString(36).substring(2, 15);
+        const path = `posts/${userId}/${dateStr}/${randomId}.${ext}`;
+        
+        // Create signed upload URL
+        const { data: signedData, error: signError } = await supabaseAdmin.storage
+          .from('post-images')
+          .createSignedUploadUrl(path);
+        
+        if (signError) {
+          throw new Error(`Failed to create signed URL: ${signError.message}`);
+        }
+
+        if (!signedData?.token) {
+          throw new Error('No upload token returned from storage');
+        }
+        
+        // Get public URL for this path
+        const { data: { publicUrl } } = supabaseAdmin.storage
+          .from('post-images')
+          .getPublicUrl(path);
+        
+        targets.push({
+          path,
+          token: signedData.token,
+          publicUrl
+        });
+      }
+      
+      res.json({ targets });
+    } catch (error: any) {
+      console.error('Sign uploads error:', error);
+      res.status(500).json({ 
+        message: "Failed to create signed upload URLs",
+        error: error.message 
+      });
+    }
+  });
+
   // Profile upsert endpoint for Supabase Auth integration
   // CRITICAL: Only creates profile if it doesn't exist. Never overwrites existing data.
   app.post("/api/profile-upsert", async (req, res) => {

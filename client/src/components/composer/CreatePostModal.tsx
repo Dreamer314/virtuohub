@@ -120,38 +120,48 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
     form.setValue('links', validLinks);
   };
 
-  // Upload images to Supabase Storage and return public URLs
+  // Upload images to Supabase Storage using signed URLs
   const uploadImages = async (files: File[]): Promise<string[]> => {
-    const urls: string[] = [];
-    const userId = user?.id || 'anonymous';
-    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
-
-    for (const file of files) {
-      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-      const randomId = Math.random().toString(36).substring(2, 15);
-      const path = `posts/${userId}/${dateStr}/${randomId}.${ext}`;
-
+    // Request signed upload URLs from server
+    const response = await fetch('/api/storage/sign-uploads', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({
+        files: files.map(f => ({ 
+          name: f.name, 
+          type: f.type, 
+          size: f.size 
+        }))
+      })
+    });
+    
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to get upload URLs');
+    }
+    
+    const { targets } = await response.json();
+    
+    if (targets.length !== files.length) {
+      throw new Error('Server returned incorrect number of upload targets');
+    }
+    
+    // Upload each file using its signed URL
+    const publicUrls: string[] = [];
+    for (let i = 0; i < files.length; i++) {
       const { data, error } = await supabase.storage
         .from('post-images')
-        .upload(path, file, { upsert: false });
-
+        .uploadToSignedUrl(targets[i].path, targets[i].token, files[i]);
+      
       if (error) {
-        throw new Error(error.message);
+        throw new Error(`Upload failed for ${files[i].name}: ${error.message}`);
       }
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('post-images')
-        .getPublicUrl(path);
-
-      if (!publicUrl) {
-        throw new Error('Could not obtain public URL');
-      }
-
-      urls.push(publicUrl);
+      
+      publicUrls.push(targets[i].publicUrl);
     }
-
-    return urls;
+    
+    return publicUrls;
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
