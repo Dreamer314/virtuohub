@@ -16,12 +16,12 @@ const stripe = new Stripe(process.env.TESTING_STRIPE_SECRET_KEY, {
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  
+
   // Get all posts with optional filtering
   app.get("/api/posts", async (req, res) => {
     try {
       const { category, platforms, authorId } = req.query;
-      
+
       const filters: any = {};
       if (category && category !== 'All') {
         filters.category = category as string;
@@ -33,7 +33,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (authorId) {
         filters.authorId = authorId as string;
       }
-      
+
       const posts = await storage.getPosts(filters);
       res.json(posts);
     } catch (error) {
@@ -55,54 +55,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Create a new post
-  app.post("/api/posts", validateSession, async (req, res) => {
-    // --- begin normalization shim ---
-    const raw = req.body ?? {};
-    const title = (raw.title ?? '').trim();
-
-    // accept either `content` or `body`
-    const content = (raw.content ?? raw.body ?? '').trim();
-
-    // accept either `platforms` or `platform_tags`
-    const platforms = Array.isArray(raw.platforms) ? raw.platforms
-                      : Array.isArray(raw.platform_tags) ? raw.platform_tags
-                      : [];
-
-    // other optional fields with safe defaults
-    const category = (raw.category ?? 'general').trim();
-    const links = Array.isArray(raw.links) ? raw.links : [];
-    const files = Array.isArray(raw.files) ? raw.files : [];
-    const images = Array.isArray(raw.images) ? raw.images : [];
-    const price = raw.price ?? null;
-    const subtype = (raw.subtype ?? 'thread').trim();
-    const subtypeData = raw.subtypeData ?? null;
-    // --- end normalization shim ---
-
-    if (!title || !content) {
-      return res.status(400).json({ error: 'TITLE_AND_CONTENT_REQUIRED' });
-    }
-
+  app.post('/api/posts', async (req, res) => {
     try {
-      const post = await storage.createPost({
-        authorId: req.user!.id,
+      // --- auth: extract user id from common locations ---
+      const userId =
+        // express locals (some middlewares attach here)
+        (res.locals?.user && (res.locals.user.id || res.locals.user.user_id)) ||
+        // passport-style
+        (req as any).user?.id ||
+        // custom
+        (req as any).auth?.user_id ||
+        // header-based fallback (if you already set it upstream)
+        (req as any).userId;
+
+      if (!userId) {
+        // If no user ID found from other methods, try validateSession logic
+        const authHeader = req.headers.authorization;
+        const token = authHeader?.replace('Bearer ', '');
+        if (token) {
+          const { data: { user } } = await supabase.auth.getUser(token);
+          if (user) {
+            (req as any).user = user;
+          } else {
+            return res.status(401).json({ error: 'UNAUTHORIZED' });
+          }
+        } else {
+          return res.status(401).json({ error: 'UNAUTHORIZED' });
+        }
+      }
+
+      // --- payload ---
+      const {
+        title,
+        content,            // body text
+        category,           // string category
+        platform_tags = [], // string[]
+        image_urls = [],    // string[] of public URLs
+        links = [],         // string[]
+        price = null,       // string | null
+        subtype = 'thread', // 'thread' | 'poll'
+        poll_options = null // string[] | null
+      } = (req.body ?? {}) as any;
+
+      // --- basic validation (keep this light; UI already validates) ---
+      if (!title || !content || !category) {
+        return res
+          .status(400)
+          .json({ error: 'INVALID_PAYLOAD', detail: 'title, content, and category are required' });
+      }
+
+      // --- create post via storage (SupabaseStorage implements this) ---
+      const created = await storage.createPost({
+        authorId: (req as any).user.id,
         title,
         body: content,
         tags: [category],
-        platforms,
+        platforms: platform_tags,
+        image_urls,
         links,
-        files,
-        images,
         price,
         subtype,
-        subtypeData
-      });
+        poll_options
+      } as any);
 
-      return res.status(201).json(post);
+      return res.status(201).json(created);
     } catch (e: any) {
-      console.error('POST /api/posts failed:', e?.message || e);
-      return res.status(500).json({
+      return res.status(400).json({
         error: 'CREATE_POST_FAILED',
-        detail: e?.message || String(e)
+        detail: e?.message ?? 'Unknown error'
       });
     }
   });
@@ -123,7 +143,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { userId } = req.params;
       const { postId } = req.body;
-      
+
       const savedPost = await storage.savePost(userId, postId);
       res.status(201).json(savedPost);
     } catch (error) {
@@ -135,7 +155,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/users/:userId/saved-posts/:postId", async (req, res) => {
     try {
       const { userId, postId } = req.params;
-      
+
       const success = await storage.unsavePost(userId, postId);
       if (success) {
         res.status(200).json({ message: "Post unsaved successfully" });
@@ -203,17 +223,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { postId } = req.params;
       const { optionIndex } = req.body;
-      
+
       if (typeof optionIndex !== 'number' || optionIndex < 0) {
         return res.status(400).json({ message: "Invalid option index" });
       }
-      
+
       const updatedPost = await storage.voteOnPoll(postId, optionIndex);
-      
+
       if (!updatedPost) {
         return res.status(404).json({ message: "Poll not found or invalid" });
       }
-      
+
       res.json(updatedPost);
     } catch (error) {
       res.status(500).json({ message: "Failed to vote on poll" });
@@ -221,7 +241,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Article routes
-  
+
   // Get article by slug
   app.get("/api/articles/:slug", async (req, res) => {
     try {
@@ -262,14 +282,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { content, parentId } = req.body;
       // Use authenticated user ID from session
       const authorId = req.user!.id;
-      
+
       const commentData = {
         articleId,
         authorId,
         content,
         parentId: parentId || null,
       };
-      
+
       const comment = await storage.createComment(commentData);
       res.status(201).json(comment);
     } catch (error) {
@@ -284,19 +304,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { content, parentId } = req.body;
       // Use authenticated user ID from session
       const authorId = req.user!.id;
-      
+
       const commentData = {
         postId,
         authorId,
         content,
         parentId: parentId || null,
       };
-      
+
       const comment = await storage.createComment(commentData);
-      
+
       // Increment comment count on the post
       await storage.addComment(postId);
-      
+
       res.status(201).json(comment);
     } catch (error) {
       console.error("Error creating post comment:", error);
@@ -360,10 +380,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { pollId } = req.params;
       const userId = req.body.userId || 'user1'; // Default user for demo
-      
+
       // In a real app, this would update database
       console.log(`User ${userId} liked poll ${pollId}`);
-      
+
       res.json({ 
         success: true, 
         message: 'Poll liked successfully',
@@ -380,9 +400,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { pollId } = req.params;
       const userId = req.body.userId || 'user1';
-      
+
       console.log(`User ${userId} saved poll ${pollId}`);
-      
+
       res.json({ 
         success: true, 
         message: 'Poll saved to your collection',
@@ -400,11 +420,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { pollId } = req.params;
       const userId = req.body.userId || 'user1';
       const { shareMethod } = req.body; // 'copy', 'email', 'social'
-      
+
       console.log(`User ${userId} shared poll ${pollId} via ${shareMethod}`);
-      
+
       const shareUrl = `${req.protocol}://${req.get('host')}/pulse?poll=${pollId}`;
-      
+
       res.json({ 
         success: true, 
         message: 'Poll shared successfully',
@@ -425,14 +445,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { reportId } = req.params;
       const userId = req.body.userId || 'user1';
-      
+
       console.log(`User ${userId} downloading report ${reportId}`);
-      
+
       // In a real app, this would:
       // 1. Check user permissions
       // 2. Log the download
       // 3. Generate/serve the actual file
-      
+
       res.json({
         success: true,
         message: 'Download initiated',
@@ -452,12 +472,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/pulse/reports/:reportId/purchase", async (req, res) => {
     try {
       const { reportId } = req.params;
-      
+
       // Get authenticated user from session
       const authHeader = req.headers.authorization;
       const token = authHeader?.replace('Bearer ', '');
       let userId = null;
-      
+
       if (token) {
         try {
           const { data: { user } } = await supabase.auth.getUser(token);
@@ -466,30 +486,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.warn('Auth verification failed:', authError);
         }
       }
-      
+
       // Require authentication for purchases
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
-      
+
       // Fetch report from database to get server-side price
       const { data: report, error: reportError } = await supabase
         .from('pulse_reports')
         .select('id, title, price_cents, access_level')
         .eq('id', reportId)
         .single();
-      
+
       if (reportError || !report) {
         return res.status(404).json({ message: "Report not found" });
       }
-      
+
       if (report.access_level !== 'paid' || !report.price_cents) {
         return res.status(400).json({ message: "Report is not available for purchase" });
       }
-      
+
       // Use server-side price, not client-provided amount
       const amount = report.price_cents;
-      
+
       // Create payment intent with metadata including user ID
       const paymentIntent = await stripe.paymentIntents.create({
         amount: Math.round(amount),
@@ -503,7 +523,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           enabled: true,
         },
       });
-      
+
       res.json({ 
         clientSecret: paymentIntent.client_secret,
         paymentIntentId: paymentIntent.id
@@ -521,12 +541,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { reportId } = req.params;
       const { paymentIntentId } = req.body;
-      
+
       // Get authenticated user from session
       const authHeader = req.headers.authorization;
       const token = authHeader?.replace('Bearer ', '');
       let userId = null;
-      
+
       if (token) {
         try {
           const { data: { user } } = await supabase.auth.getUser(token);
@@ -535,7 +555,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.warn('Auth verification failed:', authError);
         }
       }
-      
+
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
@@ -546,7 +566,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Verify the payment intent exists and is successful
       const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-      
+
       if (paymentIntent.status !== 'succeeded') {
         return res.status(400).json({ message: "Payment not successful" });
       }
@@ -591,7 +611,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { reportId } = req.params;
       const { userId } = req.query;
-      
+
       if (!userId) {
         return res.status(400).json({ message: "userId parameter required" });
       }
@@ -627,12 +647,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/pulse/reports/:reportId/purchase-status", async (req, res) => {
     try {
       const { reportId } = req.params;
-      
+
       // Get authenticated user from session
       const authHeader = req.headers.authorization;
       const token = authHeader?.replace('Bearer ', '');
       let userId = null;
-      
+
       if (token) {
         try {
           const { data: { user } } = await supabase.auth.getUser(token);
@@ -641,12 +661,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.warn('Auth verification failed:', authError);
         }
       }
-      
+
       // Require authentication for purchases
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
-      
+
       const { data, error } = await supabase
         .from('pulse_report_purchases')
         .select('*')
@@ -654,12 +674,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .eq('user_id', userId)
         .eq('status', 'completed')
         .single();
-      
+
       if (error && error.code !== 'PGRST116') { // PGRST116 = no rows returned
         console.error('Error checking purchase status:', error);
         return res.status(500).json({ message: "Error checking purchase status" });
       }
-      
+
       res.json({ 
         hasPurchased: !!data,
         purchase: data || null
@@ -675,14 +695,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { reportId } = req.params;
       const userId = req.body.userId || 'user1';
       const { organization, reason } = req.body;
-      
+
       console.log(`User ${userId} requesting access to report ${reportId} from ${organization}`);
-      
+
       // In a real app, this would:
       // 1. Save access request to database
       // 2. Send notification to admin team
       // 3. Send confirmation email to requester
-      
+
       res.json({
         success: true,
         message: 'Access request submitted successfully. Our team will review and contact you within 2-3 business days.',
@@ -706,24 +726,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // TODO: Task 8 - Add proper Supabase session validation here
       // Currently trusting client-provided id - this is a security risk that needs to be fixed
       const { id, display_name, avatar_url } = req.body;
-      
+
       // Check if profile already exists
       const existing = await storage.getProfile(id);
       if (existing) {
         console.log('[POST /api/profile-upsert] Profile already exists, skipping upsert to preserve data');
         return res.json({ success: true, profile: existing });
       }
-      
+
       // Only create new profile if it doesn't exist
       console.log('[POST /api/profile-upsert] Creating new profile for id:', id);
-      
+
       // Validate using Zod schema
       const profileData = insertProfileSchema.parse({
         id,
         displayName: display_name || null,
         avatarUrl: avatar_url || null,
       });
-      
+
       const profile = await storage.upsertProfile(profileData);
       res.json({ success: true, profile });
     } catch (error) {
@@ -753,11 +773,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/profile/handle/check", async (req, res) => {
     try {
       const { handle } = req.body;
-      
+
       if (!handle || typeof handle !== 'string') {
         return res.status(400).json({ message: "Handle is required" });
       }
-      
+
       // Validate handle format: letters, numbers, underscore, 3-20 chars
       const handleRegex = /^[a-zA-Z0-9_]{3,20}$/;
       if (!handleRegex.test(handle)) {
@@ -765,7 +785,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           message: "Handle must be 3-20 characters and contain only letters, numbers, and underscores" 
         });
       }
-      
+
       const available = await storage.isHandleAvailable(handle);
       res.json({ available });
     } catch (error) {
@@ -778,7 +798,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/profile/update", validateSession, async (req, res) => {
     try {
       const { handle, displayName, avatarUrl, role, onboardingComplete } = req.body;
-      
+
       // Validate handle if provided
       if (handle) {
         const handleRegex = /^[a-zA-Z0-9_]{3,20}$/;
@@ -787,7 +807,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             message: "Handle must be 3-20 characters and contain only letters, numbers, and underscores" 
           });
         }
-        
+
         const available = await storage.isHandleAvailable(handle);
         if (!available) {
           return res.status(400).json({ message: "Handle is already taken" });
@@ -796,7 +816,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get current profile to preserve existing data
       const currentProfile = await storage.getProfile(req.user!.id);
-      
+
       const updateData = {
         id: req.user!.id,
         handle: handle ?? currentProfile?.handle,
@@ -949,12 +969,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/pulse/reports/:reportId/download", async (req, res) => {
     try {
       const { reportId } = req.params;
-      
+
       // Get authenticated user from session
       const authHeader = req.headers.authorization;
       const token = authHeader?.replace('Bearer ', '');
       let userId = null;
-      
+
       if (token) {
         try {
           const { data: { user } } = await supabase.auth.getUser(token);
@@ -963,7 +983,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           console.warn('Auth verification failed:', authError);
         }
       }
-      
+
       // Require authentication for purchases
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
