@@ -8,7 +8,10 @@ import { useToast } from "@/hooks/use-toast";
 type Poll = {
   id: string;
   question: string;
-  options: string[] | null;          // array-of-labels schema
+  options: string[] | null;          // array-of-labels schema (poll_options)
+  subtypeData?: {                    // alternative schema
+    options?: Array<{ label: string }>;
+  };
   status: "active" | "closed";
 };
 
@@ -39,7 +42,13 @@ export default function PollCard({
   onChanged?: () => void;
   compact?: boolean;
 }) {
-  const baseLabels = useMemo(() => (poll.options ?? []).filter(Boolean), [poll.options]);
+  // Normalize poll options: prefer subtypeData.options, fallback to poll.options
+  const baseLabels = useMemo(() => {
+    if (poll.subtypeData?.options && poll.subtypeData.options.length > 0) {
+      return poll.subtypeData.options.map(opt => opt.label).filter(Boolean);
+    }
+    return (poll.options ?? []).filter(Boolean);
+  }, [poll.options, poll.subtypeData]);
   const isClosed = poll.status === "closed";
   const [labels, setLabels] = useState<string[]>(baseLabels);
 

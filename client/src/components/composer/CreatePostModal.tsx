@@ -13,6 +13,8 @@ import { X, Upload, Plus, Link as LinkIcon, Heart, BarChart3, Users, Clock } fro
 import { PlatformKey, CATEGORIES, PLATFORMS } from '@/types/content';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabaseClient';
+import { useAuth } from '@/providers/AuthProvider';
 
 const createPostSchema = z.object({
   subtype: z.enum(['thread', 'poll']).default('thread'),
@@ -51,11 +53,11 @@ interface CreatePostModalProps {
 export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCategory, initialSubtype }: CreatePostModalProps) {
   const [selectedPlatforms, setSelectedPlatforms] = useState<PlatformKey[]>([]);
   const [links, setLinks] = useState<string[]>(['']);
-  const [images, setImages] = useState<string[]>([]);
-  const [files, setFiles] = useState<{ name: string; b64: string }[]>([]);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [pollOptions, setPollOptions] = useState<string[]>(['', '']);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const form = useForm<CreatePostForm>({
     resolver: zodResolver(createPostSchema),
@@ -118,61 +120,89 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
     form.setValue('links', validLinks);
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    
-    files.forEach(file => {
-      if (file.size > 10 * 1024 * 1024) {
+  // Upload images to Supabase Storage and return public URLs
+  const uploadImages = async (files: File[]): Promise<string[]> => {
+    const urls: string[] = [];
+    const userId = user?.id || 'anonymous';
+    const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+
+    for (const file of files) {
+      try {
+        const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+        const randomId = Math.random().toString(36).substring(2, 15);
+        const path = `posts/${userId}/${dateStr}/${randomId}.${ext}`;
+
+        const { data, error } = await supabase.storage
+          .from('post-images')
+          .upload(path, file, { upsert: false });
+
+        if (error) {
+          throw error;
+        }
+
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('post-images')
+          .getPublicUrl(path);
+
+        urls.push(publicUrl);
+      } catch (err: any) {
+        console.error('Image upload failed:', err);
         toast({
-          title: 'File too large',
-          description: `${file.name} exceeds 10MB limit`,
+          title: 'Image upload failed',
+          description: 'Please try again.',
           variant: 'destructive',
         });
-        return;
       }
+    }
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target?.result && images.length < 5) {
-          setImages(prev => [...prev, e.target!.result as string]);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
+    return urls;
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const uploadFiles = Array.from(event.target.files || []);
-    
-    uploadFiles.forEach(file => {
-      if (file.size > 50 * 1024 * 1024) {
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    const validFiles: File[] = [];
+
+    for (const file of files) {
+      // Validate file type
+      const ext = file.name.split('.').pop()?.toLowerCase();
+      if (!['jpg', 'jpeg', 'png', 'webp', 'gif'].includes(ext || '')) {
         toast({
-          title: 'File too large',
-          description: `${file.name} exceeds 50MB limit`,
+          title: 'Invalid file type',
+          description: 'Only jpg, png, webp, and gif files are allowed.',
           variant: 'destructive',
         });
-        return;
+        continue;
       }
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target?.result && files.length < 10) {
-          setFiles(prev => [...prev, {
-            name: file.name,
-            b64: e.target!.result as string
-          }]);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
+      // Validate file size (10MB max)
+      if (file.size > 10 * 1024 * 1024) {
+        toast({
+          title: 'Image is too large (max 10MB)',
+          description: 'Try a smaller file.',
+          variant: 'destructive',
+        });
+        continue;
+      }
+
+      validFiles.push(file);
+    }
+
+    // Check total count (max 5 images)
+    if (imageFiles.length + validFiles.length > 5) {
+      toast({
+        title: 'Too many images',
+        description: 'Maximum 5 images allowed per post.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setImageFiles(prev => [...prev, ...validFiles]);
   };
 
   const removeImage = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const removeFile = (index: number) => {
-    setFiles(prev => prev.filter((_, i) => i !== index));
+    setImageFiles(prev => prev.filter((_, i) => i !== index));
   };
 
   // Poll option management
@@ -211,41 +241,38 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
       setIsSubmitting(true);
       
       if (data.subtype === 'poll') {
-        // Create poll
-        const pollOptions = data.pollOptions?.filter(opt => opt.trim()).map((label, index) => ({
-          id: `opt${index + 1}`,
-          label,
-          votes: 0
-        })) || [];
+        // Create poll - send poll_options array
+        const options = data.pollOptions?.filter(opt => opt.trim()) || [];
 
-        if (pollOptions.length < 2) {
+        if (options.length < 2) {
           throw new Error('Polls must have at least 2 options');
         }
 
         const pollData = {
           subtype: 'poll',
           title: data.pollQuestion || '',
-          body: data.pollQuestion || '',
+          content: data.pollQuestion || '',
+          category: data.category,
           platforms: selectedPlatforms.length > 0 ? selectedPlatforms : [],
-          subtypeData: {
-            question: data.pollQuestion || '',
-            choices: pollOptions,
-            closesAt: Date.now() + (data.pollDurationDays || 7) * 24 * 60 * 60 * 1000,
-            oneVotePerUser: true
-          }
+          poll_options: options,
         };
 
         await apiRequest('POST', '/api/posts', pollData);
       } else {
-        // Create thread
+        // Upload images first and get URLs
+        let imageUrls: string[] = [];
+        if (imageFiles.length > 0) {
+          imageUrls = await uploadImages(imageFiles);
+        }
+
+        // Create thread with image URLs only
         const postData = {
           subtype: 'thread',
           title: data.title,
-          body: data.body,
+          content: data.body,
+          category: data.category,
           platforms: selectedPlatforms.length > 0 ? selectedPlatforms : [],
-          imageUrl: images[0] || '',
-          images,
-          files: files,
+          image_urls: imageUrls,
           links: data.links || [],
           price: data.price || '',
         };
@@ -266,8 +293,7 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
       form.reset();
       setSelectedPlatforms([]);
       setLinks(['']);
-      setImages([]);
-      setFiles([]);
+      setImageFiles([]);
       setPollOptions(['', '']);
       
       onPostCreated?.();
@@ -306,8 +332,8 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
     platforms: selectedPlatforms,
     createdAt: Date.now(),
     author: { id: 'user', name: 'You', avatar: undefined },
-    imageUrl: images[0] || '',
-    images,
+    imageUrl: imageFiles[0] ? URL.createObjectURL(imageFiles[0]) : '',
+    images: imageFiles.map(f => URL.createObjectURL(f)),
     links: links.filter(l => l.trim()),
     price: form.watch('price') || ''
   };
@@ -576,12 +602,12 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
 
           {/* Images */}
           <div className="space-y-2">
-            <Label>Images (max 5, 10MB each)</Label>
+            <Label>Images (max 5, 10MB each, jpg/png/webp/gif)</Label>
             <div className="grid grid-cols-3 gap-4">
-              {images.map((image, index) => (
+              {imageFiles.map((file, index) => (
                 <div key={index} className="relative">
                   <img
-                    src={image}
+                    src={URL.createObjectURL(file)}
                     alt={`Upload ${index + 1}`}
                     className="w-full h-20 object-cover rounded border"
                   />
@@ -596,50 +622,17 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
                   </Button>
                 </div>
               ))}
-              {images.length < 5 && (
+              {imageFiles.length < 5 && (
                 <label className="flex flex-col items-center justify-center h-20 border-2 border-dashed border-gray-300 rounded cursor-pointer hover:bg-gray-50">
                   <Upload className="h-6 w-6 text-gray-400" />
                   <span className="text-xs text-gray-500">Upload</span>
                   <input
                     type="file"
-                    accept="image/*"
+                    accept=".jpg,.jpeg,.png,.webp,.gif"
                     multiple
                     className="hidden"
                     onChange={handleImageUpload}
                     data-testid="image-upload-input"
-                  />
-                </label>
-              )}
-            </div>
-          </div>
-
-          {/* Files */}
-          <div className="space-y-2">
-            <Label>Files (max 10, 50MB each)</Label>
-            <div className="space-y-2">
-              {files.map((file, index) => (
-                <div key={index} className="flex items-center justify-between p-2 border rounded">
-                  <span className="text-sm truncate">{file.name}</span>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => removeFile(index)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-              {files.length < 10 && (
-                <label className="flex items-center justify-center p-4 border-2 border-dashed border-gray-300 rounded cursor-pointer hover:bg-gray-50">
-                  <Upload className="h-5 w-5 mr-2 text-gray-400" />
-                  <span className="text-sm text-gray-500">Upload Files</span>
-                  <input
-                    type="file"
-                    multiple
-                    className="hidden"
-                    onChange={handleFileUpload}
-                    data-testid="file-upload-input"
                   />
                 </label>
               )}
