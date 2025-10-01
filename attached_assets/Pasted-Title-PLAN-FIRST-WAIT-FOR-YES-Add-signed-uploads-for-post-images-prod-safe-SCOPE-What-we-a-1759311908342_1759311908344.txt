@@ -1,0 +1,65 @@
+Title: PLAN FIRST, WAIT FOR YES — Add signed uploads for post images (prod-safe)
+
+SCOPE
+
+What we are doing
+
+Use your server to mint signed upload URLs with the Supabase service role, then the browser uploads each file directly to Storage using those signed URLs. No Supabase Auth on the client, no routing files for big binaries, and your existing public read policy continues to work.
+ 
+Touch only these files:
+1) server/routes/index.ts (or wherever registerRoutes is defined)
+2) server/supabaseStorage.ts (optional helper, reuse existing admin client if present)
+3) client/src/components/composer/CreatePostModal.tsx
+
+Do not modify other files, packages, or build config. Minimal diffs only.
+
+GOAL
+New posts must save image_urls reliably. Implement server-signed uploads to Supabase Storage so the client can upload without Supabase Auth.
+
+STEP 1 — PLAN ONLY (no edits yet)
+1) Locate registerRoutes. Propose one new POST endpoint:
+   POST /api/storage/sign-uploads
+   Body JSON: { userId: string, files: Array<{ name: string, type: string, size?: number }> }
+   Server validates:
+     - files length <= 5
+     - type in ["image/jpeg","image/png","image/webp","image/gif"]
+     - size <= 10MB if provided
+   For each file:
+     - ext from name
+     - path = `posts/${userId}/${YYYYMMDD}/${random}.${ext}`
+     - call supabaseAdmin.storage.from("post-images").createSignedUploadUrl(path)
+     - also compute publicUrl = supabaseAdmin.storage.from("post-images").getPublicUrl(path).data.publicUrl
+   Return 200 with: { targets: Array<{ path, token, publicUrl }> }
+   If any Supabase error, return 500 with message.
+
+   Use the existing service-role Supabase admin client. If not defined, create one with:
+     const supabaseAdmin = createClient(process.env.VITE_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+   Do not log the service key.
+
+2) Client change in CreatePostModal.tsx:
+   Replace the current uploadImages(files) implementation with a signed-upload flow:
+     - POST to /api/storage/sign-uploads with { userId: currentAppUserId, files: files.map(f => ({ name: f.name, type: f.type, size: f.size })) }
+     - Receive { targets }
+     - For each index i, call:
+         await supabase.storage.from("post-images")
+           .uploadToSignedUrl(targets[i].path, targets[i].token, files[i]);
+       If any upload fails, throw and stop submit.
+     - Collect targets[i].publicUrl as the final URLs and return them.
+
+   Keep the same validations for type, size, count. Keep toasts. Keep console.log('payload', postData) before POST /api/posts.
+
+3) Confirm server insert already includes image_urls and no change needed.
+
+4) Show unified diffs for:
+   - the new route inside registerRoutes (or a tiny storage route file plus a 1-line import/use in registerRoutes)
+   - the updated uploadImages in CreatePostModal.tsx
+   Stop and print: WAITING FOR YES
+
+Testing checklist (after edits):
+A) Hard refresh the app.
+B) Create a post with 1 PNG. In DevTools:
+   - You should see POST /api/storage/sign-uploads 200
+   - Then one request using uploadToSignedUrl (no CORS issues)
+   - Console shows payload with image_urls: ["https://<project>.supabase.co/storage/v1/object/public/post-images/..."]
+C) DB: SELECT id,title,image_urls FROM public.posts ORDER BY created_at DESC LIMIT 5; shows 1 URL.
+D) Feed shows the image in the new post.
