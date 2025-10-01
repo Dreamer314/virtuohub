@@ -1,7 +1,7 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
-import { ensureAvatarsBucket, ensurePostImagesBucket } from "./storageSetup";
+import { ensureAvatarsBucket } from "./storageSetup";
 
 const app = express();
 
@@ -100,7 +100,6 @@ app.use((req, res, next) => {
 
   // Ensure Supabase Storage buckets exist
   await ensureAvatarsBucket();
-  await ensurePostImagesBucket();
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;

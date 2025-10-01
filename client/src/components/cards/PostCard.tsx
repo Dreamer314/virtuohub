@@ -93,6 +93,13 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
   // Get poll data from subtypeData if it's a poll
   const pollData = post.subtype === 'poll' ? post.subtypeData as { question?: string, choices?: Array<{text: string, votes: number, id: string}>, closesAt?: number, oneVotePerUser?: boolean } : null;
 
+  // Derive images with array-safe fallback
+  const images: string[] = Array.isArray(post.images)
+    ? post.images
+    : Array.isArray((post as any).image_urls)
+      ? (post as any).image_urls
+      : [];
+
   return (
     <>
       <article className="vh-post-card" data-testid={`post-card-${post.id}`}>
@@ -157,10 +164,10 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 )}
                 
                 {/* Images from Supabase Storage */}
-                {Array.isArray(post.images) && post.images.length > 0 && (
+                {images.length > 0 && (
                   <div className="mb-3 rounded-vh-lg overflow-hidden">
                     <img
-                      src={post.images[0]}
+                      src={images[0]}
                       alt={post.title || 'post image'}
                       className="w-full h-auto object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
                       data-testid={`storage-image-${post.id}`}
@@ -211,10 +218,10 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 )}
                 
                 {/* Images from Supabase Storage */}
-                {Array.isArray(post.images) && post.images.length > 0 && (
+                {images.length > 0 && (
                   <div className="mt-4 rounded-vh-lg overflow-hidden">
                     <img
-                      src={post.images[0]}
+                      src={images[0]}
                       alt={post.title || 'post image'}
                       className="w-full h-auto object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
                       data-testid={`storage-image-${post.id}`}
