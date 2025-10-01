@@ -1,0 +1,96 @@
+Title: PLAN FIRST, WAIT FOR YES — Fix signed-upload client parsing and verify image_urls is sent on create
+
+Problem we are fixing
+Uploads run, but the DB still shows image_urls = []. The create-post payload sometimes looks right, but the array is empty because the client is likely mis-parsing the apiRequest response for /api/storage/sign-uploads and never gets valid targets.
+
+Goal
+
+In CreatePostModal.tsx, make uploadImages use apiRequest correctly and collect public URLs from Supabase after uploadToSignedUrl.
+
+Ensure the thread submit payload uses image_urls: imageUrls.
+
+Add small debug logs to prove the values.
+
+Scope
+Touch only:
+
+client/src/components/composer/CreatePostModal.tsx
+
+Do not change server files or other components.
+
+STEP 1 — PLAN ONLY
+
+Open CreatePostModal.tsx. In uploadImages, check how the signed uploads are requested. If it does:
+
+const response = await apiRequest('POST', '/api/storage/sign-uploads', {...});
+const { targets } = await response.json();
+
+
+that is wrong for our apiRequest. You must read the parsed object directly.
+
+Proposed corrected uploadImages logic:
+
+// Request signed upload URLs from server using apiRequest
+const { targets } = await apiRequest('POST', '/api/storage/sign-uploads', {
+  files: files.map(f => ({ name: f.name, type: f.type, size: f.size }))
+});
+
+if (!Array.isArray(targets) || targets.length !== files.length) {
+  throw new Error('Server returned an invalid targets array');
+}
+
+const publicUrls: string[] = [];
+for (let i = 0; i < files.length; i++) {
+  const { error } = await supabase.storage
+    .from('post-images')
+    .uploadToSignedUrl(targets[i].path, targets[i].token, files[i]);
+  if (error) {
+    throw new Error(`Upload failed for ${files[i].name}: ${error.message}`);
+  }
+  publicUrls.push(targets[i].publicUrl);
+}
+return publicUrls;
+
+
+In the thread submit branch, confirm the payload includes only:
+
+image_urls: imageUrls
+
+
+and does not include images or imageUrls.
+
+Add debugs just before posting in the thread branch:
+
+console.log('imageFiles at submit', imageFiles.length);
+console.log('imageUrls at submit', imageUrls);
+console.log('payload', postData);
+
+
+Provide a unified diff for CreatePostModal.tsx only, then STOP and print: WAITING FOR YES.
+
+STEP 2 — APPLY AFTER APPROVAL
+After I say YES, apply the diff exactly.
+
+Success criteria
+
+Network shows POST /api/storage/sign-uploads → 200 with { targets: [...] }.
+
+Network shows uploadToSignedUrl requests for each image → 200.
+
+Network shows POST /api/posts with payload.image_urls containing Supabase public URLs.
+
+SQL:
+
+SELECT id, title, image_urls
+FROM public.posts
+ORDER BY created_at DESC
+LIMIT 5;
+
+
+shows the newest row with a non empty image_urls.
+
+The community feed displays that image.
+
+Notes
+
+If there is a poll branch, it does not need images. You may add the same console.log('payload', pollData) for consistency, but do not alter other poll logic.
