@@ -127,33 +127,28 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
     const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, '');
 
     for (const file of files) {
-      try {
-        const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
-        const randomId = Math.random().toString(36).substring(2, 15);
-        const path = `posts/${userId}/${dateStr}/${randomId}.${ext}`;
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const randomId = Math.random().toString(36).substring(2, 15);
+      const path = `posts/${userId}/${dateStr}/${randomId}.${ext}`;
 
-        const { data, error } = await supabase.storage
-          .from('post-images')
-          .upload(path, file, { upsert: false });
+      const { data, error } = await supabase.storage
+        .from('post-images')
+        .upload(path, file, { upsert: false });
 
-        if (error) {
-          throw error;
-        }
-
-        // Get public URL
-        const { data: { publicUrl } } = supabase.storage
-          .from('post-images')
-          .getPublicUrl(path);
-
-        urls.push(publicUrl);
-      } catch (err: any) {
-        console.error('Image upload failed:', err);
-        toast({
-          title: 'Image upload failed',
-          description: 'Please try again.',
-          variant: 'destructive',
-        });
+      if (error) {
+        throw new Error(error.message);
       }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('post-images')
+        .getPublicUrl(path);
+
+      if (!publicUrl) {
+        throw new Error('Could not obtain public URL');
+      }
+
+      urls.push(publicUrl);
     }
 
     return urls;
@@ -262,7 +257,25 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
         // Upload images first and get URLs
         let imageUrls: string[] = [];
         if (imageFiles.length > 0) {
-          imageUrls = await uploadImages(imageFiles);
+          if (!user) {
+            toast({
+              title: 'Sign in required',
+              description: 'You must be signed in to upload images.',
+              variant: 'destructive',
+            });
+            return;
+          }
+          
+          try {
+            imageUrls = await uploadImages(imageFiles);
+          } catch (uploadError: any) {
+            toast({
+              title: 'Image upload failed',
+              description: uploadError.message || 'Could not upload images. Please try again.',
+              variant: 'destructive',
+            });
+            return;
+          }
         }
 
         // Create thread with image URLs only
@@ -277,6 +290,7 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
           price: data.price || '',
         };
 
+        console.log('payload', postData);
         await apiRequest('POST', '/api/posts', postData);
       }
 
