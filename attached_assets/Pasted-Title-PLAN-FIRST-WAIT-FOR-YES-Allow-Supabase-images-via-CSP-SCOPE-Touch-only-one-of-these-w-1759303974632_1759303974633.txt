@@ -1,0 +1,45 @@
+Title: PLAN FIRST, WAIT FOR YES — Allow Supabase images via CSP
+
+SCOPE
+Touch only one of these, whichever actually defines CSP in this repo:
+- server/index.ts  (if using helmet/contentSecurityPolicy)
+- client/index.html or client/public/index.html  (if using a meta CSP tag)
+
+Do not modify any other files. Do not add new files or packages. Keep diffs minimal.
+
+GOAL
+The Community feed <img> points to a Supabase public URL but the browser blocks it. We need to allow images from Supabase in the Content Security Policy.
+
+FLOW
+Step 1 — PLAN ONLY, no edits yet.
+1) Search for CSP definitions:
+   - Look for helmet import and contentSecurityPolicy usage in server/index.ts
+   - Look for a meta tag: <meta http-equiv="Content-Security-Policy" ...> in the client index.html
+2) Report exactly where CSP is set and paste the current directives.
+3) Propose a minimal change that adds Supabase to image sources without weakening other directives:
+   - If helmet: extend directives so img-src and media-src include "data:", "blob:", "https://*.supabase.co", "https://*.supabase.in"
+   - If meta tag: update img-src and media-src similarly
+4) Show unified diffs for the single file you will touch.
+5) STOP and print: WAITING FOR YES
+
+Step 2 — Only if I reply YES.
+Apply exactly the proposed change. No other edits. Then print final diff and a short verification note.
+
+TECH NOTES
+- For helmet 6+:
+  import helmet from "helmet";
+  const defaults = helmet.contentSecurityPolicy.getDefaultDirectives();
+  app.use(helmet({
+    contentSecurityPolicy: {
+      useDefaults: true,
+      directives: {
+        ...defaults,
+        "img-src": ["'self'", "data:", "blob:", "https://*.supabase.co", "https://*.supabase.in"],
+        "media-src": ["'self'", "data:", "blob:", "https://*.supabase.co", "https://*.supabase.in"],
+        "connect-src": defaults["connect-src"] ? [...defaults["connect-src"], "https:", "wss:"] : ["'self'", "https:", "wss:"]
+      }
+    }
+  }));
+- For a meta tag, only update the img-src and media-src parts, leaving everything else intact.
+
+After the change, I will hard refresh and test a post with one image.
