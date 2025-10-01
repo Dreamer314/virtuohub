@@ -90,6 +90,11 @@ export class SupabaseStorage implements IStorage {
   // ============================================
 
   async createPost(post: InsertPost & { authorId: string }): Promise<Post> {
+    console.log(
+      'createPost(storage) image_urls length:',
+      Array.isArray((post as any).image_urls) ? (post as any).image_urls.length : 'not-array'
+    );
+
     const { data, error } = await supabaseAdmin
       .from('posts')
       .insert({
