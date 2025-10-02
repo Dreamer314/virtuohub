@@ -457,4 +457,54 @@ export class SupabaseStorage implements IStorage {
 
     return results;
   }
+
+  async getPostPollTallies(postIds: string[], voterId?: string): Promise<{ 
+    ok: boolean; 
+    error?: string; 
+    counts?: { post_id: string; option_index: number; count: number }[]; 
+    mine?: { post_id: string; option_index: number }[] 
+  }> {
+    if (postIds.length === 0) {
+      return { ok: true, counts: [], mine: [] };
+    }
+
+    // Get vote counts for all posts
+    const { data: counts, error: cErr } = await supabaseAdmin
+      .from('post_poll_votes')
+      .select('post_id, option_index')
+      .in('post_id', postIds);
+    
+    if (cErr) {
+      return { ok: false, error: cErr.message };
+    }
+
+    // Aggregate counts manually since Supabase doesn't support count(*) with group by in the same way
+    const countMap = new Map<string, number>();
+    (counts || []).forEach(vote => {
+      const key = `${vote.post_id}:${vote.option_index}`;
+      countMap.set(key, (countMap.get(key) || 0) + 1);
+    });
+
+    const aggregatedCounts = Array.from(countMap.entries()).map(([key, count]) => {
+      const [post_id, option_index] = key.split(':');
+      return { post_id, option_index: parseInt(option_index), count };
+    });
+
+    // Get user's votes if voterId is provided
+    let mine: { post_id: string; option_index: number }[] = [];
+    if (voterId) {
+      const { data: mv, error: mErr } = await supabaseAdmin
+        .from('post_poll_votes')
+        .select('post_id, option_index')
+        .eq('voter_id', voterId)
+        .in('post_id', postIds);
+      
+      if (mErr) {
+        return { ok: false, error: mErr.message };
+      }
+      mine = mv || [];
+    }
+
+    return { ok: true, counts: aggregatedCounts, mine };
+  }
 }
