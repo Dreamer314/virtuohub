@@ -241,6 +241,26 @@ export class SupabaseStorage implements IStorage {
     return this.mapToPostWithAuthor(post, profilesMap);
   }
 
+  private extractPollMeta(row: any, myVote: number | null, tallies: number[]) {
+    const pollNode = row?.subtype_data?.poll ?? null;
+    const question =
+      typeof pollNode?.question === 'string' ? pollNode.question : null;
+    const options = Array.isArray(pollNode?.options)
+      ? pollNode.options.filter((o: any) => typeof o === 'string')
+      : [];
+
+    const safeTallies = Array.isArray(tallies) ? tallies : new Array(options.length).fill(0);
+    const total = safeTallies.reduce((a, b) => a + (Number.isFinite(b) ? b : 0), 0);
+
+    return {
+      poll: { question, options, tallies: safeTallies, total, my_vote: myVote },
+      poll_question: question,
+      poll_options: options,
+      results: safeTallies,
+      my_vote: myVote
+    };
+  }
+
   private mapToPostWithAuthor(data: any, profilesMap: Map<string, any>): PostWithAuthor {
     const profileData = profilesMap.get(data.author_id);
     
@@ -264,17 +284,7 @@ export class SupabaseStorage implements IStorage {
       updatedAt: new Date(),
     };
 
-    // Extract poll data from subtype_data with defensive type checking
-    const pollNode = data.subtype === 'poll'
-      ? (data.subtype_data?.poll ?? null)
-      : null;
-    const poll_options: string[] = Array.isArray(pollNode?.options)
-      ? pollNode!.options.filter((o: any) => typeof o === 'string')
-      : [];
-    const poll_question: string | null =
-      typeof pollNode?.question === 'string' ? pollNode!.question : null;
-
-    return {
+    let post: any = {
       id: data.id,
       authorId: data.author_id,
       title: data.title,
@@ -297,11 +307,14 @@ export class SupabaseStorage implements IStorage {
       createdAt: new Date(data.created_at),
       updatedAt: new Date(data.updated_at || data.created_at),
       author,
-      ...(data.subtype === 'poll' ? {
-        poll_options,
-        poll_question,
-      } : {})
-    } as any;
+    };
+
+    if (data.subtype === 'poll') {
+      const meta = this.extractPollMeta(data, null, []);
+      post = { ...post, ...meta };
+    }
+
+    return post;
   }
 
   async updatePost(id: string, updates: Partial<Post>): Promise<Post | undefined> {
@@ -498,7 +511,55 @@ export class SupabaseStorage implements IStorage {
     return results;
   }
 
-  async getPostPollTallies(postIds: string[], voterId?: string): Promise<{ 
+  async getMyVote(postId: string, voterId: string): Promise<number | null> {
+    const { data, error } = await supabaseAdmin
+      .from('post_poll_votes')
+      .select('option_index')
+      .eq('post_id', postId)
+      .eq('voter_id', voterId)
+      .single();
+    
+    if (error || !data) return null;
+    return data.option_index;
+  }
+
+  async getPostPollTallies(postIds: string[]): Promise<Record<string, number[]>> {
+    if (postIds.length === 0) {
+      return {};
+    }
+
+    const { data: counts, error: cErr } = await supabaseAdmin
+      .from('post_poll_votes')
+      .select('post_id, option_index')
+      .in('post_id', postIds);
+    
+    if (cErr || !counts) {
+      return {};
+    }
+
+    const talliesByPost: Record<string, Record<number, number>> = {};
+    counts.forEach(vote => {
+      if (!talliesByPost[vote.post_id]) {
+        talliesByPost[vote.post_id] = {};
+      }
+      const optIdx = vote.option_index;
+      talliesByPost[vote.post_id][optIdx] = (talliesByPost[vote.post_id][optIdx] || 0) + 1;
+    });
+
+    const result: Record<string, number[]> = {};
+    Object.keys(talliesByPost).forEach(postId => {
+      const maxIdx = Math.max(...Object.keys(talliesByPost[postId]).map(Number));
+      const arr = new Array(maxIdx + 1).fill(0);
+      Object.entries(talliesByPost[postId]).forEach(([idx, count]) => {
+        arr[Number(idx)] = count;
+      });
+      result[postId] = arr;
+    });
+
+    return result;
+  }
+
+  async getPostPollTalliesOld(postIds: string[], voterId?: string): Promise<{ 
     ok: boolean; 
     error?: string; 
     counts?: { post_id: string; option_index: number; count: number }[]; 

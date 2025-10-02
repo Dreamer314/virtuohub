@@ -1,0 +1,195 @@
+Problem: Voting returns OK, but the PostCard never shows bars/percentages. Root cause: API shape drift. Client sometimes reads post.poll?.tallies/my_vote/options, other places read post.results/my_vote or post.poll_options/poll_question. These aren’t consistently present.
+
+Goal (minimal + additive): Normalize poll data in server responses and keep legacy fields for compatibility. After this, every poll post must include:
+
+poll: {
+  question: string,
+  options: string[],
+  tallies: number[],     // counts per option
+  total: number,         // sum(tallies)
+  my_vote: number | null // option index
+},
+// Back-compat mirrors:
+poll_question: string
+poll_options: string[]
+results: number[]
+my_vote: number | null
+
+
+Also, the vote response must return the same poll block + mirrors so the UI can update immediately without refetch.
+
+Scope guardrails: Touch only server/supabaseStorage.ts, server/routes.ts, and client/src/components/cards/PostCard.tsx. No schema changes. No refactors outside these spots.
+
+1) server/supabaseStorage.ts
+
+Add a small helper to extract poll meta from a row:
+
+// near other mappers
+function extractPollMeta(row: any, myVote: number | null, tallies: number[]) {
+  const pollNode = row?.subtype_data?.poll ?? null;
+  const question =
+    typeof pollNode?.question === 'string' ? pollNode.question : null;
+  const options = Array.isArray(pollNode?.options)
+    ? pollNode.options.filter((o: any) => typeof o === 'string')
+    : [];
+
+  const safeTallies = Array.isArray(tallies) ? tallies : new Array(options.length).fill(0);
+  const total = safeTallies.reduce((a, b) => a + (Number.isFinite(b) ? b : 0), 0);
+
+  return {
+    poll: { question, options, tallies: safeTallies, total, my_vote: myVote },
+    // mirrors for back-compat
+    poll_question: question,
+    poll_options: options,
+    results: safeTallies,
+    my_vote: myVote
+  };
+}
+
+
+In mapToPostWithAuthor(row), after building the base post, if row.subtype === 'poll', attach empty poll meta (server will fill tallies in routes):
+
+if (row.subtype === 'poll') {
+  const meta = extractPollMeta(row, null, []);
+  post = { ...post, ...meta };
+}
+
+
+Expose a batch tallies getter and myVote getter if not already:
+
+// already have getPostPollTallies(postIds: string[]): Promise<Record<string, number[]>>
+// add:
+async getMyVote(postId: string, voterId: string): Promise<number | null> {
+  // select option_index where post_id=voterId ; return null if none
+}
+
+
+(If these exist already, keep them; just use them in routes below.)
+
+2) server/routes.ts
+
+Create a small helper used by both GET endpoints and the vote endpoint:
+
+async function attachPollMetaForPosts(rows: any[], storage: Storage, userId?: string) {
+  const pollIds = rows.filter(r => r.subtype === 'poll').map(r => r.id);
+  if (pollIds.length === 0) return rows;
+
+  const talliesById = await storage.getPostPollTallies(pollIds);
+
+  const myVotes: Record<string, number | null> = {};
+  if (userId) {
+    await Promise.all(
+      pollIds.map(async (id) => {
+        myVotes[id] = await storage.getMyVote(id, userId);
+      })
+    );
+  }
+
+  return rows.map(row => {
+    if (row.subtype !== 'poll') return row;
+    const myVote = userId ? (myVotes[row.id] ?? null) : null;
+    const tallies = talliesById[row.id] ?? [];
+    const meta = extractPollMeta(row, myVote, tallies);
+    return { ...row, ...meta };
+  });
+}
+
+
+GET /api/posts: after reading rows, call attachPollMetaForPosts(rows, storage, req.user?.id) and return those.
+
+GET /api/posts/:id: do the same for a single-row array and return the first.
+
+POST /api/posts/:postId/polls/vote: after saving the vote, recompute tallies + myVote and return:
+
+return res.json({
+  ok: true,
+  // normalized block:
+  poll: { question, options, tallies, total, my_vote },
+  // mirrors:
+  poll_question: question,
+  poll_options: options,
+  results: tallies,
+  my_vote
+});
+
+
+(Use extractPollMeta(foundPostRow, my_vote, tallies) to build this.)
+
+Important: Where the vote endpoint reads options, always use:
+
+const opts = Array.isArray(post.subtype_data?.poll?.options) ? post.subtype_data.poll.options : [];
+if (opts.length === 0) return res.status(400).json({ message: 'Poll has no options' });
+
+3) client/src/components/cards/PostCard.tsx
+
+Make the renderer tolerant to any of the field names. Near where you derive data for the poll UI:
+
+const options =
+  post.poll?.options ??
+  post.poll_options ??
+  [];
+
+const talliesRaw =
+  post.poll?.tallies ??
+  post.results ??
+  [];
+
+const myVote =
+  post.poll?.my_vote ??
+  post.my_vote ??
+  null;
+
+const total = post.poll?.total ?? talliesRaw.reduce((a,b)=>a+(Number(b)||0),0);
+
+const tallies = Array.isArray(talliesRaw) ? talliesRaw : new Array(options.length).fill(0);
+
+
+In the vote mutation onSuccess, update cached post in place using the server’s normalized response (prefer data.poll, else mirrors). Example if you’re using React Query:
+
+onSuccess: (data) => {
+  queryClient.setQueryData(['posts'], (old: any) => {
+    if (!old) return old;
+    return old.map((p: any) => {
+      if (p.id !== post.id) return p;
+      const next = {
+        ...p,
+        // prefer normalized block:
+        poll: data.poll ?? p.poll,
+        poll_question: data.poll_question ?? p.poll_question,
+        poll_options: data.poll_options ?? p.poll_options,
+        results: data.results ?? p.results,
+        my_vote: data.my_vote ?? p.my_vote,
+      };
+      return next;
+    });
+  });
+}
+
+
+Also disable option buttons while voteMutation.isPending || myVote !== null.
+
+4) Acceptance checklist (please verify in DevTools → Network)
+
+GET /api/posts poll item contains:
+
+poll.options, poll.tallies, poll.total, poll.my_vote
+
+AND mirrors: poll_options, results, my_vote, poll_question
+
+After clicking an option:
+
+POST /api/posts/:id/polls/vote response includes the same fields above
+
+The card updates immediately to bars/percentages
+
+Refreshing the page preserves your vote (highlight + my_vote not null)
+
+Do not change DB schema. Do not delete fields. This is a compat shim to stabilize the UI.
+
+Why this will unblock you
+
+We stop playing “whack-a-mole” with field names: every poll response exposes both the normalized poll block and the legacy mirrors the UI might still read.
+
+The client becomes defensive: it reads from poll.* first, then falls back to the old fields.
+
+Voting updates the cache synchronously with the exact shape returned by the server—no waiting for a refetch to see bars.

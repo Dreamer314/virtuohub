@@ -15,6 +15,62 @@ const stripe = new Stripe(process.env.TESTING_STRIPE_SECRET_KEY, {
   apiVersion: "2025-08-27.basil",
 });
 
+// Helper to extract poll meta from a row
+function extractPollMeta(row: any, myVote: number | null, tallies: number[]) {
+  const pollNode = row?.subtypeData?.poll ?? row?.subtype_data?.poll ?? null;
+  const question =
+    typeof pollNode?.question === 'string' ? pollNode.question : null;
+  const options = Array.isArray(pollNode?.options)
+    ? pollNode.options.filter((o: any) => typeof o === 'string')
+    : [];
+
+  const safeTallies = Array.isArray(tallies) ? tallies : new Array(options.length).fill(0);
+  const total = safeTallies.reduce((a, b) => a + (Number.isFinite(b) ? b : 0), 0);
+
+  return {
+    poll: { question, options, tallies: safeTallies, total, my_vote: myVote },
+    poll_question: question,
+    poll_options: options,
+    results: safeTallies,
+    my_vote: myVote
+  };
+}
+
+// Helper to attach poll metadata to posts
+async function attachPollMetaForPosts(rows: any[], userId?: string) {
+  const pollRows = rows.filter(r => r.subtype === 'poll');
+  if (pollRows.length === 0) return rows;
+
+  const pollIds = pollRows.map(r => r.id);
+  const talliesById = await storage.getPostPollTallies(pollIds);
+
+  const myVotes: Record<string, number | null> = {};
+  if (userId) {
+    await Promise.all(
+      pollIds.map(async (id) => {
+        myVotes[id] = await storage.getMyVote(id, userId);
+      })
+    );
+  }
+
+  return rows.map(row => {
+    if (row.subtype !== 'poll') return row;
+    const myVote = userId ? (myVotes[row.id] ?? null) : null;
+    
+    // Get tallies and ensure array length matches options length
+    const pollNode = row?.subtypeData?.poll ?? row?.subtype_data?.poll ?? null;
+    const optionsLength = Array.isArray(pollNode?.options) ? pollNode.options.length : 0;
+    const rawTallies = talliesById[row.id] ?? [];
+    const tallies = new Array(optionsLength).fill(0);
+    rawTallies.forEach((count, idx) => {
+      if (idx < optionsLength) tallies[idx] = count;
+    });
+    
+    const meta = extractPollMeta(row, myVote, tallies);
+    return { ...row, ...meta };
+  });
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // Get all posts with optional filtering
@@ -36,53 +92,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       let posts = await storage.getPosts(filters);
       
-      // Augment poll posts with vote data (batch operation for efficiency)
+      // Attach poll metadata with vote data
       const userId = (req as any).user?.id;
-      const pollPostIds = posts.filter(p => p.subtype === 'poll').map(p => p.id);
-      
-      if (pollPostIds.length > 0) {
-        const talliesResult = await storage.getPostPollTallies(pollPostIds, userId);
-        
-        if (talliesResult.ok) {
-          posts = posts.map(post => {
-            if (post.subtype === 'poll') {
-              // Extract poll options with backward compatibility fallbacks
-              const subtypeData = (post.subtypeData as any);
-              const pollNode = subtypeData?.poll;
-              
-              // Try new format first: subtypeData.poll.options
-              let pollOptions: string[] = Array.isArray(pollNode?.options) ? pollNode.options : [];
-              
-              // Fallback to legacy format: subtypeData.choices
-              if (pollOptions.length === 0 && Array.isArray(subtypeData?.choices)) {
-                pollOptions = subtypeData.choices.map((c: any) => c.text || String(c)).filter(Boolean);
-              }
-              
-              // Final fallback to flat poll_options field
-              if (pollOptions.length === 0 && Array.isArray((post as any).poll_options)) {
-                pollOptions = (post as any).poll_options;
-              }
-              
-              const results = new Array(pollOptions.length).fill(0);
-              
-              (talliesResult.counts || []).forEach((item: { post_id: string; option_index: number; count: number }) => {
-                if (item.post_id === post.id) {
-                  results[item.option_index] = item.count;
-                }
-              });
-              
-              const myVote = (talliesResult.mine || []).find((v: { post_id: string; option_index: number }) => v.post_id === post.id)?.option_index ?? null;
-              
-              return {
-                ...post,
-                my_vote: myVote,
-                results,
-              };
-            }
-            return post;
-          });
-        }
-      }
+      posts = await attachPollMetaForPosts(posts, userId);
       
       res.json(posts);
     } catch (error) {
@@ -98,49 +110,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Post not found" });
       }
       
-      // Augment poll post with vote data
+      // Attach poll metadata with vote data
       const userId = (req as any).user?.id;
-      console.log(`[GET /api/posts/${req.params.id}] userId from auth:`, userId);
-      if (post.subtype === 'poll') {
-        const talliesResult = await storage.getPostPollTallies([post.id], userId);
-        
-        if (talliesResult.ok) {
-          // Extract poll options with backward compatibility fallbacks
-          const subtypeData = (post.subtypeData as any);
-          const pollNode = subtypeData?.poll;
-          
-          // Try new format first: subtypeData.poll.options
-          let pollOptions: string[] = Array.isArray(pollNode?.options) ? pollNode.options : [];
-          
-          // Fallback to legacy format: subtypeData.choices
-          if (pollOptions.length === 0 && Array.isArray(subtypeData?.choices)) {
-            pollOptions = subtypeData.choices.map((c: any) => c.text || String(c)).filter(Boolean);
-          }
-          
-          // Final fallback to flat poll_options field
-          if (pollOptions.length === 0 && Array.isArray((post as any).poll_options)) {
-            pollOptions = (post as any).poll_options;
-          }
-          
-          const results = new Array(pollOptions.length).fill(0);
-          
-          (talliesResult.counts || []).forEach((item: { post_id: string; option_index: number; count: number }) => {
-            if (item.post_id === post.id) {
-              results[item.option_index] = item.count;
-            }
-          });
-          
-          const myVote = (talliesResult.mine || []).find((v: { post_id: string; option_index: number }) => v.post_id === post.id)?.option_index ?? null;
-          
-          post = {
-            ...post,
-            my_vote: myVote,
-            results,
-          } as any;
-        }
-      }
+      const posts = await attachPollMetaForPosts([post], userId);
       
-      res.json(post);
+      res.json(posts[0]);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch post" });
     }
@@ -366,23 +340,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ message: result.error || "Failed to save vote" });
       }
       
-      // Get fresh tallies and return them
-      const talliesResult = await storage.getPostPollTallies([postId], voterId);
-      if (!talliesResult.ok) {
-        return res.status(500).json({ message: talliesResult.error || "Failed to fetch tallies" });
-      }
-
-      // Build results array sized to number of poll options
-      const results = new Array(options.length).fill(0);
-      (talliesResult.counts || []).forEach((item: { post_id: string; option_index: number; count: number }) => {
-        if (item.post_id === postId) {
-          results[item.option_index] = item.count;
-        }
+      // Get fresh tallies and my_vote
+      const talliesById = await storage.getPostPollTallies([postId]);
+      const tallies = talliesById[postId] ?? new Array(options.length).fill(0);
+      const myVote = await storage.getMyVote(postId, voterId);
+      
+      // Return normalized poll structure (reuse pollNode from above)
+      const question = typeof pollNode?.question === 'string' ? pollNode.question : null;
+      const total = tallies.reduce((a, b) => a + (Number.isFinite(b) ? b : 0), 0);
+      
+      res.json({ 
+        ok: true, 
+        poll: { question, options, tallies, total, my_vote: myVote },
+        poll_question: question,
+        poll_options: options,
+        results: tallies,
+        my_vote: myVote
       });
-
-      const myVote = (talliesResult.mine || []).find((v: { post_id: string; option_index: number }) => v.post_id === postId)?.option_index ?? null;
-
-      res.json({ ok: true, results, my_vote: myVote });
     } catch (error: any) {
       console.error('vote error', { postId, voterId, optionIndex, err: error?.message || error });
       res.status(500).json({ message: error?.message || "Failed to vote on poll" });

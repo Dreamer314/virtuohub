@@ -25,9 +25,12 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Poll voting state from server
-  const myVote = (post as any).my_vote ?? null;
-  const pollResults = (post as any).results ?? [];
+  // Poll voting state from server - defensive reading
+  const options = (post as any).poll?.options ?? (post as any).poll_options ?? [];
+  const talliesRaw = (post as any).poll?.tallies ?? (post as any).results ?? [];
+  const myVote = (post as any).poll?.my_vote ?? (post as any).my_vote ?? null;
+  const total = (post as any).poll?.total ?? talliesRaw.reduce((a: number, b: number) => a + (Number(b) || 0), 0);
+  const tallies = Array.isArray(talliesRaw) ? talliesRaw : new Array(options.length).fill(0);
   const hasVoted = myVote !== null;
 
   const likeMutation = useMutation({
@@ -56,24 +59,35 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
     mutationFn: (optionIndex: number) => 
       apiRequest('POST', `/api/posts/${post.id}/polls/vote`, { optionIndex }),
     onSuccess: (data: any) => {
-      // Update the post cache with fresh tallies from server
-      if (data?.results && data.my_vote !== undefined) {
-        // Update in posts list
-        queryClient.setQueryData(['/api/posts'], (oldData: any) => {
-          if (!oldData) return oldData;
-          return oldData.map((p: any) => 
-            p.id === post.id 
-              ? { ...p, results: data.results, my_vote: data.my_vote }
-              : p
-          );
+      // Update the post cache with fresh tallies from server using normalized response
+      // Update in posts list
+      queryClient.setQueryData(['/api/posts'], (oldData: any) => {
+        if (!oldData) return oldData;
+        return oldData.map((p: any) => {
+          if (p.id !== post.id) return p;
+          return {
+            ...p,
+            poll: data.poll ?? p.poll,
+            poll_question: data.poll_question ?? p.poll_question,
+            poll_options: data.poll_options ?? p.poll_options,
+            results: data.results ?? p.results,
+            my_vote: data.my_vote ?? p.my_vote,
+          };
         });
-        
-        // Update single post cache if it exists
-        queryClient.setQueryData(['/api/posts', post.id], (oldData: any) => {
-          if (!oldData) return oldData;
-          return { ...oldData, results: data.results, my_vote: data.my_vote };
-        });
-      }
+      });
+      
+      // Update single post cache if it exists
+      queryClient.setQueryData(['/api/posts', post.id], (oldData: any) => {
+        if (!oldData) return oldData;
+        return {
+          ...oldData,
+          poll: data.poll ?? oldData.poll,
+          poll_question: data.poll_question ?? oldData.poll_question,
+          poll_options: data.poll_options ?? oldData.poll_options,
+          results: data.results ?? oldData.results,
+          my_vote: data.my_vote ?? oldData.my_vote,
+        };
+      });
       
       toast({ title: "Vote recorded!" });
     },
@@ -356,21 +370,20 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
             </div>
 
             {/* Poll Section for VHub Data Pulse */}
-            {post.subtype === 'poll' && pollData && pollData.choices && (
+            {post.subtype === 'poll' && options.length > 0 && (
               <div className="vh-poll-card mb-4">
                 <p className="vh-body-small font-medium text-vh-text-muted mb-3">
-                  {pollData.question || 'Vote on this poll:'}
+                  {(post as any).poll?.question ?? (post as any).poll_question ?? post.title ?? 'Vote on this poll:'}
                 </p>
                 <div className="space-y-2">
-                  {pollData.choices.map((choice: any, index: number) => {
-                    const voteCount = pollResults[index] || 0;
-                    const totalVotes = pollResults.reduce((sum: number, count: number) => sum + (count || 0), 0);
-                    const percentage = totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0;
+                  {options.map((optionText: string, index: number) => {
+                    const voteCount = tallies[index] || 0;
+                    const percentage = total > 0 ? Math.round((voteCount / total) * 100) : 0;
                     const isSelected = myVote === index;
                     
                     return (
                       <button
-                        key={choice.id}
+                        key={index}
                         onClick={() => {
                           if (!hasVoted && !voteMutation.isPending) {
                             voteMutation.mutate(index);
@@ -388,7 +401,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                         data-testid={`poll-option-${post.id}-${index}`}
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className="vh-body-small font-medium">{choice.text}</span>
+                          <span className="vh-body-small font-medium">{optionText}</span>
                           {hasVoted && (
                             <span className="vh-caption">
                               {percentage}%
@@ -408,7 +421,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 </div>
                 {hasVoted && (
                   <p className="vh-caption mt-2">
-                    Poll results based on {pollResults.reduce((sum: number, count: number) => sum + (count || 0), 0)} votes
+                    Poll results based on {total} votes
                   </p>
                 )}
               </div>
