@@ -271,7 +271,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(500).json({ message: result.error || "Failed to save vote" });
       }
       
-      res.json({ ok: true });
+      // Get fresh tallies and return them
+      const talliesResult = await storage.getPostPollTallies([postId], voterId);
+      if (!talliesResult.ok) {
+        return res.status(500).json({ message: talliesResult.error || "Failed to fetch tallies" });
+      }
+
+      // Build results array sized to number of poll options
+      const results = new Array(pollOptions.length).fill(0);
+      (talliesResult.counts || []).forEach(item => {
+        if (item.post_id === postId) {
+          results[item.option_index] = item.count;
+        }
+      });
+
+      const myVote = (talliesResult.mine || []).find(v => v.post_id === postId)?.option_index ?? null;
+
+      res.json({ ok: true, results, my_vote: myVote });
     } catch (error: any) {
       console.error('vote error', { postId, voterId, optionIndex, err: error?.message || error });
       res.status(500).json({ message: error?.message || "Failed to vote on poll" });

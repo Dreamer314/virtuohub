@@ -45,4 +45,10 @@ export interface IStorage {
   voteOnPostPoll(postId: string, voterId: string, optionIndex: number): Promise<{ ok: boolean; error?: string }>;
   getPostPollVote(postId: string, voterId: string): Promise<number | null>;
   getPostPollResults(postId: string): Promise<number[]>;
+  getPostPollTallies(postIds: string[], voterId?: string): Promise<{ 
+    ok: boolean; 
+    error?: string; 
+    counts?: { post_id: string; option_index: number; count: number }[]; 
+    mine?: { post_id: string; option_index: number }[] 
+  }>;
 }
