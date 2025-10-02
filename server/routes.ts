@@ -77,6 +77,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const price = raw.price ?? null;
     const subtype = (raw.subtype ?? 'thread').trim();
     const subtypeData = raw.subtypeData ?? null;
+    const pollOptions = Array.isArray(raw.poll_options) ? raw.poll_options : null;
     // --- end normalization shim ---
 
     if (!title || !content) {
@@ -102,6 +103,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         subtype,
         subtypeData,
         image_urls: imageUrls,
+        poll_options: pollOptions,
       } as any);
 
       return res.status(201).json(post);
