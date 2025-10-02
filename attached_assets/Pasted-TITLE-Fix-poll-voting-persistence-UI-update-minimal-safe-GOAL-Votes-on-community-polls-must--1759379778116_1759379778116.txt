@@ -1,0 +1,124 @@
+TITLE: Fix poll voting persistence + UI update (minimal, safe)
+
+GOAL: Votes on community polls must persist in the DB and the card must flip to results immediately and after refresh.
+
+SCOPE/GUARDRAILS
+
+Touch only these files:
+shared/schema.ts, server/supabaseStorage.ts, server/routes.ts, client/src/components/cards/PostCard.tsx
+
+Do not modify image uploads, threads, auth, CSP, or unrelated routes.
+
+Keep all existing behavior intact; add only the minimal code needed.
+
+1) DB schema (Drizzle)
+Add a table public.post_poll_votes if not present:
+
+// shared/schema.ts
+export const postPollVotes = pgTable('post_poll_votes', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  postId: uuid('post_id').notNull().references(() => posts.id, { onDelete: 'cascade' }),
+  voterId: uuid('voter_id').notNull(),
+  optionIndex: integer('option_index').notNull(), // 0-based index into poll_options
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+}, (t) => ({
+  uniqueVote: unique().on(t.postId, t.voterId),
+  idxPost: index('idx_ppv_post').on(t.postId),
+}));
+
+
+Then run the migration (whatever command the project uses, e.g. npm run db:push).
+
+Also, if we manage RLS in SQL, add:
+
+alter table public.post_poll_votes enable row level security;
+create policy "read all" on public.post_poll_votes for select using (true);
+create policy "insert own" on public.post_poll_votes for insert to authenticated with check (auth.uid() = voter_id);
+create policy "update own" on public.post_poll_votes for update to authenticated using (auth.uid() = voter_id) with check (auth.uid() = voter_id);
+
+
+(We use supabaseAdmin so RLS won’t block writes, but the read policy keeps things simple.)
+
+2) Storage layer (server/supabaseStorage.ts)
+Add two helpers:
+
+async savePostPollVote(postId: string, voterId: string, optionIndex: number) {
+  const { error } = await supabaseAdmin
+    .from('post_poll_votes')
+    .upsert({ post_id: postId, voter_id: voterId, option_index: optionIndex }, { onConflict: 'post_id,voter_id' });
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}
+
+async getPostPollTallies(postIds: string[], voterId?: string) {
+  // tallies
+  const { data: counts, error: cErr } = await supabaseAdmin
+    .from('post_poll_votes')
+    .select('post_id, option_index, count:count(*)')
+    .in('post_id', postIds);
+  if (cErr) return { ok: false, error: cErr.message };
+
+  // my votes
+  let mine: { post_id: string; option_index: number }[] = [];
+  if (voterId) {
+    const { data: mv, error: mErr } = await supabaseAdmin
+      .from('post_poll_votes')
+      .select('post_id, option_index')
+      .eq('voter_id', voterId)
+      .in('post_id', postIds);
+    if (mErr) return { ok: false, error: mErr.message };
+    mine = mv ?? [];
+  }
+  return { ok: true, counts: counts ?? [], mine };
+}
+
+
+3) Vote endpoint (server/routes.ts)
+In POST /api/posts/:postId/polls/vote:
+
+Validate optionIndex (>=0 and < poll options.length).
+
+Call savePostPollVote.
+
+Then return fresh tallies for that post and my_vote.
+Example response:
+
+{ "ok": true, "results": [3, 5, 2], "my_vote": 1 }
+
+
+Also augment GET /api/posts and GET /api/posts/:id:
+
+Collect all poll post IDs in the response.
+
+Call getPostPollTallies(ids, req.user?.id).
+
+Attach results (array sized to number of options, fill 0s for missing) and my_vote (number or null) to each poll post.
+
+4) PostCard.tsx (client)
+
+Ensure each poll option button has its own onClick={() => voteMutation.mutate(index)} so it’s not “one big box”.
+
+When the vote mutation resolves, update the local card: set post.results and post.my_vote from the API response.
+If using React Query, queryClient.setQueryData(['posts'], updater) is fine.
+
+Keep buttons disabled while voting and once my_vote is set.
+
+5) Acceptance checks
+
+Create a poll with 2–4 options.
+
+Vote. The card immediately flips to bars with counts and highlights your choice.
+
+Refresh. The post still shows your vote and current tallies.
+
+In SQL:
+
+select * from public.post_poll_votes order by created_at desc limit 20;
+select post_id, option_index, count(*) from public.post_poll_votes group by 1,2 order by 1,2;
+
+
+You should see rows for your post and option.
+
+Keep the diff minimal; do not touch non-poll features.
+
+-- END --
