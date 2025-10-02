@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, boolean, integer, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, boolean, integer, jsonb, smallint, unique } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -123,6 +123,16 @@ export const comments = pgTable("comments", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const postPollVotes = pgTable("post_poll_votes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  postId: varchar("post_id").notNull().references(() => posts.id, { onDelete: "cascade" }),
+  voterId: varchar("voter_id").notNull().references(() => profiles.id, { onDelete: "cascade" }),
+  optionIndex: smallint("option_index").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => ({
+  uniqueVotePerPost: unique().on(table.postId, table.voterId),
+}));
+
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
   password: true,
@@ -172,6 +182,12 @@ export const insertCommentSchema = createInsertSchema(comments).pick({
   parentId: true,
 });
 
+export const insertPostPollVoteSchema = createInsertSchema(postPollVotes).pick({
+  postId: true,
+  voterId: true,
+  optionIndex: true,
+});
+
 export const insertProfileSchema = createInsertSchema(profiles).pick({
   id: true,
   handle: true,
@@ -219,6 +235,9 @@ export type Article = typeof articles.$inferSelect;
 
 export type InsertComment = z.infer<typeof insertCommentSchema>;
 export type Comment = typeof comments.$inferSelect;
+
+export type InsertPostPollVote = z.infer<typeof insertPostPollVoteSchema>;
+export type PostPollVote = typeof postPollVotes.$inferSelect;
 
 export type InsertProfile = z.infer<typeof insertProfileSchema>;
 export type Profile = typeof profiles.$inferSelect;

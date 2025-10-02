@@ -888,6 +888,32 @@ As the lines between physical and digital continue to blur, virtual fashion stan
       this.comments.set(commentId, comment);
     }
   }
+
+  // Poll vote methods (in-memory for dev/testing)
+  private pollVotes = new Map<string, { voterId: string; optionIndex: number }>();
+
+  async voteOnPostPoll(postId: string, voterId: string, optionIndex: number): Promise<{ ok: boolean }> {
+    const key = `${postId}:${voterId}`;
+    this.pollVotes.set(key, { voterId, optionIndex });
+    return { ok: true };
+  }
+
+  async getPostPollVote(postId: string, voterId: string): Promise<number | null> {
+    const key = `${postId}:${voterId}`;
+    const vote = this.pollVotes.get(key);
+    return vote ? vote.optionIndex : null;
+  }
+
+  async getPostPollResults(postId: string): Promise<number[]> {
+    const results: number[] = [];
+    for (const [key, vote] of this.pollVotes.entries()) {
+      if (key.startsWith(`${postId}:`)) {
+        const idx = vote.optionIndex;
+        results[idx] = (results[idx] || 0) + 1;
+      }
+    }
+    return results;
+  }
 }
 
 export const storage = new MemStorage();

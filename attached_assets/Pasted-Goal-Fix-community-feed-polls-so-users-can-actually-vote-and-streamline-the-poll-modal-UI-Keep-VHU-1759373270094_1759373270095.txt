@@ -1,0 +1,146 @@
+Goal
+Fix community-feed polls so users can actually vote, and streamline the poll modal UI. Keep VHUB Pulse (admin-only) polls separate.
+
+Scope guardrails
+
+Do not change the existing Pulse (admin) poll code or tables.
+
+Keep all changes narrowly scoped to community post polls (subtype 'poll') and the CreatePostModal.
+
+No unrelated deletions/refactors. Small, additive diffs only.
+
+1) Database: add votes storage for post polls
+
+Create a new table post_poll_votes with RLS. One vote per (post_id, voter_id). Use profiles.id (same as auth uid) for voter.
+
+-- Enable pgcrypto if needed for gen_random_uuid()
+create extension if not exists pgcrypto;
+
+create table if not exists public.post_poll_votes (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid not null references public.posts(id) on delete cascade,
+  voter_id uuid not null references public.profiles(id) on delete cascade,
+  option_index smallint not null check (option_index >= 0 and option_index <= 9),
+  created_at timestamptz not null default now(),
+  unique (post_id, voter_id)
+);
+
+alter table public.post_poll_votes enable row level security;
+
+-- Anyone can read aggregate results
+create policy "post_poll_votes_select" on public.post_poll_votes
+for select using (true);
+
+-- Logged-in user can insert/update their own vote
+create policy "post_poll_votes_upsert_own" on public.post_poll_votes
+for insert with check (auth.uid() = voter_id);
+
+create policy "post_poll_votes_update_own" on public.post_poll_votes
+for update using (auth.uid() = voter_id) with check (auth.uid() = voter_id);
+
+
+If your server prefers UPSERT, rely on the unique constraint (post_id, voter_id).
+
+2) Server: add a tiny vote endpoint and include poll state
+
+In server/routes.ts:
+
+Add POST /api/posts/:postId/polls/vote (validate session).
+
+Body: { optionIndex: number }.
+
+Verify the post exists and subtype = 'poll'.
+
+Verify optionIndex is within bounds of posts.poll_options (0..n-1).
+
+Upsert into post_poll_votes on (post_id, voter_id) → set option_index.
+
+Return { ok: true }.
+
+Augment the existing posts feed response for poll posts:
+
+For each subtype = 'poll' post, attach:
+
+my_vote = the caller’s option_index from post_poll_votes (or null).
+
+results = an array of counts by option_index (0 if none).
+(Use a select count(*) group by option_index where post_id = $1.)
+
+isClosed computed from poll duration/expires_at (existing logic).
+
+Do not touch Pulse endpoints/tables.
+
+3) Client: wire up vote + correct hasVoted state
+
+In client/src/components/... where poll cards render:
+
+If post.subtype === 'poll':
+
+Show vote UI when isClosed === false and my_vote == null.
+
+Show results UI when my_vote != null or isClosed === true.
+
+On option click:
+
+await apiRequest('POST', \/api/posts/${post.id}/polls/vote`, { optionIndex })`
+
+Optimistically update my_vote and increment the chosen result count, or re-fetch the post.
+
+4) CreatePostModal: hide unused fields for polls + add fun helper text
+
+In CreatePostModal.tsx:
+
+When subtype === 'poll', hide (don’t delete globally):
+
+Title input,
+
+Price,
+
+Links,
+
+Platforms,
+
+Images upload.
+
+Keep: Poll Description, Poll Question, Poll Options, Duration, Category.
+
+Add helper notes (inline helpText or small-muted text):
+
+Poll Description – “Add quick context so voters know what this is about.”
+
+Poll Question – “Ask it plainly. One clear question works best.”
+
+Poll Options (2–10) – “Short choices. Hit Enter to add another.”
+
+Duration – “How long voting stays open. Results stay visible after.”
+
+(Style to match your UI; keep text light/fun but concise.)
+
+No behavior change for thread posts—only conditionally render these fields when subtype==='poll'.
+
+5) Quick checks (after deploy)
+
+Create a poll with 2–3 options.
+
+In Network tab, confirm:
+
+Feed GET /api/posts includes my_vote (null initially) + results arrays for poll posts.
+
+Clicking an option calls POST /api/posts/:postId/polls/vote → 200.
+
+In SQL:
+
+select * from post_poll_votes order by created_at desc limit 10;
+
+
+You should see your vote row.
+
+UI flips from vote choices → results with your selection highlighted.
+
+6) Absolutely do not:
+
+Reuse pulse_votes for community polls.
+
+Change CSP, image code, or thread logic.
+
+Remove code used by threads—only hide in the modal when subtype==='poll'.

@@ -404,4 +404,56 @@ export class SupabaseStorage implements IStorage {
   async voteOnPoll(postId: string, optionIndex: number): Promise<PostWithAuthor | null> {
     return this.memStorage.voteOnPoll(postId, optionIndex);
   }
+
+  // ============================================
+  // Poll Vote Methods (Supabase)
+  // ============================================
+
+  async voteOnPostPoll(postId: string, voterId: string, optionIndex: number): Promise<{ ok: boolean }> {
+    const { error } = await supabaseAdmin
+      .from('post_poll_votes')
+      .upsert({
+        post_id: postId,
+        voter_id: voterId,
+        option_index: optionIndex,
+      }, {
+        onConflict: 'post_id,voter_id'
+      });
+
+    if (error) {
+      console.error('Failed to vote on post poll:', error);
+      return { ok: false };
+    }
+
+    return { ok: true };
+  }
+
+  async getPostPollVote(postId: string, voterId: string): Promise<number | null> {
+    const { data, error } = await supabaseAdmin
+      .from('post_poll_votes')
+      .select('option_index')
+      .eq('post_id', postId)
+      .eq('voter_id', voterId)
+      .maybeSingle();
+
+    if (error || !data) return null;
+    return data.option_index;
+  }
+
+  async getPostPollResults(postId: string): Promise<number[]> {
+    const { data, error } = await supabaseAdmin
+      .from('post_poll_votes')
+      .select('option_index')
+      .eq('post_id', postId);
+
+    if (error || !data) return [];
+
+    const results: number[] = [];
+    for (const vote of data) {
+      const idx = vote.option_index;
+      results[idx] = (results[idx] || 0) + 1;
+    }
+
+    return results;
+  }
 }

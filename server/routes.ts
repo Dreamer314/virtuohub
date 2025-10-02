@@ -34,7 +34,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         filters.authorId = authorId as string;
       }
       
-      const posts = await storage.getPosts(filters);
+      let posts = await storage.getPosts(filters);
+      
+      // Augment poll posts with vote data
+      const userId = (req as any).user?.id;
+      posts = await Promise.all(posts.map(async (post) => {
+        if (post.subtype === 'poll') {
+          const results = await storage.getPostPollResults(post.id);
+          const myVote = userId ? await storage.getPostPollVote(post.id, userId) : null;
+          return {
+            ...post,
+            my_vote: myVote,
+            results,
+          };
+        }
+        return post;
+      }));
+      
       res.json(posts);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch posts" });
@@ -44,10 +60,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get a single post
   app.get("/api/posts/:id", async (req, res) => {
     try {
-      const post = await storage.getPost(req.params.id);
+      let post = await storage.getPost(req.params.id);
       if (!post) {
         return res.status(404).json({ message: "Post not found" });
       }
+      
+      // Augment poll post with vote data
+      const userId = (req as any).user?.id;
+      if (post.subtype === 'poll') {
+        const results = await storage.getPostPollResults(post.id);
+        const myVote = userId ? await storage.getPostPollVote(post.id, userId) : null;
+        post = {
+          ...post,
+          my_vote: myVote,
+          results,
+        } as any;
+      }
+      
       res.json(post);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch post" });
@@ -207,24 +236,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(PLATFORMS);
   });
 
-  // Vote on a poll
-  app.post("/api/posts/:postId/vote", async (req, res) => {
+  // Vote on a community post poll (with user tracking)
+  app.post("/api/posts/:postId/polls/vote", validateSession, async (req, res) => {
     try {
       const { postId } = req.params;
       const { optionIndex } = req.body;
+      const voterId = req.user!.id;
       
       if (typeof optionIndex !== 'number' || optionIndex < 0) {
         return res.status(400).json({ message: "Invalid option index" });
       }
       
-      const updatedPost = await storage.voteOnPoll(postId, optionIndex);
-      
-      if (!updatedPost) {
-        return res.status(404).json({ message: "Poll not found or invalid" });
+      // Verify the post exists and is a poll
+      const post = await storage.getPost(postId);
+      if (!post) {
+        return res.status(404).json({ message: "Post not found" });
       }
       
-      res.json(updatedPost);
+      if (post.subtype !== 'poll') {
+        return res.status(400).json({ message: "Post is not a poll" });
+      }
+      
+      // Verify optionIndex is within bounds
+      const pollOptions = (post as any).poll_options || (post.subtypeData as any)?.choices || [];
+      if (optionIndex >= pollOptions.length) {
+        return res.status(400).json({ message: "Option index out of bounds" });
+      }
+      
+      // Save the vote
+      const result = await storage.voteOnPostPoll(postId, voterId, optionIndex);
+      
+      if (!result.ok) {
+        return res.status(500).json({ message: "Failed to save vote" });
+      }
+      
+      res.json({ ok: true });
     } catch (error) {
+      console.error("Failed to vote on poll:", error);
       res.status(500).json({ message: "Failed to vote on poll" });
     }
   });

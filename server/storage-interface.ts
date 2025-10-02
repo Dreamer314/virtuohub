@@ -40,4 +40,9 @@ export interface IStorage {
   getComments(articleId: string): Promise<CommentWithAuthor[]>;
   getPostComments(postId: string): Promise<CommentWithAuthor[]>;
   likeComment(commentId: string): Promise<void>;
+
+  // Poll vote methods
+  voteOnPostPoll(postId: string, voterId: string, optionIndex: number): Promise<{ ok: boolean }>;
+  getPostPollVote(postId: string, voterId: string): Promise<number | null>;
+  getPostPollResults(postId: string): Promise<number[]>;
 }

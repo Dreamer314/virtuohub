@@ -21,11 +21,14 @@ interface PostCardProps {
 
 export const PostCard = React.memo(function PostCard({ post, currentUserId = 'user1', isDetailView = false }: PostCardProps) {
   const [isSaved, setIsSaved] = useState(post.isSaved || false);
-  const [hasVoted, setHasVoted] = useState(false);
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
   const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  // Poll voting state from server
+  const myVote = (post as any).my_vote ?? null;
+  const pollResults = (post as any).results ?? [];
+  const hasVoted = myVote !== null;
 
   const likeMutation = useMutation({
     mutationFn: () => apiRequest('POST', `/api/posts/${post.id}/like`),
@@ -46,6 +49,23 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
       setIsSaved(!isSaved);
       queryClient.invalidateQueries({ queryKey: ['/api/users', currentUserId, 'saved-posts'] });
       toast({ title: isSaved ? "Post unsaved" : "Post saved!" });
+    }
+  });
+
+  const voteMutation = useMutation({
+    mutationFn: (optionIndex: number) => 
+      apiRequest('POST', `/api/posts/${post.id}/polls/vote`, { optionIndex }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      queryClient.invalidateQueries({ queryKey: ['/api/posts', post.id] });
+      toast({ title: "Vote recorded!" });
+    },
+    onError: () => {
+      toast({ 
+        title: "Vote failed", 
+        description: "Please try again",
+        variant: "destructive" 
+      });
     }
   });
 
@@ -305,20 +325,20 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 </p>
                 <div className="space-y-2">
                   {pollData.choices.map((choice: any, index: number) => {
-                    const totalVotes = pollData.choices?.reduce((sum: number, c: any) => sum + c.votes, 0) || 0;
-                    const percentage = totalVotes > 0 ? Math.round((choice.votes / totalVotes) * 100) : 0;
-                    const isSelected = selectedOption === index;
+                    const voteCount = pollResults[index] || 0;
+                    const totalVotes = pollResults.reduce((sum: number, count: number) => sum + (count || 0), 0);
+                    const percentage = totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0;
+                    const isSelected = myVote === index;
                     
                     return (
                       <button
                         key={choice.id}
                         onClick={() => {
-                          if (!hasVoted) {
-                            setSelectedOption(index);
-                            setHasVoted(true);
+                          if (!hasVoted && !voteMutation.isPending) {
+                            voteMutation.mutate(index);
                           }
                         }}
-                        disabled={hasVoted}
+                        disabled={hasVoted || voteMutation.isPending}
                         className={cn(
                           "w-full p-3 rounded-vh-md border text-left transition-vh-fast",
                           hasVoted 
@@ -350,7 +370,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 </div>
                 {hasVoted && (
                   <p className="vh-caption mt-2">
-                    Poll results based on {pollData.choices?.reduce((sum: number, c: any) => sum + c.votes, 0) || 0} votes
+                    Poll results based on {pollResults.reduce((sum: number, count: number) => sum + (count || 0), 0)} votes
                   </p>
                 )}
               </div>
