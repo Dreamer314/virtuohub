@@ -88,7 +88,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const talliesResult = await storage.getPostPollTallies([post.id], userId);
         
         if (talliesResult.ok) {
-          const pollOptions = (post as any).poll_options || (post.subtypeData as any)?.choices || [];
+          const pollOptions = (post as any).poll_options || (post.subtypeData as any)?.poll?.options || [];
           const results = new Array(pollOptions.length).fill(0);
           
           (talliesResult.counts || []).forEach((item: { post_id: string; option_index: number; count: number }) => {
@@ -137,15 +137,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const subtype = (raw.subtype ?? 'thread').trim();
     const subtypeData = raw.subtypeData ?? null;
     const pollOptions = Array.isArray(raw.poll_options) ? raw.poll_options : null;
+    const pollQuestion = raw.pollQuestion || null;
     // --- end normalization shim ---
 
-    if (!title || !content) {
+    // Poll-specific validation
+    if (subtype === 'poll') {
+      if (!pollOptions || !Array.isArray(pollOptions) || pollOptions.length < 2) {
+        return res.status(400).json({ 
+          error: 'POLL_VALIDATION_FAILED',
+          message: 'Polls must have at least 2 options'
+        });
+      }
+    }
+
+    if (!title && !content) {
       return res.status(400).json({ error: 'TITLE_AND_CONTENT_REQUIRED' });
     }
 
     console.log('createPost payload (server):', {
       subtype,
-      imageCount: imageUrls.length
+      imageCount: imageUrls.length,
+      pollOptionsCount: pollOptions?.length
     });
 
     try {
@@ -163,6 +175,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         subtypeData,
         image_urls: imageUrls,
         poll_options: pollOptions,
+        pollQuestion: pollQuestion,
       } as any);
 
       return res.status(201).json(post);
@@ -288,7 +301,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Verify optionIndex is within bounds
-      const pollOptions = (post as any).poll_options || (post.subtypeData as any)?.choices || [];
+      const pollOptions = (post as any).poll_options || (post.subtypeData as any)?.poll?.options || [];
       if (optionIndex >= pollOptions.length) {
         return res.status(400).json({ message: "Option index out of bounds" });
       }

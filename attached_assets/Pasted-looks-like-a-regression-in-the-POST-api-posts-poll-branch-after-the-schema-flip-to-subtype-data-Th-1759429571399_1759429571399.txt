@@ -1,0 +1,190 @@
+looks like a regression in the POST /api/posts poll branch after the schema flip to subtype_data. The modal is fine, but the server is probably rejecting the payload (or failing to map poll_options → subtype_data) and returning the generic “Failed to publish”.
+
+Here’s a tight, low-risk prompt  to fix poll creation + voting end-to-end and surface real errors. It keeps scope to only what we need.
+
+Fix poll creation regression + wire subtype_data + votes (minimal & safe)
+
+GOAL: Creating a community poll should succeed and immediately be voteable. The server must accept the poll payload from the modal, store options in posts.subtype_data, and voting should persist in post_poll_votes.
+
+SCOPE/GUARDRAILS
+
+Touch only:
+
+server/routes.ts
+
+server/supabaseStorage.ts
+
+shared/schema.ts (only if post_poll_votes doesn’t exist yet)
+
+client/src/components/cards/PostCard.tsx (only if needed to consume returned tallies)
+
+Do not change auth, CSP, thread uploads, or anything unrelated.
+
+1) DB (only if missing)
+
+Create votes table & policies if not already present:
+
+// shared/schema.ts
+export const postPollVotes = pgTable('post_poll_votes', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  postId: uuid('post_id').notNull().references(() => posts.id, { onDelete: 'cascade' }),
+  voterId: uuid('voter_id').notNull(),
+  optionIndex: integer('option_index').notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+}, (t) => ({
+  uniqueVote: unique().on(t.postId, t.voterId),
+  idxPost: index('idx_ppv_post').on(t.postId),
+}));
+
+
+Then run the migration (e.g. npm run db:push).
+If we manage RLS via SQL, also:
+
+alter table public.post_poll_votes enable row level security;
+create policy "read all" on public.post_poll_votes for select using (true);
+create policy "insert own" on public.post_poll_votes for insert to authenticated with check (auth.uid() = voter_id);
+create policy "update own" on public.post_poll_votes for update to authenticated using (auth.uid() = voter_id) with check (auth.uid() = voter_id);
+
+
+(We write with supabaseAdmin, so RLS won’t block writes; reads stay public.)
+
+2) Storage helpers (server/supabaseStorage.ts)
+
+Save vote + batch tallies (idempotent upsert; conflict on post_id,voter_id):
+
+async savePostPollVote(postId: string, voterId: string, optionIndex: number) {
+  const { error } = await supabaseAdmin
+    .from('post_poll_votes')
+    .upsert(
+      { post_id: postId, voter_id: voterId, option_index: optionIndex },
+      { onConflict: 'post_id,voter_id' }
+    );
+  if (error) return { ok: false, error: error.message };
+  return { ok: true };
+}
+
+async getPostPollTallies(postIds: string[], voterId?: string) {
+  const { data: counts, error: cErr } = await supabaseAdmin
+    .from('post_poll_votes')
+    .select('post_id, option_index, count:count(*)')
+    .in('post_id', postIds);
+  if (cErr) return { ok: false, error: cErr.message };
+
+  let mine: { post_id: string; option_index: number }[] = [];
+  if (voterId) {
+    const { data: mv, error: mErr } = await supabaseAdmin
+      .from('post_poll_votes')
+      .select('post_id, option_index')
+      .eq('voter_id', voterId)
+      .in('post_id', postIds);
+    if (mErr) return { ok: false, error: mErr.message };
+    mine = mv ?? [];
+  }
+  return { ok: true, counts: counts ?? [], mine };
+}
+
+
+Create/fetch posts (polls use subtype_data):
+
+In createPost:
+
+For subtype === 'poll', accept the existing client payload:
+pollQuestion (string) and poll_options (string[]) from the body.
+
+Convert to subtype_data:
+
+// subtype_data shape we standardize on:
+// { poll: { question: string, options: string[] } }
+const subtypeData =
+  body.subtype === 'poll'
+    ? { poll: { question: body.pollQuestion || body.title || '', options: body.poll_options || [] } }
+    : null;
+
+
+If the DB requires a title for posts, use the poll question as title when subtype is poll.
+
+In the row→API mapping:
+
+For poll posts, read back row.subtype_data?.poll to expose:
+
+poll_question: string
+
+poll_options: string[]
+
+This ensures the vote endpoint can validate optionIndex against poll_options.length.
+
+3) Routes (server/routes.ts)
+
+POST /api/posts
+
+Keep existing thread logic intact.
+
+In the poll branch:
+
+Validate: Array.isArray(body.poll_options) && body.poll_options.length >= 2
+
+Build subtype_data as above and pass into storage.
+
+If title is missing, set title = body.pollQuestion || 'Poll'.
+
+Return the created post (with poll_question/poll_options mapped).
+
+POST /api/posts/:postId/polls/vote
+
+Get optionIndex from JSON body; must be 0 <= optionIndex < poll_options.length.
+
+Save vote via savePostPollVote(postId, userId, optionIndex).
+
+Fetch fresh tallies for that one post via getPostPollTallies([postId], userId).
+
+Respond:
+
+{ "ok": true, "results": [/* counts per option */], "my_vote": <number> }
+
+
+On errors, console.error('vote error', { postId, voterId, optionIndex, err }) and return { ok:false, message } so the client sees a real reason.
+
+GET /api/posts & /api/posts/:id
+
+Collect poll post IDs in the response.
+
+Call getPostPollTallies(ids, req.user?.id).
+
+For each poll post, attach:
+
+results: number[] (same length as poll_options, fill zeros where missing)
+
+my_vote: number|null
+
+4) Client (PostCard.tsx)
+
+Ensure each poll option button calls onClick={() => voteMutation.mutate(index)} (no single “big box”).
+
+When the vote mutation returns, update the local post with results + my_vote from the response (or invalidate the list query).
+
+Disable buttons while pending and when my_vote !== null.
+
+5) Acceptance
+
+Create poll (2–4 options).
+DevTools → Network → POST /api/posts should be 200 with the post object; no generic “Failed to publish”.
+
+Vote once in the feed.
+
+POST /api/posts/:id/polls/vote returns {ok:true, results, my_vote}.
+
+The card flips to bars, your choice is highlighted, buttons disabled.
+
+Refresh the page: the poll still shows your vote and tallies.
+
+(Optional SQL)
+
+select * from public.post_poll_votes order by created_at desc limit 20;
+select post_id, option_index, count(*) from public.post_poll_votes group by 1,2 order by 1,2;
+
+
+Rows should exist for your poll.
+
+Keep the diff minimal; do not touch unrelated features.
+
+— END —

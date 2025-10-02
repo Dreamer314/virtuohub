@@ -97,18 +97,30 @@ export class SupabaseStorage implements IStorage {
 
     // Prepare subtype_data for polls
     let subtypeData = null;
-    if (post.subtype === 'poll' && Array.isArray((post as any).poll_options)) {
+    let finalTitle = post.title;
+    
+    if (post.subtype === 'poll') {
+      const pollOptions = Array.isArray((post as any).poll_options) ? (post as any).poll_options : [];
+      const pollQuestion = (post as any).pollQuestion || post.title || post.body || 'Poll';
+      
       subtypeData = {
-        question: post.title || post.body || 'Poll Question',
-        choices: (post as any).poll_options.map((text: string) => ({ text, votes: 0, id: text }))
+        poll: {
+          question: pollQuestion,
+          options: pollOptions
+        }
       };
+      
+      // Use poll question as title if title is missing
+      if (!finalTitle) {
+        finalTitle = pollQuestion;
+      }
     }
 
     const { data, error } = await supabaseAdmin
       .from('posts')
       .insert({
         author_id: post.authorId,
-        title: post.title,
+        title: finalTitle,
         content: post.body,
         category: post.tags?.[0] || 'general',
         platform_tags: post.platforms || [],
@@ -252,8 +264,10 @@ export class SupabaseStorage implements IStorage {
       updatedAt: new Date(),
     };
 
-    // Extract poll_options from subtype_data if it exists
-    const pollOptions = data.subtype_data?.choices?.map((choice: any) => choice.text) || null;
+    // Extract poll data from new subtype_data structure: { poll: { question, options } }
+    const pollData = data.subtype_data?.poll || null;
+    const pollQuestion = pollData?.question || null;
+    const pollOptions = pollData?.options || null;
 
     return {
       id: data.id,
@@ -271,7 +285,8 @@ export class SupabaseStorage implements IStorage {
       status: 'published',
       subtype: data.subtype || 'thread',
       subtypeData: data.subtype_data || null,
-      poll_options: pollOptions, // Include raw poll_options for vote endpoint
+      poll_question: pollQuestion,
+      poll_options: pollOptions,
       likes: data.likes || 0,
       comments: data.comments || 0,
       shares: data.shares || 0,
