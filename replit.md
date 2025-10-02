@@ -12,6 +12,20 @@ VirtuoHub is a modern community platform designed for virtual world creators, fe
 
 ## Recent Changes
 
+**October 2, 2025 - Poll Voting System & Streamlined Poll Creation**
+- **Poll Voting System**: Implemented complete poll voting functionality for community feed posts
+  - Database: Added `post_poll_votes` table with unique constraint (post_id, voter_id) for one vote per user
+  - API: Created POST /api/posts/:postId/polls/vote endpoint with session validation and upsert logic
+  - Feed Augmentation: GET /api/posts now includes `my_vote` (user's selection) and `results` (vote counts)
+  - UI: PostCard component uses server-backed voting with optimistic updates and persistent vote tracking
+  - Votes persist across page refreshes and enforce one-vote-per-user constraint
+- **Streamlined Poll Creation UI**: CreatePostModal now hides unused fields for polls
+  - Hidden for polls: Title, Price, Platforms, Links, Images sections
+  - Visible for polls: Poll Description (body), Poll Question, Poll Options (2-10), Duration, Category
+  - Added contextual helper text for each poll field to guide users
+  - Fixed validation schema: title now optional for polls, required only for threads
+  - Poll creation flow now streamlined and intuitive
+
 **October 2, 2025 - Reddit-Style Images & Poll Fix**
 - **Reddit-Style Image Display**: Changed feed images from cropping to shrink-to-fit
   - Feed images: `max-h-[28rem]` (448px) with `object-contain` and `bg-black` background
