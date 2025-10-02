@@ -85,13 +85,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Augment poll post with vote data
       const userId = (req as any).user?.id;
       if (post.subtype === 'poll') {
-        const results = await storage.getPostPollResults(post.id);
-        const myVote = userId ? await storage.getPostPollVote(post.id, userId) : null;
-        post = {
-          ...post,
-          my_vote: myVote,
-          results,
-        } as any;
+        const talliesResult = await storage.getPostPollTallies([post.id], userId);
+        
+        if (talliesResult.ok) {
+          const pollOptions = (post as any).poll_options || (post.subtypeData as any)?.choices || [];
+          const results = new Array(pollOptions.length).fill(0);
+          
+          (talliesResult.counts || []).forEach((item: { post_id: string; option_index: number; count: number }) => {
+            if (item.post_id === post.id) {
+              results[item.option_index] = item.count;
+            }
+          });
+          
+          const myVote = (talliesResult.mine || []).find((v: { post_id: string; option_index: number }) => v.post_id === post.id)?.option_index ?? null;
+          
+          post = {
+            ...post,
+            my_vote: myVote,
+            results,
+          } as any;
+        }
       }
       
       res.json(post);
