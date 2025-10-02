@@ -46,7 +46,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
         if (talliesResult.ok) {
           posts = posts.map(post => {
             if (post.subtype === 'poll') {
-              const pollOptions = (post as any).poll_options || (post.subtypeData as any)?.choices || [];
+              // Extract poll options with backward compatibility fallbacks
+              const subtypeData = (post.subtypeData as any);
+              const pollNode = subtypeData?.poll;
+              
+              // Try new format first: subtypeData.poll.options
+              let pollOptions: string[] = Array.isArray(pollNode?.options) ? pollNode.options : [];
+              
+              // Fallback to legacy format: subtypeData.choices
+              if (pollOptions.length === 0 && Array.isArray(subtypeData?.choices)) {
+                pollOptions = subtypeData.choices.map((c: any) => c.text || String(c)).filter(Boolean);
+              }
+              
+              // Final fallback to flat poll_options field
+              if (pollOptions.length === 0 && Array.isArray((post as any).poll_options)) {
+                pollOptions = (post as any).poll_options;
+              }
+              
               const results = new Array(pollOptions.length).fill(0);
               
               (talliesResult.counts || []).forEach((item: { post_id: string; option_index: number; count: number }) => {
@@ -84,12 +100,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Augment poll post with vote data
       const userId = (req as any).user?.id;
+      console.log(`[GET /api/posts/${req.params.id}] userId from auth:`, userId);
       if (post.subtype === 'poll') {
         const talliesResult = await storage.getPostPollTallies([post.id], userId);
         
         if (talliesResult.ok) {
-          const pollNode = (post.subtypeData as any)?.poll;
-          const pollOptions: string[] = Array.isArray(pollNode?.options) ? pollNode.options : [];
+          // Extract poll options with backward compatibility fallbacks
+          const subtypeData = (post.subtypeData as any);
+          const pollNode = subtypeData?.poll;
+          
+          // Try new format first: subtypeData.poll.options
+          let pollOptions: string[] = Array.isArray(pollNode?.options) ? pollNode.options : [];
+          
+          // Fallback to legacy format: subtypeData.choices
+          if (pollOptions.length === 0 && Array.isArray(subtypeData?.choices)) {
+            pollOptions = subtypeData.choices.map((c: any) => c.text || String(c)).filter(Boolean);
+          }
+          
+          // Final fallback to flat poll_options field
+          if (pollOptions.length === 0 && Array.isArray((post as any).poll_options)) {
+            pollOptions = (post as any).poll_options;
+          }
+          
           const results = new Array(pollOptions.length).fill(0);
           
           (talliesResult.counts || []).forEach((item: { post_id: string; option_index: number; count: number }) => {

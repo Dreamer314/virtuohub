@@ -533,6 +533,7 @@ export class SupabaseStorage implements IStorage {
     // Get user's votes if voterId is provided
     let mine: { post_id: string; option_index: number }[] = [];
     if (voterId) {
+      console.log('[getPostPollTallies] Fetching votes for voterId:', voterId, 'postIds:', postIds);
       const { data: mv, error: mErr } = await supabaseAdmin
         .from('post_poll_votes')
         .select('post_id, option_index')
@@ -540,9 +541,11 @@ export class SupabaseStorage implements IStorage {
         .in('post_id', postIds);
       
       if (mErr) {
+        console.error('[getPostPollTallies] Error fetching user votes:', mErr);
         return { ok: false, error: mErr.message };
       }
       mine = mv || [];
+      console.log('[getPostPollTallies] Found user votes:', mine.length, mine);
     }
 
     return { ok: true, counts: aggregatedCounts, mine };

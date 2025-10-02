@@ -378,12 +378,12 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                         }}
                         disabled={hasVoted || voteMutation.isPending}
                         className={cn(
-                          "w-full p-3 rounded-vh-md border text-left transition-vh-fast",
+                          "w-full p-3 rounded-vh-md border text-left transition-all duration-200",
                           hasVoted 
                             ? isSelected 
                               ? "border-vh-accent1 bg-vh-accent1-light" 
                               : "border-vh-border bg-vh-surface"
-                            : "border-vh-border hover:border-vh-accent1 hover:bg-vh-accent1-light"
+                            : "border-vh-border hover:border-vh-accent1 hover:bg-vh-accent1-light hover:shadow-md cursor-pointer"
                         )}
                         data-testid={`poll-option-${post.id}-${index}`}
                       >
