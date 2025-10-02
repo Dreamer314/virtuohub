@@ -264,10 +264,15 @@ export class SupabaseStorage implements IStorage {
       updatedAt: new Date(),
     };
 
-    // Extract poll data from new subtype_data structure: { poll: { question, options } }
-    const pollData = data.subtype_data?.poll || null;
-    const pollQuestion = pollData?.question || null;
-    const pollOptions = pollData?.options || null;
+    // Extract poll data from subtype_data with defensive type checking
+    const pollNode = data.subtype === 'poll'
+      ? (data.subtype_data?.poll ?? null)
+      : null;
+    const poll_options: string[] = Array.isArray(pollNode?.options)
+      ? pollNode!.options.filter((o: any) => typeof o === 'string')
+      : [];
+    const poll_question: string | null =
+      typeof pollNode?.question === 'string' ? pollNode!.question : null;
 
     return {
       id: data.id,
@@ -285,8 +290,6 @@ export class SupabaseStorage implements IStorage {
       status: 'published',
       subtype: data.subtype || 'thread',
       subtypeData: data.subtype_data || null,
-      poll_question: pollQuestion,
-      poll_options: pollOptions,
       likes: data.likes || 0,
       comments: data.comments || 0,
       shares: data.shares || 0,
@@ -294,6 +297,10 @@ export class SupabaseStorage implements IStorage {
       createdAt: new Date(data.created_at),
       updatedAt: new Date(data.updated_at || data.created_at),
       author,
+      ...(data.subtype === 'poll' ? {
+        poll_options,
+        poll_question,
+      } : {})
     } as any;
   }
 
@@ -438,6 +445,9 @@ export class SupabaseStorage implements IStorage {
         post_id: postId,
         voter_id: voterId,
         option_index: optionIndex,
+      }, {
+        onConflict: 'post_id,voter_id',
+        ignoreDuplicates: false
       })
       .select();
 

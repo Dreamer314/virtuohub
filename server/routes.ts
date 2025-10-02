@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage.config";
 import { insertPostSchema, insertSavedPostSchema, insertArticleSchema, insertCommentSchema, insertProfileSchema, CATEGORIES, PLATFORMS } from "@shared/schema";
 import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
-import { validateSession } from "./middleware/auth";
+import { validateSession, optionalAuth } from "./middleware/auth";
 import Stripe from "stripe";
 import { supabase, supabaseAdmin } from "./supabaseClient";
 
@@ -18,7 +18,7 @@ const stripe = new Stripe(process.env.TESTING_STRIPE_SECRET_KEY, {
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // Get all posts with optional filtering
-  app.get("/api/posts", async (req, res) => {
+  app.get("/api/posts", optionalAuth, async (req, res) => {
     try {
       const { category, platforms, authorId } = req.query;
       
@@ -75,7 +75,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get a single post
-  app.get("/api/posts/:id", async (req, res) => {
+  app.get("/api/posts/:id", optionalAuth, async (req, res) => {
     try {
       let post = await storage.getPost(req.params.id);
       if (!post) {
@@ -88,7 +88,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const talliesResult = await storage.getPostPollTallies([post.id], userId);
         
         if (talliesResult.ok) {
-          const pollOptions = (post as any).poll_options || (post.subtypeData as any)?.poll?.options || [];
+          const pollNode = (post.subtypeData as any)?.poll;
+          const pollOptions: string[] = Array.isArray(pollNode?.options) ? pollNode.options : [];
           const results = new Array(pollOptions.length).fill(0);
           
           (talliesResult.counts || []).forEach((item: { post_id: string; option_index: number; count: number }) => {
@@ -300,9 +301,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Post is not a poll" });
       }
       
-      // Verify optionIndex is within bounds
-      const pollOptions = (post as any).poll_options || (post.subtypeData as any)?.poll?.options || [];
-      if (optionIndex >= pollOptions.length) {
+      // Verify optionIndex is within bounds - with backward compatibility fallbacks
+      const subtypeData = (post.subtypeData as any);
+      const pollNode = subtypeData?.poll;
+      
+      // Try new format first: subtypeData.poll.options
+      let options: string[] = Array.isArray(pollNode?.options) ? pollNode.options : [];
+      
+      // Fallback to legacy format: subtypeData.choices (array of {text, ...})
+      if (options.length === 0 && Array.isArray(subtypeData?.choices)) {
+        options = subtypeData.choices.map((c: any) => c.text || String(c)).filter(Boolean);
+      }
+      
+      // Final fallback to flat poll_options field
+      if (options.length === 0 && Array.isArray((post as any).poll_options)) {
+        options = (post as any).poll_options;
+      }
+      
+      if (options.length === 0) {
+        return res.status(400).json({ message: "Poll has no options" });
+      }
+      
+      if (optionIndex >= options.length) {
         return res.status(400).json({ message: "Option index out of bounds" });
       }
       
@@ -321,7 +341,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Build results array sized to number of poll options
-      const results = new Array(pollOptions.length).fill(0);
+      const results = new Array(options.length).fill(0);
       (talliesResult.counts || []).forEach((item: { post_id: string; option_index: number; count: number }) => {
         if (item.post_id === postId) {
           results[item.option_index] = item.count;

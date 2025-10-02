@@ -128,12 +128,32 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
     return null;
   };
 
-  // Get poll data from subtypeData if it's a poll
+  // Get poll data - handle both old format and new { poll: { question, options } } format
   const pollData = post.subtype === 'poll'
-    ? (
-        (post as any).subtypeData
-        ?? {
-          question: post.title || post.body || 'Poll',
+    ? (() => {
+        const subtypeData = (post as any).subtypeData;
+        const pollNode = subtypeData?.poll;
+        
+        // New format: { poll: { question, options } }
+        if (pollNode && Array.isArray(pollNode.options)) {
+          return {
+            question: pollNode.question || post.title || 'Poll',
+            choices: pollNode.options.map((text: string, i: number) => ({
+              id: String(i), text, votes: 0,
+            })),
+            closesAt: null,
+            oneVotePerUser: true,
+          };
+        }
+        
+        // Old format or fallback to poll_options
+        if (subtypeData?.question && Array.isArray(subtypeData?.choices)) {
+          return subtypeData;
+        }
+        
+        // Final fallback to poll_options
+        return {
+          question: (post as any).poll_question || post.title || post.body || 'Poll',
           choices: Array.isArray((post as any).poll_options)
             ? (post as any).poll_options.map((text: string, i: number) => ({
                 id: String(i), text, votes: 0,
@@ -141,8 +161,8 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
             : [],
           closesAt: null,
           oneVotePerUser: true,
-        }
-      )
+        };
+      })()
     : null;
 
   // Derive images with array-safe fallback

@@ -1,0 +1,76 @@
+because we changed how polls are stored (subtype_data.poll.options), but the feed UI still expects poll_options on each post. When the API stopped returning that flat poll_options field, the UI had nothing to render, so all options disappeared. only restore the missing mapping (no broad refactors):
+
+Bug: Poll options no longer render on the community feed. Regression cause: we now store polls under posts.subtype_data but the UI still reads post.poll_options.
+
+Goal (minimal + additive): Always include a flat poll_options: string[] (and poll_question: string) on API responses for poll posts, derived from subtype_data. Do not remove or rename existing fields. Do not touch client code beyond optional debug logs.
+
+Target files:
+
+server/supabaseStorage.ts
+
+server/routes.ts
+
+Exact changes:
+
+In server/supabaseStorage.ts, inside mapToPostWithAuthor(row):
+
+Read the poll data from row.subtype_data using this shape:
+
+const pollNode = row.subtype === 'poll'
+  ? (row.subtype_data?.poll ?? null)
+  : null;
+const poll_options: string[] = Array.isArray(pollNode?.options)
+  ? pollNode!.options.filter(o => typeof o === 'string')
+  : [];
+const poll_question: string | null =
+  typeof pollNode?.question === 'string' ? pollNode!.question : null;
+
+
+When returning the post object, add these properties (without removing anything else):
+
+...(row.subtype === 'poll' ? {
+  poll_options,
+  poll_question,
+} : {})
+
+
+Add a temporary server log to confirm shape:
+
+if (row.subtype === 'poll') {
+  console.log('[mapToPostWithAuthor] poll extracted', {
+    id: row.id, optionsLen: poll_options.length, hasQuestion: !!poll_question
+  });
+}
+
+
+In server/routes.ts:
+
+Ensure both GET /api/posts and GET /api/posts/:id return the poll_options and poll_question fields produced by mapToPostWithAuthor. If we already spread the mapped object, nothing else is needed; otherwise, include those fields explicitly when serializing.
+
+Do not change the CreatePost storage format again. We will keep:
+
+subtype_data = { "poll": { "question": string, "options": string[] } }
+
+
+Add one more defensive guard in the vote endpoint where it reads options:
+
+const pollNode = post.subtype_data?.poll;
+const options: string[] = Array.isArray(pollNode?.options) ? pollNode.options : [];
+
+
+If options.length === 0, return 400 with "Poll has no options".
+
+Acceptance checks:
+
+Create a new poll, then open DevTools → Network → GET /api/posts → first item (your post): it must include
+
+"subtype": "poll",
+"poll_question": "…",
+"poll_options": ["…","…"]
+
+
+Feed card shows clickable options again.
+
+Vote works and results display.
+
+Scope guardrails: Keep diffs minimal. Don’t refactor unrelated code, don’t remove fields, don’t alter DB schema, and don’t change client components.
