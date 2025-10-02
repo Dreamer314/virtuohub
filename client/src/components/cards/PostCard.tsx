@@ -55,9 +55,26 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
   const voteMutation = useMutation({
     mutationFn: (optionIndex: number) => 
       apiRequest('POST', `/api/posts/${post.id}/polls/vote`, { optionIndex }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/posts', post.id] });
+    onSuccess: (data: any) => {
+      // Update the post cache with fresh tallies from server
+      if (data?.results && data.my_vote !== undefined) {
+        // Update in posts list
+        queryClient.setQueryData(['/api/posts'], (oldData: any) => {
+          if (!oldData) return oldData;
+          return oldData.map((p: any) => 
+            p.id === post.id 
+              ? { ...p, results: data.results, my_vote: data.my_vote }
+              : p
+          );
+        });
+        
+        // Update single post cache if it exists
+        queryClient.setQueryData(['/api/posts', post.id], (oldData: any) => {
+          if (!oldData) return oldData;
+          return { ...oldData, results: data.results, my_vote: data.my_vote };
+        });
+      }
+      
       toast({ title: "Vote recorded!" });
     },
     onError: (error: any) => {
