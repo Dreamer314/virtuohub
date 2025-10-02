@@ -12,18 +12,28 @@ VirtuoHub is a modern community platform designed for virtual world creators, fe
 
 ## Recent Changes
 
-**October 2, 2025 - Poll Voting System & Streamlined Poll Creation**
-- **Poll Voting System**: Implemented complete poll voting functionality for community feed posts
-  - Database: Added `post_poll_votes` table with unique constraint (post_id, voter_id) for one vote per user
-  - API: Created POST /api/posts/:postId/polls/vote endpoint with session validation and upsert logic
-  - Feed Augmentation: GET /api/posts now includes `my_vote` (user's selection) and `results` (vote counts)
-  - UI: PostCard component uses server-backed voting with optimistic updates and persistent vote tracking
-  - Votes persist across page refreshes and enforce one-vote-per-user constraint
-- **Streamlined Poll Creation UI**: CreatePostModal now hides unused fields for polls
+**October 2, 2025 - Poll Voting System with Database Persistence & Batch Tallies**
+- **Poll Voting System**: Implemented complete poll voting functionality with Supabase persistence
+  - Database: `post_poll_votes` table with unique constraint (post_id, voter_id) ensures one vote per user
+  - Storage Layer: Added `getPostPollTallies(postIds[], voterId?)` for efficient batch vote fetching
+    - Aggregates vote counts for multiple posts in single database query
+    - Returns both vote tallies and user's votes (my_vote) in one operation
+    - Used by GET /api/posts for efficient feed augmentation
+  - Vote Endpoint: POST /api/posts/:postId/polls/vote returns fresh tallies immediately
+    - Response format: `{ ok: true, results: number[], my_vote: number | null }`
+    - Vote buttons use individual onClick handlers with proper disabled states
+  - UI Updates: PostCard component uses optimistic cache updates with server response
+    - Immediately updates local React Query cache with server-returned tallies
+    - No query invalidation needed - instant UI flip to results view
+    - Votes persist across page refreshes with my_vote and results from server
+  - Data Flow: Raw poll_options field included in post objects for vote validation
+    - Server routes check poll_options length before accepting vote
+    - Prevents out-of-bounds option index errors
+- **Streamlined Poll Creation UI**: CreatePostModal hides unused fields for polls
   - Hidden for polls: Title, Price, Platforms, Links, Images sections
   - Visible for polls: Poll Description (body), Poll Question, Poll Options (2-10), Duration, Category
   - Added contextual helper text for each poll field to guide users
-  - Fixed validation schema: title now optional for polls, required only for threads
+  - Fixed validation schema: title optional for polls, required only for threads
   - Poll creation flow now streamlined and intuitive
 
 **October 2, 2025 - Reddit-Style Images & Poll Fix**

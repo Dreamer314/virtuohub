@@ -95,6 +95,15 @@ export class SupabaseStorage implements IStorage {
       Array.isArray((post as any).image_urls) ? (post as any).image_urls.length : 'not-array'
     );
 
+    // Prepare subtype_data for polls
+    let subtypeData = null;
+    if (post.subtype === 'poll' && Array.isArray((post as any).poll_options)) {
+      subtypeData = {
+        question: post.title || post.body || 'Poll Question',
+        choices: (post as any).poll_options.map((text: string) => ({ text, votes: 0, id: text }))
+      };
+    }
+
     const { data, error } = await supabaseAdmin
       .from('posts')
       .insert({
@@ -106,9 +115,7 @@ export class SupabaseStorage implements IStorage {
         links: Array.isArray((post as any).links) ? (post as any).links : [],
         price: (post as any).price ?? null,
         subtype: post.subtype || 'thread',
-        poll_options: post.subtype === 'poll'
-          ? Array.isArray((post as any).poll_options) ? (post as any).poll_options : null
-          : null,
+        subtype_data: subtypeData,
         image_urls: Array.isArray((post as any).image_urls) ? (post as any).image_urls : [],
       })
       .select()
@@ -133,10 +140,7 @@ export class SupabaseStorage implements IStorage {
       price: data.price || '',
       status: 'published',
       subtype: data.subtype || 'thread',
-      subtypeData: data.poll_options ? {
-        question: data.title ?? data.content ?? '',
-        choices: data.poll_options.map((text: string) => ({ text, votes: 0, id: text }))
-      } : null,
+      subtypeData: data.subtype_data || null,
       likes: data.likes || 0,
       comments: data.comments || 0,
       shares: data.shares || 0,
@@ -248,6 +252,9 @@ export class SupabaseStorage implements IStorage {
       updatedAt: new Date(),
     };
 
+    // Extract poll_options from subtype_data if it exists
+    const pollOptions = data.subtype_data?.choices?.map((choice: any) => choice.text) || null;
+
     return {
       id: data.id,
       authorId: data.author_id,
@@ -263,10 +270,8 @@ export class SupabaseStorage implements IStorage {
       price: data.price || '',
       status: 'published',
       subtype: data.subtype || 'thread',
-      subtypeData: data.poll_options ? {
-        question: data.title ?? data.content ?? '',
-        choices: data.poll_options.map((text: string) => ({ text, votes: 0, id: text }))
-      } : null,
+      subtypeData: data.subtype_data || null,
+      poll_options: pollOptions, // Include raw poll_options for vote endpoint
       likes: data.likes || 0,
       comments: data.comments || 0,
       shares: data.shares || 0,
@@ -274,7 +279,7 @@ export class SupabaseStorage implements IStorage {
       createdAt: new Date(data.created_at),
       updatedAt: new Date(data.updated_at || data.created_at),
       author,
-    };
+    } as any;
   }
 
   async updatePost(id: string, updates: Partial<Post>): Promise<Post | undefined> {
@@ -410,22 +415,32 @@ export class SupabaseStorage implements IStorage {
   // ============================================
 
   async voteOnPostPoll(postId: string, voterId: string, optionIndex: number): Promise<{ ok: boolean; error?: string }> {
-    const { error } = await supabaseAdmin
+    console.log('[voteOnPostPoll] Starting vote save:', { postId, voterId, optionIndex });
+    
+    const { data, error } = await supabaseAdmin
       .from('post_poll_votes')
       .upsert({
         post_id: postId,
         voter_id: voterId,
         option_index: optionIndex,
-      }, {
-        onConflict: 'post_id,voter_id'
-      });
+      })
+      .select();
+
+    console.log('[voteOnPostPoll] Upsert result:', { data, error });
 
     if (error) {
       const errorMsg = error.message || 'Database error while saving vote';
-      console.error('vote error', { postId, voterId, optionIndex, err: errorMsg, details: error });
+      console.error('[voteOnPostPoll] vote error', { postId, voterId, optionIndex, err: errorMsg, details: error });
       return { ok: false, error: errorMsg };
     }
 
+    // Check if data was actually written
+    if (!data || data.length === 0) {
+      console.error('[voteOnPostPoll] No rows returned from upsert - vote not saved');
+      return { ok: false, error: 'Vote not saved - no rows returned' };
+    }
+
+    console.log('[voteOnPostPoll] Vote saved successfully:', data);
     return { ok: true };
   }
 
