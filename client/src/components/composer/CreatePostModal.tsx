@@ -18,7 +18,7 @@ import { useAuth } from '@/providers/AuthProvider';
 
 const createPostSchema = z.object({
   subtype: z.enum(['thread', 'poll']).default('thread'),
-  title: z.string().min(1, 'Title is required').max(200, 'Title too long'),
+  title: z.string().optional(),
   body: z.string().min(1, 'Content is required').max(5000, 'Content too long'),
   category: z.string().min(1, 'Category is required'),
   price: z.string().optional(),
@@ -29,6 +29,16 @@ const createPostSchema = z.object({
   pollOptions: z.array(z.string().min(1, 'Option cannot be empty')).optional(),
   pollDurationDays: z.number().min(1).max(30).optional(),
 }).refine((data) => {
+  // Title required for threads
+  if (data.subtype === 'thread') {
+    return data.title && data.title.trim().length > 0 && data.title.length <= 200;
+  }
+  return true;
+}, {
+  message: 'Title is required for threads',
+  path: ['title'],
+}).refine((data) => {
+  // Poll validation
   if (data.subtype === 'poll') {
     return data.pollQuestion && data.pollQuestion.trim().length > 0 &&
            data.pollOptions && data.pollOptions.length >= 2 && data.pollOptions.length <= 10;
@@ -408,25 +418,30 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
               </Button>
             </div>
           </div>
-          {/* Title */}
-          <div className="space-y-2">
-            <Label htmlFor="title">Title *</Label>
-            <Input
-              id="title"
-              placeholder="What's your post about?"
-              {...form.register('title')}
-              data-testid="post-title-input"
-            />
-            {form.formState.errors.title && (
-              <p className="text-sm text-red-500">{form.formState.errors.title.message}</p>
-            )}
-          </div>
+          {/* Title - Hidden for polls */}
+          {currentSubtype !== 'poll' && (
+            <div className="space-y-2">
+              <Label htmlFor="title">Title *</Label>
+              <Input
+                id="title"
+                placeholder="What's your post about?"
+                {...form.register('title')}
+                data-testid="post-title-input"
+              />
+              {form.formState.errors.title && (
+                <p className="text-sm text-red-500">{form.formState.errors.title.message}</p>
+              )}
+            </div>
+          )}
 
-          {/* Content */}
+          {/* Content / Poll Description */}
           <div className="space-y-2">
             <Label htmlFor="body">
               {currentSubtype === 'poll' ? 'Poll Description *' : 'Content *'}
             </Label>
+            {currentSubtype === 'poll' && (
+              <p className="text-sm text-muted-foreground">Add quick context so voters know what this is about.</p>
+            )}
             <Textarea
               id="body"
               placeholder={
@@ -449,6 +464,7 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
               {/* Poll Question */}
               <div className="space-y-2">
                 <Label htmlFor="pollQuestion">Poll Question *</Label>
+                <p className="text-sm text-muted-foreground">Ask it plainly. One clear question works best.</p>
                 <Input
                   id="pollQuestion"
                   placeholder="What question would you like to ask?"
@@ -463,6 +479,7 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
               {/* Poll Options */}
               <div className="space-y-2">
                 <Label>Poll Options (2-10 options)</Label>
+                <p className="text-sm text-muted-foreground">Short choices. Hit Enter to add another.</p>
                 {pollOptions.map((option, index) => (
                   <div key={index} className="flex gap-2">
                     <Input
@@ -502,6 +519,7 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
               {/* Poll Duration */}
               <div className="space-y-2">
                 <Label htmlFor="pollDurationDays">Poll Duration</Label>
+                <p className="text-sm text-muted-foreground">How long voting stays open. Results stay visible after.</p>
                 <Select
                   defaultValue="7"
                   onValueChange={(value) => form.setValue('pollDurationDays', parseInt(value))}
@@ -541,113 +559,121 @@ export function CreatePostModal({ open, onOpenChange, onPostCreated, initialCate
             </Select>
           </div>
 
-          {/* Price */}
-          <div className="space-y-2">
-            <Label htmlFor="price">Price (optional)</Label>
-            <Input
-              id="price"
-              placeholder="e.g., Free, $50, $10-25"
-              {...form.register('price')}
-              data-testid="post-price-input"
-            />
-          </div>
-
-          {/* Platforms */}
-          <div className="space-y-2">
-            <Label>Platforms (optional)</Label>
-            <div className="flex flex-wrap gap-2">
-              {PLATFORMS.map((platform) => (
-                <Badge
-                  key={platform.key}
-                  variant={selectedPlatforms.includes(platform.key) ? 'default' : 'outline'}
-                  className="cursor-pointer"
-                  onClick={() => handlePlatformToggle(platform.key)}
-                  data-testid={`platform-${platform.key}`}
-                >
-                  {platform.label}
-                </Badge>
-              ))}
+          {/* Price - Hidden for polls */}
+          {currentSubtype !== 'poll' && (
+            <div className="space-y-2">
+              <Label htmlFor="price">Price (optional)</Label>
+              <Input
+                id="price"
+                placeholder="e.g., Free, $50, $10-25"
+                {...form.register('price')}
+                data-testid="post-price-input"
+              />
             </div>
-            {form.formState.errors.platforms && (
-              <p className="text-sm text-red-500">{form.formState.errors.platforms.message}</p>
-            )}
-          </div>
+          )}
 
-          {/* Links */}
-          <div className="space-y-2">
-            <Label>Links (optional)</Label>
-            {links.map((link, index) => (
-              <div key={index} className="flex gap-2">
-                <Input
-                  placeholder="https://example.com"
-                  value={link}
-                  onChange={(e) => handleLinkChange(index, e.target.value)}
-                  data-testid={`post-link-${index}`}
-                />
-                {links.length > 1 && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="icon"
-                    onClick={() => removeLink(index)}
+          {/* Platforms - Hidden for polls */}
+          {currentSubtype !== 'poll' && (
+            <div className="space-y-2">
+              <Label>Platforms (optional)</Label>
+              <div className="flex flex-wrap gap-2">
+                {PLATFORMS.map((platform) => (
+                  <Badge
+                    key={platform.key}
+                    variant={selectedPlatforms.includes(platform.key) ? 'default' : 'outline'}
+                    className="cursor-pointer"
+                    onClick={() => handlePlatformToggle(platform.key)}
+                    data-testid={`platform-${platform.key}`}
                   >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
+                    {platform.label}
+                  </Badge>
+                ))}
               </div>
-            ))}
-            {links.length < 10 && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={addLink}
-                className="w-full"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Link
-              </Button>
-            )}
-          </div>
-
-          {/* Images */}
-          <div className="space-y-2">
-            <Label>Images (max 5, 10MB each, jpg/png/webp/gif)</Label>
-            <div className="grid grid-cols-3 gap-4">
-              {imageFiles.map((file, index) => (
-                <div key={index} className="relative">
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt={`Upload ${index + 1}`}
-                    className="w-full h-20 object-cover rounded border"
-                  />
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    className="absolute -top-2 -right-2 h-6 w-6"
-                    onClick={() => removeImage(index)}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </div>
-              ))}
-              {imageFiles.length < 5 && (
-                <label className="flex flex-col items-center justify-center h-20 border-2 border-dashed border-gray-300 rounded cursor-pointer hover:bg-gray-50">
-                  <Upload className="h-6 w-6 text-gray-400" />
-                  <span className="text-xs text-gray-500">Upload</span>
-                  <input
-                    type="file"
-                    accept="image/jpeg,image/png,image/webp,image/gif"
-                    multiple
-                    className="hidden"
-                    onChange={handleImageUpload}
-                    data-testid="image-upload-input"
-                  />
-                </label>
+              {form.formState.errors.platforms && (
+                <p className="text-sm text-red-500">{form.formState.errors.platforms.message}</p>
               )}
             </div>
-          </div>
+          )}
+
+          {/* Links - Hidden for polls */}
+          {currentSubtype !== 'poll' && (
+            <div className="space-y-2">
+              <Label>Links (optional)</Label>
+              {links.map((link, index) => (
+                <div key={index} className="flex gap-2">
+                  <Input
+                    placeholder="https://example.com"
+                    value={link}
+                    onChange={(e) => handleLinkChange(index, e.target.value)}
+                    data-testid={`post-link-${index}`}
+                  />
+                  {links.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => removeLink(index)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+              {links.length < 10 && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={addLink}
+                  className="w-full"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Link
+                </Button>
+              )}
+            </div>
+          )}
+
+          {/* Images - Hidden for polls */}
+          {currentSubtype !== 'poll' && (
+            <div className="space-y-2">
+              <Label>Images (max 5, 10MB each, jpg/png/webp/gif)</Label>
+              <div className="grid grid-cols-3 gap-4">
+                {imageFiles.map((file, index) => (
+                  <div key={index} className="relative">
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={`Upload ${index + 1}`}
+                      className="w-full h-20 object-cover rounded border"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      className="absolute -top-2 -right-2 h-6 w-6"
+                      onClick={() => removeImage(index)}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                ))}
+                {imageFiles.length < 5 && (
+                  <label className="flex flex-col items-center justify-center h-20 border-2 border-dashed border-gray-300 rounded cursor-pointer hover:bg-gray-50">
+                    <Upload className="h-6 w-6 text-gray-400" />
+                    <span className="text-xs text-gray-500">Upload</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      multiple
+                      className="hidden"
+                      onChange={handleImageUpload}
+                      data-testid="image-upload-input"
+                    />
+                  </label>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Submit */}
           <div className="flex justify-end gap-3 pt-4">
