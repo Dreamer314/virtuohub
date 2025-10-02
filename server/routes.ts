@@ -238,11 +238,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Vote on a community post poll (with user tracking)
   app.post("/api/posts/:postId/polls/vote", validateSession, async (req, res) => {
+    const { postId } = req.params;
+    const { optionIndex } = req.body;
+    const voterId = req.user!.id;
+    
     try {
-      const { postId } = req.params;
-      const { optionIndex } = req.body;
-      const voterId = req.user!.id;
-      
       if (typeof optionIndex !== 'number' || optionIndex < 0) {
         return res.status(400).json({ message: "Invalid option index" });
       }
@@ -267,13 +267,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const result = await storage.voteOnPostPoll(postId, voterId, optionIndex);
       
       if (!result.ok) {
-        return res.status(500).json({ message: "Failed to save vote" });
+        console.error('vote error', { postId, voterId, optionIndex, err: result.error });
+        return res.status(500).json({ message: result.error || "Failed to save vote" });
       }
       
       res.json({ ok: true });
-    } catch (error) {
-      console.error("Failed to vote on poll:", error);
-      res.status(500).json({ message: "Failed to vote on poll" });
+    } catch (error: any) {
+      console.error('vote error', { postId, voterId, optionIndex, err: error?.message || error });
+      res.status(500).json({ message: error?.message || "Failed to vote on poll" });
     }
   });
 

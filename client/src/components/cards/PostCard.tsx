@@ -60,10 +60,11 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
       queryClient.invalidateQueries({ queryKey: ['/api/posts', post.id] });
       toast({ title: "Vote recorded!" });
     },
-    onError: () => {
+    onError: (error: any) => {
+      const errorMessage = error?.message || "Please try again";
       toast({ 
         title: "Vote failed", 
-        description: "Please try again",
+        description: errorMessage,
         variant: "destructive" 
       });
     }

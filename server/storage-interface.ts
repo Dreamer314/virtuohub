@@ -42,7 +42,7 @@ export interface IStorage {
   likeComment(commentId: string): Promise<void>;
 
   // Poll vote methods
-  voteOnPostPoll(postId: string, voterId: string, optionIndex: number): Promise<{ ok: boolean }>;
+  voteOnPostPoll(postId: string, voterId: string, optionIndex: number): Promise<{ ok: boolean; error?: string }>;
   getPostPollVote(postId: string, voterId: string): Promise<number | null>;
   getPostPollResults(postId: string): Promise<number[]>;
 }

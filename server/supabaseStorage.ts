@@ -409,7 +409,7 @@ export class SupabaseStorage implements IStorage {
   // Poll Vote Methods (Supabase)
   // ============================================
 
-  async voteOnPostPoll(postId: string, voterId: string, optionIndex: number): Promise<{ ok: boolean }> {
+  async voteOnPostPoll(postId: string, voterId: string, optionIndex: number): Promise<{ ok: boolean; error?: string }> {
     const { error } = await supabaseAdmin
       .from('post_poll_votes')
       .upsert({
@@ -421,8 +421,9 @@ export class SupabaseStorage implements IStorage {
       });
 
     if (error) {
-      console.error('Failed to vote on post poll:', error);
-      return { ok: false };
+      const errorMsg = error.message || 'Database error while saving vote';
+      console.error('vote error', { postId, voterId, optionIndex, err: errorMsg, details: error });
+      return { ok: false, error: errorMsg };
     }
 
     return { ok: true };

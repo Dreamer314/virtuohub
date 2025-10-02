@@ -892,7 +892,7 @@ As the lines between physical and digital continue to blur, virtual fashion stan
   // Poll vote methods (in-memory for dev/testing)
   private pollVotes = new Map<string, { voterId: string; optionIndex: number }>();
 
-  async voteOnPostPoll(postId: string, voterId: string, optionIndex: number): Promise<{ ok: boolean }> {
+  async voteOnPostPoll(postId: string, voterId: string, optionIndex: number): Promise<{ ok: boolean; error?: string }> {
     const key = `${postId}:${voterId}`;
     this.pollVotes.set(key, { voterId, optionIndex });
     return { ok: true };
