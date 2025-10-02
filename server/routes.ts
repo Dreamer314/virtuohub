@@ -279,13 +279,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Build results array sized to number of poll options
       const results = new Array(pollOptions.length).fill(0);
-      (talliesResult.counts || []).forEach(item => {
+      (talliesResult.counts || []).forEach((item: { post_id: string; option_index: number; count: number }) => {
         if (item.post_id === postId) {
           results[item.option_index] = item.count;
         }
       });
 
-      const myVote = (talliesResult.mine || []).find(v => v.post_id === postId)?.option_index ?? null;
+      const myVote = (talliesResult.mine || []).find((v: { post_id: string; option_index: number }) => v.post_id === postId)?.option_index ?? null;
 
       res.json({ ok: true, results, my_vote: myVote });
     } catch (error: any) {

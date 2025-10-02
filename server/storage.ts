@@ -914,6 +914,35 @@ As the lines between physical and digital continue to blur, virtual fashion stan
     }
     return results;
   }
+
+  async getPostPollTallies(postIds: string[], voterId?: string): Promise<{ 
+    ok: boolean; 
+    error?: string; 
+    counts?: { post_id: string; option_index: number; count: number }[]; 
+    mine?: { post_id: string; option_index: number }[] 
+  }> {
+    const countMap = new Map<string, number>();
+    const mine: { post_id: string; option_index: number }[] = [];
+
+    for (const [key, vote] of this.pollVotes.entries()) {
+      const [postId] = key.split(':');
+      if (postIds.includes(postId)) {
+        const countKey = `${postId}:${vote.optionIndex}`;
+        countMap.set(countKey, (countMap.get(countKey) || 0) + 1);
+        
+        if (voterId && vote.voterId === voterId) {
+          mine.push({ post_id: postId, option_index: vote.optionIndex });
+        }
+      }
+    }
+
+    const counts = Array.from(countMap.entries()).map(([key, count]) => {
+      const [post_id, option_index] = key.split(':');
+      return { post_id, option_index: parseInt(option_index), count };
+    });
+
+    return { ok: true, counts, mine };
+  }
 }
 
 export const storage = new MemStorage();
