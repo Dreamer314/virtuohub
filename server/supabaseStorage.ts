@@ -134,7 +134,8 @@ export class SupabaseStorage implements IStorage {
       status: 'published',
       subtype: data.subtype || 'thread',
       subtypeData: data.poll_options ? {
-        options: data.poll_options.map((text: string) => ({ text, votes: 0, percentage: 0 }))
+        question: data.title ?? data.content ?? '',
+        choices: data.poll_options.map((text: string) => ({ text, votes: 0, id: text }))
       } : null,
       likes: data.likes || 0,
       comments: data.comments || 0,
@@ -263,7 +264,8 @@ export class SupabaseStorage implements IStorage {
       status: 'published',
       subtype: data.subtype || 'thread',
       subtypeData: data.poll_options ? {
-        options: data.poll_options.map((text: string) => ({ text, votes: 0, percentage: 0 }))
+        question: data.title ?? data.content ?? '',
+        choices: data.poll_options.map((text: string) => ({ text, votes: 0, id: text }))
       } : null,
       likes: data.likes || 0,
       comments: data.comments || 0,

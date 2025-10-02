@@ -1,0 +1,114 @@
+Goal: Make feed images look like Reddit (thumbnail + lightbox) and fix polls so options show and (optionally) images attach to polls. Keep changes small and isolated.
+
+A. Feed image UX (thumbnail + lightbox using Supabase transforms)
+
+PostCard.tsx
+
+Right after we derive images, compute a thumbnail URL using the Supabase render endpoint.
+
+// existing:
+const images = post.images || (post as any).image_urls || [];
+const originalUrl = images[0];
+
+// new: derive a smaller feed thumbnail with crop
+function toThumb(u: string) {
+  if (!u) return u;
+  // turn /object/ into /render/image/ and add transform params
+  return u.replace('/storage/v1/object/', '/storage/v1/render/image/')
+          + (u.includes('?') ? '&' : '?')
+          + 'width=640&height=360&resize=cover&quality=80';
+}
+const thumbUrl = originalUrl ? toThumb(originalUrl) : '';
+
+
+In the feed card image spot, use thumbUrl:
+
+{images.length > 0 && (
+  <button
+    type="button"
+    onClick={() => setLightboxOpen(true)}
+    className="mb-3 rounded-vh-lg overflow-hidden block w-full"
+    aria-label="Open image"
+  >
+    <img
+      src={thumbUrl}
+      alt={post.title || 'post image'}
+      className="w-full h-[360px] md:h-[420px] object-cover"
+      loading="lazy"
+      decoding="async"
+    />
+  </button>
+)}
+
+
+Add a lightbox/dialog for the full image (can use your existing Dialog or a simple modal). Inside the modal, render the original originalUrl:
+
+<Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
+  <DialogContent className="max-w-[90vw] max-h-[90vh] p-0 bg-transparent shadow-none">
+    {originalUrl && (
+      <img
+        src={originalUrl}
+        alt={post.title || 'full image'}
+        className="max-w-[90vw] max-h-[90vh] object-contain"
+      />
+    )}
+  </DialogContent>
+</Dialog>
+
+
+(Optional) Add srcSet for sharper displays:
+
+const thumb2x = originalUrl
+  ? toThumb(originalUrl).replace('width=640', 'width=1280').replace('height=360', 'height=720')
+  : '';
+// in <img>:
+srcSet={thumb2x ? `${thumbUrl} 1x, ${thumb2x} 2x` : undefined}
+sizes="(max-width: 768px) 100vw, 640px"
+
+
+B. Polls not showing options (and allowing images on polls if desired)
+
+server/supabaseStorage.ts (or wherever rows are mapped to API post objects):
+
+In your row→API mapping function(s), when subtype === 'poll', set:
+
+subtypeData: data.poll_options
+  ? { question: data.title ?? data.content ?? '', choices: data.poll_options }
+  : null,
+
+
+Keep existing images: data.image_urls || [] as is.
+
+server/routes.ts → POST /api/posts
+
+Make sure we do not wipe image_urls for polls if you want images on polls.
+If you currently have something like:
+
+image_urls: subtype === 'poll' ? [] : imageUrls,
+
+
+change it to:
+
+image_urls: imageUrls,
+
+
+(If you explicitly don’t want poll images, keep the old line—polls will work; images just won’t show on polls.)
+
+PostCard.tsx (display)
+
+It already does:
+
+const pollData = post.subtype === 'poll'
+  ? (post.subtypeData as { question?: string; choices?: Array<{text: string, votes: number, id: string}> })
+  : null;
+
+
+With the server fix above, pollData will be populated and the UI can render choices.
+
+Why this matches Reddit’s feel
+
+Feed: a constrained, cropped preview (object-fit: cover) at ~640×360 (Reddit uses ~600–700px wide card images depending on layout).
+
+Click: a lightbox with the full, original image.
+
+Speed: Supabase render endpoint serves resized/compressed versions at the edge, so your feed stays fast.

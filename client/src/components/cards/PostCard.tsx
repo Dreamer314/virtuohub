@@ -100,6 +100,20 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
       ? (post as any).image_urls
       : [];
 
+  // Generate thumbnail URL using Supabase render endpoint for faster feed loading
+  const toThumb = (url: string) => {
+    if (!url) return url;
+    return url.replace('/storage/v1/object/', '/storage/v1/render/image/')
+            + (url.includes('?') ? '&' : '?')
+            + 'width=640&height=360&resize=cover&quality=80';
+  };
+
+  const originalUrl = images[0] || '';
+  const thumbUrl = originalUrl ? toThumb(originalUrl) : '';
+  const thumb2x = originalUrl 
+    ? toThumb(originalUrl).replace('width=640', 'width=1280').replace('height=360', 'height=720')
+    : '';
+
   return (
     <>
       <article className="vh-post-card" data-testid={`post-card-${post.id}`}>
@@ -165,20 +179,27 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 
                 {/* Images from Supabase Storage */}
                 {images.length > 0 && (
-                  <div className="mb-3 rounded-vh-lg overflow-hidden">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setIsImageViewerOpen(true);
+                    }}
+                    className="mb-3 rounded-vh-lg overflow-hidden block w-full"
+                    aria-label="Open image"
+                    data-testid={`storage-image-${post.id}`}
+                  >
                     <img
-                      src={images[0]}
+                      src={thumbUrl}
+                      srcSet={thumb2x ? `${thumbUrl} 1x, ${thumb2x} 2x` : undefined}
+                      sizes="(max-width: 768px) 100vw, 640px"
                       alt={post.title || 'post image'}
-                      className="w-full h-auto object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
-                      data-testid={`storage-image-${post.id}`}
+                      className="w-full h-[360px] md:h-[420px] object-cover"
                       loading="lazy"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setIsImageViewerOpen(true);
-                      }}
+                      decoding="async"
                     />
-                  </div>
+                  </button>
                 )}
               </Link>
             ) : (
@@ -252,7 +273,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                   ))}
                 </div>
               )}
-              {post.platforms.map((platform: string) => (
+              {post.platforms && post.platforms.map((platform: string) => (
                 <span 
                   key={platform} 
                   className="vh-platform-pill"
@@ -392,14 +413,12 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
       </article>
 
       {/* Image Viewer Modal */}
-      {post.imageUrl && (
-        <ImageViewerModal
-          isOpen={isImageViewerOpen}
-          onClose={() => setIsImageViewerOpen(false)}
-          imageUrl={post.imageUrl}
-          imageAlt={post.title || ""}
-        />
-      )}
+      <ImageViewerModal
+        isOpen={isImageViewerOpen}
+        onClose={() => setIsImageViewerOpen(false)}
+        imageUrl={originalUrl || post.imageUrl || ''}
+        imageAlt={post.title || ""}
+      />
     </>
   );
 });

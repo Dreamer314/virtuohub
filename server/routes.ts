@@ -101,7 +101,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         price,
         subtype,
         subtypeData,
-        image_urls: subtype === 'poll' ? [] : imageUrls,
+        image_urls: imageUrls,
       } as any);
 
       return res.status(201).json(post);
