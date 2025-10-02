@@ -12,6 +12,21 @@ VirtuoHub is a modern community platform designed for virtual world creators, fe
 
 ## Recent Changes
 
+**October 2, 2025 - Reddit-Style Images & Poll Fix**
+- **Reddit-Style Image Display**: Changed feed images from cropping to shrink-to-fit
+  - Feed images: `max-h-[28rem]` (448px) with `object-contain` and `bg-black` background
+  - Lightbox images: `max-h-[80vh]` with `object-contain` for viewport-friendly display
+  - Preserved thumbnail optimization with Supabase render endpoint (640×360) and retina 2x srcSet
+  - Full images now visible with proportional scaling, no cropping
+- **CRITICAL FIX**: Poll options now persist when creating polls
+  - Fixed server routes.ts to extract `poll_options` from request body
+  - Server now properly forwards poll_options to storage layer
+  - Storage layer maps poll_options → subtypeData with question and choices
+  - Polls display correctly in feed with all options visible
+- **TypeScript Fixes**: Added type annotations to PostCard.tsx for poll rendering
+  - Fixed `post.content` → `post.body` reference
+  - Added type annotations to map/reduce callbacks for poll vote calculations
+
 **September 30, 2025 - Profile Persistence Bug Fix**
 - **CRITICAL FIX**: Resolved profile data not persisting across page refreshes
 - Modified POST /api/profile-upsert to prevent overwriting existing profile data
