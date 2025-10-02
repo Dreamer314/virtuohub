@@ -12,6 +12,30 @@ VirtuoHub is a modern community platform designed for virtual world creators, fe
 
 ## Recent Changes
 
+**October 2, 2025 - Poll System Normalization with Backward Compatibility**
+- **Normalized Poll API Response Structure**: Implemented comprehensive poll data normalization across all endpoints
+  - All poll endpoints now return both normalized structure AND legacy mirror fields for backward compatibility
+  - Normalized block: `poll: { question, options, tallies, total, my_vote }`
+  - Legacy mirrors: `poll_question, poll_options, results, my_vote` (maintains API contract)
+  - Created `extractPollMeta` helper in supabaseStorage.ts that defensively extracts poll data from subtypeData
+  - Added `attachPollMetaForPosts` batch function in routes.ts for efficient tallies/my_vote fetching
+  - Updated GET /api/posts and GET /api/posts/:id to use batch attachment (simplified from ~40 lines to 3 lines each)
+  - POST /api/posts/:postId/polls/vote returns complete normalized response with both formats
+- **Client-Side Defensive Reading**: PostCard.tsx now reads poll data with fallback chains
+  - Options: `poll?.options ?? poll_options ?? []`
+  - Tallies: `poll?.tallies ?? results ?? []`
+  - My Vote: `poll?.my_vote ?? my_vote ?? null`
+  - Ensures compatibility with any field name variation from cached or fresh data
+- **Optimistic UI Updates**: Vote mutation onSuccess merges server's normalized response into cache
+  - No query invalidation needed - server response directly updates cached posts
+  - Immediate UI flip to results view after voting
+  - Consistent data shape across list view and detail view
+- **Array Sizing Fix**: attachPollMetaForPosts ensures tallies arrays match poll options length
+  - Creates zero-filled array based on subtypeData.poll.options.length
+  - Maps aggregated vote counts onto properly sized array
+  - Prevents index out-of-bounds errors in UI rendering
+- **No Schema Changes**: Pure compatibility shim at API layer, database structure unchanged
+
 **October 2, 2025 - CRITICAL FIX: Poll Creation Database Schema**
 - **Database Schema Fix**: Fixed poll creation to use correct `subtype_data` JSONB column
   - Previous bug: Code attempted to insert into non-existent `poll_options` column
