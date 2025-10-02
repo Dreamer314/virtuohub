@@ -95,7 +95,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
     ? (
         (post as any).subtypeData
         ?? {
-          question: post.title || post.content || 'Poll',
+          question: post.title || post.body || 'Poll',
           choices: Array.isArray((post as any).poll_options)
             ? (post as any).poll_options.map((text: string, i: number) => ({
                 id: String(i), text, votes: 0,
@@ -304,8 +304,8 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                   {pollData.question || 'Vote on this poll:'}
                 </p>
                 <div className="space-y-2">
-                  {pollData.choices.map((choice, index) => {
-                    const totalVotes = pollData.choices?.reduce((sum, c) => sum + c.votes, 0) || 0;
+                  {pollData.choices.map((choice: any, index: number) => {
+                    const totalVotes = pollData.choices?.reduce((sum: number, c: any) => sum + c.votes, 0) || 0;
                     const percentage = totalVotes > 0 ? Math.round((choice.votes / totalVotes) * 100) : 0;
                     const isSelected = selectedOption === index;
                     
@@ -350,7 +350,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                 </div>
                 {hasVoted && (
                   <p className="vh-caption mt-2">
-                    Poll results based on {pollData.choices?.reduce((sum, c) => sum + c.votes, 0) || 0} votes
+                    Poll results based on {pollData.choices?.reduce((sum: number, c: any) => sum + c.votes, 0) || 0} votes
                   </p>
                 )}
               </div>
