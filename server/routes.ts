@@ -36,20 +36,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       let posts = await storage.getPosts(filters);
       
-      // Augment poll posts with vote data
+      // Augment poll posts with vote data (batch operation for efficiency)
       const userId = (req as any).user?.id;
-      posts = await Promise.all(posts.map(async (post) => {
-        if (post.subtype === 'poll') {
-          const results = await storage.getPostPollResults(post.id);
-          const myVote = userId ? await storage.getPostPollVote(post.id, userId) : null;
-          return {
-            ...post,
-            my_vote: myVote,
-            results,
-          };
+      const pollPostIds = posts.filter(p => p.subtype === 'poll').map(p => p.id);
+      
+      if (pollPostIds.length > 0) {
+        const talliesResult = await storage.getPostPollTallies(pollPostIds, userId);
+        
+        if (talliesResult.ok) {
+          posts = posts.map(post => {
+            if (post.subtype === 'poll') {
+              const pollOptions = (post as any).poll_options || (post.subtypeData as any)?.choices || [];
+              const results = new Array(pollOptions.length).fill(0);
+              
+              (talliesResult.counts || []).forEach((item: { post_id: string; option_index: number; count: number }) => {
+                if (item.post_id === post.id) {
+                  results[item.option_index] = item.count;
+                }
+              });
+              
+              const myVote = (talliesResult.mine || []).find((v: { post_id: string; option_index: number }) => v.post_id === post.id)?.option_index ?? null;
+              
+              return {
+                ...post,
+                my_vote: myVote,
+                results,
+              };
+            }
+            return post;
+          });
         }
-        return post;
-      }));
+      }
       
       res.json(posts);
     } catch (error) {
