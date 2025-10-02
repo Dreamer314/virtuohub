@@ -12,6 +12,20 @@ VirtuoHub is a modern community platform designed for virtual world creators, fe
 
 ## Recent Changes
 
+**October 2, 2025 - CRITICAL FIX: Poll Creation Database Schema**
+- **Database Schema Fix**: Fixed poll creation to use correct `subtype_data` JSONB column
+  - Previous bug: Code attempted to insert into non-existent `poll_options` column
+  - Root cause: Posts table uses `subtype_data` (JSONB) for poll storage, not separate column
+  - Fix implemented in `supabaseStorage.ts` createPost method:
+    - Transforms poll_options array → subtype_data JSON: `{ question, choices: [{ text, votes, id }] }`
+    - Properly inserts into posts.subtype_data column
+  - Poll reading fixed in mapToPostWithAuthor:
+    - Extracts poll_options from subtype_data.choices for vote validation
+    - Returns poll_options array to maintain API contract
+  - Data flow now complete: client poll_options → server subtype_data → database JSONB → read back as poll_options
+  - Legacy polls with null subtype_data remain in database from pre-fix attempts
+  - Verified by architect: implementation correct, end-to-end flow preserved
+
 **October 2, 2025 - Poll Voting System with Database Persistence & Batch Tallies**
 - **Poll Voting System**: Implemented complete poll voting functionality with Supabase persistence
   - Database: `post_poll_votes` table with unique constraint (post_id, voter_id) ensures one vote per user
