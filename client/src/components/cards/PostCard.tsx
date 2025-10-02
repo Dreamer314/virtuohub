@@ -91,7 +91,21 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
   };
 
   // Get poll data from subtypeData if it's a poll
-  const pollData = post.subtype === 'poll' ? post.subtypeData as { question?: string, choices?: Array<{text: string, votes: number, id: string}>, closesAt?: number, oneVotePerUser?: boolean } : null;
+  const pollData = post.subtype === 'poll'
+    ? (
+        (post as any).subtypeData
+        ?? {
+          question: post.title || post.content || 'Poll',
+          choices: Array.isArray((post as any).poll_options)
+            ? (post as any).poll_options.map((text: string, i: number) => ({
+                id: String(i), text, votes: 0,
+              }))
+            : [],
+          closesAt: null,
+          oneVotePerUser: true,
+        }
+      )
+    : null;
 
   // Derive images with array-safe fallback
   const images: string[] = Array.isArray(post.images)
@@ -195,7 +209,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                       srcSet={thumb2x ? `${thumbUrl} 1x, ${thumb2x} 2x` : undefined}
                       sizes="(max-width: 768px) 100vw, 640px"
                       alt={post.title || 'post image'}
-                      className="w-full h-[360px] md:h-[420px] object-cover"
+                      className="w-full max-h-[28rem] object-contain bg-black rounded-vh-lg"
                       loading="lazy"
                       decoding="async"
                     />
@@ -244,9 +258,8 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                     <img
                       src={images[0]}
                       alt={post.title || 'post image'}
-                      className="w-full h-auto object-cover cursor-pointer hover:scale-105 transition-transform duration-200"
+                      className="w-full max-h-[80vh] object-contain bg-black rounded-vh-lg"
                       data-testid={`storage-image-${post.id}`}
-                      loading="lazy"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();

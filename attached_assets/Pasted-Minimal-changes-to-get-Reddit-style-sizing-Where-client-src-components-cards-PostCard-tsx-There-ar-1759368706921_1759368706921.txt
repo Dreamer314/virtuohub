@@ -1,0 +1,83 @@
+Minimal changes to get Reddit-style sizing
+
+Where: client/src/components/cards/PostCard.tsx
+There are two <img> tags (feed and detail/lightbox). Change their classes:
+
+Feed preview (smaller “shrink-to-fit”):
+
+<img
+  src={images[0]}
+  alt={post.title || 'post image'}
+  className="w-full max-h-[28rem] object-contain bg-black rounded-vh-lg cursor-pointer hover:opacity-95 transition"
+  loading="lazy"
+  data-testid={`storage-image-${post.id}`}
+/>
+
+
+(28rem ≈ 448px; bump to max-h-[32rem] if you want a bit taller.)
+
+Detail / lightbox (fit to screen):
+
+<img
+  src={images[0]}
+  alt={post.title || 'post image'}
+  className="w-full max-h-[80vh] object-contain bg-black rounded-vh-lg"
+  data-testid={`storage-image-${post.id}`}
+/>
+
+
+That alone will stop cropping and make the preview small-but-complete, and the lightbox will fit the full image to the viewport.
+
+Polls not showing options (quick fix)
+
+Right now the card looks for post.subtypeData for polls. Your server stores options in post.poll_options. So the UI never sees the choices.
+
+Add a safe fallback that maps poll_options → the shape your UI expects.
+
+In PostCard.tsx, replace the pollData line with:
+
+const pollData = post.subtype === 'poll'
+  ? (
+      (post as any).subtypeData
+      ?? {
+        question: post.title || post.content || 'Poll',
+        choices: Array.isArray((post as any).poll_options)
+          ? (post as any).poll_options.map((text: string, i: number) => ({
+              id: String(i), text, votes: 0,
+            }))
+          : [],
+        closesAt: null,
+        oneVotePerUser: true,
+      }
+    )
+  : null;
+
+
+That keeps your current render logic intact and makes polls work immediately without any server changes.
+
+Copy-paste prompt for your Replit Agent
+
+Goal: Stop image cropping (use Reddit-style shrink-to-fit) and make poll choices render.
+Scope: Only edit client/src/components/cards/PostCard.tsx. No other files.
+
+In both image tags (feed & detail), change object-cover → object-contain.
+
+Feed image classes should include: w-full max-h-[28rem] object-contain bg-black rounded-vh-lg and loading="lazy".
+
+Detail/lightbox image classes should include: w-full max-h-[80vh] object-contain bg-black rounded-vh-lg.
+
+Update the poll data derivation to fall back to post.poll_options when post.subtypeData is missing:
+
+const pollData = post.subtype === 'poll'
+  ? ((post as any).subtypeData ?? {
+      question: post.title || post.content || 'Poll',
+      choices: Array.isArray((post as any).poll_options)
+        ? (post as any).poll_options.map((text: string, i: number) => ({ id: String(i), text, votes: 0 }))
+        : [],
+      closesAt: null,
+      oneVotePerUser: true,
+    })
+  : null;
+
+
+Keep everything else the same.
