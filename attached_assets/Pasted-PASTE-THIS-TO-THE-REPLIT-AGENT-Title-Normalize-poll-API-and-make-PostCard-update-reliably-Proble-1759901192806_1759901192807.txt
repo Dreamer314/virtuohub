@@ -1,0 +1,157 @@
+PASTE THIS TO THE REPLIT AGENT:
+
+Title: Normalize poll API and make PostCard update reliably
+
+Problem:
+Voting sometimes shows a toast but the card does not switch to results. The GET endpoints sometimes return my_vote null and tallies not aligned with options. The UI is fragile to field-name drift.
+
+Goal (minimal and additive):
+
+Server always includes a normalized poll block on every poll post (list and single).
+
+Vote endpoint returns the same normalized poll block so the client can update immediately.
+
+Tallies are zero-filled to match options length.
+
+Keep legacy fields for compatibility (do not remove anything).
+
+No schema changes. No unrelated refactors.
+
+Normalized poll block to return:
+poll: { question: string, options: string[], tallies: number[], total: number, my_vote: number | null }
+Legacy mirrors to also return: poll_question, poll_options, results, my_vote
+
+Files allowed:
+
+server/supabaseStorage.ts
+
+server/routes.ts
+
+client/src/components/cards/PostCard.tsx (only if needed to read normalized fields with fallback)
+
+Do not touch:
+
+schema files
+
+auth
+
+styling
+
+unrelated routes or components
+
+Exact changes:
+
+A) server/supabaseStorage.ts
+
+Add helpers near existing mappers:
+
+function zeroFill(arr: number[] | undefined, len: number): number[] {
+const a = Array.isArray(arr) ? arr.slice(0) : [];
+while (a.length < len) a.push(0);
+for (let i = 0; i < a.length; i++) a[i] = Number.isFinite(a[i]) ? Number(a[i]) : 0;
+return a.slice(0, len);
+}
+
+function extractPollMeta(row: any, myVote: number | null, talliesIn: number[]) {
+const pollNode = row?.subtype_data?.poll ?? null;
+const question = typeof pollNode?.question === 'string' ? pollNode.question : null;
+const options = Array.isArray(pollNode?.options) ? pollNode.options.filter((o: any) => typeof o === 'string') : [];
+const tallies = zeroFill(talliesIn, options.length);
+const total = tallies.reduce((a, b) => a + (Number.isFinite(b) ? b : 0), 0);
+return {
+poll: { question, options, tallies, total, my_vote: myVote },
+poll_question: question,
+poll_options: options,
+results: tallies,
+my_vote: myVote
+};
+}
+
+In mapToPostWithAuthor(row), after building the base post object, if row.subtype === 'poll', attach empty meta so routes can fill counts:
+if (row.subtype === 'poll') {
+const meta = extractPollMeta(row, null, []);
+post = { ...post, ...meta };
+}
+
+Ensure storage has a method to get an individual vote (if missing):
+async getMyVote(postId: string, voterId: string): Promise<number | null> {
+// select option_index from post_poll_votes where post_id = postId and voter_id = voterId limit 1
+// return null if none
+}
+
+B) server/routes.ts
+
+Add a helper to attach normalized poll meta to posts consistently (place near other route helpers):
+
+async function attachPollMetaForPosts(rows: any[], storage: any, userId?: string) {
+const pollIds = rows.filter(r => r.subtype === 'poll').map(r => r.id);
+if (pollIds.length === 0) return rows;
+
+const talliesById = await storage.getPostPollTallies(pollIds);
+const myVotes: Record<string, number | null> = {};
+if (userId) {
+await Promise.all(pollIds.map(async id => { myVotes[id] = await storage.getMyVote(id, userId); }));
+}
+
+return rows.map(row => {
+if (row.subtype !== 'poll') return row;
+const myVote = userId ? (myVotes[row.id] ?? null) : null;
+const tallies = talliesById[row.id] ?? [];
+const meta = extractPollMeta(row, myVote, tallies);
+return { ...row, ...meta };
+});
+}
+
+GET /api/posts: after you fetch rows via storage, call:
+const rows = await storage.getPosts(...);
+const withMeta = await attachPollMetaForPosts(rows, storage, req.user?.id);
+return res.json({ posts: withMeta });
+
+GET /api/posts/:id: do the same for a single-row array, then return the first.
+
+POST /api/posts/:postId/polls/vote:
+
+After saving the vote, re-read the post row and its options from subtype_data.poll.options.
+
+Recompute tallies via getPostPollTallies([id]) and get myVote via getMyVote(id, req.user.id).
+
+Zero-fill tallies to options length.
+
+Respond with:
+return res.json({
+ok: true,
+poll: { question, options, tallies, total, my_vote: myVote },
+poll_question: question,
+poll_options: options,
+results: tallies,
+my_vote: myVote
+});
+
+C) client/src/components/cards/PostCard.tsx (only if needed)
+Before rendering, derive defensively:
+const options = post.poll?.options ?? post.poll_options ?? [];
+const tallies = Array.isArray(post.poll?.tallies) ? post.poll.tallies : (Array.isArray(post.results) ? post.results : []);
+const total = typeof post.poll?.total === 'number' ? post.poll.total : tallies.reduce((a,b)=>a+(Number(b)||0),0);
+const myVote = post.poll?.my_vote ?? post.my_vote ?? null;
+
+In vote mutation onSuccess, merge the server response into the cached post, preferring data.poll, then mirrors.
+
+Acceptance tests:
+
+Create a new poll with 3 options. Vote one option. Card flips to bars and percentages immediately. Your choice is highlighted. Buttons disabled after vote.
+
+Refresh. my_vote remains your chosen index. Tallies length equals options length on GET.
+
+Network checks:
+
+GET /api/posts returns poll block plus mirrors for the poll.
+
+POST /api/posts/:id/polls/vote returns the same poll block plus mirrors.
+
+Scope and safety:
+
+Keep diffs minimal. Do not rename or remove existing fields. Do not change database schema. Do not edit unrelated files.
+
+Log one line per poll in routes after attachPollMetaForPosts with id, options length, tallies length for verification.
+
+End of prompt.
