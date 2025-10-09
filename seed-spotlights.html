@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Spotlight Posts</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto; }
+        .spotlight { border: 1px solid #ccc; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        button { background: #7C3AED; color: white; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; margin: 5px; }
+        button:hover { background: #6D28D9; }
+        .status { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background: #D1FAE5; color: #065F46; }
+        .error { background: #FEE2E2; color: #991B1B; }
+    </style>
+</head>
+<body>
+    <h1>Create Spotlight Posts</h1>
+    <p>Click the button below to create 5 sample spotlight posts. You must be logged in first.</p>
+    
+    <button onclick="createAllSpotlights()">Create All 5 Spotlights</button>
+    <div id="status"></div>
+    
+    <div id="spotlights"></div>
+
+    <script>
+        const spotlights = [
+            {
+                subtype: "spotlight",
+                title: "Maya Chen - Avatar Fashion Designer Extraordinaire",
+                summary: "Creating cutting-edge virtual fashion that's redefining digital identity across platforms",
+                body: "Maya Chen has become one of the most influential avatar fashion designers in the virtual world space, with her creations worn by over 500,000 avatars across VRChat, Second Life, and Meta Horizon Worlds.\\n\\n**Background:**\\nStarting as a traditional fashion designer, Maya transitioned to virtual worlds in 2020 and quickly made waves with her unique blend of haute couture and digital innovation. Her signature style combines futuristic aesthetics with cultural heritage elements, creating pieces that are both visually stunning and deeply meaningful.\\n\\n**Notable Achievements:**\\n• Created the \\"Neon Dynasty\\" collection - 200K+ downloads\\n• Collaborated with major VR events including Virtual Fashion Week\\n• Featured in Vogue's \\"Digital Fashion Pioneers\\" article\\n• Built a thriving Discord community of 50K+ fashion enthusiasts\\n\\n**Design Philosophy:**\\n\\"In virtual worlds, we're not limited by physics or manufacturing. I create pieces that tell stories, pieces that couldn't exist in the physical world but feel more real than anything you could wear on the street.\\"",
+                tags: ["fashion", "avatar design", "vrchat", "virtual fashion", "metaverse"],
+                platforms: ["VRChat", "Second Life", "Meta Horizon Worlds"],
+                images: ["https://images.unsplash.com/photo-1558769132-cb1aea1c8347?w=800"]
+            },
+            {
+                subtype: "spotlight",
+                title: "DJ Synthwave - From Bedroom Producer to Virtual Megastar",
+                summary: "Building a music empire one virtual concert at a time",
+                body: "DJ Synthwave has transformed the virtual concert scene, hosting events that regularly draw 10,000+ simultaneous attendees across multiple platforms.\\n\\n**The Journey:**\\nStarting with small DJ sets in VRChat club worlds in 2021, Synthwave built a loyal following through consistent weekly performances and innovative use of visual effects synchronized to the music.\\n\\n**Performance Stats:**\\n• 200+ virtual concerts performed\\n• 10M+ total attendance across all shows\\n• Average 8,000 concurrent viewers per major event\\n• Featured artist at Virtual Coachella 2024",
+                tags: ["music", "dj", "virtual concerts", "entertainment"],
+                platforms: ["VRChat", "Meta Horizon Worlds"],
+                images: ["https://images.unsplash.com/photo-1571266028243-d220c11fa714?w=800"]
+            },
+            {
+                subtype: "spotlight",
+                title: "Neon Realms Studio - Pushing the Boundaries of Virtual Architecture",
+                summary: "An indie studio creating impossible architecture and mind-bending spaces in VR",
+                body: "Neon Realms Studio has carved out a unique niche by creating environments that challenge our perception of space and reality.\\n\\n**Flagship Projects:**\\n• **Escher's Dream** - A gravity-defying maze world (1.2M visits)\\n• **The Infinite Gallery** - Ever-changing art exhibition space (800K visits)\\n• **Quantum Gardens** - Non-Euclidean botanical environment (650K visits)",
+                tags: ["architecture", "vr worlds", "unity", "innovation"],
+                platforms: ["VRChat", "Unity"],
+                images: ["https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800"]
+            },
+            {
+                subtype: "spotlight",
+                title: "CodeCraft Academy - Teaching Virtual World Builders",
+                summary: "Free education platform that has trained over 50,000 creators",
+                body: "CodeCraft Academy has revolutionized virtual world education by making professional-grade training accessible to everyone.\\n\\n**Program Highlights:**\\n• 30-Day Unity Mastery - From zero to first VRChat world\\n• Blender for Virtual Worlds - Character and environment creation\\n• Roblox Game Design Bootcamp - Build and monetize your first game",
+                tags: ["education", "unity", "blender", "community"],
+                platforms: ["Unity", "VRChat", "Roblox"],
+                images: ["https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800"]
+            },
+            {
+                subtype: "spotlight",
+                title: "Phoenix Rising - Rebuilt After Losing Everything",
+                summary: "An inspiring story of resilience and community support",
+                body: "When veteran creator Marcus \\"Phoenix\\" Williams lost his entire portfolio to a hard drive failure, the virtual world community rallied to help him rebuild.\\n\\n**The Comeback:**\\n• **Ember City 2.0** - Rebuilt with community input (500K visits)\\n• **Hope's Haven** - A memorial world (300K visits)\\n• **Creator's Refuge** - A social space for backup education (250K visits)",
+                tags: ["inspiration", "community", "resilience"],
+                platforms: ["VRChat", "Unity", "Second Life"],
+                images: ["https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800"]
+            }
+        ];
+
+        async function createSpotlight(data, index) {
+            const statusDiv = document.getElementById('status');
+            try {
+                const response = await fetch('/api/posts', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    statusDiv.innerHTML += `<div class="status success">✓ Created: ${data.title}</div>`;
+                    return true;
+                } else {
+                    const error = await response.text();
+                    statusDiv.innerHTML += `<div class="status error">✗ Failed: ${data.title} - ${error}</div>`;
+                    return false;
+                }
+            } catch (error) {
+                statusDiv.innerHTML += `<div class="status error">✗ Error: ${data.title} - ${error.message}</div>`;
+                return false;
+            }
+        }
+
+        async function createAllSpotlights() {
+            const statusDiv = document.getElementById('status');
+            statusDiv.innerHTML = '<div class="status">Creating spotlights...</div>';
+            
+            for (let i = 0; i < spotlights.length; i++) {
+                await createSpotlight(spotlights[i], i);
+                await new Promise(resolve => setTimeout(resolve, 500)); // Small delay between requests
+            }
+            
+            statusDiv.innerHTML += '<div class="status success"><strong>Done! Refresh the /spotlights page to see them.</strong></div>';
+        }
+
+        // Display spotlight previews
+        const container = document.getElementById('spotlights');
+        spotlights.forEach((spot, i) => {
+            container.innerHTML += `
+                <div class="spotlight">
+                    <h3>${i + 1}. ${spot.title}</h3>
+                    <p><strong>Summary:</strong> ${spot.summary}</p>
+                    <p><strong>Tags:</strong> ${spot.tags.join(', ')}</p>
+                    <p><strong>Platforms:</strong> ${spot.platforms.join(', ')}</p>
+                </div>
+            `;
+        });
+    </script>
+</body>
+</html>
