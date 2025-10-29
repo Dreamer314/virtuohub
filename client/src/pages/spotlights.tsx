@@ -1,86 +1,13 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Star, ArrowRight } from 'lucide-react';
 import { Link } from 'wouter';
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
-import { PostCard } from '@/components/cards/PostCard';
 import { Footer } from '@/components/layout/footer';
 import { EngagementSection } from '@/components/engagement-section';
-import { useQuery } from '@tanstack/react-query';
-import type { PostWithAuthor } from '@shared/schema';
-import { useURLFilters } from '@/hooks/useURLFilters';
-import { useFilterStore } from '@/lib/stores/filter-store';
 
 const SpotlightsPage: React.FC = () => {
-  const { actions } = useURLFilters();
-  const filterStore = useFilterStore();
-
-  // Initialize page-specific filtering on mount
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    
-    // Only set spotlight filter if it's not already active or if there are conflicting filters
-    const currentSubtypes = filterStore.selectedSubtypes;
-    const hasSpotlightFilter = currentSubtypes.includes('spotlight');
-    const hasOtherFilters = currentSubtypes.some(subtype => subtype !== 'spotlight');
-    
-    if (!hasSpotlightFilter || hasOtherFilters) {
-      // Clear other subtypes and set spotlight - but do it gently
-      if (hasOtherFilters) {
-        actions.clearSubtypes();
-      }
-      if (!hasSpotlightFilter) {
-        actions.addSubtype('spotlight');
-      }
-    }
-  }, []); // Remove actions from dependencies to prevent re-runs
-
-  // Fetch all posts and filter for spotlight posts using unified schema
-  const { data: posts = [], isLoading } = useQuery<PostWithAuthor[]>({
-    queryKey: ['/api/posts']
-  });
-
-  // Filter posts by spotlight subtype and apply other active filters
-  const spotlightPosts = posts
-    .filter(post => {
-      // Always include spotlight subtype
-      if (post.subtype !== 'spotlight') return false;
-      
-      // Apply platform filtering if active
-      if (filterStore.selectedPlatforms.length > 0) {
-        const hasMatchingPlatform = post.platforms?.some(platform => 
-          filterStore.selectedPlatforms.includes(platform as any)
-        );
-        if (!hasMatchingPlatform) return false;
-      }
-      
-      // Apply search query if active
-      if (filterStore.searchQuery.trim()) {
-        const query = filterStore.searchQuery.toLowerCase();
-        const matchesSearch = 
-          post.title.toLowerCase().includes(query) ||
-          post.body?.toLowerCase().includes(query) ||
-          post.tags?.some(tag => tag.toLowerCase().includes(query));
-        if (!matchesSearch) return false;
-      }
-      
-      return true;
-    })
-    .sort((a, b) => {
-      // Apply sorting based on filter store settings
-      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-      
-      if (filterStore.sortBy === 'recent') {
-        return filterStore.sortDirection === 'desc' ? bTime - aTime : aTime - bTime;
-      } else if (filterStore.sortBy === 'popular') {
-        const aPopularity = (a.likes || 0) + (a.comments || 0) + (a.shares || 0);
-        const bPopularity = (b.likes || 0) + (b.comments || 0) + (b.shares || 0);
-        return filterStore.sortDirection === 'desc' ? bPopularity - aPopularity : aPopularity - bPopularity;
-      }
-      return bTime - aTime; // Default to recent desc
-    });
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
@@ -145,59 +72,13 @@ const SpotlightsPage: React.FC = () => {
                     </p>
                   </div>
 
-                  {/* Search and Filter Integration */}
-                  <div className="mb-6">
-                    <div className="text-center text-sm text-muted-foreground">
-                      {spotlightPosts.length === 0 
-                        ? 'No spotlights match your current filters'
-                        : `Showing ${spotlightPosts.length} spotlight${spotlightPosts.length !== 1 ? 's' : ''}`
-                      }
-                      {filterStore.hasActiveFilters() && (
-                        <button 
-                          onClick={actions.clearFilters}
-                          className="ml-2 text-primary hover:text-primary/80 underline"
-                        >
-                          Clear filters
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Dynamic Spotlight Posts */}
+                  {/* Featured Spotlight */}
                   <div className="space-y-8">
-                    {isLoading ? (
-                      <div className="text-center py-12">
-                        <div className="text-muted-foreground">Loading spotlights...</div>
-                      </div>
-                    ) : spotlightPosts.length === 0 ? (
-                      <div className="text-center py-12">
-                        <div className="text-6xl mb-4">🔍</div>
-                        <h3 className="text-xl font-semibold mb-2 text-foreground">
-                          No spotlights found
-                        </h3>
-                        <p className="text-muted-foreground mb-4">
-                          {filterStore.hasActiveFilters() 
-                            ? 'Try adjusting your filters to see more content.'
-                            : 'No creator spotlights are available yet.'}
-                        </p>
-                      </div>
-                    ) : (
-                      <>
-                        {/* Render Spotlight Posts Dynamically */}
-                        {spotlightPosts.map((post) => (
-                          <PostCard
-                            key={post.id}
-                            post={post}
-                          />
-                        ))}
-                        
-                        {/* Featured Spotlight (fallback content) */}
-                        {spotlightPosts.length > 0 && (
-                          <div className="mt-8">
-                            <h2 className="text-2xl font-bold text-foreground mb-6 text-center">
-                              Featured Spotlight
-                            </h2>
-                            <article className="enhanced-card hover-lift rounded-xl overflow-hidden">
+                    <div>
+                      <h2 className="text-2xl font-bold text-foreground mb-6 text-center">
+                        Featured Spotlight
+                      </h2>
+                      <article className="enhanced-card hover-lift rounded-xl overflow-hidden">
                           <div className="flex flex-col lg:flex-row gap-8">
                             <div className="lg:w-1/3">
                               <div className="w-full h-64 lg:h-80 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-xl flex items-center justify-center relative overflow-hidden">
@@ -273,11 +154,11 @@ const SpotlightsPage: React.FC = () => {
                               />
                             </div>
                           </div>
-                        </article>
+                      </article>
 
-                            {/* More Spotlights */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <article className="enhanced-card hover-lift rounded-xl border border-sidebar-border hover:border-yellow-500/30 transition-all overflow-hidden">
+                      {/* More Spotlights */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                        <article className="enhanced-card hover-lift rounded-xl border border-sidebar-border hover:border-yellow-500/30 transition-all overflow-hidden">
                             <div className="w-full h-48 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center relative">
                               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
                               <span className="text-4xl relative z-10">🏢</span>
@@ -342,12 +223,9 @@ const SpotlightsPage: React.FC = () => {
                               />
                             </div>
                           </article>
-                            </div>
-                          </div>
-                        )}
-                      </>
-                    )}
-                  </div>
+                        </div>
+                      </div>
+                    </div>
                 </main>
 
                 {/* Mobile Right Sidebar */}
