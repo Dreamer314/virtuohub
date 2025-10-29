@@ -1,0 +1,53 @@
+Diagnose why Community Feed posts appear on the Creator Spotlights page
+
+Goal: Do not modify code. Read the repo and explain why the Creator Spotlights page renders a Community Feed section with “Showing 5 spotlights | Clear filters” and post-style cards beneath the Featured Spotlight block. Produce a short report that cites file paths and relevant lines.
+
+Context clues from screenshots:
+
+The page header shows “Creator Spotlights.”
+
+Below the correct “Featured Spotlight” block, there is a second section with the Community Feed UI: “Showing 5 spotlights | Clear filters,” tags, and the like/save/comment bar.
+
+The Featured Spotlight block and the small spotlight tiles look correct. Clicking “View Full Spotlight” opens a mocked spotlight detail page, which is fine for now.
+
+Repository questions to answer:
+
+Which route file renders the Creator Spotlights page, and what components does it mount under the Featured Spotlight section?
+
+Likely paths to check:
+
+client/src/pages/spotlights.tsx or client/src/pages/creator-spotlights.tsx
+
+Route config in client/src/App.tsx or wherever routes are defined
+
+Which component prints the string “Showing X spotlights | Clear filters”? Identify its file and how it ends up on the Spotlights page.
+
+Is the Spotlights page importing any of these: CommunityFeed, FeedList, PostList, FilterBar, or a FeedProvider?
+
+For the leaking section, what data source is used? Confirm whether the fetch calls supabase.from('posts') or a shared “posts” fetcher with a filter like tags contains 'spotlight' or category = 'spotlights'.
+
+What powers the correct Featured Spotlight block and the mini spotlight tiles? Are they using a local mock array like spotlightsData.ts, or a spotlights table?
+
+Are we rendering PostCard for the second section instead of SpotlightCard? If yes, note the exact component and usage site.
+
+Are there any shared layouts or wrappers that always mount a feed section under certain routes?
+
+Deliverable:
+
+A concise report that lists:
+
+The exact component that introduces the feed section on the Spotlights page, with file path and the prop values being passed.
+
+The data query used by that component, including table name and filters.
+
+Whether the Featured Spotlight content is local mock data or a distinct table.
+
+A minimal plan to keep for later, not to apply now, that states which component to remove or replace, which query to point at, and which card component to use.
+
+Important constraints:
+
+Do not change any files.
+
+Do not auto-run code that writes to the filesystem.
+
+Limit output to analysis and file references only.
