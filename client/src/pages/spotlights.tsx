@@ -68,7 +68,7 @@ const LOCAL_SEED_SPOTLIGHTS: Spotlight[] = [
 ];
 
 const SpotlightsPage = () => {
-  const { data: spotlights = LOCAL_SEED_SPOTLIGHTS } = useQuery<Spotlight[]>({
+  const { data: spotlightsData, isLoading } = useQuery<Spotlight[]>({
     queryKey: ['spotlights:list'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -77,12 +77,15 @@ const SpotlightsPage = () => {
         .eq('published', true)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data && data.length > 0 ? data : LOCAL_SEED_SPOTLIGHTS;
+      return data || [];
     }
   });
 
+  const showEmptyState = !isLoading && spotlightsData && spotlightsData.length === 0;
+  const spotlights = showEmptyState ? [] : (spotlightsData || LOCAL_SEED_SPOTLIGHTS);
   const featuredSpotlight = spotlights[0];
   const miniSpotlights = spotlights.slice(1, 3);
+  const showDemoLink = import.meta.env.VITE_SPOTLIGHT_DEMO === 'true';
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
@@ -147,8 +150,25 @@ const SpotlightsPage = () => {
                     </p>
                   </div>
 
+                  {/* Empty State */}
+                  {showEmptyState && (
+                    <div className="text-center py-16">
+                      <div className="text-6xl mb-6">✨</div>
+                      <h2 className="text-2xl font-bold text-foreground mb-4">Spotlights are coming soon</h2>
+                      <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+                        We are preparing our first creator features. Check back shortly.
+                      </p>
+                      {showDemoLink && (
+                        <Link href="/spotlight/demo" className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-medium rounded-lg transition-all duration-300" data-testid="view-demo-button">
+                          View Demo Layout
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </Link>
+                      )}
+                    </div>
+                  )}
+
                   {/* Featured Spotlight */}
-                  {featuredSpotlight && (
+                  {!showEmptyState && featuredSpotlight && (
                     <div className="space-y-8">
                       <div>
                         <h2 className="text-2xl font-bold text-foreground mb-6 text-center">
@@ -187,35 +207,10 @@ const SpotlightsPage = () => {
                             )}
 
                             {/* View Full Spotlight Button */}
-                            <div className="mb-6">
-                              <Link href={`/spotlight/${featuredSpotlight.slug}`} className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-medium rounded-lg transition-all duration-300 group">
-                                View Full Spotlight
-                                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                              </Link>
-                            </div>
-
-                            {/* Engagement Section */}
-                            <EngagementSection 
-                              contentId={`spotlight-${featuredSpotlight.slug}`}
-                              contentType="spotlight"
-                              initialLikes={324}
-                              initialComments={[
-                                {
-                                  id: '1',
-                                  author: 'Alex Rivera',
-                                  content: 'Emma\'s Neon Dreams world is absolutely stunning! The lighting work is incredible.',
-                                  timestamp: '1 hour ago',
-                                  likes: 15
-                                },
-                                {
-                                  id: '2',
-                                  author: 'Sam Chen',
-                                  content: 'Been following her work for years. True pioneer in VR environment design!',
-                                  timestamp: '3 hours ago',
-                                  likes: 22
-                                }
-                              ]}
-                            />
+                            <Link href={`/spotlight/${featuredSpotlight.slug}`} className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-medium rounded-lg transition-all duration-300 group" data-testid="view-featured-spotlight">
+                              View Full Spotlight
+                              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                            </Link>
                           </div>
                         </article>
 

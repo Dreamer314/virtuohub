@@ -10,7 +10,7 @@ import { SpotlightMeta } from '@/components/spotlights/SpotlightMeta';
 import { SpotlightPortfolioList } from '@/components/spotlights/SpotlightPortfolioList';
 import { SpotlightAchievements } from '@/components/spotlights/SpotlightAchievements';
 import { SpotlightConnect } from '@/components/spotlights/SpotlightConnect';
-import { EngagementSection } from '@/components/engagement-section';
+import { SpotlightEngagement } from '@/components/spotlight-engagement';
 import { supabase } from '@/lib/supabaseClient';
 import type { Spotlight } from '@/types/spotlight';
 
@@ -203,12 +203,7 @@ const SpotlightDetailPage = () => {
 
                       {/* Engagement Section */}
                       <div className="mt-8">
-                        <EngagementSection 
-                          contentId={`spotlight-${spotlight.slug}`}
-                          contentType="spotlight"
-                          initialLikes={0}
-                          initialComments={[]}
-                        />
+                        <SpotlightEngagement spotlightId={spotlight.id} />
                       </div>
                     </div>
                   </article>

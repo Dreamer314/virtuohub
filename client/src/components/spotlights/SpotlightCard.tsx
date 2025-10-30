@@ -1,6 +1,5 @@
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'wouter';
-import { EngagementSection } from '@/components/engagement-section';
 import type { Spotlight } from '@/types/spotlight';
 
 interface SpotlightCardProps {
@@ -41,18 +40,10 @@ export function SpotlightCard({ spotlight, emoji = '👤', gradient = 'from-blue
             ))}
           </div>
         )}
-        <div className="mb-4">
-          <Link href={`/spotlight/${spotlight.slug}`} className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
-            View Full Spotlight
-            <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
-          </Link>
-        </div>
-        <EngagementSection 
-          contentId={`spotlight-${spotlight.slug}`}
-          contentType="spotlight"
-          initialLikes={0}
-          initialComments={[]}
-        />
+        <Link href={`/spotlight/${spotlight.slug}`} className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white text-sm font-medium rounded-lg transition-all duration-300 group" data-testid={`view-spotlight-${spotlight.slug}`}>
+          View Full Spotlight
+          <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
+        </Link>
       </div>
     </article>
   );

@@ -15,6 +15,7 @@ import ThreadPage from "@/pages/thread";
 import TrendingPage from "@/pages/trending";
 import SpotlightsPage from "@/pages/spotlights";
 import SpotlightDetailPage from "@/pages/spotlight-detail";
+import SpotlightDemoPage from "@/pages/spotlight-demo";
 import InterviewsPage from "@/pages/interviews";
 import InterviewDetailPage from "@/pages/interview-detail";
 import GuidesPage from "@/pages/guides";
@@ -39,6 +40,7 @@ function Router() {
       <Route path="/home" component={HomePage} />
       <Route path="/community" component={Community} />
       <Route path="/spotlights" component={SpotlightsPage} />
+      <Route path="/spotlight/demo" component={SpotlightDemoPage} />
       <Route path="/spotlight/:id" component={SpotlightDetailPage} />
       <Route path="/interviews" component={InterviewsPage} />
       <Route path="/interview/:id" component={InterviewDetailPage} />
