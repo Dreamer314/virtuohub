@@ -1,13 +1,88 @@
-import React from 'react';
 import { Star, ArrowRight } from 'lucide-react';
 import { Link } from 'wouter';
+import { useQuery } from '@tanstack/react-query';
 import { Header } from '@/components/layout/header';
 import { LeftSidebar } from '@/components/layout/left-sidebar';
 import { RightSidebar } from '@/components/layout/right-sidebar';
 import { Footer } from '@/components/layout/footer';
 import { EngagementSection } from '@/components/engagement-section';
+import { SpotlightCard } from '@/components/spotlights/SpotlightCard';
+import { SpotlightHero } from '@/components/spotlights/SpotlightHero';
+import { SpotlightMeta } from '@/components/spotlights/SpotlightMeta';
+import { SpotlightPortfolioList } from '@/components/spotlights/SpotlightPortfolioList';
+import { SpotlightAchievements } from '@/components/spotlights/SpotlightAchievements';
+import { SpotlightConnect } from '@/components/spotlights/SpotlightConnect';
+import { supabase } from '@/lib/supabaseClient';
+import type { Spotlight } from '@/types/spotlight';
 
-const SpotlightsPage: React.FC = () => {
+const LOCAL_SEED_SPOTLIGHTS: Spotlight[] = [
+  {
+    id: '1',
+    slug: 'emma-thompson-vr-artist',
+    type: 'creator',
+    name: 'Emma Thompson',
+    role: 'VR Environment Artist & World Builder',
+    about: 'Emma is a pioneering VR environment artist known for creating atmospheric virtual worlds that have garnered over 2 million visits across VRChat. Her expertise lies in blending photorealistic environments with interactive storytelling elements.\n\nShe specializes in cyberpunk and fantasy themes, using cutting-edge lighting techniques and particle systems to create immersive experiences that transport users to entirely new realities.',
+    stats: { visits: 2000000, followers: 15000, years: 3, location: 'San Francisco, CA' },
+    tags: ['VRChat', 'Unity', 'Blender', 'Environment Design'],
+    portfolio: [
+      { title: 'Neon Dreams', category: 'Cyberpunk City World', description: 'A sprawling cyberpunk metropolis', statLabel: '500K+ visits' },
+      { title: 'Mystic Forest Temple', category: 'Fantasy Environment', description: 'An enchanted forest sanctuary', statLabel: '800K+ visits' },
+      { title: 'Underground Club Scene', category: 'Social Hub', description: 'An underground venue for events', statLabel: '400K+ visits' }
+    ],
+    achievements: [
+      'VRChat Creator of the Year 2023',
+      'Unity Showcase Featured Artist',
+      'Speaker at VR Developer Conference 2024',
+      'Mentor in VRChat Creator Program'
+    ],
+    social: { vrchat: '@EmmaThompsonVR', twitter: '@VR_Emma_Art', discord: 'Emma#1337' },
+    published: true
+  },
+  {
+    id: '2',
+    slug: 'pixelcraft-studios',
+    type: 'studio',
+    name: 'PixelCraft Studios',
+    role: 'Independent Game Studio',
+    about: 'Independent game studio creating immersive Roblox experiences with over 10M total plays.',
+    stats: { location: '—' },
+    tags: ['Roblox', 'Game Design'],
+    portfolio: [],
+    achievements: [],
+    published: true
+  },
+  {
+    id: '3',
+    slug: 'virtualforge-ai-tool',
+    type: 'tool',
+    name: 'VirtualForge',
+    role: 'AI-Powered World Generation Tool',
+    about: 'AI-powered world generation tool helping creators build immersive environments 10x faster.',
+    stats: { location: '—' },
+    tags: ['AI Tools', 'Unity'],
+    portfolio: [],
+    achievements: [],
+    published: true
+  }
+];
+
+const SpotlightsPage = () => {
+  const { data: spotlights = LOCAL_SEED_SPOTLIGHTS } = useQuery<Spotlight[]>({
+    queryKey: ['spotlights:list'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('spotlights')
+        .select('id, slug, name, role, hero_image, tags, stats, type, about')
+        .eq('published', true)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data && data.length > 0 ? data : LOCAL_SEED_SPOTLIGHTS;
+    }
+  });
+
+  const featuredSpotlight = spotlights[0];
+  const miniSpotlights = spotlights.slice(1, 3);
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
@@ -73,159 +148,98 @@ const SpotlightsPage: React.FC = () => {
                   </div>
 
                   {/* Featured Spotlight */}
-                  <div className="space-y-8">
-                    <div>
-                      <h2 className="text-2xl font-bold text-foreground mb-6 text-center">
-                        Featured Spotlight
-                      </h2>
-                      <article className="enhanced-card hover-lift rounded-xl overflow-hidden">
-                          <div className="flex flex-col lg:flex-row gap-8">
-                            <div className="lg:w-1/3">
-                              <div className="w-full h-64 lg:h-80 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-xl flex items-center justify-center relative overflow-hidden">
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                                <span className="text-6xl relative z-10">👤</span>
-                                <div className="absolute bottom-4 left-4 right-4 z-10">
-                                  <div className="text-white font-semibold">Emma Thompson</div>
-                                  <div className="text-white/80 text-sm">2M+ world visits</div>
-                                </div>
-                              </div>
-                            </div>
-                            <div className="lg:w-2/3 p-8">
-                              <div className="mb-4">
-                                <span className="inline-block px-3 py-1 text-xs font-medium bg-primary/20 text-primary border border-primary/30 rounded-full">Spotlight</span>
-                              </div>
-                              <h2 className="text-3xl font-bold text-foreground mb-3">Emma Thompson</h2>
-                              <p className="text-lg text-muted-foreground mb-6">VR Environment Artist & World Builder</p>
-                              
+                  {featuredSpotlight && (
+                    <div className="space-y-8">
+                      <div>
+                        <h2 className="text-2xl font-bold text-foreground mb-6 text-center">
+                          Featured Spotlight
+                        </h2>
+                        <article className="enhanced-card hover-lift rounded-xl overflow-hidden">
+                          <SpotlightHero 
+                            spotlight={featuredSpotlight} 
+                            emoji="👤"
+                            gradient="from-yellow-400 via-orange-500 to-red-500"
+                          />
+                          <div className="lg:w-2/3 lg:ml-[33.333333%] p-8 lg:pt-0">
+                            <SpotlightMeta spotlight={featuredSpotlight} />
+                            
+                            {featuredSpotlight.about && (
                               <div className="mb-6">
                                 <h3 className="text-lg font-semibold text-foreground mb-3">About</h3>
-                                <p className="text-muted-foreground mb-4">
-                                  Emma is a pioneering VR environment artist known for creating atmospheric virtual worlds that have garnered over 2 million visits across VRChat. Her expertise lies in blending photorealistic environments with interactive storytelling elements.
-                                </p>
-                                <p className="text-muted-foreground">
-                                  She specializes in cyberpunk and fantasy themes, using cutting-edge lighting techniques and particle systems to create immersive experiences that transport users to entirely new realities.
-                                </p>
+                                {featuredSpotlight.about.split('\n\n').map((paragraph, index) => (
+                                  <p key={index} className="text-muted-foreground mb-4">
+                                    {paragraph}
+                                  </p>
+                                ))}
                               </div>
+                            )}
 
-                              <div className="mb-6">
-                                <h3 className="text-lg font-semibold text-foreground mb-3">Portfolio Highlights</h3>
-                                <ul className="space-y-2 text-muted-foreground">
-                                  <li>• Neon Dreams - Cyberpunk City World (500K+ visits)</li>
-                                  <li>• Mystic Forest Temple - Fantasy Environment (800K+ visits)</li>
-                                  <li>• Underground Club Scene - Social Hub (400K+ visits)</li>
-                                </ul>
-                              </div>
+                            <SpotlightPortfolioList spotlight={featuredSpotlight} />
 
+                            {featuredSpotlight.tags && featuredSpotlight.tags.length > 0 && (
                               <div className="flex flex-wrap gap-3 mb-6">
-                                <span className="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm">VRChat</span>
-                                <span className="px-3 py-1 bg-accent/20 text-accent rounded-full text-sm">Unity</span>
-                                <span className="px-3 py-1 bg-primary/20 text-primary rounded-full text-sm">Blender</span>
+                                {featuredSpotlight.tags.slice(0, 3).map((tag, index) => (
+                                  <span key={index} className={index % 2 === 0 ? "px-3 py-1 bg-primary/20 text-primary rounded-full text-sm" : "px-3 py-1 bg-accent/20 text-accent rounded-full text-sm"}>
+                                    {tag}
+                                  </span>
+                                ))}
                               </div>
+                            )}
 
-                              {/* View Full Spotlight Button */}
-                              <div className="mb-6">
-                                <Link href="/spotlight/emma-thompson-vr-artist" className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-medium rounded-lg transition-all duration-300 group">
-                                  View Full Spotlight
-                                  <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                                </Link>
-                              </div>
-
-                              {/* Engagement Section */}
-                              <EngagementSection 
-                                contentId="spotlight-emma-thompson"
-                                contentType="spotlight"
-                                initialLikes={324}
-                                initialComments={[
-                                  {
-                                    id: '1',
-                                    author: 'Alex Rivera',
-                                    content: 'Emma\'s Neon Dreams world is absolutely stunning! The lighting work is incredible.',
-                                    timestamp: '1 hour ago',
-                                    likes: 15
-                                  },
-                                  {
-                                    id: '2',
-                                    author: 'Sam Chen',
-                                    content: 'Been following her work for years. True pioneer in VR environment design!',
-                                    timestamp: '3 hours ago',
-                                    likes: 22
-                                  }
-                                ]}
-                              />
+                            {/* View Full Spotlight Button */}
+                            <div className="mb-6">
+                              <Link href={`/spotlight/${featuredSpotlight.slug}`} className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white font-medium rounded-lg transition-all duration-300 group">
+                                View Full Spotlight
+                                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                              </Link>
                             </div>
+
+                            {/* Engagement Section */}
+                            <EngagementSection 
+                              contentId={`spotlight-${featuredSpotlight.slug}`}
+                              contentType="spotlight"
+                              initialLikes={324}
+                              initialComments={[
+                                {
+                                  id: '1',
+                                  author: 'Alex Rivera',
+                                  content: 'Emma\'s Neon Dreams world is absolutely stunning! The lighting work is incredible.',
+                                  timestamp: '1 hour ago',
+                                  likes: 15
+                                },
+                                {
+                                  id: '2',
+                                  author: 'Sam Chen',
+                                  content: 'Been following her work for years. True pioneer in VR environment design!',
+                                  timestamp: '3 hours ago',
+                                  likes: 22
+                                }
+                              ]}
+                            />
                           </div>
-                      </article>
+                        </article>
 
-                      {/* More Spotlights */}
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                        <article className="enhanced-card hover-lift rounded-xl border border-sidebar-border hover:border-yellow-500/30 transition-all overflow-hidden">
-                            <div className="w-full h-48 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center relative">
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                              <span className="text-4xl relative z-10">🏢</span>
-                              <div className="absolute bottom-4 left-4 right-4 z-10">
-                                <div className="text-white font-semibold text-sm">10M+ total plays</div>
-                              </div>
-                            </div>
-                            <div className="p-6">
-                              <span className="inline-block px-2 py-1 text-xs font-medium bg-primary/20 text-primary border border-primary/30 rounded-full mb-3">Studio Spotlight</span>
-                              <h3 className="text-xl font-semibold text-foreground mb-2">PixelCraft Studios</h3>
-                              <p className="text-sm text-muted-foreground mb-4">
-                                Independent game studio creating immersive Roblox experiences with over 10M total plays.
-                              </p>
-                              <div className="flex gap-2 mb-4">
-                                <span className="px-2 py-1 bg-accent/20 text-accent rounded text-xs">Roblox</span>
-                                <span className="px-2 py-1 bg-primary/20 text-primary rounded text-xs border border-primary/30">Game Design</span>
-                              </div>
-                              <div className="mb-4">
-                                <Link href="/spotlight/pixelcraft-studios" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
-                                  View Full Spotlight
-                                  <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
-                                </Link>
-                              </div>
-                              <EngagementSection 
-                                contentId="spotlight-pixelcraft"
-                                contentType="spotlight"
-                                initialLikes={178}
-                                initialComments={[]}
-                              />
-                            </div>
-                          </article>
-
-                          <article className="enhanced-card hover-lift rounded-xl border border-sidebar-border hover:border-yellow-500/30 transition-all overflow-hidden">
-                            <div className="w-full h-48 bg-gradient-to-br from-green-500 to-teal-600 rounded-lg flex items-center justify-center relative">
-                              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-                              <span className="text-4xl relative z-10">🛠️</span>
-                              <div className="absolute bottom-4 left-4 right-4 z-10">
-                                <div className="text-white font-semibold text-sm">AI-Powered</div>
-                              </div>
-                            </div>
-                            <div className="p-6">
-                              <span className="inline-block px-2 py-1 text-xs font-medium bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 rounded-full mb-3">Tool Spotlight</span>
-                              <h3 className="text-xl font-semibold text-foreground mb-2">VirtualForge</h3>
-                              <p className="text-sm text-muted-foreground mb-4">
-                                AI-powered world generation tool helping creators build immersive environments 10x faster.
-                              </p>
-                              <div className="flex gap-2 mb-4">
-                                <span className="px-2 py-1 bg-primary/20 text-primary rounded text-xs border border-primary/30">AI Tools</span>
-                                <span className="px-2 py-1 bg-accent/20 text-accent rounded text-xs border border-accent/30">Unity</span>
-                              </div>
-                              <div className="mb-4">
-                                <Link href="/spotlight/virtualforge-ai-tool" className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 text-white text-sm font-medium rounded-lg transition-all duration-300 group">
-                                  View Full Spotlight
-                                  <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
-                                </Link>
-                              </div>
-                              <EngagementSection 
-                                contentId="spotlight-virtualforge"
-                                contentType="spotlight"
-                                initialLikes={203}
-                                initialComments={[]}
-                              />
-                            </div>
-                          </article>
-                        </div>
+                        {/* More Spotlights */}
+                        {miniSpotlights.length > 0 && (
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                            {miniSpotlights.map((spotlight, index) => {
+                              const config = index === 0 
+                                ? { emoji: '🏢', gradient: 'from-blue-500 to-purple-600', statOverlay: '10M+ total plays' }
+                                : { emoji: '🛠️', gradient: 'from-green-500 to-teal-600', statOverlay: 'AI-Powered' };
+                              
+                              return (
+                                <SpotlightCard 
+                                  key={spotlight.id}
+                                  spotlight={spotlight}
+                                  {...config}
+                                />
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
                     </div>
+                  )}
                 </main>
 
                 {/* Mobile Right Sidebar */}
