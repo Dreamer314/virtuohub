@@ -52,23 +52,18 @@ export function SpotlightEngagement({ spotlightId }: SpotlightEngagementProps) {
   });
 
   // Fetch comments
-  const { data: comments = [] } = useQuery({
+  const { data: comments = [], error: commentsError } = useQuery({
     queryKey: ['spotlight-comments', spotlightId],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('spotlight_comments')
-        .select('id, body, created_at, user_id, profiles(handle)')
+        .select('id, body, created_at, user_id')
         .eq('spotlight_id', spotlightId)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data.map((comment: any) => ({
-        id: comment.id,
-        author: comment.profiles?.handle || 'Anonymous',
-        content: comment.body,
-        timestamp: new Date(comment.created_at).toLocaleString(),
-        likes: 0
-      }));
-    }
+      return data || [];
+    },
+    enabled: !!spotlightId
   });
 
   // Like mutation
@@ -183,6 +178,39 @@ export function SpotlightEngagement({ spotlightId }: SpotlightEngagementProps) {
       {/* Comments Section */}
       {showComments && (
         <div className="space-y-4">
+          {/* Error State */}
+          {commentsError && (
+            <p className="text-xs text-muted-foreground">Couldn't load comments.</p>
+          )}
+
+          {/* Comments List */}
+          {!commentsError && comments.length > 0 && (
+            <div className="space-y-4 mb-4">
+              {comments.map((comment: any) => (
+                <div key={comment.id} className="flex space-x-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-teal-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-xs font-bold text-white">
+                      {comment.user_id?.charAt(0) || 'U'}
+                    </span>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <span className="font-medium text-foreground text-sm">
+                        User
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(comment.created_at).toLocaleString()}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {comment.body}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
           {/* Add Comment */}
           <div className="flex space-x-3">
             <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0">
@@ -211,34 +239,6 @@ export function SpotlightEngagement({ spotlightId }: SpotlightEngagementProps) {
               )}
             </div>
           </div>
-
-          {/* Comments List */}
-          {comments.length > 0 && (
-            <div className="space-y-4 border-t border-border pt-4">
-              {comments.map((comment: any) => (
-                <div key={comment.id} className="flex space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-teal-500 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-xs font-bold text-white">
-                      {comment.author.charAt(0)}
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <span className="font-medium text-foreground text-sm">
-                        {comment.author}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {comment.timestamp}
-                      </span>
-                    </div>
-                    <p className="text-sm text-muted-foreground">
-                      {comment.content}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       )}
     </div>
