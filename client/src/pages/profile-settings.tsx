@@ -29,6 +29,7 @@ interface QuickFacts {
     instagram?: string;
     artstation?: string;
     discord?: string;
+    primfeed?: string;
   };
 }
 
@@ -67,6 +68,11 @@ const PRIMARY_ROLE_OPTIONS = [
   "Sound Designer",
   "Video Editor",
   "Community Manager",
+  "Store owner / Brand owner",
+  "Founder / Entrepreneur",
+  "Community / Event host",
+  "Educator / Mentor",
+  "New / Learning (just getting started)",
 ];
 
 const PLATFORM_OPTIONS = [
@@ -134,6 +140,7 @@ export default function ProfileSettings() {
   const [socialInstagram, setSocialInstagram] = useState("");
   const [socialArtStation, setSocialArtStation] = useState("");
   const [socialDiscord, setSocialDiscord] = useState("");
+  const [socialPrimfeed, setSocialPrimfeed] = useState("");
 
   // Fetch or create profile
   const { data: profile, isLoading: profileLoading, error: profileError, refetch: refetchProfile } = useQuery<ProfileV2 | null>({
@@ -323,6 +330,7 @@ export default function ProfileSettings() {
         setSocialInstagram(qf.social_links?.instagram || '');
         setSocialArtStation(qf.social_links?.artstation || '');
         setSocialDiscord(qf.social_links?.discord || '');
+        setSocialPrimfeed(qf.social_links?.primfeed || '');
       } else {
         // Reset creator profile fields if no quick_facts
         setPrimaryRole('');
@@ -336,6 +344,7 @@ export default function ProfileSettings() {
         setSocialInstagram('');
         setSocialArtStation('');
         setSocialDiscord('');
+        setSocialPrimfeed('');
       }
       
       // Clear pending states when loading fresh profile
@@ -413,6 +422,7 @@ export default function ProfileSettings() {
           instagram: socialInstagram.trim() || undefined,
           artstation: socialArtStation.trim() || undefined,
           discord: socialDiscord.trim() || undefined,
+          primfeed: socialPrimfeed.trim() || undefined,
         },
       };
 
@@ -551,7 +561,8 @@ export default function ProfileSettings() {
     socialTwitter !== (qf?.social_links?.twitter || '') ||
     socialInstagram !== (qf?.social_links?.instagram || '') ||
     socialArtStation !== (qf?.social_links?.artstation || '') ||
-    socialDiscord !== (qf?.social_links?.discord || '');
+    socialDiscord !== (qf?.social_links?.discord || '') ||
+    socialPrimfeed !== (qf?.social_links?.primfeed || '');
 
   const currentAvatarPreview = pendingAvatarPreview || avatarUrl;
 
@@ -749,7 +760,7 @@ export default function ProfileSettings() {
                   data-testid="input-availability-note"
                 />
                 <p className="text-xs text-muted-foreground">
-                  This will be visible on your public profile when filled in
+                  Example: Open to collabs and paid projects on weekends, available for consulting on creator tools, or open to speaking opportunities.
                 </p>
               </div>
             </div>
@@ -970,6 +981,17 @@ export default function ProfileSettings() {
                       onChange={(e) => setSocialDiscord(e.target.value)}
                       placeholder="username#0001 or link"
                       data-testid="input-social-discord"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="social-primfeed">Primfeed</Label>
+                    <Input
+                      id="social-primfeed"
+                      value={socialPrimfeed}
+                      onChange={(e) => setSocialPrimfeed(e.target.value)}
+                      placeholder="https://primfeed.com/username"
+                      data-testid="input-social-primfeed"
                     />
                   </div>
                 </div>
