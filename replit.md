@@ -97,12 +97,22 @@ Preferred communication style: Simple, everyday language.
 -   "← Back to VirtuoHub" link returns to homepage
 -   "/u/:handle" button opens public profile in same tab
 
+**Public Profile Layout**:
+-   **Global Header**: Full VirtuoHub header with logo, navigation (Home/Learn/Earn/Connect/Community), and user dropdown
+-   **Breadcrumb Navigation**: "← Back to VirtuoHub" link below header for easy return
+-   **Responsive Layout**: Flexbox column layout with header, scrollable main content, and footer
+-   **Footer**: Shared footer component with branding, social links, quick links, and copyright
+-   **Consistent UX**: Loading and error states also render within global layout for unified experience
+-   **Hero Block**: "VirtuoHub Creator" label, primary skill badge, colored availability indicators (green dot for available, blue for hiring)
+-   **Default Content**: Opportunities card shows default text when availability flags are true but no custom note exists
+
 ### Updated Components
 -   `shared/schema.profilesV2.ts`: Added `headline`, `is_open_to_work`, `is_hiring`, `availability_note`, and `quick_facts` JSONB columns
 -   `client/src/pages/profile-settings.tsx`: Complete Creator Profile section with all fields, availability checkboxes, preview-before-save avatar upload
 -   `client/src/components/multi-select-chips.tsx`: Reusable multi-select component with custom entry support
--   `client/src/pages/public-profile.tsx`: Headline display under handle, bio in About section
+-   `client/src/pages/public-profile.tsx`: Full global layout with Header/Footer, "VirtuoHub Creator" label, primary skill in hero, colored availability badges, default Opportunities text, uppercase section labels, two-column portfolio/socials
 -   `client/src/components/layout/header.tsx`: Clickable avatar and display name with navigation
+-   `client/src/components/layout/footer.tsx`: Shared footer component used across all pages
 -   `client/src/hooks/useV2Handle.ts`: Fetches active profile handle for navigation
 -   `client/src/hooks/useV2Avatar.ts`: Fetches active profile avatar with stable query key
 -   `client/src/hooks/useMyV2Profile.ts`: Unified hook for fetching user's complete profile data
