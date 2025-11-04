@@ -52,6 +52,15 @@ Preferred communication style: Simple, everyday language.
 -   **handle**: Unique lowercase handle (username)
 -   **about**: Optional bio/description text
 -   **profile_photo_url**: Avatar image URL from Supabase Storage
+-   **visibility**: Profile visibility setting (PUBLIC/PRIVATE)
+
+### Header User Menu Integration
+-   **Hook**: `useMyV2Profile()` fetches complete profile data (handle, display_name, profile_photo_url, visibility, hasValidProfile)
+-   **Display Logic**: Shows @handle when available, falls back to display_name or email-based username
+-   **Avatar**: Displays v2 profile photo with User icon fallback in purple circle
+-   **Enable/Disable**: "View public profile" enabled only when hasValidProfile is true (handle exists and is non-empty)
+-   **Menu Items**: View public profile, Profile settings, Log out
+-   **Chevron Icon**: Added to indicate dropdown menu availability
 
 ### Avatar Upload
 

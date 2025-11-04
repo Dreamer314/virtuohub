@@ -21,15 +21,14 @@ import {
   Shield,
   UserCircle,
   Settings as SettingsIcon,
+  ChevronDown,
 } from "lucide-react";
 import { useLocation, Link } from "wouter";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/providers/AuthProvider";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { supabase } from "@/lib/supabaseClient";
-import { useDisplayIdentity } from "@/hooks/useDisplayIdentity";
-import { useV2Avatar } from "@/hooks/useV2Avatar";
-import { useV2Handle } from "@/hooks/useV2Handle";
+import { useMyV2Profile } from "@/hooks/useMyV2Profile";
 import { WelcomeModal } from "@/components/welcome/WelcomeModal";
 
 interface HeaderProps {
@@ -45,10 +44,14 @@ export function Header({ onCreatePost }: HeaderProps) {
     "signin"
   );
   const { user, loading, showWelcome, setShowWelcome } = useAuth();
-  const { displayName, isTemporary } = useDisplayIdentity();
-  const avatarUrl = useV2Avatar();
-  const userHandle = useV2Handle();
+  const { data: v2Profile, isLoading: profileLoading } = useMyV2Profile();
   const [welcomeModalOpen, setWelcomeModalOpen] = useState(false);
+
+  // Extract profile data with fallbacks
+  const displayName = v2Profile?.displayName || (v2Profile?.handle ? `@${v2Profile.handle}` : (user?.email?.split('@')[0] || 'User'));
+  const avatarUrl = v2Profile?.profilePhotoUrl;
+  const userHandle = v2Profile?.handle;
+  const canViewProfile = v2Profile?.hasValidProfile || false;
 
   // Admin flag
   const [isAdmin, setIsAdmin] = useState(false);
@@ -223,7 +226,7 @@ export function Header({ onCreatePost }: HeaderProps) {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button 
-                          className="flex items-center space-x-2 px-3 py-1 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer outline-none focus:ring-2 focus:ring-primary"
+                          className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer outline-none focus:ring-2 focus:ring-primary"
                           data-testid="user-menu-trigger"
                         >
                           {avatarUrl ? (
@@ -234,59 +237,51 @@ export function Header({ onCreatePost }: HeaderProps) {
                               data-testid="user-avatar"
                             />
                           ) : (
-                            <User className="w-4 h-4" />
+                            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                              <User className="w-3 h-3 text-primary" />
+                            </div>
                           )}
                           <span
-                            className="text-sm font-medium"
+                            className="text-sm font-medium max-w-[120px] truncate"
                             data-testid="user-display-name"
                           >
-                            {displayName}
+                            {userHandle ? `@${userHandle}` : displayName}
                           </span>
+                          <ChevronDown className="w-3 h-3 text-muted-foreground" />
                         </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
                         <DropdownMenuItem 
-                          asChild={!!userHandle}
-                          disabled={!userHandle}
-                          className="cursor-pointer"
+                          asChild={canViewProfile}
+                          disabled={!canViewProfile}
+                          className={canViewProfile ? "cursor-pointer" : "cursor-not-allowed opacity-50"}
+                          data-testid="menu-view-profile"
                         >
-                          {userHandle ? (
+                          {canViewProfile && userHandle ? (
                             <Link href={`/u/${userHandle}`}>
                               <User className="w-4 h-4 mr-2" />
                               View public profile
                             </Link>
                           ) : (
-                            <div className="flex items-center opacity-50">
+                            <div className="flex items-center">
                               <User className="w-4 h-4 mr-2" />
                               View public profile
                             </div>
                           )}
                         </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
+                        <DropdownMenuItem asChild data-testid="menu-profile-settings">
                           <Link href="/settings/profile" className="cursor-pointer">
                             <SettingsIcon className="w-4 h-4 mr-2" />
                             Profile settings
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+                        <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer" data-testid="menu-logout">
                           <LogOut className="w-4 h-4 mr-2" />
                           Log out
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
-                    {isTemporary && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setWelcomeModalOpen(true)}
-                        className="text-sm font-medium px-3"
-                        data-testid="complete-profile-button"
-                      >
-                        <UserCircle className="w-4 h-4 mr-1" />
-                        Complete your profile
-                      </Button>
-                    )}
                   </div>
                 ) : (
                   <>
@@ -423,13 +418,15 @@ export function Header({ onCreatePost }: HeaderProps) {
                               data-testid="mobile-user-avatar"
                             />
                           ) : (
-                            <User className="w-4 h-4" />
+                            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                              <User className="w-3 h-3 text-primary" />
+                            </div>
                           )}
                           <span 
                             className="text-sm font-medium" 
                             data-testid="mobile-user-display-name"
                           >
-                            {displayName}
+                            {userHandle ? `@${userHandle}` : displayName}
                           </span>
                         </div>
                         
@@ -437,10 +434,10 @@ export function Header({ onCreatePost }: HeaderProps) {
                         <Button
                           variant="ghost"
                           className="justify-start w-full"
-                          asChild={!!userHandle}
-                          disabled={!userHandle}
+                          asChild={canViewProfile}
+                          disabled={!canViewProfile}
                         >
-                          {userHandle ? (
+                          {canViewProfile && userHandle ? (
                             <Link href={`/u/${userHandle}`} onClick={() => setIsMobileMenuOpen(false)}>
                               <User className="w-4 h-4 mr-2" />
                               View public profile
@@ -462,20 +459,6 @@ export function Header({ onCreatePost }: HeaderProps) {
                             Profile settings
                           </Link>
                         </Button>
-                        {isTemporary && (
-                          <Button
-                            variant="ghost"
-                            className="justify-start w-full"
-                            onClick={() => {
-                              setWelcomeModalOpen(true);
-                              setIsMobileMenuOpen(false);
-                            }}
-                            data-testid="mobile-complete-profile-button"
-                          >
-                            <UserCircle className="w-4 h-4 mr-2" />
-                            Complete your profile
-                          </Button>
-                        )}
                         <Button
                           variant="ghost"
                           className="justify-start w-full"
