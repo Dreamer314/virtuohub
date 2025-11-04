@@ -223,7 +223,7 @@ export function Header({ onCreatePost }: HeaderProps) {
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <button 
-                          className="hidden lg:flex items-center space-x-2 px-3 py-1 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer outline-none focus:ring-2 focus:ring-primary"
+                          className="flex items-center space-x-2 px-3 py-1 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer outline-none focus:ring-2 focus:ring-primary"
                           data-testid="user-menu-trigger"
                         >
                           {avatarUrl ? (
@@ -245,14 +245,23 @@ export function Header({ onCreatePost }: HeaderProps) {
                         </button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
-                        {userHandle && (
-                          <DropdownMenuItem asChild>
-                            <Link href={`/u/${userHandle}`} className="cursor-pointer">
+                        <DropdownMenuItem 
+                          asChild={!!userHandle}
+                          disabled={!userHandle}
+                          className="cursor-pointer"
+                        >
+                          {userHandle ? (
+                            <Link href={`/u/${userHandle}`}>
                               <User className="w-4 h-4 mr-2" />
                               View public profile
                             </Link>
-                          </DropdownMenuItem>
-                        )}
+                          ) : (
+                            <div className="flex items-center opacity-50">
+                              <User className="w-4 h-4 mr-2" />
+                              View public profile
+                            </div>
+                          )}
+                        </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link href="/settings/profile" className="cursor-pointer">
                             <SettingsIcon className="w-4 h-4 mr-2" />
@@ -271,7 +280,7 @@ export function Header({ onCreatePost }: HeaderProps) {
                         variant="ghost"
                         size="sm"
                         onClick={() => setWelcomeModalOpen(true)}
-                        className="text-sm font-medium px-3 hidden lg:inline-flex"
+                        className="text-sm font-medium px-3"
                         data-testid="complete-profile-button"
                       >
                         <UserCircle className="w-4 h-4 mr-1" />
@@ -425,18 +434,24 @@ export function Header({ onCreatePost }: HeaderProps) {
                         </div>
                         
                         {/* Menu items */}
-                        {userHandle && (
-                          <Button
-                            variant="ghost"
-                            className="justify-start w-full"
-                            asChild
-                          >
+                        <Button
+                          variant="ghost"
+                          className="justify-start w-full"
+                          asChild={!!userHandle}
+                          disabled={!userHandle}
+                        >
+                          {userHandle ? (
                             <Link href={`/u/${userHandle}`} onClick={() => setIsMobileMenuOpen(false)}>
                               <User className="w-4 h-4 mr-2" />
                               View public profile
                             </Link>
-                          </Button>
-                        )}
+                          ) : (
+                            <div className="flex items-center opacity-50 px-3 py-2">
+                              <User className="w-4 h-4 mr-2" />
+                              View public profile
+                            </div>
+                          )}
+                        </Button>
                         <Button
                           variant="ghost"
                           className="justify-start w-full"
