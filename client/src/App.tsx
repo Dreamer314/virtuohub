@@ -37,6 +37,7 @@ import PublicProfile from "@/pages/public-profile";
 import ProfileSettings from "@/pages/profile-settings";
 import Talent from "@/pages/talent";
 import JobNew from "@/pages/job-new";
+import JobDetail from "@/pages/job-detail";
 
 function Router() {
   return (
@@ -76,6 +77,7 @@ function Router() {
       
       {/* Job Board */}
       <Route path="/jobs/new" component={JobNew} />
+      <Route path="/jobs/:id" component={JobDetail} />
 
       {/* Profiles v2 */}
       <Route path="/settings/profile" component={ProfileSettings} />

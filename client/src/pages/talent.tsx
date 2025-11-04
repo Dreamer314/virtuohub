@@ -783,14 +783,15 @@ export default function Talent() {
                     </p>
 
                     {/* View Details Button */}
-                    <Button 
-                      variant="default" 
-                      className="w-full" 
-                      onClick={() => {/* TODO: Navigate to /jobs/:id */}}
-                      data-testid={`button-view-job-${job.id}`}
-                    >
-                      View details
-                    </Button>
+                    <Link href={`/jobs/${job.id}?from=talent_work`}>
+                      <Button 
+                        variant="default" 
+                        className="w-full" 
+                        data-testid={`button-view-job-${job.id}`}
+                      >
+                        View details
+                      </Button>
+                    </Link>
                   </Card>
                 );
               })}
