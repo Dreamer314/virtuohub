@@ -207,14 +207,13 @@ export default function Talent() {
               <div>
                 <label className="text-sm font-medium mb-2 block">Primary Skill</label>
                 <Select
-                  value={filters.primarySkill}
+                  value={filters.primarySkill || undefined}
                   onValueChange={(value) => setFilters({ ...filters, primarySkill: value })}
                 >
                   <SelectTrigger data-testid="filter-primary-skill">
                     <SelectValue placeholder="Any skill" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Any skill</SelectItem>
                     {PRIMARY_ROLES.map((role) => (
                       <SelectItem key={role} value={role}>
                         {role}
@@ -228,14 +227,13 @@ export default function Talent() {
               <div>
                 <label className="text-sm font-medium mb-2 block">Platform</label>
                 <Select
-                  value={filters.platform}
+                  value={filters.platform || undefined}
                   onValueChange={(value) => setFilters({ ...filters, platform: value })}
                 >
                   <SelectTrigger data-testid="filter-platform">
                     <SelectValue placeholder="Any platform" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Any platform</SelectItem>
                     {PLATFORMS.map((platform) => (
                       <SelectItem key={platform} value={platform}>
                         {platform}
@@ -249,14 +247,13 @@ export default function Talent() {
               <div>
                 <label className="text-sm font-medium mb-2 block">Tools</label>
                 <Select
-                  value={filters.tool}
+                  value={filters.tool || undefined}
                   onValueChange={(value) => setFilters({ ...filters, tool: value })}
                 >
                   <SelectTrigger data-testid="filter-tool">
                     <SelectValue placeholder="Any tool" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Any tool</SelectItem>
                     {TOOLS.map((tool) => (
                       <SelectItem key={tool} value={tool}>
                         {tool}
