@@ -53,6 +53,10 @@ Preferred communication style: Simple, everyday language.
 -   **about**: Optional bio/description text
 -   **profile_photo_url**: Avatar image URL from Supabase Storage
 -   **visibility**: Profile visibility setting (PUBLIC/PRIVATE)
+-   **is_open_to_work**: Boolean flag indicating user is open to paid opportunities
+-   **is_hiring**: Boolean flag indicating user is looking to hire creators
+-   **availability_note**: Optional text field for availability details
+-   **quick_facts**: JSONB column storing Creator Profile data (see below)
 
 ### Header User Menu Integration
 -   **Hook**: `useMyV2Profile()` fetches complete profile data (handle, display_name, profile_photo_url, visibility, hasValidProfile)
@@ -94,18 +98,71 @@ Preferred communication style: Simple, everyday language.
 -   "/u/:handle" button opens public profile in same tab
 
 ### Updated Components
--   `shared/schema.profilesV2.ts`: Added `headline` text column to profiles_v2 table
--   `client/src/pages/profile-settings.tsx`: Headline input field, preview-before-save avatar upload
+-   `shared/schema.profilesV2.ts`: Added `headline`, `is_open_to_work`, `is_hiring`, `availability_note`, and `quick_facts` JSONB columns
+-   `client/src/pages/profile-settings.tsx`: Complete Creator Profile section with all fields, availability checkboxes, preview-before-save avatar upload
+-   `client/src/components/multi-select-chips.tsx`: Reusable multi-select component with custom entry support
 -   `client/src/pages/public-profile.tsx`: Headline display under handle, bio in About section
 -   `client/src/components/layout/header.tsx`: Clickable avatar and display name with navigation
 -   `client/src/hooks/useV2Handle.ts`: Fetches active profile handle for navigation
 -   `client/src/hooks/useV2Avatar.ts`: Fetches active profile avatar with stable query key
+-   `client/src/hooks/useMyV2Profile.ts`: Unified hook for fetching user's complete profile data
 
 ### Implementation Details
 -   **Schema Fields**: Uses `profiles_v2.about` for bio, `headline` for tagline
 -   **Query Key Stability**: Uses `['v2-avatar', user?.id ?? 'none']` and `['v2-handle', user?.id ?? 'none']` to prevent undefined cache keys
 -   **Cache Invalidation**: After profile save, invalidates `['my-profile-v2']`, `['profile-v2', handle]`, `['v2-avatar', userId]`, `['v2-handle', userId]`
 -   **Preview Behavior**: Avatar previews locally; upload deferred until "Save Changes" clicked
+
+### Creator Profile System
+
+**Purpose**: Allows creators to showcase professional skills, tools, platforms, and portfolio for collaboration opportunities.
+
+**Data Storage**: All creator profile data stored in `quick_facts` JSONB column to avoid schema drift between Neon (Drizzle) and Supabase databases.
+
+**Creator Profile Fields in quick_facts**:
+```typescript
+{
+  primary_role: string,           // Main skill (e.g., "3D Modeler", "Animator")
+  secondary_roles: string[],      // Additional skills
+  platforms: string[],            // Virtual worlds/engines (e.g., "Roblox", "Unity")
+  tools: string[],                // Software tools (e.g., "Blender", "Photoshop")
+  experience_level: string,       // "New / < 1 year", "1–3 years", "3–5 years", "5+ years"
+  portfolio_url: string,          // Portfolio/website URL
+  social_links: {
+    website?: string,
+    twitter?: string,
+    instagram?: string,
+    artstation?: string,
+    discord?: string
+  }
+}
+```
+
+**UI Components**:
+-   **MultiSelectChips**: Reusable component for multi-select fields with custom entry support
+    -   Click chip to select/deselect
+    -   X button on selected chips to remove
+    -   "+ Other" button reveals custom input field for non-predefined options
+    -   Used for secondary roles, platforms, and tools
+-   **Primary Skill**: Single-select dropdown with "Other..." option for custom entries
+-   **Portfolio & Socials**: Text inputs for URLs with proper test IDs
+
+**Predefined Options**:
+-   **Primary Roles** (12): 3D Modeler, World Builder, Environment Artist, Character Artist, Rigger, Animator, Scripter / Programmer, Technical Artist, UI / UX Designer, Sound Designer, Video Editor, Community Manager
+-   **Platforms** (9): Roblox, VRChat, Second Life, IMVU, Meta Horizon Worlds, GTA / FiveM, The Sims (CC), Unity, Unreal Engine
+-   **Tools** (11): Blender, Maya, ZBrush, Substance Painter, Photoshop, Marvelous Designer, Unity, Unreal Engine, Notepad++, VS Code, Udon / UdonSharp
+-   **Experience Levels** (4): New / < 1 year, 1–3 years, 3–5 years, 5+ years
+
+**Save Behavior**:
+-   All creator profile data merges into existing quick_facts object
+-   Undefined/empty values preserved to avoid data loss
+-   Save button enabled when any field changes (including array comparisons)
+-   Cache invalidation after save: `['my-profile-v2']`, `['profile-v2', handle]`, `['v2-avatar', userId]`
+
+**Availability & Opportunities**:
+-   **is_open_to_work**: Checkbox to signal openness to paid work
+-   **is_hiring**: Checkbox to signal looking to hire creators
+-   **availability_note**: Free-text field for availability details (visible on public profile when filled)
 
 ### Known Issues
 -   **PostgREST Schema Cache**: After schema changes (like adding `headline` column), PostgREST may report "Could not find the column" (PGRST204) despite column existing in database. Resolution: Send `NOTIFY pgrst, 'reload schema';` or wait for auto-refresh. Cache typically refreshes within 5-10 minutes.
