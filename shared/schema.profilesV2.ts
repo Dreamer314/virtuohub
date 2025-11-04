@@ -15,6 +15,7 @@ export const profilesV2 = pgTable("profiles_v2", {
   kind: profileKindEnum("kind").notNull(),              // CREATOR | STUDIO
   handle: text("handle").notNull().unique(),            // lowercase unique
   displayName: text("display_name").notNull(),          // avatar name or real name
+  headline: text("headline"),                           // tagline/one-liner
   about: text("about"),
   platforms: text("platforms").array().default(sql`'{}'`),
   skills: text("skills").array().default(sql`'{}'`),
@@ -73,6 +74,7 @@ export const insertProfileV2Schema = createInsertSchema(profilesV2).pick({
   kind: true,
   handle: true,
   displayName: true,
+  headline: true,
   about: true,
   platforms: true,
   skills: true,
