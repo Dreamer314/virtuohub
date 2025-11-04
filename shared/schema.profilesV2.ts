@@ -24,6 +24,9 @@ export const profilesV2 = pgTable("profiles_v2", {
   headerImageUrl: text("header_image_url"),
   gallery: jsonb("gallery").default(sql`'[]'::jsonb`),  // [{url,caption,alt,order}] cap=5 in app
   visibility: visibilityLevelEnum("visibility").notNull().default("PUBLIC"),
+  isOpenToWork: boolean("is_open_to_work").notNull().default(false),
+  isHiring: boolean("is_hiring").notNull().default(false),
+  availabilityNote: text("availability_note"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -83,6 +86,9 @@ export const insertProfileV2Schema = createInsertSchema(profilesV2).pick({
   headerImageUrl: true,
   gallery: true,
   visibility: true,
+  isOpenToWork: true,
+  isHiring: true,
+  availabilityNote: true,
 }).extend({
   handle: z.string().min(3).max(20).regex(/^[a-z0-9_]+$/, "Handle must contain only lowercase letters, numbers, and underscores"),
   displayName: z.string().min(1).max(100),

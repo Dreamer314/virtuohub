@@ -1,0 +1,116 @@
+Task: Add an "Availability / Open to opportunities" section to Profiles v2.
+
+Goal
+Make creator profiles feel more like the start of a talent marketplace by adding:
+- "Open to work" and "Hiring" toggles
+- A short free-text note about opportunities
+These should be stored on profiles_v2 and exposed in both profile settings and the public profile page.
+
+Hard rules
+- Use ONLY the existing profiles_v2 table as the profile source of truth.
+- No new tables. Just add columns to profiles_v2 via the existing Drizzle schema and db:push.
+- Do NOT touch legacy v1 profile tables or onboarding flows.
+- Do NOT remove or rename any existing columns.
+- Keep Typescript types in sync.
+
+Database changes (profiles_v2)
+1) Update the Drizzle schema definition for profiles_v2 (shared/schema.profilesV2.ts or wherever it lives) to add:
+
+- isOpenToWork: boolean, default false, NOT NULL
+- isHiring: boolean, default false, NOT NULL
+- availabilityNote: text, nullable
+
+Name the underlying SQL columns:
+
+- is_open_to_work  (boolean, default false)
+- is_hiring        (boolean, default false)
+- availability_note (text)
+
+2) Run the appropriate migration / push (npm run db:push or equivalent) so these columns exist in the database.
+
+3) Verify with a SQL query in Supabase that profiles_v2 now has:
+- is_open_to_work boolean
+- is_hiring boolean
+- availability_note text
+
+Profile settings UI (/settings/profile)
+File: client/src/pages/profile-settings.tsx
+
+1) Extend the TS type you use for the profile (e.g. MyProfileV2 or similar) to include:
+- is_open_to_work: boolean
+- is_hiring: boolean
+- availability_note: string | null
+
+2) When loading the profile from Supabase, select these new fields as well.
+
+3) In the form state, initialize them with safe defaults:
+- is_open_to_work: profile?.is_open_to_work ?? false
+- is_hiring: profile?.is_hiring ?? false
+- availability_note: profile?.availability_note ?? ''
+
+4) In the JSX, below the existing Bio textarea, add a new section:
+
+- Heading: "Availability"
+- Checkbox:
+  - Label: "I’m open to paid opportunities"
+  - Bound to is_open_to_work
+- Checkbox:
+  - Label: "I’m looking to hire creators"
+  - Bound to is_hiring
+- Textarea:
+  - Label: "Availability details"
+  - Placeholder: "What kinds of work, collaboration, or roles are you open to?"
+  - Bound to availability_note
+
+5) Update the "Save Changes" mutation so it includes these new fields in the UPDATE on profiles_v2:
+- is_open_to_work
+- is_hiring
+- availability_note
+
+Make sure they are actually persisted.
+
+Public profile UI (/u/:handle)
+File: client/src/pages/public-profile.tsx
+
+1) Ensure the profile query selects:
+- is_open_to_work
+- is_hiring
+- availability_note
+
+2) Under the headline (where the name and handle are), render status pills if needed:
+- If profile.is_open_to_work: show a small pill, e.g. "Open to opportunities"
+- If profile.is_hiring: show a pill, e.g. "Hiring creators"
+
+Use the existing badge / pill styles already in the project if there are any. Otherwise a simple rounded badge is fine.
+
+3) Below the About section, conditionally render an "Opportunities" card:
+
+- Only show this card if availability_note is non-empty.
+- Content:
+
+  Title: "Opportunities"
+  Body: the availability_note text.
+
+No card at all if availability_note is null or empty.
+
+General
+- Do not break existing profile functionality (headline, bio/about, avatar, etc.).
+- Keep the new fields optional and additive.
+- Use existing design language (shadows, rounded corners, typography) so it looks native to the app.
+
+Testing checklist (please actually run this)
+1) Log in as my existing user and go to /settings/profile.
+2) Set:
+   - Open to paid opportunities = checked
+   - Looking to hire creators = checked
+   - Availability details = some sample text
+   Click Save Changes and confirm the toast.
+3) Refresh /settings/profile and confirm the values are persisted.
+4) Go to /u/<my-handle>:
+   - Verify the pills "Open to opportunities" and "Hiring creators" show under the headline.
+   - Verify an "Opportunities" section appears and shows the text.
+5) Turn off both checkboxes, clear availability details, save again, then refresh:
+   - No pills under the headline.
+   - No "Opportunities" section.
+
+Finally, summarize which files you changed and the final database schema for profiles_v2.
