@@ -61,11 +61,20 @@ Preferred communication style: Simple, everyday language.
 **URL Generation**: Supabase Storage public URLs via `getPublicUrl()` API
 
 **Updated Components**:
--   `client/src/pages/profile-settings.tsx`: File upload UI replacing text input
--   `client/src/pages/public-profile.tsx`: Displays avatar from `profile_photo_url`
+-   `client/src/pages/profile-settings.tsx`: File upload UI replacing text input, uses `about` field for bio
+-   `client/src/pages/public-profile.tsx`: Displays avatar from `profile_photo_url`, uses `about` field
 -   `client/src/components/layout/header.tsx`: Shows v2 avatar in desktop and mobile headers
 -   `client/src/hooks/useAvatarUpload.ts`: Upload logic with validation
--   `client/src/hooks/useV2Avatar.ts`: Fetches active profile avatar for header
+-   `client/src/hooks/useV2Avatar.ts`: Fetches active profile avatar with stable query key
+
+**Implementation Details**:
+-   **Schema Field**: Uses `profiles_v2.about` (text column) for bio content
+-   **Query Key Stability**: Uses `['v2-avatar', user?.id ?? 'none']` to prevent undefined cache keys
+-   **Cache Invalidation**: After avatar upload, invalidates ['my-profile-v2'], ['profile-v2', handle], and ['v2-avatar', userId]
+-   **Auto-save**: Avatar updates immediately on upload without requiring separate save action
+
+**Known Issues**:
+-   **PostgREST Schema Cache**: After schema changes, PostgREST may report "Could not find the 'about' column" (PGRST204) despite column existing in database. Resolution: Send `NOTIFY pgrst, 'reload schema';` or restart PostgREST service. Cache typically auto-refreshes within a few minutes.
 
 ## External Dependencies
 
