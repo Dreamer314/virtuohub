@@ -1,4 +1,11 @@
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/components/theme-provider";
 import {
   Moon,
@@ -12,7 +19,8 @@ import {
   LogOut,
   User,
   Shield,
-  UserCircle
+  UserCircle,
+  Settings as SettingsIcon,
 } from "lucide-react";
 import { useLocation, Link } from "wouter";
 import { useState, useEffect } from "react";
@@ -211,25 +219,13 @@ export function Header({ onCreatePost }: HeaderProps) {
               <>
                 {user ? (
                   <div className="flex items-center space-x-2">
-                    <div className="hidden lg:flex items-center space-x-2 px-3 py-1 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
-                      {/* Avatar - links to public profile */}
-                      {userHandle ? (
-                        <Link href={`/u/${userHandle}`}>
-                          <div className="cursor-pointer">
-                            {avatarUrl ? (
-                              <img 
-                                src={avatarUrl} 
-                                alt={displayName}
-                                className="w-6 h-6 rounded-full object-cover"
-                                data-testid="user-avatar"
-                              />
-                            ) : (
-                              <User className="w-4 h-4" />
-                            )}
-                          </div>
-                        </Link>
-                      ) : (
-                        <div>
+                    {/* User Menu Dropdown */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button 
+                          className="hidden lg:flex items-center space-x-2 px-3 py-1 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer outline-none focus:ring-2 focus:ring-primary"
+                          data-testid="user-menu-trigger"
+                        >
                           {avatarUrl ? (
                             <img 
                               src={avatarUrl} 
@@ -240,18 +236,36 @@ export function Header({ onCreatePost }: HeaderProps) {
                           ) : (
                             <User className="w-4 h-4" />
                           )}
-                        </div>
-                      )}
-                      {/* Display name - links to settings */}
-                      <Link href="/settings/profile">
-                        <span
-                          className="text-sm font-medium cursor-pointer"
-                          data-testid="user-display-name"
-                        >
-                          {displayName}
-                        </span>
-                      </Link>
-                    </div>
+                          <span
+                            className="text-sm font-medium"
+                            data-testid="user-display-name"
+                          >
+                            {displayName}
+                          </span>
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        {userHandle && (
+                          <DropdownMenuItem asChild>
+                            <Link href={`/u/${userHandle}`} className="cursor-pointer">
+                              <User className="w-4 h-4 mr-2" />
+                              View public profile
+                            </Link>
+                          </DropdownMenuItem>
+                        )}
+                        <DropdownMenuItem asChild>
+                          <Link href="/settings/profile" className="cursor-pointer">
+                            <SettingsIcon className="w-4 h-4 mr-2" />
+                            Profile settings
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+                          <LogOut className="w-4 h-4 mr-2" />
+                          Log out
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                     {isTemporary && (
                       <Button
                         variant="ghost"
@@ -264,16 +278,6 @@ export function Header({ onCreatePost }: HeaderProps) {
                         Complete your profile
                       </Button>
                     )}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleSignOut}
-                      className="text-sm font-medium px-3 hidden lg:inline-flex"
-                      data-testid="logout-button"
-                    >
-                      <LogOut className="w-4 h-4 mr-1" />
-                      Log Out
-                    </Button>
                   </div>
                 ) : (
                   <>
@@ -400,55 +404,53 @@ export function Header({ onCreatePost }: HeaderProps) {
                   <>
                     {user ? (
                       <div className="space-y-2">
+                        {/* User info header */}
                         <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-muted/50">
-                          {/* Mobile Avatar - links to public profile */}
-                          {userHandle ? (
-                            <Link href={`/u/${userHandle}`}>
-                              <div 
-                                className="cursor-pointer"
-                                onClick={() => setIsMobileMenuOpen(false)}
-                              >
-                                {avatarUrl ? (
-                                  <img 
-                                    src={avatarUrl} 
-                                    alt={displayName}
-                                    className="w-6 h-6 rounded-full object-cover"
-                                    data-testid="mobile-user-avatar"
-                                  />
-                                ) : (
-                                  <User className="w-4 h-4" />
-                                )}
-                              </div>
-                            </Link>
+                          {avatarUrl ? (
+                            <img 
+                              src={avatarUrl} 
+                              alt={displayName}
+                              className="w-6 h-6 rounded-full object-cover"
+                              data-testid="mobile-user-avatar"
+                            />
                           ) : (
-                            <div>
-                              {avatarUrl ? (
-                                <img 
-                                  src={avatarUrl} 
-                                  alt={displayName}
-                                  className="w-6 h-6 rounded-full object-cover"
-                                  data-testid="mobile-user-avatar"
-                                />
-                              ) : (
-                                <User className="w-4 h-4" />
-                              )}
-                            </div>
+                            <User className="w-4 h-4" />
                           )}
-                          {/* Mobile Display name - links to settings */}
-                          <Link href="/settings/profile">
-                            <span 
-                              className="text-sm font-medium cursor-pointer" 
-                              data-testid="mobile-user-display-name"
-                              onClick={() => setIsMobileMenuOpen(false)}
-                            >
-                              {displayName}
-                            </span>
-                          </Link>
+                          <span 
+                            className="text-sm font-medium" 
+                            data-testid="mobile-user-display-name"
+                          >
+                            {displayName}
+                          </span>
                         </div>
+                        
+                        {/* Menu items */}
+                        {userHandle && (
+                          <Button
+                            variant="ghost"
+                            className="justify-start w-full"
+                            asChild
+                          >
+                            <Link href={`/u/${userHandle}`} onClick={() => setIsMobileMenuOpen(false)}>
+                              <User className="w-4 h-4 mr-2" />
+                              View public profile
+                            </Link>
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          className="justify-start w-full"
+                          asChild
+                        >
+                          <Link href="/settings/profile" onClick={() => setIsMobileMenuOpen(false)}>
+                            <SettingsIcon className="w-4 h-4 mr-2" />
+                            Profile settings
+                          </Link>
+                        </Button>
                         {isTemporary && (
                           <Button
                             variant="ghost"
-                            className="justify-start"
+                            className="justify-start w-full"
                             onClick={() => {
                               setWelcomeModalOpen(true);
                               setIsMobileMenuOpen(false);
@@ -461,12 +463,12 @@ export function Header({ onCreatePost }: HeaderProps) {
                         )}
                         <Button
                           variant="ghost"
-                          className="justify-start"
+                          className="justify-start w-full"
                           onClick={handleSignOut}
                           data-testid="mobile-logout-button"
                         >
                           <LogOut className="w-4 h-4 mr-2" />
-                          Log Out
+                          Log out
                         </Button>
                       </div>
                     ) : (
