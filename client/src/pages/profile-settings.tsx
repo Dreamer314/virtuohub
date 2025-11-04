@@ -34,12 +34,14 @@ export default function ProfileSettings() {
   const { user } = useAuth();
   const { toast } = useToast();
   
+  console.log('[PROFILE SETTINGS] Component render - user:', user?.id, 'email:', user?.email);
+  
   const [displayName, setDisplayName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [bio, setBio] = useState("");
 
   // Fetch or create profile
-  const { data: profile, isLoading: profileLoading, refetch: refetchProfile } = useQuery<ProfileV2 | null>({
+  const { data: profile, isLoading: profileLoading, error: profileError, refetch: refetchProfile } = useQuery<ProfileV2 | null>({
     queryKey: ['my-profile-v2', user?.id],
     queryFn: async () => {
       console.log('[PROFILE SETTINGS] Starting profile load for user:', user?.id);
@@ -194,6 +196,13 @@ export default function ProfileSettings() {
     enabled: !!user?.id
   });
 
+  // Log query error
+  useEffect(() => {
+    if (profileError) {
+      console.error('[PROFILE SETTINGS] QUERY ERROR:', profileError);
+    }
+  }, [profileError]);
+
   // Update form when profile loads
   useEffect(() => {
     if (profile) {
@@ -274,9 +283,22 @@ export default function ProfileSettings() {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Card className="p-8 max-w-md text-center">
           <h1 className="text-2xl font-bold mb-2">Error loading profile</h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground mb-4">
             Unable to load or create your profile. Please try again.
           </p>
+          {profileError && (
+            <div className="mt-4 p-4 bg-destructive/10 rounded text-sm text-left">
+              <p className="font-semibold mb-2">Debug Info:</p>
+              <p className="text-xs break-all">
+                {JSON.stringify(profileError, null, 2)}
+              </p>
+            </div>
+          )}
+          <div className="mt-4 p-4 bg-muted rounded text-sm text-left">
+            <p className="font-semibold mb-2">User Info:</p>
+            <p className="text-xs">ID: {user?.id || 'null'}</p>
+            <p className="text-xs">Email: {user?.email || 'null'}</p>
+          </div>
         </Card>
       </div>
     );
