@@ -1,0 +1,56 @@
+Task: Fix Profiles v2 so that Bio and avatar actually work end-to-end.
+
+Context
+- Stack: React + TypeScript + Supabase.
+- Profiles v2 table: public.profiles_v2 with columns:
+  profile_id, user_id, handle, visibility, about, profile_photo_url, quick_facts (jsonb).
+- I am logged in as the user whose handle is `virtuohub_found`.
+
+Current behavior
+- On `/settings/profile`:
+  - I see a "Bio" textarea. When I type text and click "Save Changes", I get a toast "Profile updated", and the text appears under my handle on the public profile page.
+  - There is an "Upload Photo" button, but clicking it does NOT open the file picker or save an image.
+- On `/u/virtuohub_found`:
+  - Under the handle, I see my Bio text (e.g. "Founder of VirtuoHub, building tools for creators."). ✅
+  - In the "About" section, I still see the placeholder text: "This is a creator profile on VirtuoHub. More features coming soon!" ❌
+  - Avatar is still just the colored circle with the letter "V".
+
+What I want
+
+1) Bio / About behavior
+- Use ONE field as the source of truth for now: the Bio field from `/settings/profile`.
+- Store that text in a consistent place in the DB. You can choose either:
+  - `profiles_v2.about` (text), OR
+  - `profiles_v2.quick_facts -> 'bio'` (jsonb),
+  but pick ONE and use it everywhere.
+- On the public profile page (`public-profile.tsx`):
+  - Under the handle, show this same Bio value.
+  - In the "About" section, also show the SAME Bio value instead of the placeholder.
+  - If the Bio is empty, THEN show the existing placeholder text.
+
+2) Avatar upload behavior
+- Fix the "Upload Photo" button on `/settings/profile` so that:
+  - Clicking it opens the OS file picker.
+  - After selecting an image (PNG/JPEG/GIF/WEBP, max 5MB):
+    - The file is uploaded to the existing `avatars` bucket in Supabase Storage.
+    - The resulting public URL is stored in `profiles_v2.profile_photo_url` for the current user’s active profile.
+    - The settings page shows the new avatar preview.
+- Make sure the public profile page uses `profile_photo_url` for the avatar image if present, with the existing colored-circle fallback if it’s null.
+
+3) Header avatar
+- In `client/src/components/layout/header.tsx` (or equivalent):
+  - Use the v2 profile’s `profile_photo_url` (you already have a `useV2Avatar` hook; fix or simplify it).
+  - Show the uploaded avatar image in the header for logged-in users.
+  - If no `profile_photo_url` is set, fall back to the current colored initial behavior.
+
+4) Clean up / consistency
+- Remove any leftover references to a non-existent schema (e.g. old `quick_facts` usage if you decide to use `about`, or vice versa). The code and the DB schema must agree.
+- Make sure all Supabase queries respect RLS (use auth.uid() implicitly via the client).
+- Keep changes on the client side only; do not change any RLS policies in SQL.
+
+Important: I already have an existing profile row in `profiles_v2` with handle `virtuohub_found`. Please test with that user and verify:
+- Bio shows correctly under the handle AND in the About section.
+- Uploading a photo updates:
+  - Settings preview
+  - Public profile avatar
+  - Header avatar

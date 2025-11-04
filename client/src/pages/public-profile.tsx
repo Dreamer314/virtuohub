@@ -123,13 +123,19 @@ export default function PublicProfile() {
           </div>
         </Card>
 
-        {/* Additional Info Card */}
+        {/* About Section */}
         <Card className="p-6">
           <h2 className="text-lg font-semibold mb-3">About</h2>
-          <div className="text-sm text-muted-foreground space-y-2">
-            <p>
-              This is a creator profile on VirtuoHub. More features coming soon!
-            </p>
+          <div className="text-sm space-y-2">
+            {profile.about ? (
+              <p className="text-foreground whitespace-pre-wrap" data-testid="about-section-bio">
+                {profile.about}
+              </p>
+            ) : (
+              <p className="text-muted-foreground" data-testid="about-section-placeholder">
+                This is a creator profile on VirtuoHub. More features coming soon!
+              </p>
+            )}
           </div>
         </Card>
       </div>
