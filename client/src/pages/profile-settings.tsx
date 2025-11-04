@@ -13,6 +13,24 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { User, Save, Loader2, Upload, Camera, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/providers/AuthProvider";
+import { MultiSelectChips } from "@/components/multi-select-chips";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+interface QuickFacts {
+  primary_role?: string;
+  secondary_roles?: string[];
+  platforms?: string[];
+  tools?: string[];
+  experience_level?: string;
+  portfolio_url?: string;
+  social_links?: {
+    website?: string;
+    twitter?: string;
+    instagram?: string;
+    artstation?: string;
+    discord?: string;
+  };
+}
 
 interface ProfileV2 {
   profile_id: string;
@@ -27,12 +45,62 @@ interface ProfileV2 {
   is_open_to_work: boolean;
   is_hiring: boolean;
   availability_note: string | null;
+  quick_facts: QuickFacts | null;
 }
 
 interface AccountPrefs {
   user_id: string;
   last_active_profile_id: string | null;
 }
+
+// Predefined options for Creator Profile
+const PRIMARY_ROLE_OPTIONS = [
+  "3D Modeler",
+  "World Builder",
+  "Environment Artist",
+  "Character Artist",
+  "Rigger",
+  "Animator",
+  "Scripter / Programmer",
+  "Technical Artist",
+  "UI / UX Designer",
+  "Sound Designer",
+  "Video Editor",
+  "Community Manager",
+];
+
+const PLATFORM_OPTIONS = [
+  "Roblox",
+  "VRChat",
+  "Second Life",
+  "IMVU",
+  "Meta Horizon Worlds",
+  "GTA / FiveM",
+  "The Sims (CC)",
+  "Unity",
+  "Unreal Engine",
+];
+
+const TOOL_OPTIONS = [
+  "Blender",
+  "Maya",
+  "ZBrush",
+  "Substance Painter",
+  "Photoshop",
+  "Marvelous Designer",
+  "Unity",
+  "Unreal Engine",
+  "Notepad++",
+  "VS Code",
+  "Udon / UdonSharp",
+];
+
+const EXPERIENCE_LEVELS = [
+  "New / < 1 year",
+  "1–3 years",
+  "3–5 years",
+  "5+ years",
+];
 
 export default function ProfileSettings() {
   const { user } = useAuth();
@@ -51,6 +119,21 @@ export default function ProfileSettings() {
   const [availabilityNote, setAvailabilityNote] = useState("");
   const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
   const [pendingAvatarPreview, setPendingAvatarPreview] = useState<string | null>(null);
+
+  // Creator Profile fields
+  const [primaryRole, setPrimaryRole] = useState("");
+  const [showCustomPrimaryRole, setShowCustomPrimaryRole] = useState(false);
+  const [customPrimaryRole, setCustomPrimaryRole] = useState("");
+  const [secondaryRoles, setSecondaryRoles] = useState<string[]>([]);
+  const [platforms, setPlatforms] = useState<string[]>([]);
+  const [tools, setTools] = useState<string[]>([]);
+  const [experienceLevel, setExperienceLevel] = useState("");
+  const [portfolioUrl, setPortfolioUrl] = useState("");
+  const [socialWebsite, setSocialWebsite] = useState("");
+  const [socialTwitter, setSocialTwitter] = useState("");
+  const [socialInstagram, setSocialInstagram] = useState("");
+  const [socialArtStation, setSocialArtStation] = useState("");
+  const [socialDiscord, setSocialDiscord] = useState("");
 
   // Fetch or create profile
   const { data: profile, isLoading: profileLoading, error: profileError, refetch: refetchProfile } = useQuery<ProfileV2 | null>({
@@ -225,6 +308,36 @@ export default function ProfileSettings() {
       setIsOpenToWork(profile.is_open_to_work ?? false);
       setIsHiring(profile.is_hiring ?? false);
       setAvailabilityNote(profile.availability_note || '');
+      
+      // Load quick_facts (creator profile data)
+      const qf = profile.quick_facts;
+      if (qf) {
+        setPrimaryRole(qf.primary_role || '');
+        setSecondaryRoles(qf.secondary_roles || []);
+        setPlatforms(qf.platforms || []);
+        setTools(qf.tools || []);
+        setExperienceLevel(qf.experience_level || '');
+        setPortfolioUrl(qf.portfolio_url || '');
+        setSocialWebsite(qf.social_links?.website || '');
+        setSocialTwitter(qf.social_links?.twitter || '');
+        setSocialInstagram(qf.social_links?.instagram || '');
+        setSocialArtStation(qf.social_links?.artstation || '');
+        setSocialDiscord(qf.social_links?.discord || '');
+      } else {
+        // Reset creator profile fields if no quick_facts
+        setPrimaryRole('');
+        setSecondaryRoles([]);
+        setPlatforms([]);
+        setTools([]);
+        setExperienceLevel('');
+        setPortfolioUrl('');
+        setSocialWebsite('');
+        setSocialTwitter('');
+        setSocialInstagram('');
+        setSocialArtStation('');
+        setSocialDiscord('');
+      }
+      
       // Clear pending states when loading fresh profile
       setPendingAvatarFile(null);
       setPendingAvatarPreview(null);
@@ -283,6 +396,26 @@ export default function ProfileSettings() {
         }
       }
 
+      // Build updated quick_facts by merging with existing data
+      const existingQuickFacts = profile.quick_facts || {};
+      const updatedQuickFacts = {
+        ...existingQuickFacts,
+        primary_role: primaryRole.trim() || undefined,
+        secondary_roles: secondaryRoles.length > 0 ? secondaryRoles : undefined,
+        platforms: platforms.length > 0 ? platforms : undefined,
+        tools: tools.length > 0 ? tools : undefined,
+        experience_level: experienceLevel || undefined,
+        portfolio_url: portfolioUrl.trim() || undefined,
+        social_links: {
+          ...(existingQuickFacts.social_links || {}),
+          website: socialWebsite.trim() || undefined,
+          twitter: socialTwitter.trim() || undefined,
+          instagram: socialInstagram.trim() || undefined,
+          artstation: socialArtStation.trim() || undefined,
+          discord: socialDiscord.trim() || undefined,
+        },
+      };
+
       // Update all profile fields
       const { error } = await supabase
         .from('profiles_v2')
@@ -293,7 +426,8 @@ export default function ProfileSettings() {
           profile_photo_url: finalAvatarUrl,
           is_open_to_work: isOpenToWork,
           is_hiring: isHiring,
-          availability_note: availabilityNote.trim() || null
+          availability_note: availabilityNote.trim() || null,
+          quick_facts: updatedQuickFacts
         })
         .eq('profile_id', profile.profile_id)
         .eq('user_id', user.id); // RLS safety
@@ -389,6 +523,15 @@ export default function ProfileSettings() {
     );
   }
 
+  // Helper to check if arrays are different
+  const arraysEqual = (a: string[], b: string[]) => {
+    if (a.length !== b.length) return false;
+    const sortedA = [...a].sort();
+    const sortedB = [...b].sort();
+    return sortedA.every((val, idx) => val === sortedB[idx]);
+  };
+
+  const qf = profile.quick_facts;
   const hasChanges = 
     displayName !== (profile.display_name || '') ||
     headline !== (profile.headline || '') ||
@@ -396,7 +539,19 @@ export default function ProfileSettings() {
     isOpenToWork !== (profile.is_open_to_work ?? false) ||
     isHiring !== (profile.is_hiring ?? false) ||
     availabilityNote !== (profile.availability_note || '') ||
-    pendingAvatarFile !== null;
+    pendingAvatarFile !== null ||
+    // Creator profile changes
+    primaryRole !== (qf?.primary_role || '') ||
+    !arraysEqual(secondaryRoles, qf?.secondary_roles || []) ||
+    !arraysEqual(platforms, qf?.platforms || []) ||
+    !arraysEqual(tools, qf?.tools || []) ||
+    experienceLevel !== (qf?.experience_level || '') ||
+    portfolioUrl !== (qf?.portfolio_url || '') ||
+    socialWebsite !== (qf?.social_links?.website || '') ||
+    socialTwitter !== (qf?.social_links?.twitter || '') ||
+    socialInstagram !== (qf?.social_links?.instagram || '') ||
+    socialArtStation !== (qf?.social_links?.artstation || '') ||
+    socialDiscord !== (qf?.social_links?.discord || '');
 
   const currentAvatarPreview = pendingAvatarPreview || avatarUrl;
 
@@ -596,6 +751,223 @@ export default function ProfileSettings() {
                 <p className="text-xs text-muted-foreground">
                   This will be visible on your public profile when filled in
                 </p>
+              </div>
+            </div>
+
+            {/* Creator Profile Section */}
+            <div className="space-y-6 pt-6 border-t">
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Creator Profile</h3>
+                <p className="text-sm text-muted-foreground">
+                  Showcase your skills, tools, and experience to potential collaborators
+                </p>
+              </div>
+
+              {/* Primary Skill / Role */}
+              <div className="space-y-2">
+                <Label htmlFor="primary-role">Primary Skill<span className="text-red-500 ml-1">*</span></Label>
+                <Select
+                  value={primaryRole}
+                  onValueChange={(value) => {
+                    if (value === "Other") {
+                      setShowCustomPrimaryRole(true);
+                      setPrimaryRole("");
+                    } else {
+                      setShowCustomPrimaryRole(false);
+                      setPrimaryRole(value);
+                    }
+                  }}
+                >
+                  <SelectTrigger data-testid="select-primary-role">
+                    <SelectValue placeholder="Select your primary skill..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PRIMARY_ROLE_OPTIONS.map((role) => (
+                      <SelectItem key={role} value={role}>
+                        {role}
+                      </SelectItem>
+                    ))}
+                    <SelectItem value="Other">Other...</SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                {showCustomPrimaryRole && (
+                  <div className="flex gap-2 mt-2">
+                    <Input
+                      value={customPrimaryRole}
+                      onChange={(e) => setCustomPrimaryRole(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && customPrimaryRole.trim()) {
+                          setPrimaryRole(customPrimaryRole.trim());
+                          setShowCustomPrimaryRole(false);
+                          setCustomPrimaryRole("");
+                        }
+                      }}
+                      placeholder="Enter your custom role..."
+                      autoFocus
+                      data-testid="input-custom-primary-role"
+                    />
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        if (customPrimaryRole.trim()) {
+                          setPrimaryRole(customPrimaryRole.trim());
+                          setShowCustomPrimaryRole(false);
+                          setCustomPrimaryRole("");
+                        }
+                      }}
+                      disabled={!customPrimaryRole.trim()}
+                    >
+                      Set
+                    </Button>
+                  </div>
+                )}
+                <p className="text-xs text-muted-foreground">
+                  What you're best known for
+                </p>
+              </div>
+
+              {/* Other Skills */}
+              <div className="space-y-2">
+                <Label>Other Skills</Label>
+                <MultiSelectChips
+                  options={PRIMARY_ROLE_OPTIONS.filter(r => r !== primaryRole)}
+                  selected={secondaryRoles}
+                  onChange={setSecondaryRoles}
+                  allowCustom
+                  placeholder="Add a custom skill..."
+                  testIdPrefix="secondary-role"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Additional skills you can offer
+                </p>
+              </div>
+
+              {/* Platforms */}
+              <div className="space-y-2">
+                <Label>Platforms you work on</Label>
+                <MultiSelectChips
+                  options={PLATFORM_OPTIONS}
+                  selected={platforms}
+                  onChange={setPlatforms}
+                  allowCustom
+                  placeholder="Add a custom platform..."
+                  testIdPrefix="platform"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Virtual worlds and engines you create for
+                </p>
+              </div>
+
+              {/* Tools */}
+              <div className="space-y-2">
+                <Label>Tools you use</Label>
+                <MultiSelectChips
+                  options={TOOL_OPTIONS}
+                  selected={tools}
+                  onChange={setTools}
+                  allowCustom
+                  placeholder="Add a custom tool..."
+                  testIdPrefix="tool"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Software and tools in your workflow
+                </p>
+              </div>
+
+              {/* Experience Level */}
+              <div className="space-y-2">
+                <Label htmlFor="experience-level">Experience level</Label>
+                <Select
+                  value={experienceLevel}
+                  onValueChange={setExperienceLevel}
+                >
+                  <SelectTrigger data-testid="select-experience-level">
+                    <SelectValue placeholder="Select your experience level..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {EXPERIENCE_LEVELS.map((level) => (
+                      <SelectItem key={level} value={level}>
+                        {level}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Portfolio & Socials */}
+              <div className="space-y-4 pt-2">
+                <h4 className="font-medium text-sm">Portfolio & Socials</h4>
+
+                {/* Portfolio URL */}
+                <div className="space-y-2">
+                  <Label htmlFor="portfolio-url">Portfolio / Website</Label>
+                  <Input
+                    id="portfolio-url"
+                    value={portfolioUrl}
+                    onChange={(e) => setPortfolioUrl(e.target.value)}
+                    placeholder="https://..."
+                    data-testid="input-portfolio-url"
+                  />
+                </div>
+
+                {/* Social Links Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="social-website">Website</Label>
+                    <Input
+                      id="social-website"
+                      value={socialWebsite}
+                      onChange={(e) => setSocialWebsite(e.target.value)}
+                      placeholder="https://..."
+                      data-testid="input-social-website"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="social-twitter">Twitter / X</Label>
+                    <Input
+                      id="social-twitter"
+                      value={socialTwitter}
+                      onChange={(e) => setSocialTwitter(e.target.value)}
+                      placeholder="https://twitter.com/..."
+                      data-testid="input-social-twitter"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="social-instagram">Instagram</Label>
+                    <Input
+                      id="social-instagram"
+                      value={socialInstagram}
+                      onChange={(e) => setSocialInstagram(e.target.value)}
+                      placeholder="https://instagram.com/..."
+                      data-testid="input-social-instagram"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="social-artstation">ArtStation</Label>
+                    <Input
+                      id="social-artstation"
+                      value={socialArtStation}
+                      onChange={(e) => setSocialArtStation(e.target.value)}
+                      placeholder="https://artstation.com/..."
+                      data-testid="input-social-artstation"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="social-discord">Discord</Label>
+                    <Input
+                      id="social-discord"
+                      value={socialDiscord}
+                      onChange={(e) => setSocialDiscord(e.target.value)}
+                      placeholder="username#0001 or link"
+                      data-testid="input-social-discord"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
