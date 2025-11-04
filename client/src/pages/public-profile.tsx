@@ -1,8 +1,9 @@
 import { useParams } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabaseClient";
-import { User, MapPin, Calendar } from "lucide-react";
+import { User, MapPin, Calendar, Briefcase, Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface ProfileV2 {
   profile_id: string;
@@ -14,6 +15,9 @@ interface ProfileV2 {
   about: string | null;
   visibility: string;
   created_at: string;
+  is_open_to_work: boolean;
+  is_hiring: boolean;
+  availability_note: string | null;
 }
 
 export default function PublicProfile() {
@@ -26,7 +30,7 @@ export default function PublicProfile() {
 
       const { data, error } = await supabase
         .from('profiles_v2')
-        .select('profile_id, user_id, handle, display_name, headline, profile_photo_url, about, visibility, created_at')
+        .select('profile_id, user_id, handle, display_name, headline, profile_photo_url, about, visibility, created_at, is_open_to_work, is_hiring, availability_note')
         .eq('handle', handle.toLowerCase())
         .single();
 
@@ -105,9 +109,27 @@ export default function PublicProfile() {
               </p>
 
               {/* Headline */}
-              <p className="text-base text-foreground mb-4" data-testid="profile-headline">
+              <p className="text-base text-foreground mb-3" data-testid="profile-headline">
                 {headline}
               </p>
+
+              {/* Availability Pills */}
+              {(profile.is_open_to_work || profile.is_hiring) && (
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {profile.is_open_to_work && (
+                    <Badge variant="secondary" className="flex items-center gap-1" data-testid="badge-open-to-work">
+                      <Briefcase className="w-3 h-3" />
+                      Open to opportunities
+                    </Badge>
+                  )}
+                  {profile.is_hiring && (
+                    <Badge variant="secondary" className="flex items-center gap-1" data-testid="badge-hiring">
+                      <Users className="w-3 h-3" />
+                      Hiring creators
+                    </Badge>
+                  )}
+                </div>
+              )}
 
               {/* Meta Info */}
               <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
@@ -126,7 +148,7 @@ export default function PublicProfile() {
         </Card>
 
         {/* About Section */}
-        <Card className="p-6">
+        <Card className="p-6 mb-6">
           <h2 className="text-lg font-semibold mb-3">About</h2>
           <div className="text-sm space-y-2">
             {bio ? (
@@ -140,6 +162,18 @@ export default function PublicProfile() {
             )}
           </div>
         </Card>
+
+        {/* Opportunities Section */}
+        {profile.availability_note && profile.availability_note.trim() && (
+          <Card className="p-6" data-testid="opportunities-section">
+            <h2 className="text-lg font-semibold mb-3">Opportunities</h2>
+            <div className="text-sm">
+              <p className="text-foreground whitespace-pre-wrap" data-testid="opportunities-note">
+                {profile.availability_note}
+              </p>
+            </div>
+          </Card>
+        )}
       </div>
     </div>
   );
