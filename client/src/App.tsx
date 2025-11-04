@@ -32,6 +32,10 @@ import AdminPage from "@/pages/admin";
 /* Onboarding page (route stays public for this test) */
 import OnboardingPage from "@/pages/onboarding";
 
+/* Profiles v2 */
+import PublicProfile from "@/pages/public-profile";
+import ProfileSettings from "@/pages/profile-settings";
+
 function Router() {
   return (
     <Switch>
@@ -64,6 +68,10 @@ function Router() {
 
       {/* Onboarding (still routable) */}
       <Route path="/onboarding" component={OnboardingPage} />
+
+      {/* Profiles v2 */}
+      <Route path="/settings/profile" component={ProfileSettings} />
+      <Route path="/u/:handle" component={PublicProfile} />
 
       {/* 404 */}
       <Route component={NotFound} />

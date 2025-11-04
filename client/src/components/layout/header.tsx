@@ -207,15 +207,17 @@ export function Header({ onCreatePost }: HeaderProps) {
               <>
                 {user ? (
                   <div className="flex items-center space-x-2">
-                    <div className="hidden lg:flex items-center space-x-2 px-3 py-1 rounded-lg bg-muted/50">
-                      <User className="w-4 h-4" />
-                      <span
-                        className="text-sm font-medium"
-                        data-testid="user-display-name"
-                      >
-                        {displayName}
-                      </span>
-                    </div>
+                    <Link href="/settings/profile">
+                      <div className="hidden lg:flex items-center space-x-2 px-3 py-1 rounded-lg bg-muted/50 hover:bg-muted cursor-pointer transition-colors">
+                        <User className="w-4 h-4" />
+                        <span
+                          className="text-sm font-medium"
+                          data-testid="user-display-name"
+                        >
+                          {displayName}
+                        </span>
+                      </div>
+                    </Link>
                     {isTemporary && (
                       <Button
                         variant="ghost"
@@ -364,15 +366,20 @@ export function Header({ onCreatePost }: HeaderProps) {
                   <>
                     {user ? (
                       <div className="space-y-2">
-                        <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-muted/50">
-                          <User className="w-4 h-4" />
-                          <span
-                            className="text-sm font-medium"
-                            data-testid="mobile-user-display-name"
+                        <Link href="/settings/profile">
+                          <div 
+                            className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-muted/50 hover:bg-muted cursor-pointer transition-colors"
+                            onClick={() => setIsMobileMenuOpen(false)}
                           >
-                            {displayName}
-                          </span>
-                        </div>
+                            <User className="w-4 h-4" />
+                            <span
+                              className="text-sm font-medium"
+                              data-testid="mobile-user-display-name"
+                            >
+                              {displayName}
+                            </span>
+                          </div>
+                        </Link>
                         {isTemporary && (
                           <Button
                             variant="ghost"
