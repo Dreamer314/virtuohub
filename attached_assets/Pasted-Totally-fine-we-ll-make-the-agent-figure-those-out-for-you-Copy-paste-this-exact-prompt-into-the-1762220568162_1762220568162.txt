@@ -1,0 +1,159 @@
+Totally fine — we’ll make the agent figure those out for you.
+
+Copy-paste this exact prompt into the Replit Agent. You don’t need to edit anything:
+
+Task: Show author info on Spotlight comments using existing v1 profiles data. No DB or schema changes. Client code only.
+
+Context
+
+Stack: React + TypeScript with Supabase.
+
+Spotlight comments come from spotlight_comments with fields: id, body, created_at, user_id, spotlight_id.
+
+Profiles v1 table is profiles with fields: id, handle, display_name, avatar_url.
+
+Profiles v2 exists but is gated. Do not use or touch v2 in this task.
+
+What I want
+
+Find the code that fetches and renders Spotlight comments.
+
+Search for:
+
+from('spotlight_comments')
+
+.eq('spotlight_id'
+
+This is the place you’ll update.
+
+Before changing anything, identify:
+
+The actual Supabase client variable name used in that file (it might be supabase, client, sb, etc.).
+
+The variable that holds the current spotlight’s id (often spotlightId, spotlight.id, slugData.id, etc.).
+
+Use those existing names in your implementation. Do not introduce a second client or a new way to get the id.
+
+Replace the current single comments query with a 2-step load:
+
+Types
+
+Add these types (or adapt them to existing types if they already exist):
+
+type AuthorLite = {
+  id: string;
+  handle: string | null;
+  display_name: string | null;
+  avatar_url: string | null;
+};
+
+type SpotlightCommentRow = {
+  id: string;
+  body: string;
+  created_at: string;
+  user_id: string | null;
+  author?: AuthorLite;
+};
+
+Step A – fetch comments
+
+Using the existing Supabase client and spotlight id variable, fetch comments like this:
+
+const { data: comments = [], error: commentsErr } = await <SUPABASE_CLIENT>
+  .from('spotlight_comments')
+  .select('id, body, created_at, user_id')
+  .eq('spotlight_id', <SPOTLIGHT_ID>)
+  .order('created_at', { ascending: false });
+
+if (commentsErr) {
+  console.error('Failed to load comments', commentsErr);
+  // keep or call any existing error handling you already had
+}
+
+
+Replace <SUPABASE_CLIENT> and <SPOTLIGHT_ID> with the real variables from this file.
+
+Step B – fetch authors from v1 profiles
+const userIds = Array.from(
+  new Set(comments.map(c => c.user_id).filter((v): v is string => !!v))
+);
+
+let authors: AuthorLite[] = [];
+
+if (userIds.length) {
+  const { data: authorRows = [], error: authorsErr } = await <SUPABASE_CLIENT>
+    .from('profiles') // v1 table
+    .select('id, handle, display_name, avatar_url')
+    .in('id', userIds);
+
+  if (authorsErr) {
+    console.error('Failed to load authors', authorsErr);
+  }
+
+  authors = authorRows ?? [];
+}
+
+const authorById: Record<string, AuthorLite> = Object.fromEntries(
+  authors.map(a => [a.id, a as AuthorLite])
+);
+
+const rows: SpotlightCommentRow[] = comments.map(c => ({
+  ...c,
+  author: c.user_id
+    ? authorById[c.user_id] ?? {
+        id: c.user_id,
+        handle: null,
+        display_name: 'User',
+        avatar_url: null,
+      }
+    : {
+        id: 'anonymous',
+        handle: null,
+        display_name: 'User',
+        avatar_url: null,
+      },
+}));
+
+
+Use whatever state or return shape is already in place. For example, if the component currently does setComments(data), change it to:
+
+setComments(rows);
+
+
+Rendering changes
+
+In the JSX where each comment is rendered:
+
+Use the attached author data:
+
+const name =
+  comment.author?.display_name ||
+  comment.author?.handle ||
+  'User';
+
+
+Use comment.author?.avatar_url for the avatar image if it exists; fall back to the existing default avatar logic when it’s null or undefined.
+
+Error & null safety requirements
+
+If the author query fails, still render all comments using the default "User" author object (as in the code above).
+
+Never assume user_id is non-null; handle null gracefully as shown.
+
+Do not throw or crash the UI if there’s any missing profile.
+
+Important constraints
+
+Do not modify or reference any v2 tables (profiles_v2, account_prefs, etc.).
+
+Do not touch server code, SQL migrations, or RLS policies.
+
+Do not rename existing tables. Use spotlight_comments and profiles exactly.
+
+Keep everything in TypeScript strict mode; fix any type errors you introduce.
+
+When you’re done, show me:
+
+The final comments query function/hook.
+
+The updated JSX snippet for rendering a single comment (including how the name and avatar are derived).

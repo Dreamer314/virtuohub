@@ -7,6 +7,21 @@ import { supabase } from '@/lib/supabaseClient';
 import { queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
 
+type AuthorLite = {
+  id: string;
+  handle: string | null;
+  display_name: string | null;
+  avatar_url: string | null;
+};
+
+type SpotlightCommentRow = {
+  id: string;
+  body: string;
+  created_at: string;
+  user_id: string | null;
+  author?: AuthorLite;
+};
+
 interface SpotlightEngagementProps {
   spotlightId: string;
 }
@@ -51,17 +66,66 @@ export function SpotlightEngagement({ spotlightId }: SpotlightEngagementProps) {
     enabled: !!currentUser
   });
 
-  // Fetch comments
-  const { data: comments = [], error: commentsError } = useQuery({
+  // Fetch comments with author info
+  const { data: comments = [], error: commentsError } = useQuery<SpotlightCommentRow[]>({
     queryKey: ['spotlight-comments', spotlightId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Step A: Fetch comments
+      const { data: commentsData, error: commentsErr } = await supabase
         .from('spotlight_comments')
         .select('id, body, created_at, user_id')
         .eq('spotlight_id', spotlightId)
         .order('created_at', { ascending: false });
-      if (error) throw error;
-      return data || [];
+
+      if (commentsErr) {
+        console.error('Failed to load comments', commentsErr);
+        throw commentsErr;
+      }
+
+      const comments = commentsData ?? [];
+
+      // Step B: Fetch authors from v1 profiles
+      const userIds = Array.from(
+        new Set(comments.map(c => c.user_id).filter((v): v is string => !!v))
+      );
+
+      let authors: AuthorLite[] = [];
+
+      if (userIds.length) {
+        const { data: authorRows = [], error: authorsErr } = await supabase
+          .from('profiles') // v1 table
+          .select('id, handle, display_name, avatar_url')
+          .in('id', userIds);
+
+        if (authorsErr) {
+          console.error('Failed to load authors', authorsErr);
+        }
+
+        authors = authorRows ?? [];
+      }
+
+      const authorById: Record<string, AuthorLite> = Object.fromEntries(
+        authors.map(a => [a.id, a as AuthorLite])
+      );
+
+      const rows: SpotlightCommentRow[] = comments.map(c => ({
+        ...c,
+        author: c.user_id
+          ? authorById[c.user_id] ?? {
+              id: c.user_id,
+              handle: null,
+              display_name: 'User',
+              avatar_url: null,
+            }
+          : {
+              id: 'anonymous',
+              handle: null,
+              display_name: 'User',
+              avatar_url: null,
+            },
+      }));
+
+      return rows;
     },
     enabled: !!spotlightId
   });
@@ -186,28 +250,42 @@ export function SpotlightEngagement({ spotlightId }: SpotlightEngagementProps) {
           {/* Comments List */}
           {!commentsError && comments.length > 0 && (
             <div className="space-y-4 mb-4">
-              {comments.map((comment: any) => (
-                <div key={comment.id} className="flex space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-teal-500 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-xs font-bold text-white">
-                      {comment.user_id?.charAt(0) || 'U'}
-                    </span>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center space-x-2 mb-1">
-                      <span className="font-medium text-foreground text-sm">
-                        User
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(comment.created_at).toLocaleString()}
-                      </span>
+              {comments.map((comment) => {
+                const name = comment.author?.display_name || comment.author?.handle || 'User';
+                const avatarUrl = comment.author?.avatar_url;
+                const initial = name.charAt(0).toUpperCase();
+
+                return (
+                  <div key={comment.id} className="flex space-x-3">
+                    {avatarUrl ? (
+                      <img 
+                        src={avatarUrl} 
+                        alt={name}
+                        className="w-8 h-8 rounded-full flex-shrink-0 object-cover"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-teal-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <span className="text-xs font-bold text-white">
+                          {initial}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <span className="font-medium text-foreground text-sm">
+                          {name}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {new Date(comment.created_at).toLocaleString()}
+                        </span>
+                      </div>
+                      <p className="text-sm text-muted-foreground">
+                        {comment.body}
+                      </p>
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      {comment.body}
-                    </p>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
