@@ -93,11 +93,13 @@ export default function PublicProfile() {
   const headline = profile.headline || "Creator on VirtuoHub";
   const bio = profile.about;
   const avatarUrl = profile.profile_photo_url;
+  const qf = profile.quick_facts;
+  const primarySkill = qf?.primary_role?.trim();
 
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Profile Header */}
+        {/* Hero Block */}
         <Card className="p-8 mb-6">
           <div className="flex flex-col md:flex-row items-start gap-6">
             {/* Avatar */}
@@ -119,6 +121,11 @@ export default function PublicProfile() {
 
             {/* Profile Info */}
             <div className="flex-1">
+              {/* Creator Profile Label */}
+              <div className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
+                VirtuoHub Creator
+              </div>
+
               <h1 className="text-3xl font-bold mb-1" data-testid="profile-display-name">
                 {displayName}
               </h1>
@@ -131,18 +138,23 @@ export default function PublicProfile() {
                 {headline}
               </p>
 
-              {/* Availability Pills */}
-              {(profile.is_open_to_work || profile.is_hiring) && (
+              {/* Primary Skill + Availability Pills */}
+              {(primarySkill || profile.is_open_to_work || profile.is_hiring) && (
                 <div className="flex flex-wrap gap-2 mb-4">
+                  {primarySkill && (
+                    <Badge variant="default" data-testid="hero-primary-skill">
+                      {primarySkill}
+                    </Badge>
+                  )}
                   {profile.is_open_to_work && (
                     <Badge variant="secondary" className="flex items-center gap-1" data-testid="badge-open-to-work">
-                      <Briefcase className="w-3 h-3" />
-                      Open to opportunities
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-500 mr-0.5"></span>
+                      Available for work
                     </Badge>
                   )}
                   {profile.is_hiring && (
                     <Badge variant="secondary" className="flex items-center gap-1" data-testid="badge-hiring">
-                      <Users className="w-3 h-3" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-500 mr-0.5"></span>
                       Hiring creators
                     </Badge>
                   )}
@@ -182,21 +194,25 @@ export default function PublicProfile() {
         </Card>
 
         {/* Opportunities Section */}
-        {profile.availability_note && profile.availability_note.trim() && (
+        {(profile.availability_note?.trim() || profile.is_open_to_work || profile.is_hiring) && (
           <Card className="p-6 mb-6" data-testid="opportunities-section">
             <h2 className="text-lg font-semibold mb-3">Opportunities</h2>
             <div className="text-sm">
-              <p className="text-foreground whitespace-pre-wrap" data-testid="opportunities-note">
-                {profile.availability_note}
-              </p>
+              {profile.availability_note?.trim() ? (
+                <p className="text-foreground whitespace-pre-wrap" data-testid="opportunities-note">
+                  {profile.availability_note}
+                </p>
+              ) : (
+                <p className="text-muted-foreground" data-testid="opportunities-default">
+                  Open to new collaborations and opportunities.
+                </p>
+              )}
             </div>
           </Card>
         )}
 
         {/* Creator Profile Section */}
         {(() => {
-          const qf = profile.quick_facts;
-          const hasPrimaryRole = qf?.primary_role && qf.primary_role.trim();
           const hasOtherSkills = qf?.secondary_roles && qf.secondary_roles.length > 0;
           const hasPlatforms = qf?.platforms && qf.platforms.length > 0;
           const hasTools = qf?.tools && qf.tools.length > 0;
@@ -209,29 +225,19 @@ export default function PublicProfile() {
                           qf?.social_links?.discord?.trim() ||
                           qf?.social_links?.primfeed?.trim();
           
-          const hasAnyCreatorData = hasPrimaryRole || hasOtherSkills || hasPlatforms || hasTools || hasExperience || hasLinks;
+          const hasAnyCreatorData = hasOtherSkills || hasPlatforms || hasTools || hasExperience || hasLinks;
           
           if (!hasAnyCreatorData) return null;
 
           return (
             <Card className="p-6" data-testid="creator-profile-section">
               <h2 className="text-lg font-semibold mb-4">Creator profile</h2>
-              <div className="space-y-4">
+              <div className="space-y-5">
                 
-                {/* Primary skill */}
-                {hasPrimaryRole && (
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Primary skill</h3>
-                    <Badge variant="default" data-testid="primary-skill-badge">
-                      {qf.primary_role}
-                    </Badge>
-                  </div>
-                )}
-
                 {/* Other skills */}
                 {hasOtherSkills && (
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Other skills</h3>
+                    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Other skills</h3>
                     <div className="flex flex-wrap gap-2">
                       {qf.secondary_roles!.map((skill) => (
                         <Badge key={skill} variant="secondary" data-testid={`other-skill-${skill.toLowerCase().replace(/\s+/g, '-')}`}>
@@ -245,7 +251,7 @@ export default function PublicProfile() {
                 {/* Platforms */}
                 {hasPlatforms && (
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Platforms</h3>
+                    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Platforms</h3>
                     <div className="flex flex-wrap gap-2">
                       {qf.platforms!.map((platform) => (
                         <Badge key={platform} variant="outline" data-testid={`platform-${platform.toLowerCase().replace(/\s+/g, '-')}`}>
@@ -259,7 +265,7 @@ export default function PublicProfile() {
                 {/* Tools */}
                 {hasTools && (
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Tools</h3>
+                    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Tools</h3>
                     <div className="flex flex-wrap gap-2">
                       {qf.tools!.map((tool) => (
                         <Badge key={tool} variant="outline" data-testid={`tool-${tool.toLowerCase().replace(/\s+/g, '-')}`}>
@@ -273,7 +279,7 @@ export default function PublicProfile() {
                 {/* Experience */}
                 {hasExperience && (
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Experience</h3>
+                    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">Experience</h3>
                     <p className="text-sm text-foreground" data-testid="experience-level">
                       {qf.experience_level}
                     </p>
@@ -282,17 +288,17 @@ export default function PublicProfile() {
 
                 {/* Portfolio & socials */}
                 {hasLinks && (
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Portfolio & socials</h3>
-                    <div className="space-y-1 text-sm">
+                  <div className="pt-1 border-t">
+                    <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-3 mt-1">Portfolio & socials</h3>
+                    <div className="space-y-2 text-sm">
                       {qf.portfolio_url?.trim() && (
-                        <div>
-                          <span className="text-muted-foreground">Portfolio: </span>
+                        <div className="flex items-start gap-2">
+                          <span className="text-muted-foreground min-w-[90px]">Portfolio:</span>
                           <a 
                             href={qf.portfolio_url} 
                             target="_blank" 
                             rel="noopener noreferrer" 
-                            className="text-primary hover:underline"
+                            className="text-primary hover:underline break-all"
                             data-testid="link-portfolio"
                           >
                             {qf.portfolio_url}
@@ -300,13 +306,13 @@ export default function PublicProfile() {
                         </div>
                       )}
                       {qf.social_links?.website?.trim() && (
-                        <div>
-                          <span className="text-muted-foreground">Website: </span>
+                        <div className="flex items-start gap-2">
+                          <span className="text-muted-foreground min-w-[90px]">Website:</span>
                           <a 
                             href={qf.social_links.website} 
                             target="_blank" 
                             rel="noopener noreferrer" 
-                            className="text-primary hover:underline"
+                            className="text-primary hover:underline break-all"
                             data-testid="link-website"
                           >
                             {qf.social_links.website}
@@ -314,13 +320,13 @@ export default function PublicProfile() {
                         </div>
                       )}
                       {qf.social_links?.twitter?.trim() && (
-                        <div>
-                          <span className="text-muted-foreground">Twitter/X: </span>
+                        <div className="flex items-start gap-2">
+                          <span className="text-muted-foreground min-w-[90px]">Twitter/X:</span>
                           <a 
                             href={qf.social_links.twitter} 
                             target="_blank" 
                             rel="noopener noreferrer" 
-                            className="text-primary hover:underline"
+                            className="text-primary hover:underline break-all"
                             data-testid="link-twitter"
                           >
                             {qf.social_links.twitter}
@@ -328,13 +334,13 @@ export default function PublicProfile() {
                         </div>
                       )}
                       {qf.social_links?.instagram?.trim() && (
-                        <div>
-                          <span className="text-muted-foreground">Instagram: </span>
+                        <div className="flex items-start gap-2">
+                          <span className="text-muted-foreground min-w-[90px]">Instagram:</span>
                           <a 
                             href={qf.social_links.instagram} 
                             target="_blank" 
                             rel="noopener noreferrer" 
-                            className="text-primary hover:underline"
+                            className="text-primary hover:underline break-all"
                             data-testid="link-instagram"
                           >
                             {qf.social_links.instagram}
@@ -342,13 +348,13 @@ export default function PublicProfile() {
                         </div>
                       )}
                       {qf.social_links?.artstation?.trim() && (
-                        <div>
-                          <span className="text-muted-foreground">ArtStation: </span>
+                        <div className="flex items-start gap-2">
+                          <span className="text-muted-foreground min-w-[90px]">ArtStation:</span>
                           <a 
                             href={qf.social_links.artstation} 
                             target="_blank" 
                             rel="noopener noreferrer" 
-                            className="text-primary hover:underline"
+                            className="text-primary hover:underline break-all"
                             data-testid="link-artstation"
                           >
                             {qf.social_links.artstation}
@@ -356,21 +362,21 @@ export default function PublicProfile() {
                         </div>
                       )}
                       {qf.social_links?.discord?.trim() && (
-                        <div>
-                          <span className="text-muted-foreground">Discord: </span>
-                          <span className="text-foreground" data-testid="link-discord">
+                        <div className="flex items-start gap-2">
+                          <span className="text-muted-foreground min-w-[90px]">Discord:</span>
+                          <span className="text-foreground break-all" data-testid="link-discord">
                             {qf.social_links.discord}
                           </span>
                         </div>
                       )}
                       {qf.social_links?.primfeed?.trim() && (
-                        <div>
-                          <span className="text-muted-foreground">Primfeed: </span>
+                        <div className="flex items-start gap-2">
+                          <span className="text-muted-foreground min-w-[90px]">Primfeed:</span>
                           <a 
                             href={qf.social_links.primfeed} 
                             target="_blank" 
                             rel="noopener noreferrer" 
-                            className="text-primary hover:underline"
+                            className="text-primary hover:underline break-all"
                             data-testid="link-primfeed"
                           >
                             {qf.social_links.primfeed}

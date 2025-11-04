@@ -1,0 +1,306 @@
+You’re working in the VirtuoHub codebase (Supabase + React). I don’t want any new database tables or migrations for this task – this is UI polish only for the public profile page.
+Goal
+My public profile at /u/:handle currently works but feels like “one card in a black void.” I want it to feel like a proper Creator Profile page that fits into the rest of the VirtuoHub UI, using the data we already have:
+
+
+Avatar, name, handle
+
+
+Headline
+
+
+About / bio
+
+
+Availability: is_open_to_work, is_hiring, availability_note
+
+
+Creator profile fields: primary_skill, other_skills, platforms, tools, experience_level
+
+
+Portfolio & socials: portfolio/website, personal site, Twitter/X, Instagram, ArtStation, Discord, Primfeed (Primfeed field already exists in settings)
+
+
+Focus on layout & presentation, not new backend logic.
+
+1. Page framing / layout
+File: client/src/pages/public-profile.tsx (and any shared layout components if needed)
+
+
+Reuse the same kind of center column layout as the community/home page:
+
+
+Content should sit in a max-width centered container (e.g. max-w-4xl mx-auto px-4) so it doesn’t look like a lone card floating in a huge black canvas.
+
+
+Keep the dark theme, but ensure the profile sections are clearly grouped in a vertical stack of cards.
+
+
+
+
+Make sure the three main sections are visually clear and in this order:
+
+
+Hero block (top): avatar + name + handle + headline + availability + primary skill
+
+
+“About” card
+
+
+“Opportunities” card
+
+
+“Creator profile” card
+
+
+Each card should use the same card styling as the rest of the app (radius, border, background, padding) so it feels consistent.
+
+
+
+2. Hero block polish (top of profile)
+Use existing data; no schema changes.
+In the hero area:
+
+
+Keep:
+
+
+Avatar
+
+
+display_name
+
+
+handle
+
+
+headline (or fallback text if empty)
+
+
+“Joined [Month Year]”
+
+
+Existing “Hiring creators” badge if present
+
+
+
+
+Add a small label above or beside the name that makes it explicit this is a creator profile, e.g.:
+
+
+Creator Profile or VirtuoHub Creator
+
+
+Make it subtle (small text, slightly muted) so it’s more of a tag than a big heading.
+
+
+Add primary skill + availability in a compact, readable way:
+Directly under the handle + headline area, render a row like:
+
+
+A pill for primary_skill if present, e.g. 3D Modeler, World Builder, Founder / Entrepreneur, etc.
+
+
+Availability badges based on existing booleans:
+
+
+If is_open_to_work, show something like: ● Available for work
+
+
+If is_hiring, show something like: ● Hiring creators
+
+
+
+
+These should look like the existing pill/badge styles you already use for “Hiring creators”.
+
+
+The idea: when you land on the page, you immediately see who they are and what they’re open to without having to scroll.
+
+
+Make sure the hero looks good on mobile:
+
+
+Stack elements vertically with reasonable spacing
+
+
+Badges wrap nicely (no overflow)
+
+
+
+
+
+3. “About” and “Opportunities” cards
+About card
+
+
+Keep the existing behavior: show about text.
+
+
+If about is empty, show the existing friendly placeholder text you already have (“This is a creator profile on VirtuoHub…”).
+
+
+Opportunities card
+
+
+Continue to show availability_note if present.
+
+
+If availability_note is empty but is_open_to_work or is_hiring is true, show a short friendly default like:
+
+
+Open to new collaborations and opportunities.
+
+
+
+
+If all availability fields are empty/false, you can either:
+
+
+Hide the “Opportunities” card entirely, or
+
+
+Show a very subtle placeholder like: No availability details listed yet.
+I’m fine with whichever option is simplest and most consistent with the rest of the UI.
+
+
+
+
+(Do not change the settings form text here; this is only about how the public profile renders.)
+
+4. “Creator profile” card improvements
+Still in public-profile.tsx.
+This section is already showing the new fields (skills, platforms, tools, etc.). I just want it to feel more like a polished, skimmable block.
+
+
+Section title
+
+
+
+
+Keep the heading as Creator profile (same capitalization as current).
+
+
+
+
+Group content in clear rows
+
+
+Use small labels + content underneath, something like:
+
+
+Primary skill
+[primary_skill pill]
+
+
+Other skills
+Render each other_skill as a pill. If none, you can hide this row.
+
+
+Platforms
+Pills for platforms (Roblox, VRChat, Second Life, IMVU, Meta Horizon Worlds, GTA/FiveM, The Sims (CC), Unity, Unreal Engine, Other).
+
+
+Tools
+Pills for tools (Blender, Maya, ZBrush, Substance Painter, Photoshop, Marvelous Designer, Unity, Unreal, VS Code, etc.).
+
+
+Experience
+Show the saved experience_level value as text (e.g. 5+ years). If not set, hide the row.
+
+
+
+
+Portfolio & socials
+
+
+At the bottom of the Creator profile card, render a “Portfolio & socials” block with clickable links:
+
+
+Show each field only if it has a value:
+
+
+Portfolio / Website
+
+
+Website (if you have a separate field)
+
+
+Twitter / X
+
+
+Instagram
+
+
+ArtStation
+
+
+Discord (show as text if it’s a handle, but still styled as part of the list)
+
+
+Primfeed (NEW in this display – if a primfeed URL or handle field exists from settings, show it here with label “Primfeed”)
+
+
+
+
+Visually, you can render each as:
+
+
+A small label + anchor text on its own line (e.g. Instagram: @username), or
+
+
+A row of “link pills” with an icon + label (e.g. [IG Icon] Instagram linking out)
+
+
+Pick whichever best matches the rest of the app styling. The important part is that they look clearly clickable and grouped under “Portfolio & socials”.
+Make sure external links open in a new tab with rel="noreferrer noopener".
+
+5. Guard rails / constraints
+
+
+Do not add or modify database tables. Use existing fields only.
+
+
+Do not change multi-profile behavior – we still have one profile per user.
+
+
+Do not touch the Talent directory or Job Board yet. This prompt is strictly for the public profile UI.
+
+
+Keep everything responsive and consistent with the current design system (colors, typography, spacing, card radius).
+
+
+
+6. What to show me when you’re done
+When you’re finished:
+
+
+Show the key snippets you changed from public-profile.tsx (and any small layout tweaks elsewhere).
+
+
+Include a brief before/after summary:
+
+
+How the hero changed
+
+
+How the Creator profile card is now structured
+
+
+How Portfolio & socials are rendered (including Primfeed)
+
+
+
+
+Confirm that:
+
+
+No migrations were run
+
+
+Profiles with minimal data still render cleanly (no empty labels)
+
+
+
+
+Please keep the explanation focused and not too long – I’m paying per prompt.
