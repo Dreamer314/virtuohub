@@ -321,7 +321,7 @@ export default function ProfileSettings() {
       // Refresh profile data and header avatar
       queryClient.invalidateQueries({ queryKey: ['my-profile-v2'] });
       queryClient.invalidateQueries({ queryKey: ['profile-v2', profile?.handle] });
-      queryClient.invalidateQueries({ queryKey: ['v2-avatar', user.id ?? 'none'] });
+      queryClient.invalidateQueries({ queryKey: ['v2-avatar', user?.id ?? 'none'] });
       
       toast({
         title: "Profile updated",
