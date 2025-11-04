@@ -35,6 +35,7 @@ import OnboardingPage from "@/pages/onboarding";
 /* Profiles v2 */
 import PublicProfile from "@/pages/public-profile";
 import ProfileSettings from "@/pages/profile-settings";
+import Talent from "@/pages/talent";
 
 function Router() {
   return (
@@ -68,6 +69,9 @@ function Router() {
 
       {/* Onboarding (still routable) */}
       <Route path="/onboarding" component={OnboardingPage} />
+
+      {/* Talent Directory */}
+      <Route path="/talent" component={Talent} />
 
       {/* Profiles v2 */}
       <Route path="/settings/profile" component={ProfileSettings} />
