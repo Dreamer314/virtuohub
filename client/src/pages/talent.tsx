@@ -192,7 +192,7 @@ export default function Talent() {
 
       if (filters.platform) {
         filtered = filtered.filter(p => 
-          p.quick_facts?.platforms?.some(platform => 
+          p.quick_facts?.platforms?.some((platform: string) => 
             platform.toLowerCase() === filters.platform.toLowerCase()
           )
         );
@@ -200,7 +200,7 @@ export default function Talent() {
 
       if (filters.tool) {
         filtered = filtered.filter(p => 
-          p.quick_facts?.tools?.some(tool => 
+          p.quick_facts?.tools?.some((tool: string) => 
             tool.toLowerCase() === filters.tool.toLowerCase()
           )
         );
