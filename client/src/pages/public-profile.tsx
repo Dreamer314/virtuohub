@@ -5,6 +5,23 @@ import { User, MapPin, Calendar, Briefcase, Users } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
+interface QuickFacts {
+  primary_role?: string;
+  secondary_roles?: string[];
+  platforms?: string[];
+  tools?: string[];
+  experience_level?: string;
+  portfolio_url?: string;
+  social_links?: {
+    website?: string;
+    twitter?: string;
+    instagram?: string;
+    artstation?: string;
+    discord?: string;
+    primfeed?: string;
+  };
+}
+
 interface ProfileV2 {
   profile_id: string;
   user_id: string;
@@ -18,6 +35,7 @@ interface ProfileV2 {
   is_open_to_work: boolean;
   is_hiring: boolean;
   availability_note: string | null;
+  quick_facts: QuickFacts | null;
 }
 
 export default function PublicProfile() {
@@ -30,7 +48,7 @@ export default function PublicProfile() {
 
       const { data, error } = await supabase
         .from('profiles_v2')
-        .select('profile_id, user_id, handle, display_name, headline, profile_photo_url, about, visibility, created_at, is_open_to_work, is_hiring, availability_note')
+        .select('profile_id, user_id, handle, display_name, headline, profile_photo_url, about, visibility, created_at, is_open_to_work, is_hiring, availability_note, quick_facts')
         .eq('handle', handle.toLowerCase())
         .single();
 
@@ -165,7 +183,7 @@ export default function PublicProfile() {
 
         {/* Opportunities Section */}
         {profile.availability_note && profile.availability_note.trim() && (
-          <Card className="p-6" data-testid="opportunities-section">
+          <Card className="p-6 mb-6" data-testid="opportunities-section">
             <h2 className="text-lg font-semibold mb-3">Opportunities</h2>
             <div className="text-sm">
               <p className="text-foreground whitespace-pre-wrap" data-testid="opportunities-note">
@@ -174,6 +192,198 @@ export default function PublicProfile() {
             </div>
           </Card>
         )}
+
+        {/* Creator Profile Section */}
+        {(() => {
+          const qf = profile.quick_facts;
+          const hasPrimaryRole = qf?.primary_role && qf.primary_role.trim();
+          const hasOtherSkills = qf?.secondary_roles && qf.secondary_roles.length > 0;
+          const hasPlatforms = qf?.platforms && qf.platforms.length > 0;
+          const hasTools = qf?.tools && qf.tools.length > 0;
+          const hasExperience = qf?.experience_level && qf.experience_level.trim();
+          const hasLinks = qf?.portfolio_url?.trim() || 
+                          qf?.social_links?.website?.trim() ||
+                          qf?.social_links?.twitter?.trim() ||
+                          qf?.social_links?.instagram?.trim() ||
+                          qf?.social_links?.artstation?.trim() ||
+                          qf?.social_links?.discord?.trim() ||
+                          qf?.social_links?.primfeed?.trim();
+          
+          const hasAnyCreatorData = hasPrimaryRole || hasOtherSkills || hasPlatforms || hasTools || hasExperience || hasLinks;
+          
+          if (!hasAnyCreatorData) return null;
+
+          return (
+            <Card className="p-6" data-testid="creator-profile-section">
+              <h2 className="text-lg font-semibold mb-4">Creator profile</h2>
+              <div className="space-y-4">
+                
+                {/* Primary skill */}
+                {hasPrimaryRole && (
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Primary skill</h3>
+                    <Badge variant="default" data-testid="primary-skill-badge">
+                      {qf.primary_role}
+                    </Badge>
+                  </div>
+                )}
+
+                {/* Other skills */}
+                {hasOtherSkills && (
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Other skills</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {qf.secondary_roles!.map((skill) => (
+                        <Badge key={skill} variant="secondary" data-testid={`other-skill-${skill.toLowerCase().replace(/\s+/g, '-')}`}>
+                          {skill}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Platforms */}
+                {hasPlatforms && (
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Platforms</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {qf.platforms!.map((platform) => (
+                        <Badge key={platform} variant="outline" data-testid={`platform-${platform.toLowerCase().replace(/\s+/g, '-')}`}>
+                          {platform}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Tools */}
+                {hasTools && (
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Tools</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {qf.tools!.map((tool) => (
+                        <Badge key={tool} variant="outline" data-testid={`tool-${tool.toLowerCase().replace(/\s+/g, '-')}`}>
+                          {tool}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Experience */}
+                {hasExperience && (
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Experience</h3>
+                    <p className="text-sm text-foreground" data-testid="experience-level">
+                      {qf.experience_level}
+                    </p>
+                  </div>
+                )}
+
+                {/* Portfolio & socials */}
+                {hasLinks && (
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-2">Portfolio & socials</h3>
+                    <div className="space-y-1 text-sm">
+                      {qf.portfolio_url?.trim() && (
+                        <div>
+                          <span className="text-muted-foreground">Portfolio: </span>
+                          <a 
+                            href={qf.portfolio_url} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-primary hover:underline"
+                            data-testid="link-portfolio"
+                          >
+                            {qf.portfolio_url}
+                          </a>
+                        </div>
+                      )}
+                      {qf.social_links?.website?.trim() && (
+                        <div>
+                          <span className="text-muted-foreground">Website: </span>
+                          <a 
+                            href={qf.social_links.website} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-primary hover:underline"
+                            data-testid="link-website"
+                          >
+                            {qf.social_links.website}
+                          </a>
+                        </div>
+                      )}
+                      {qf.social_links?.twitter?.trim() && (
+                        <div>
+                          <span className="text-muted-foreground">Twitter/X: </span>
+                          <a 
+                            href={qf.social_links.twitter} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-primary hover:underline"
+                            data-testid="link-twitter"
+                          >
+                            {qf.social_links.twitter}
+                          </a>
+                        </div>
+                      )}
+                      {qf.social_links?.instagram?.trim() && (
+                        <div>
+                          <span className="text-muted-foreground">Instagram: </span>
+                          <a 
+                            href={qf.social_links.instagram} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-primary hover:underline"
+                            data-testid="link-instagram"
+                          >
+                            {qf.social_links.instagram}
+                          </a>
+                        </div>
+                      )}
+                      {qf.social_links?.artstation?.trim() && (
+                        <div>
+                          <span className="text-muted-foreground">ArtStation: </span>
+                          <a 
+                            href={qf.social_links.artstation} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-primary hover:underline"
+                            data-testid="link-artstation"
+                          >
+                            {qf.social_links.artstation}
+                          </a>
+                        </div>
+                      )}
+                      {qf.social_links?.discord?.trim() && (
+                        <div>
+                          <span className="text-muted-foreground">Discord: </span>
+                          <span className="text-foreground" data-testid="link-discord">
+                            {qf.social_links.discord}
+                          </span>
+                        </div>
+                      )}
+                      {qf.social_links?.primfeed?.trim() && (
+                        <div>
+                          <span className="text-muted-foreground">Primfeed: </span>
+                          <a 
+                            href={qf.social_links.primfeed} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-primary hover:underline"
+                            data-testid="link-primfeed"
+                          >
+                            {qf.social_links.primfeed}
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </Card>
+          );
+        })()}
       </div>
     </div>
   );
