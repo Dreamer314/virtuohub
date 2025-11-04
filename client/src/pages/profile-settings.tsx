@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { User, Save, Loader2, Upload, Camera, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/providers/AuthProvider";
 
@@ -23,6 +24,9 @@ interface ProfileV2 {
   about: string | null;
   kind: string;
   visibility: string;
+  is_open_to_work: boolean;
+  is_hiring: boolean;
+  availability_note: string | null;
 }
 
 interface AccountPrefs {
@@ -42,6 +46,9 @@ export default function ProfileSettings() {
   const [headline, setHeadline] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [bio, setBio] = useState("");
+  const [isOpenToWork, setIsOpenToWork] = useState(false);
+  const [isHiring, setIsHiring] = useState(false);
+  const [availabilityNote, setAvailabilityNote] = useState("");
   const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
   const [pendingAvatarPreview, setPendingAvatarPreview] = useState<string | null>(null);
 
@@ -215,6 +222,9 @@ export default function ProfileSettings() {
       setHeadline(profile.headline || '');
       setAvatarUrl(profile.profile_photo_url || '');
       setBio(profile.about || '');
+      setIsOpenToWork(profile.is_open_to_work ?? false);
+      setIsHiring(profile.is_hiring ?? false);
+      setAvailabilityNote(profile.availability_note || '');
       // Clear pending states when loading fresh profile
       setPendingAvatarFile(null);
       setPendingAvatarPreview(null);
@@ -280,7 +290,10 @@ export default function ProfileSettings() {
           display_name: displayName.trim(),
           headline: headline.trim() || null,
           about: bio.trim(),
-          profile_photo_url: finalAvatarUrl
+          profile_photo_url: finalAvatarUrl,
+          is_open_to_work: isOpenToWork,
+          is_hiring: isHiring,
+          availability_note: availabilityNote.trim() || null
         })
         .eq('profile_id', profile.profile_id)
         .eq('user_id', user.id); // RLS safety
@@ -380,6 +393,9 @@ export default function ProfileSettings() {
     displayName !== (profile.display_name || '') ||
     headline !== (profile.headline || '') ||
     bio !== (profile?.about || '') ||
+    isOpenToWork !== (profile.is_open_to_work ?? false) ||
+    isHiring !== (profile.is_hiring ?? false) ||
+    availabilityNote !== (profile.availability_note || '') ||
     pendingAvatarFile !== null;
 
   const currentAvatarPreview = pendingAvatarPreview || avatarUrl;
@@ -523,6 +539,64 @@ export default function ProfileSettings() {
               <p className="text-xs text-muted-foreground">
                 {bio.length} characters
               </p>
+            </div>
+
+            {/* Availability Section */}
+            <div className="space-y-4 pt-4 border-t">
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Availability</h3>
+                <p className="text-sm text-muted-foreground">
+                  Let others know if you're open to opportunities or looking to hire
+                </p>
+              </div>
+
+              {/* Open to Work Checkbox */}
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="open-to-work"
+                  checked={isOpenToWork}
+                  onCheckedChange={(checked) => setIsOpenToWork(checked === true)}
+                  data-testid="checkbox-open-to-work"
+                />
+                <Label 
+                  htmlFor="open-to-work"
+                  className="text-sm font-normal cursor-pointer"
+                >
+                  I'm open to paid opportunities
+                </Label>
+              </div>
+
+              {/* Hiring Checkbox */}
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="hiring"
+                  checked={isHiring}
+                  onCheckedChange={(checked) => setIsHiring(checked === true)}
+                  data-testid="checkbox-hiring"
+                />
+                <Label 
+                  htmlFor="hiring"
+                  className="text-sm font-normal cursor-pointer"
+                >
+                  I'm looking to hire creators
+                </Label>
+              </div>
+
+              {/* Availability Note */}
+              <div className="space-y-2">
+                <Label htmlFor="availability-note">Availability details</Label>
+                <Textarea
+                  id="availability-note"
+                  value={availabilityNote}
+                  onChange={(e) => setAvailabilityNote(e.target.value)}
+                  placeholder="What kinds of work, collaboration, or roles are you open to?"
+                  className="min-h-[100px] resize-y"
+                  data-testid="input-availability-note"
+                />
+                <p className="text-xs text-muted-foreground">
+                  This will be visible on your public profile when filled in
+                </p>
+              </div>
             </div>
 
             {/* Save Button */}
