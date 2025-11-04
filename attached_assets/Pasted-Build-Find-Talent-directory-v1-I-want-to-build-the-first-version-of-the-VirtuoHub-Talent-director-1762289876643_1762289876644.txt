@@ -1,0 +1,149 @@
+Build “Find Talent” directory v1
+
+I want to build the first version of the VirtuoHub Talent directory, using the existing Profiles v2 system and the new Creator Profile fields we just added.
+
+Goal: A new Find Talent page that lists creator profiles in a clean card layout with basic filters. This will live at /talent and use our existing header/footer layout and Profiles v2 data (no multi-profile, one profile per user).
+
+1. New route and layout
+
+Create a new page at client/src/pages/talent.tsx (or whatever route convention we use) that:
+
+Uses the same <Header /> and <Footer /> as /community and /u/:handle.
+
+Wraps content in max-w-6xl mx-auto px-4 py-10 with min-h-screen flex flex-col.
+
+Page title block at the top, something like:
+
+Title: VirtuoHub Talent
+
+Subtitle: “Discover creators to collaborate with across virtual worlds.”
+
+Directly under the title, add two tabs:
+
+Find Talent (selected, active)
+
+Find Work (disabled / “Coming soon” pill, just a button with no navigation yet)
+
+Use our existing tab style if we have one; otherwise simple buttons with an underline for the active tab is fine.
+
+2. Data source
+
+Use Profiles v2 as the data source, only profiles where:
+
+visibility = 'PUBLIC'
+
+And we have at least a display_name and handle.
+
+Re-use the fields we already use on the public profile:
+
+display_name, handle, profile_photo_url, headline
+
+about (for a short summary)
+
+is_open_to_work, is_hiring, availability_note
+
+Creator profile fields (wherever they’re stored now – likely in quick_facts JSON):
+
+primarySkill
+
+otherSkills (array)
+
+platforms (array)
+
+tools (array)
+
+experienceLevel
+
+Please reuse the same options & labels we use in profile settings so filters match the form.
+
+If we don’t already have an API endpoint for listing profiles with filters, create one under our existing API pattern (e.g. /api/profile-v2/search or similar) that:
+
+Returns public profiles with the above fields.
+
+Accepts optional query params for: primarySkill, platform, tool, and a general q text search.
+
+Filters should be simple and safe (e.g. ILIKE on text fields / matching inside JSON arrays).
+
+3. Filters section (top of page content)
+
+Add a filter row under the tabs with:
+
+Primary skill – dropdown (single select) populated from the same list as the Creator Profile form. Include an “Any skill” / empty option.
+
+Platform – dropdown (single select) from the same platform options we use in settings (including GTA/FiveM and The Sims CC and “Other”).
+
+Tools – dropdown (single select) from the existing tools options plus “Other”.
+
+A Search input (q) for free-text search across name, handle and about.
+
+A Clear filters text button that resets everything.
+
+Filters should be controlled React state and trigger a refetch using our query library (React Query / TanStack query) with a stable key (e.g. ['talent-directory', filters]).
+
+4. Talent cards layout
+
+Below the filters, render a responsive grid/list of cards:
+
+On desktop: 2 columns (or 3 if it looks good), on mobile: 1 column.
+
+Each card should include:
+
+Avatar (small circle) + display_name + @handle.
+
+Primary skill pill (if set), e.g. 3D Modeler or Store Owner.
+
+Availability pills:
+
+If is_open_to_work → show green-dot pill “Available for work”.
+
+If is_hiring → show blue-dot pill “Hiring creators”.
+
+Short summary text:
+
+Use about truncated to ~120–160 chars with an ellipsis.
+
+Fallback: “Creator on VirtuoHub.” if about is empty.
+
+Tag row(s):
+
+Platforms: show up to 3 platform pills, then +N more if there are additional entries.
+
+Tools: same pattern (up to 3 tools, then +N more).
+
+Experience level line if present (e.g. “Experience: 5+ years”).
+
+Primary action button: View profile → links to /u/:handle in the same tab.
+
+Use our existing card styles (rounded, subtle border, dark background, hover state) to match the rest of the app.
+
+5. Loading, empty & error states
+
+Loading: skeleton cards (or at least a “Loading creators…” message) while the query runs.
+
+Empty results: show a friendly message like:
+
+“No creators match these filters yet. Try removing a filter or broadening your search.”
+
+Error: show a simple error state with a retry button using the query’s refetch.
+
+6. QA checklist
+
+Please test and confirm:
+
+Filters work together (e.g. pick Primary Skill + Platform + type a search query).
+
+Clearing filters reloads the full list.
+
+Clicking “View profile” opens the correct /u/:handle page.
+
+Profiles with minimal data still render gracefully (e.g. no tools/platforms → those rows are hidden).
+
+The page looks good on desktop and mobile.
+
+Finally, add a short section to replit.md documenting:
+
+The new /talent page
+
+The API endpoint used for listing/filtering profiles
+
+Which profile fields power the directory (primarySkill, platforms, tools, availability, etc.)
