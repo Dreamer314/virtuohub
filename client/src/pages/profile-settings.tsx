@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { Link } from "wouter";
 import { supabase } from "@/lib/supabaseClient";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -9,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { User, Save, Loader2, Upload, Camera } from "lucide-react";
+import { User, Save, Loader2, Upload, Camera, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/providers/AuthProvider";
 
 interface ProfileV2 {
@@ -17,6 +18,7 @@ interface ProfileV2 {
   user_id: string;
   handle: string;
   display_name: string;
+  headline: string | null;
   profile_photo_url: string | null;
   about: string | null;
   kind: string;
@@ -37,9 +39,11 @@ export default function ProfileSettings() {
   console.log('[PROFILE SETTINGS] Component render - user:', user?.id, 'email:', user?.email);
   
   const [displayName, setDisplayName] = useState("");
+  const [headline, setHeadline] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [bio, setBio] = useState("");
-  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [pendingAvatarFile, setPendingAvatarFile] = useState<File | null>(null);
+  const [pendingAvatarPreview, setPendingAvatarPreview] = useState<string | null>(null);
 
   // Fetch or create profile
   const { data: profile, isLoading: profileLoading, error: profileError, refetch: refetchProfile } = useQuery<ProfileV2 | null>({
@@ -208,87 +212,104 @@ export default function ProfileSettings() {
   useEffect(() => {
     if (profile) {
       setDisplayName(profile.display_name || '');
+      setHeadline(profile.headline || '');
       setAvatarUrl(profile.profile_photo_url || '');
       setBio(profile.about || '');
+      // Clear pending states when loading fresh profile
+      setPendingAvatarFile(null);
+      setPendingAvatarPreview(null);
     }
   }, [profile]);
 
-  // Handle avatar file upload
-  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle avatar file selection (preview only, no upload yet)
+  const handleAvatarSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file || !user?.id || !profile) return;
+    if (!file) return;
 
-    setUploadError(null);
-
-    const { url, error } = await uploadAvatar(file, user.id);
-
-    if (error) {
-      setUploadError(error);
+    // Validate file type
+    const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
       toast({
-        title: "Upload failed",
-        description: error,
+        title: "Invalid file type",
+        description: "Please upload a PNG, JPEG, GIF, or WEBP image",
         variant: "destructive"
       });
       return;
     }
 
-    if (url) {
-      // Update profile with new avatar URL
-      const { error: updateError } = await supabase
-        .from('profiles_v2')
-        .update({ profile_photo_url: url })
-        .eq('profile_id', profile.profile_id)
-        .eq('user_id', user.id);
-
-      if (updateError) {
-        setUploadError('Failed to update profile');
-        toast({
-          title: "Update failed",
-          description: "Avatar uploaded but failed to update profile",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      // Update local state
-      setAvatarUrl(url);
-      
-      // Refresh profile data and header avatar
-      queryClient.invalidateQueries({ queryKey: ['my-profile-v2'] });
-      queryClient.invalidateQueries({ queryKey: ['profile-v2', profile.handle] });
-      queryClient.invalidateQueries({ queryKey: ['v2-avatar', user.id ?? 'none'] });
-      
+    // Validate file size (5MB limit)
+    if (file.size > 5 * 1024 * 1024) {
       toast({
-        title: "Avatar updated",
-        description: "Your profile picture has been updated successfully."
+        title: "File too large",
+        description: "File size must be less than 5MB",
+        variant: "destructive"
       });
+      return;
     }
 
-    // Reset file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+    // Create preview URL
+    const previewUrl = URL.createObjectURL(file);
+    setPendingAvatarFile(file);
+    setPendingAvatarPreview(previewUrl);
   };
 
-  // Save mutation (for display name and bio)
+  // Save mutation (upload avatar if pending, then save all fields)
   const saveMutation = useMutation({
     mutationFn: async () => {
       if (!profile || !user?.id) throw new Error('No profile to update');
 
+      let finalAvatarUrl = avatarUrl;
+
+      // If there's a pending avatar file, upload it first
+      if (pendingAvatarFile) {
+        const { url, error } = await uploadAvatar(pendingAvatarFile, user.id);
+        
+        if (error) {
+          throw new Error(`Avatar upload failed: ${error}`);
+        }
+        
+        if (url) {
+          finalAvatarUrl = url;
+        }
+      }
+
+      // Update all profile fields
       const { error } = await supabase
         .from('profiles_v2')
         .update({
           display_name: displayName.trim(),
-          about: bio.trim()
+          headline: headline.trim() || null,
+          about: bio.trim(),
+          profile_photo_url: finalAvatarUrl
         })
         .eq('profile_id', profile.profile_id)
         .eq('user_id', user.id); // RLS safety
 
       if (error) throw error;
+
+      return finalAvatarUrl;
     },
-    onSuccess: () => {
+    onSuccess: (finalAvatarUrl) => {
+      // Update local avatar state
+      setAvatarUrl(finalAvatarUrl || '');
+      
+      // Clear pending avatar states
+      setPendingAvatarFile(null);
+      if (pendingAvatarPreview) {
+        URL.revokeObjectURL(pendingAvatarPreview);
+      }
+      setPendingAvatarPreview(null);
+      
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      
+      // Refresh profile data and header avatar
       queryClient.invalidateQueries({ queryKey: ['my-profile-v2'] });
       queryClient.invalidateQueries({ queryKey: ['profile-v2', profile?.handle] });
+      queryClient.invalidateQueries({ queryKey: ['v2-avatar', user.id ?? 'none'] });
+      
       toast({
         title: "Profile updated",
         description: "Your changes have been saved successfully."
@@ -299,7 +320,7 @@ export default function ProfileSettings() {
       console.error('Error saving profile:', error);
       toast({
         title: "Error",
-        description: "Failed to save your profile. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to save your profile. Please try again.",
         variant: "destructive"
       });
     }
@@ -357,12 +378,22 @@ export default function ProfileSettings() {
 
   const hasChanges = 
     displayName !== (profile.display_name || '') ||
-    bio !== (profile?.about || '');
+    headline !== (profile.headline || '') ||
+    bio !== (profile?.about || '') ||
+    pendingAvatarFile !== null;
+
+  const currentAvatarPreview = pendingAvatarPreview || avatarUrl;
 
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-3xl mx-auto px-4 py-8">
         <div className="mb-6">
+          <Link href="/">
+            <a className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-4 transition-colors">
+              <ArrowLeft className="w-4 h-4" />
+              Back to VirtuoHub
+            </a>
+          </Link>
           <h1 className="text-3xl font-bold mb-2">My Profile</h1>
           <p className="text-muted-foreground">
             Manage your public creator profile on VirtuoHub
@@ -373,9 +404,9 @@ export default function ProfileSettings() {
           <div className="space-y-6">
             {/* Avatar Preview */}
             <div className="flex items-center gap-4">
-              {avatarUrl ? (
+              {currentAvatarPreview ? (
                 <img 
-                  src={avatarUrl} 
+                  src={currentAvatarPreview} 
                   alt="Profile preview"
                   className="w-20 h-20 rounded-full object-cover border-2 border-border"
                   onError={(e) => {
@@ -408,6 +439,22 @@ export default function ProfileSettings() {
               </p>
             </div>
 
+            {/* Headline */}
+            <div className="space-y-2">
+              <Label htmlFor="headline">Headline</Label>
+              <Input
+                id="headline"
+                value={headline}
+                onChange={(e) => setHeadline(e.target.value)}
+                placeholder="Creator on VirtuoHub"
+                maxLength={120}
+                data-testid="input-headline"
+              />
+              <p className="text-xs text-muted-foreground">
+                A short tagline that appears under your name
+              </p>
+            </div>
+
             {/* Handle (Read-only) */}
             <div className="space-y-2">
               <Label htmlFor="handle">Handle</Label>
@@ -433,7 +480,7 @@ export default function ProfileSettings() {
                   type="file"
                   id="avatar-upload"
                   accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
-                  onChange={handleAvatarUpload}
+                  onChange={handleAvatarSelect}
                   className="hidden"
                   data-testid="input-avatar-file"
                 />
@@ -441,27 +488,24 @@ export default function ProfileSettings() {
                   type="button"
                   variant="outline"
                   onClick={() => fileInputRef.current?.click()}
-                  disabled={uploading}
                   className="flex items-center gap-2"
-                  data-testid="button-upload-avatar"
+                  data-testid="button-select-avatar"
                 >
-                  {uploading ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</>
-                  ) : (
-                    <><Camera className="w-4 h-4" /> Upload Photo</>
-                  )}
+                  <Camera className="w-4 h-4" /> Choose Photo
                 </Button>
-                {avatarUrl && (
+                {pendingAvatarFile && (
+                  <span className="text-sm text-amber-600 dark:text-amber-500">
+                    Photo selected (not saved yet)
+                  </span>
+                )}
+                {!pendingAvatarFile && avatarUrl && (
                   <span className="text-sm text-muted-foreground">
-                    ✓ Photo uploaded
+                    Current photo saved
                   </span>
                 )}
               </div>
-              {uploadError && (
-                <p className="text-xs text-destructive">{uploadError}</p>
-              )}
               <p className="text-xs text-muted-foreground">
-                PNG, JPEG, GIF, or WEBP. Max 5MB.
+                PNG, JPEG, GIF, or WEBP. Max 5MB. Click "Save Changes" to upload.
               </p>
             </div>
 
@@ -505,19 +549,19 @@ export default function ProfileSettings() {
           </div>
         </Card>
 
-        {/* Preview Link */}
+        {/* Public Profile Link */}
         {profile.handle && (
           <div className="mt-4 text-center">
-            <p className="text-sm text-muted-foreground">
-              View your public profile at{' '}
-              <a 
-                href={`/u/${profile.handle}`}
-                className="text-primary hover:underline"
-                data-testid="link-view-public-profile"
+            <Link href={`/u/${profile.handle}`}>
+              <Button 
+                variant="outline" 
+                className="gap-2"
+                data-testid="button-view-public-profile"
               >
-                /u/{profile.handle}
-              </a>
-            </p>
+                <User className="w-4 h-4" />
+                View Public Profile
+              </Button>
+            </Link>
           </div>
         )}
       </div>

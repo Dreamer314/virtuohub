@@ -1,0 +1,114 @@
+Task: Clean up Profiles v2 UX (headline vs bio, photo saving, navigation).
+
+I already have:
+
+Supabase + profiles_v2 + account_prefs.
+
+Working profile settings page at /settings/profile.
+
+Public profile page at /u/:handle.
+
+Avatar upload that saves immediately and a single about/bio field.
+
+Please do the following, without touching v1 profiles, RLS, or auth:
+
+Add a “headline” field to profiles_v2
+
+Add a new headline text column to public.profiles_v2 (nullable, default NULL).
+
+Do not remove about or quick_facts. about stays as the main bio.
+
+Update profile settings UI
+
+File: client/src/pages/profile-settings.tsx
+
+In the form, add a new text input called “Headline” between Display Name and Handle.
+
+Wire it to the new headline column:
+
+Load headline when fetching the active profile.
+
+Allow editing headline and include it in the update mutation.
+
+Keep about as the “Bio” textarea.
+
+Change public profile layout
+
+File: client/src/pages/public-profile.tsx
+
+Use these rules:
+
+Under the handle (@handle), show profile.headline if present.
+
+If headline is empty, you can show nothing or a simple default like “Creator on VirtuoHub”.
+
+In the About section, show only profile.about (the bio).
+
+If about is empty, show the placeholder “This creator has not added a bio yet.” inside the About card.
+
+Remove the duplicate where the bio text appears both under the handle and again in About.
+
+Change avatar upload behavior
+
+Currently the avatar is uploaded and saved immediately when a file is selected.
+
+I want this behavior instead:
+
+When a file is selected:
+
+Show a preview of the new photo and a status like “Photo selected (not saved yet)”.
+
+Store the file in component state only; do not upload to Supabase yet.
+
+When the user clicks Save Changes:
+
+If a new file has been selected, upload it to the existing avatars bucket and update profiles_v2.profile_photo_url.
+
+Then save the other profile fields (display_name, headline, about) in the same submit flow.
+
+After success, clear the “pending file” state and show the “Profile updated” toast.
+
+Keep the cache invalidation for the avatar/header working after save.
+
+Navigation improvements
+
+On the profile settings page:
+
+Add a small text link above “My Profile” or near the top:
+← Back to VirtuoHub that routes to / (or the main home route used in this project).
+
+Make the “View your public profile at /u/:handle” text at the bottom into a clear link/button that navigates to the correct /u/:handle route.
+
+In the header component (client/src/components/layout/header.tsx):
+
+Clicking the avatar in the top-right should navigate to the user’s public profile /u/:handle.
+
+Clicking the user’s name in the header should go to /settings/profile (keep this behavior).
+
+General rules
+
+Do not change RLS policies, auth, or any v1 tables.
+
+Keep all existing types strict and update them where needed (e.g. add headline to the profile types).
+
+After making changes, run through this flow:
+
+Visit /settings/profile, change display name, headline, upload a photo, and edit bio.
+
+Click Save Changes and verify everything persists.
+
+Visit /u/:handle and confirm:
+
+Avatar shows.
+
+Headline shows under handle.
+
+Bio appears only in About.
+
+Joined date still shows.
+
+Click the avatar in the header and confirm it goes to the public profile.
+
+Confirm that navigating back from settings via the new “Back to VirtuoHub” link works.
+
+Please summarize exactly what you changed and which files were touched when you’re done.
