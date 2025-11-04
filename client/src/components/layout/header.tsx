@@ -21,6 +21,7 @@ import { AuthModal } from "@/components/auth/AuthModal";
 import { supabase } from "@/lib/supabaseClient";
 import { useDisplayIdentity } from "@/hooks/useDisplayIdentity";
 import { useV2Avatar } from "@/hooks/useV2Avatar";
+import { useV2Handle } from "@/hooks/useV2Handle";
 import { WelcomeModal } from "@/components/welcome/WelcomeModal";
 
 interface HeaderProps {
@@ -38,6 +39,7 @@ export function Header({ onCreatePost }: HeaderProps) {
   const { user, loading, showWelcome, setShowWelcome } = useAuth();
   const { displayName, isTemporary } = useDisplayIdentity();
   const avatarUrl = useV2Avatar();
+  const userHandle = useV2Handle();
   const [welcomeModalOpen, setWelcomeModalOpen] = useState(false);
 
   // Admin flag
@@ -209,26 +211,47 @@ export function Header({ onCreatePost }: HeaderProps) {
               <>
                 {user ? (
                   <div className="flex items-center space-x-2">
-                    <Link href="/settings/profile">
-                      <div className="hidden lg:flex items-center space-x-2 px-3 py-1 rounded-lg bg-muted/50 hover:bg-muted cursor-pointer transition-colors">
-                        {avatarUrl ? (
-                          <img 
-                            src={avatarUrl} 
-                            alt={displayName}
-                            className="w-6 h-6 rounded-full object-cover"
-                            data-testid="user-avatar"
-                          />
-                        ) : (
-                          <User className="w-4 h-4" />
-                        )}
+                    <div className="hidden lg:flex items-center space-x-2 px-3 py-1 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
+                      {/* Avatar - links to public profile */}
+                      {userHandle ? (
+                        <Link href={`/u/${userHandle}`}>
+                          <div className="cursor-pointer">
+                            {avatarUrl ? (
+                              <img 
+                                src={avatarUrl} 
+                                alt={displayName}
+                                className="w-6 h-6 rounded-full object-cover"
+                                data-testid="user-avatar"
+                              />
+                            ) : (
+                              <User className="w-4 h-4" />
+                            )}
+                          </div>
+                        </Link>
+                      ) : (
+                        <div>
+                          {avatarUrl ? (
+                            <img 
+                              src={avatarUrl} 
+                              alt={displayName}
+                              className="w-6 h-6 rounded-full object-cover"
+                              data-testid="user-avatar"
+                            />
+                          ) : (
+                            <User className="w-4 h-4" />
+                          )}
+                        </div>
+                      )}
+                      {/* Display name - links to settings */}
+                      <Link href="/settings/profile">
                         <span
-                          className="text-sm font-medium"
+                          className="text-sm font-medium cursor-pointer"
                           data-testid="user-display-name"
                         >
                           {displayName}
                         </span>
-                      </div>
-                    </Link>
+                      </Link>
+                    </div>
                     {isTemporary && (
                       <Button
                         variant="ghost"
@@ -377,29 +400,51 @@ export function Header({ onCreatePost }: HeaderProps) {
                   <>
                     {user ? (
                       <div className="space-y-2">
-                        <Link href="/settings/profile">
-                          <div 
-                            className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-muted/50 hover:bg-muted cursor-pointer transition-colors"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                          >
-                            {avatarUrl ? (
-                              <img 
-                                src={avatarUrl} 
-                                alt={displayName}
-                                className="w-6 h-6 rounded-full object-cover"
-                                data-testid="mobile-user-avatar"
-                              />
-                            ) : (
-                              <User className="w-4 h-4" />
-                            )}
-                            <span
-                              className="text-sm font-medium"
+                        <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-muted/50">
+                          {/* Mobile Avatar - links to public profile */}
+                          {userHandle ? (
+                            <Link href={`/u/${userHandle}`}>
+                              <div 
+                                className="cursor-pointer"
+                                onClick={() => setIsMobileMenuOpen(false)}
+                              >
+                                {avatarUrl ? (
+                                  <img 
+                                    src={avatarUrl} 
+                                    alt={displayName}
+                                    className="w-6 h-6 rounded-full object-cover"
+                                    data-testid="mobile-user-avatar"
+                                  />
+                                ) : (
+                                  <User className="w-4 h-4" />
+                                )}
+                              </div>
+                            </Link>
+                          ) : (
+                            <div>
+                              {avatarUrl ? (
+                                <img 
+                                  src={avatarUrl} 
+                                  alt={displayName}
+                                  className="w-6 h-6 rounded-full object-cover"
+                                  data-testid="mobile-user-avatar"
+                                />
+                              ) : (
+                                <User className="w-4 h-4" />
+                              )}
+                            </div>
+                          )}
+                          {/* Mobile Display name - links to settings */}
+                          <Link href="/settings/profile">
+                            <span 
+                              className="text-sm font-medium cursor-pointer" 
                               data-testid="mobile-user-display-name"
+                              onClick={() => setIsMobileMenuOpen(false)}
                             >
                               {displayName}
                             </span>
-                          </div>
-                        </Link>
+                          </Link>
+                        </div>
                         {isTemporary && (
                           <Button
                             variant="ghost"

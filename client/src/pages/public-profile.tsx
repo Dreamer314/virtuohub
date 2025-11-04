@@ -9,6 +9,7 @@ interface ProfileV2 {
   user_id: string;
   handle: string;
   display_name: string;
+  headline: string | null;
   profile_photo_url: string | null;
   about: string | null;
   visibility: string;
@@ -25,7 +26,7 @@ export default function PublicProfile() {
 
       const { data, error } = await supabase
         .from('profiles_v2')
-        .select('profile_id, user_id, handle, display_name, profile_photo_url, about, visibility, created_at')
+        .select('profile_id, user_id, handle, display_name, headline, profile_photo_url, about, visibility, created_at')
         .eq('handle', handle.toLowerCase())
         .single();
 
@@ -67,7 +68,8 @@ export default function PublicProfile() {
   }
 
   const displayName = profile.display_name || profile.handle;
-  const bio = profile.about || "This creator has not added a bio yet.";
+  const headline = profile.headline || "Creator on VirtuoHub";
+  const bio = profile.about;
   const avatarUrl = profile.profile_photo_url;
 
   return (
@@ -98,13 +100,13 @@ export default function PublicProfile() {
               <h1 className="text-3xl font-bold mb-1" data-testid="profile-display-name">
                 {displayName}
               </h1>
-              <p className="text-xl text-muted-foreground mb-4" data-testid="profile-handle">
+              <p className="text-xl text-muted-foreground mb-2" data-testid="profile-handle">
                 @{profile.handle}
               </p>
 
-              {/* Bio */}
-              <p className="text-base text-foreground whitespace-pre-wrap mb-4" data-testid="profile-bio">
-                {bio}
+              {/* Headline */}
+              <p className="text-base text-foreground mb-4" data-testid="profile-headline">
+                {headline}
               </p>
 
               {/* Meta Info */}
@@ -127,13 +129,13 @@ export default function PublicProfile() {
         <Card className="p-6">
           <h2 className="text-lg font-semibold mb-3">About</h2>
           <div className="text-sm space-y-2">
-            {profile.about ? (
+            {bio ? (
               <p className="text-foreground whitespace-pre-wrap" data-testid="about-section-bio">
-                {profile.about}
+                {bio}
               </p>
             ) : (
               <p className="text-muted-foreground" data-testid="about-section-placeholder">
-                This is a creator profile on VirtuoHub. More features coming soon!
+                This creator has not added a bio yet.
               </p>
             )}
           </div>
