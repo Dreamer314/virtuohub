@@ -68,7 +68,20 @@ export function MultiSelectChips({
               data-testid={`${testIdPrefix}-${option.toLowerCase().replace(/\s+/g, "-")}`}
             >
               {option}
-              {isSelected && <X className="w-3 h-3 ml-1" />}
+              {isSelected && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleOption(option);
+                  }}
+                  className="ml-1 inline-flex items-center"
+                  aria-label={`Remove ${option}`}
+                  data-testid={`${testIdPrefix}-remove-${option.toLowerCase().replace(/\s+/g, "-")}`}
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
             </Badge>
           );
         })}
@@ -85,7 +98,18 @@ export function MultiSelectChips({
               data-testid={`${testIdPrefix}-custom-${custom.toLowerCase().replace(/\s+/g, "-")}`}
             >
               {custom}
-              <X className="w-3 h-3 ml-1" />
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleOption(custom);
+                }}
+                className="ml-1 inline-flex items-center"
+                aria-label={`Remove ${custom}`}
+                data-testid={`${testIdPrefix}-remove-custom-${custom.toLowerCase().replace(/\s+/g, "-")}`}
+              >
+                <X className="w-3 h-3" />
+              </button>
             </Badge>
           ))}
 
@@ -121,6 +145,7 @@ export function MultiSelectChips({
             data-testid={`${testIdPrefix}-custom-input`}
           />
           <Button
+            type="button"
             size="sm"
             onClick={addCustom}
             disabled={!customValue.trim()}

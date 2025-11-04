@@ -796,8 +796,10 @@ export default function ProfileSettings() {
                     <Input
                       value={customPrimaryRole}
                       onChange={(e) => setCustomPrimaryRole(e.target.value)}
+                      onInput={(e) => setCustomPrimaryRole((e.target as HTMLInputElement).value)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && customPrimaryRole.trim()) {
+                          e.preventDefault();
                           setPrimaryRole(customPrimaryRole.trim());
                           setShowCustomPrimaryRole(false);
                           setCustomPrimaryRole("");
@@ -808,8 +810,10 @@ export default function ProfileSettings() {
                       data-testid="input-custom-primary-role"
                     />
                     <Button
+                      type="button"
                       size="sm"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
                         if (customPrimaryRole.trim()) {
                           setPrimaryRole(customPrimaryRole.trim());
                           setShowCustomPrimaryRole(false);
@@ -817,6 +821,7 @@ export default function ProfileSettings() {
                         }
                       }}
                       disabled={!customPrimaryRole.trim()}
+                      data-testid="button-set-custom-primary-role"
                     >
                       Set
                     </Button>
