@@ -129,6 +129,8 @@ export default function Talent() {
         throw error;
       }
 
+      console.log('Talent directory query returned', data?.length || 0, 'profiles:', data?.map(p => ({ handle: p.handle, is_open_to_work: p.is_open_to_work, is_hiring: p.is_hiring })));
+
       // Filter by quick_facts fields in JavaScript (since they're JSONB)
       let filtered = data || [];
 
