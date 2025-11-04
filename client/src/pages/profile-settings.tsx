@@ -42,55 +42,79 @@ export default function ProfileSettings() {
   const { data: profile, isLoading: profileLoading, refetch: refetchProfile } = useQuery<ProfileV2 | null>({
     queryKey: ['my-profile-v2', user?.id],
     queryFn: async () => {
-      if (!user?.id) return null;
+      console.log('[PROFILE SETTINGS] Starting profile load for user:', user?.id);
+      
+      if (!user?.id) {
+        console.log('[PROFILE SETTINGS] No user ID, returning null');
+        return null;
+      }
 
       // Step 1: Check account_prefs for active profile
-      const { data: prefs } = await supabase
+      console.log('[PROFILE SETTINGS] Step 1: Checking account_prefs');
+      const { data: prefs, error: prefsError } = await supabase
         .from('account_prefs')
         .select('last_active_profile_id')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle(); // Use maybeSingle() to return null if not found instead of throwing error
+      
+      console.log('[PROFILE SETTINGS] account_prefs result:', { data: prefs, error: prefsError });
 
       let profileId = prefs?.last_active_profile_id;
+      console.log('[PROFILE SETTINGS] Active profile ID from prefs:', profileId);
 
       // Step 2: If we have an active profile ID, fetch it
       if (profileId) {
+        console.log('[PROFILE SETTINGS] Step 2: Fetching active profile:', profileId);
         const { data: existingProfile, error } = await supabase
           .from('profiles_v2')
           .select('*')
           .eq('profile_id', profileId)
-          .single();
+          .maybeSingle(); // Use maybeSingle() to handle missing profile gracefully
+
+        console.log('[PROFILE SETTINGS] profiles_v2 fetch result:', { data: existingProfile, error });
 
         if (!error && existingProfile) {
+          console.log('[PROFILE SETTINGS] SUCCESS: Returning existing profile');
           return existingProfile;
         }
       }
 
       // Step 3: Check if user has any profiles
-      const { data: userProfiles } = await supabase
+      console.log('[PROFILE SETTINGS] Step 3: Searching for any user profiles');
+      const { data: userProfiles, error: userProfilesError } = await supabase
         .from('profiles_v2')
         .select('*')
         .eq('user_id', user.id)
         .limit(1);
 
+      console.log('[PROFILE SETTINGS] User profiles search result:', { data: userProfiles, error: userProfilesError });
+
       if (userProfiles && userProfiles.length > 0) {
+        console.log('[PROFILE SETTINGS] Found existing profile, updating account_prefs');
         // Update account_prefs to point to this profile
-        await supabase
+        const { error: upsertError } = await supabase
           .from('account_prefs')
           .upsert({
             user_id: user.id,
             last_active_profile_id: userProfiles[0].profile_id
           });
+        
+        console.log('[PROFILE SETTINGS] account_prefs upsert result:', { error: upsertError });
+        console.log('[PROFILE SETTINGS] SUCCESS: Returning found profile');
         return userProfiles[0];
       }
 
       // Step 4: Create a new default profile with collision-safe handle
+      console.log('[PROFILE SETTINGS] Step 4: Creating new profile');
+      
       // Get v1 profile for defaults
-      const { data: v1Profile } = await supabase
+      const { data: v1Profile, error: v1Error } = await supabase
         .from('profiles')
         .select('handle, display_name')
         .eq('id', user.id)
-        .single();
+        .maybeSingle(); // Use maybeSingle() - v1 profile might not exist
+
+      console.log('[PROFILE SETTINGS] v1 profile fetch result:', { data: v1Profile, error: v1Error });
 
       const baseHandle = (v1Profile?.handle || user.email?.split('@')[0] || 'user')
         .toLowerCase()
@@ -98,18 +122,22 @@ export default function ProfileSettings() {
         .substring(0, 15); // Leave room for suffix
 
       const defaultDisplayName = v1Profile?.display_name || baseHandle;
+      console.log('[PROFILE SETTINGS] Base handle:', baseHandle, 'Display name:', defaultDisplayName);
 
       // Find an available handle by appending suffix if needed
       let attemptHandle = baseHandle;
       let suffix = 0;
       let handleAvailable = false;
       
+      console.log('[PROFILE SETTINGS] Starting handle collision check');
       while (!handleAvailable && suffix < 100) {
-        const { data: existingProfile } = await supabase
+        const { data: existingProfile, error: checkError } = await supabase
           .from('profiles_v2')
           .select('handle')
           .eq('handle', attemptHandle)
-          .single();
+          .maybeSingle(); // Use maybeSingle() - null means handle is available
+
+        console.log('[PROFILE SETTINGS] Handle check for', attemptHandle, ':', { exists: !!existingProfile, error: checkError });
 
         if (!existingProfile) {
           handleAvailable = true;
@@ -122,10 +150,14 @@ export default function ProfileSettings() {
       }
 
       if (!handleAvailable) {
+        console.error('[PROFILE SETTINGS] ERROR: Could not find available handle after 100 attempts');
         throw new Error('Could not find available handle');
       }
 
+      console.log('[PROFILE SETTINGS] Final handle:', attemptHandle);
+
       // Create new profile with collision-free handle
+      console.log('[PROFILE SETTINGS] Inserting new profile');
       const { data: newProfile, error: createError } = await supabase
         .from('profiles_v2')
         .insert({
@@ -139,19 +171,24 @@ export default function ProfileSettings() {
         .select()
         .single();
 
+      console.log('[PROFILE SETTINGS] Profile insert result:', { data: newProfile, error: createError });
+
       if (createError) {
-        console.error('Error creating profile:', createError);
+        console.error('[PROFILE SETTINGS] ERROR creating profile:', createError);
         throw createError;
       }
 
       // Create account_prefs
-      await supabase
+      console.log('[PROFILE SETTINGS] Creating account_prefs');
+      const { error: prefsCreateError } = await supabase
         .from('account_prefs')
         .upsert({
           user_id: user.id,
           last_active_profile_id: newProfile.profile_id
         });
 
+      console.log('[PROFILE SETTINGS] account_prefs upsert result:', { error: prefsCreateError });
+      console.log('[PROFILE SETTINGS] SUCCESS: Returning newly created profile');
       return newProfile;
     },
     enabled: !!user?.id

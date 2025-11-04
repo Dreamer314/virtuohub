@@ -1,0 +1,67 @@
+Bug: Visiting /settings/profile in the running app shows:
+
+"Error loading profile
+Unable to load or create your profile. Please try again."
+
+I am logged in (I see my handle and logout button in the header), and we already created a v2 profile + account_prefs row for this user directly in Supabase.
+
+Please debug and fix this in SMALL STEPS. Do NOT run big audits or refactors.
+
+Constraints:
+- Do NOT change any database schema, RLS policies, or SQL migrations.
+- Use the existing profiles_v2 and account_prefs tables exactly as they are.
+- Keep Profiles v1 behavior (comments, spotlights, feed) untouched.
+
+What I want you to do:
+
+1) Find the settings page code
+   - Open client/src/pages/profile-settings.tsx (or whatever file you created for the profile settings).
+   - Identify the function that:
+     - gets the current auth user
+     - loads the active profile from profiles_v2/account_prefs
+     - and/or creates a default profile.
+
+2) Add temporary logging
+   - Log the result and error of every Supabase call in that flow:
+     - the call that gets the current user
+     - the call that reads account_prefs
+     - the call that reads profiles_v2
+     - the call that inserts a new profile or prefs
+   - For each, console.log both the data and error objects and a short label (e.g. "loadPrefs error:", etc.).
+
+3) Re-run the app and explain the REAL error
+   - Reproduce the /settings/profile page load.
+   - Look at the browser console and/or server logs.
+   - Tell me exactly which Supabase call is failing and what error message it returns
+     (for example: RLS violation, missing field, invalid JSON, etc.).
+   - Do NOT guess; base this on the logged error.
+
+4) Implement a minimal fix in client code only
+   - If the problem is that user_id is null, fix how you get the current auth user id.
+   - If the problem is a bad insert/update shape (wrong columns, wrong JSON type), fix the payload so it matches the existing profiles_v2 and account_prefs columns.
+   - If the problem is that your code assumes quick_facts is always an object, add a safe default when it is null.
+   - If the problem is that you are querying by the wrong field (e.g. mixing v1 profile id with Supabase auth id), fix the WHERE condition.
+
+   IMPORTANT:
+   - Do NOT change table names or column names.
+   - Do NOT bypass RLS with a service key.
+   - Only adjust how the React page calls Supabase and how it handles null/empty cases.
+
+5) Clean up the logging
+   - Once the page successfully:
+     - loads my existing v2 profile, OR
+     - creates one and then loads it
+     without showing the “Error loading profile” box,
+   - Remove the noisy console.log statements or reduce them to a single debug log.
+
+6) Final summary
+   - Tell me:
+     - Which function was broken and why.
+     - Which Supabase call failed and what the error was.
+     - What exact code change you made to fix it.
+   - Confirm that:
+     - /settings/profile now loads my profile without error when I am logged in.
+     - The public page /u/:handle still works.
+     - Community feed and spotlight pages are unaffected.
+
+Please work incrementally and avoid any large unrelated changes.
