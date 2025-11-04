@@ -42,6 +42,10 @@ interface ProfileV2 {
 
 export default function PublicProfile() {
   const { handle } = useParams<{ handle: string }>();
+  
+  // Check if user came from talent directory
+  const searchParams = new URLSearchParams(window.location.search);
+  const fromTalent = searchParams.get('from') === 'talent';
 
   const { data: profile, isLoading, error } = useQuery<ProfileV2 | null>({
     queryKey: ['profile-v2', handle],
@@ -115,12 +119,12 @@ export default function PublicProfile() {
           {/* Breadcrumb */}
           <div className="mb-6">
             <Link 
-              href="/" 
+              href={fromTalent ? "/talent" : "/"} 
               className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-              data-testid="link-back-home"
+              data-testid={fromTalent ? "link-back-talent" : "link-back-home"}
             >
               <ArrowLeft className="w-4 h-4" />
-              Back to VirtuoHub
+              {fromTalent ? "Back to Talent" : "Back to VirtuoHub"}
             </Link>
           </div>
 
