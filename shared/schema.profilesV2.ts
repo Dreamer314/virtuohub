@@ -27,6 +27,7 @@ export const profilesV2 = pgTable("profiles_v2", {
   isOpenToWork: boolean("is_open_to_work").notNull().default(false),
   isHiring: boolean("is_hiring").notNull().default(false),
   availabilityNote: text("availability_note"),
+  quickFacts: jsonb("quick_facts"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

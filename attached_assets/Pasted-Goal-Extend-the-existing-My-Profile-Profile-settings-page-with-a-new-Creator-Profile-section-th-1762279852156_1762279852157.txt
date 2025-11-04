@@ -1,0 +1,411 @@
+Goal:
+Extend the existing My Profile → Profile settings page with a new “Creator Profile” section that captures marketplace-style info (skills, platforms, tools, portfolio, socials), without touching the marketplace / directory UI yet.
+Use the existing Supabase profiles_v2 table.
+Important: store all new creator-profile fields inside the existing quick_facts JSONB column so we don’t need new migrations or columns. Existing fields like headline, about, is_open_to_work, is_hiring, availability_note must keep working as they are now.
+
+1. Data model (inside profiles_v2.quick_facts)
+Use this structure (all keys optional):
+{
+  "primary_role": "3D Modeler",
+  "secondary_roles": ["Rigger", "Texture Artist"],
+  "platforms": ["Second Life", "VRChat", "The Sims (CC)"],
+  "tools": ["Blender", "Photoshop"],
+  "experience_level": "3–5 years",
+  "portfolio_url": "https://…",
+  "social_links": {
+    "website": "https://…",
+    "twitter": "https://twitter.com/…",
+    "instagram": "https://instagram.com/…",
+    "artstation": "https://…",
+    "discord": "name#0001"
+  }
+}
+
+When saving, merge into quick_facts rather than overwriting everything, to avoid losing unknown keys:
+const updatedQuickFacts = {
+  ...(existingQuickFacts ?? {}),
+  primary_role,
+  secondary_roles,
+  platforms,
+  tools,
+  experience_level,
+  portfolio_url,
+  social_links: {
+    ...(existingQuickFacts?.social_links ?? {}),
+    website,
+    twitter,
+    instagram,
+    artstation,
+    discord,
+  },
+};
+
+Then include quick_facts: updatedQuickFacts in the update call for profiles_v2.
+
+2. UI placement
+File to edit: client/src/pages/profile-settings.tsx
+On the My Profile settings page:
+
+
+Keep the existing sections as they are:
+
+
+Display Name
+
+
+Headline
+
+
+Handle (read-only)
+
+
+Profile Picture upload
+
+
+Bio
+
+
+Availability toggles (is_open_to_work, is_hiring, availability_note) – these already work, don’t break them.
+
+
+
+
+Below the existing sections, add a new card titled “Creator Profile”.
+
+
+Use the same visual style as other settings cards (rounded card, section title, helper text).
+
+3. Fields in “Creator Profile”
+3.1 Primary Skill / Role (required)
+
+
+Label: Primary Skill
+
+
+Type: single-select dropdown or pill group.
+
+
+Options (predefined list):
+
+
+3D Modeler
+
+
+World Builder
+
+
+Environment Artist
+
+
+Character Artist
+
+
+Rigger
+
+
+Animator
+
+
+Scripter / Programmer
+
+
+Technical Artist
+
+
+UI / UX Designer
+
+
+Sound Designer
+
+
+Video Editor
+
+
+Community Manager
+
+
+
+
+Include an “Other…” option:
+
+
+When selected, show a small text input.
+
+
+User types a custom role and presses Enter.
+
+
+Save that string as quick_facts.primary_role.
+
+
+In the UI, display the custom value as the selected role.
+
+
+
+
+3.2 Other Skills (optional)
+
+
+Label: Other Skills
+
+
+Type: multi-select chips using the same list as Primary Skill.
+
+
+Behavior:
+
+
+User can toggle multiple chips on/off.
+
+
+Include an “Other +” chip.
+
+
+Clicking it shows a small text input.
+
+
+On Enter, create a new pill with that label and add to secondary_roles.
+
+
+
+
+
+
+Save as quick_facts.secondary_roles: string[].
+
+
+3.3 Platforms
+
+
+Label: Platforms you work on
+
+
+Type: multi-select chips.
+
+
+Predefined options:
+
+
+Roblox
+
+
+VRChat
+
+
+Second Life
+
+
+IMVU
+
+
+Meta Horizon Worlds
+
+
+GTA / FiveM
+
+
+The Sims (CC)
+
+
+Unity
+
+
+Unreal Engine
+
+
+
+
+“Other” behavior (important):
+
+
+Show an “Other +” chip.
+
+
+Clicking it opens a small text input.
+
+
+When the user types a custom platform and hits Enter:
+
+
+Add a chip with that text.
+
+
+Store it as a normal string in the array.
+
+
+
+
+
+
+Save as quick_facts.platforms: string[].
+
+
+3.4 Tools
+
+
+Label: Tools you use
+
+
+Type: multi-select chips.
+
+
+Predefined options (we can add more later, but start with):
+
+
+Blender
+
+
+Maya
+
+
+ZBrush
+
+
+Substance Painter
+
+
+Photoshop
+
+
+Marvelous Designer
+
+
+Unity
+
+
+Unreal Engine
+
+
+Notepad++
+
+
+VS Code
+
+
+Udon / UdonSharp
+
+
+
+
+Same “Other +” → input → pill behavior as Platforms.
+
+
+Save as quick_facts.tools: string[].
+
+
+3.5 Experience
+
+
+Label: Experience level
+
+
+Type: single-select dropdown.
+
+
+Options:
+
+
+New / < 1 year
+
+
+1–3 years
+
+
+3–5 years
+
+
+5+ years
+
+
+
+
+Save selection as quick_facts.experience_level: string.
+
+
+3.6 Portfolio and socials
+In the same card, under a subheading like “Portfolio & Socials”, add:
+
+
+Portfolio / website
+
+
+Placeholder: https://…
+
+
+Save as quick_facts.portfolio_url.
+
+
+
+
+Twitter / X → quick_facts.social_links.twitter
+
+
+Instagram → quick_facts.social_links.instagram
+
+
+ArtStation → quick_facts.social_links.artstation
+
+
+Discord (free text, can be link or handle) → quick_facts.social_links.discord
+
+
+All optional. Simple text inputs; no heavy validation, just trim and ensure empty strings become null or are omitted.
+
+4. Loading & saving behavior
+
+
+When the settings page loads, fetch the current profile (which it already does) and:
+
+
+Read quick_facts from the profile row.
+
+
+Parse it as an object and initialize the new form fields from it.
+
+
+Handle the case where quick_facts is null or missing keys.
+
+
+
+
+On Save Changes:
+
+
+Keep the existing save behavior for display_name, headline, about, avatar, availability, etc.
+
+
+Extend the payload to include updated quick_facts as described above.
+
+
+
+
+Ensure the Save button disabled / loading states still behave correctly (no double submits).
+
+
+Do not modify public profile layout yet (other than whatever is already implemented for availability chips like “Hiring creators”).
+
+
+
+5. UI polish
+
+
+Use the same input components and styling that the page already uses (so it matches VirtuoHub’s look).
+
+
+Chips / pills should:
+
+
+Show an active state when selected.
+
+
+Be removable for multi-select fields (little “x” on the chip).
+
+
+
+
+Custom “Other” entries should look identical to predefined chips once added.
+
+
+
+In summary:
+Add a “Creator Profile” card to profile-settings.tsx that reads/writes the structured creator data into profiles_v2.quick_facts as described. Don’t add new DB columns, don’t touch marketplace browsing yet, and don’t break existing profile/availability behavior.
