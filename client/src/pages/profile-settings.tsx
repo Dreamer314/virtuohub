@@ -427,7 +427,8 @@ export default function ProfileSettings() {
       };
 
       // Update all profile fields
-      const { error } = await supabase
+      console.log('[Profile Save] Updating profile with quick_facts:', updatedQuickFacts);
+      const { data, error } = await supabase
         .from('profiles_v2')
         .update({
           display_name: displayName.trim(),
@@ -440,9 +441,14 @@ export default function ProfileSettings() {
           quick_facts: updatedQuickFacts
         })
         .eq('profile_id', profile.profile_id)
-        .eq('user_id', user.id); // RLS safety
+        .eq('user_id', user.id) // RLS safety
+        .select();
 
-      if (error) throw error;
+      console.log('[Profile Save] Update result:', { data, error });
+      if (error) {
+        console.error('[Profile Save] Update failed:', error);
+        throw error;
+      }
 
       return finalAvatarUrl;
     },
