@@ -1,205 +1,60 @@
 # VirtuoHub Community Platform
 
 ## Overview
-VirtuoHub is a modern community platform for virtual world creators, featuring a three-column layout. It allows users to share content, engage with posts, and connect across virtual ecosystems like Second Life, Roblox, and VRChat. The platform includes specialized content types such as polls ("VHub Data Pulse") and Q&A ("Interview"), alongside extensive filtering and categorization. Key capabilities include a complete authentication system with Supabase, a two-step onboarding process with handle validation and avatar upload, route protection, and comprehensive profile management with secure API endpoints and Row Level Security (RLS). The business vision is to create a central hub for virtual world communities, fostering creation and collaboration.
+VirtuoHub is a community platform for virtual world creators, designed with a three-column layout to facilitate content sharing, engagement, and connection across virtual ecosystems like Second Life, Roblox, and VRChat. The platform supports specialized content types such as polls ("VHub Data Pulse") and Q&A ("Interview"), along with extensive filtering. It features a complete authentication system via Supabase, a two-step onboarding process including handle validation and avatar upload, robust route protection, and comprehensive profile management with secure API endpoints and Row Level Security (RLS). The overarching vision is to establish a central hub that fosters creation and collaboration within virtual world communities.
 
 ## User Preferences
 Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
-**Frontend Architecture**
--   React 18 with TypeScript and Vite.
--   Component-based architecture using shadcn/ui.
--   Three-column responsive layout.
--   Client-side routing with Wouter.
--   State management: TanStack Query for server state, React hooks for local state.
--   Theme support with light/dark mode.
+**Frontend**
+-   Built with React 18, TypeScript, and Vite, utilizing a component-based architecture with shadcn/ui.
+-   Features a three-column responsive layout, client-side routing with Wouter, and state management via TanStack Query for server state and React hooks for local state.
+-   Supports theme switching with light/dark modes.
 
-**Backend Architecture**
--   Express.js REST API server with TypeScript.
--   In-memory storage for development.
--   RESTful endpoints for posts, users, and saved content.
--   Middleware for logging, JSON parsing, and error handling.
+**Backend**
+-   An Express.js REST API server developed with TypeScript, using in-memory storage for development.
+-   Provides RESTful endpoints for posts, users, and saved content, incorporating middleware for logging, JSON parsing, and error handling.
 
-**UI/UX Design Philosophy**
--   Modern glass-morphism design with subtle shadows and transparency.
--   Consistent spacing and typography (Inter/Poppins fonts).
--   Purple accent color (`#7C3AED`).
--   Card-based layout with hover effects and smooth animations.
--   Mobile-responsive design.
+**UI/UX Design**
+-   Employs a modern glass-morphism design with subtle shadows, transparency, and a consistent aesthetic.
+-   Utilizes Inter/Poppins fonts, a purple accent color (`#7C3AED`), and a card-based layout with hover effects and smooth animations.
+-   Fully mobile-responsive.
 
 **Data Models**
--   **Users**: ID, username, password, display name, avatar, bio, role, timestamps.
--   **Posts**: ID, author, title, content, images, category, platforms, pricing, type (regular/pulse/insight), poll data, engagement metrics.
--   **Saved Posts**: User-post relationships.
--   **Categories**: General, Assets for Sale, Jobs & Gigs, Collaboration & WIP, Industry News, Events & Meetups, Tips & Tutorials.
--   **Platforms**: Core Virtual Worlds (Roblox, VRChat, Second Life, IMVU, Meta Horizon Worlds), Game Development (Unity, Unreal Engine, Core, Dreams), Gaming Platforms (Fortnite Creative, Minecraft, GTA FiveM, The Sims, inZOI), Game Communities (Elder Scrolls Online, Fallout, Counter-Strike, Team Fortress 2), and Other.
+-   Key entities include `Users`, `Posts` (with specialized types like polls and Q&A), `Saved Posts`, `Categories`, and `Platforms`.
+-   `Profiles v2` schema includes `display_name`, `headline`, `handle`, `about`, `profile_photo_url`, `visibility`, `is_open_to_work`, `is_hiring`, `availability_note`, and a `quick_facts` JSONB for Creator Profile data.
 
 **Technical Implementations & Features**
--   **Authentication & Onboarding**: Supabase Auth, two-step onboarding with handle validation and avatar upload, `OnboardingGuard` for route protection.
--   **Profile Management**: Secure API endpoints, RLS for `profiles_v2`, `profile_bta`, `account_prefs`, `profile_access_requests`, `handle_history` tables. Foreign key enforcement for referential integrity.
--   **Poll System**: Normalized API response structure for poll data, client-side defensive reading for backward compatibility, optimistic UI updates for voting, and streamlined poll creation UI. Poll data stored in `subtype_data` JSONB column.
--   **Image Display**: Reddit-style image display with shrink-to-fit for feed images (`object-contain`), and optimized for lightboxes.
--   **State Management Strategy**: TanStack Query for API data, React hooks for local UI state, Context providers for theme/notifications, query invalidation for real-time updates.
--   **Profiles v2 Avatar Upload**: Real image uploads to Supabase Storage with file validation, auto-save on upload, and avatar display in header and public profiles.
-
-## Profiles v2 System
-
-### Profile Fields
--   **display_name**: Required, how name appears to others
--   **headline**: Optional tagline/one-liner that appears under handle on public profile
--   **handle**: Unique lowercase handle (username)
--   **about**: Optional bio/description text
--   **profile_photo_url**: Avatar image URL from Supabase Storage
--   **visibility**: Profile visibility setting (PUBLIC/PRIVATE)
--   **is_open_to_work**: Boolean flag indicating user is open to paid opportunities
--   **is_hiring**: Boolean flag indicating user is looking to hire creators
--   **availability_note**: Optional text field for availability details
--   **quick_facts**: JSONB column storing Creator Profile data (see below)
-
-### Header User Menu Integration
--   **Hook**: `useMyV2Profile()` fetches complete profile data (handle, display_name, profile_photo_url, visibility, hasValidProfile)
--   **Display Logic**: Shows @handle when available, falls back to display_name or email-based username
--   **Avatar**: Displays v2 profile photo with User icon fallback in purple circle
--   **Enable/Disable**: "View public profile" enabled only when hasValidProfile is true (handle exists and is non-empty)
--   **Menu Items**: View public profile, Profile settings, Log out
--   **Chevron Icon**: Added to indicate dropdown menu availability
-
-### Avatar Upload
-
-**Storage Bucket**: `avatars` bucket in Supabase Storage
--   **Configuration**: Public read access, 5MB file size limit
--   **Allowed formats**: PNG, JPEG, GIF, WEBP
--   **Created by**: `server/storageSetup.ts` on server startup
-
-**Upload Flow (Preview-Before-Save)**:
-1. User clicks "Choose Photo" in `/settings/profile`
-2. File is validated (type, size) client-side
-3. Image previews locally using base64 data URL (NOT uploaded yet)
-4. When user clicks "Save Changes":
-   - Avatar uploads to `avatars/{user_id}/{timestamp-random}.{ext}` 
-   - Public URL is retrieved
-   - All profile fields (display_name, headline, about, profile_photo_url) save together
-5. Profile caches are invalidated for immediate UI update
-
-**URL Generation**: Supabase Storage public URLs via `getPublicUrl()` API
-
-### Navigation Features
-
-**Header Avatar & Display Name**:
--   **Avatar click**: Navigates to `/u/:handle` (user's public profile)
--   **Display name click**: Navigates to `/settings/profile` (profile settings)
--   Works on both desktop and mobile layouts
--   Uses `useV2Handle` hook to fetch user's handle for navigation
-
-**Profile Settings**:
--   "← Back to VirtuoHub" link returns to homepage
--   "/u/:handle" button opens public profile in same tab
-
-**Public Profile Layout**:
--   **Global Header**: Full VirtuoHub header with logo, navigation (Home/Learn/Earn/Connect/Community), and user dropdown
--   **Breadcrumb Navigation**: "← Back to VirtuoHub" link below header for easy return
--   **Responsive Layout**: Flexbox column layout with header, scrollable main content, and footer
--   **Footer**: Shared footer component with branding, social links, quick links, and copyright
--   **Consistent UX**: Loading and error states also render within global layout for unified experience
--   **Hero Block**: "VirtuoHub Creator" label, primary skill badge, colored availability indicators (green dot for available, blue for hiring)
--   **Default Content**: Opportunities card shows default text when availability flags are true but no custom note exists
-
-### Updated Components
--   `shared/schema.profilesV2.ts`: Added `headline`, `is_open_to_work`, `is_hiring`, `availability_note`, and `quick_facts` JSONB columns
--   `client/src/pages/profile-settings.tsx`: Complete Creator Profile section with all fields, availability checkboxes, preview-before-save avatar upload
--   `client/src/components/multi-select-chips.tsx`: Reusable multi-select component with custom entry support
--   `client/src/pages/public-profile.tsx`: Full global layout with Header/Footer, "VirtuoHub Creator" label, primary skill in hero, colored availability badges, default Opportunities text, uppercase section labels, two-column portfolio/socials
--   `client/src/components/layout/header.tsx`: Clickable avatar and display name with navigation
--   `client/src/components/layout/footer.tsx`: Shared footer component used across all pages
--   `client/src/hooks/useV2Handle.ts`: Fetches active profile handle for navigation
--   `client/src/hooks/useV2Avatar.ts`: Fetches active profile avatar with stable query key
--   `client/src/hooks/useMyV2Profile.ts`: Unified hook for fetching user's complete profile data
-
-### Implementation Details
--   **Schema Fields**: Uses `profiles_v2.about` for bio, `headline` for tagline
--   **Query Key Stability**: Uses `['v2-avatar', user?.id ?? 'none']` and `['v2-handle', user?.id ?? 'none']` to prevent undefined cache keys
--   **Cache Invalidation**: After profile save, invalidates `['my-profile-v2']`, `['profile-v2', handle]`, `['v2-avatar', userId]`, `['v2-handle', userId]`
--   **Preview Behavior**: Avatar previews locally; upload deferred until "Save Changes" clicked
-
-### Creator Profile System
-
-**Purpose**: Allows creators to showcase professional skills, tools, platforms, and portfolio for collaboration opportunities.
-
-**Data Storage**: All creator profile data stored in `quick_facts` JSONB column to avoid schema drift between Neon (Drizzle) and Supabase databases.
-
-**Creator Profile Fields in quick_facts**:
-```typescript
-{
-  primary_role: string,           // Main skill (e.g., "3D Modeler", "Animator")
-  secondary_roles: string[],      // Additional skills
-  platforms: string[],            // Virtual worlds/engines (e.g., "Roblox", "Unity")
-  tools: string[],                // Software tools (e.g., "Blender", "Photoshop")
-  experience_level: string,       // "New / < 1 year", "1–3 years", "3–5 years", "5+ years"
-  portfolio_url: string,          // Portfolio/website URL
-  social_links: {
-    website?: string,
-    twitter?: string,
-    instagram?: string,
-    artstation?: string,
-    discord?: string
-  }
-}
-```
-
-**UI Components**:
--   **MultiSelectChips**: Reusable component for multi-select fields with custom entry support
-    -   Click chip to select/deselect
-    -   X button on selected chips to remove
-    -   "+ Other" button reveals custom input field for non-predefined options
-    -   Used for secondary roles, platforms, and tools
--   **Primary Skill**: Single-select dropdown with "Other..." option for custom entries
--   **Portfolio & Socials**: Text inputs for URLs with proper test IDs
-
-**Predefined Options**:
--   **Primary Roles** (12): 3D Modeler, World Builder, Environment Artist, Character Artist, Rigger, Animator, Scripter / Programmer, Technical Artist, UI / UX Designer, Sound Designer, Video Editor, Community Manager
--   **Platforms** (9): Roblox, VRChat, Second Life, IMVU, Meta Horizon Worlds, GTA / FiveM, The Sims (CC), Unity, Unreal Engine
--   **Tools** (11): Blender, Maya, ZBrush, Substance Painter, Photoshop, Marvelous Designer, Unity, Unreal Engine, Notepad++, VS Code, Udon / UdonSharp
--   **Experience Levels** (4): New / < 1 year, 1–3 years, 3–5 years, 5+ years
-
-**Save Behavior**:
--   All creator profile data merges into existing quick_facts object
--   Undefined/empty values preserved to avoid data loss
--   Save button enabled when any field changes (including array comparisons)
--   Cache invalidation after save: `['my-profile-v2']`, `['profile-v2', handle]`, `['v2-avatar', userId]`
-
-**Availability & Opportunities**:
--   **is_open_to_work**: Checkbox to signal openness to paid work
--   **is_hiring**: Checkbox to signal looking to hire creators
--   **availability_note**: Free-text field for availability details (visible on public profile when filled)
-
-### Known Issues
--   **PostgREST Schema Cache**: After schema changes (like adding `headline` column), PostgREST may report "Could not find the column" (PGRST204) despite column existing in database. Resolution: Send `NOTIFY pgrst, 'reload schema';` or wait for auto-refresh. Cache typically refreshes within 5-10 minutes.
+-   **Authentication & Onboarding**: Implemented with Supabase Auth, including a two-step onboarding process with handle validation and avatar upload, secured by an `OnboardingGuard`.
+-   **Profile Management**: Secure API endpoints with RLS on `profiles_v2` and related tables; supports real image uploads to Supabase Storage with client-side validation and preview-before-save functionality.
+-   **Poll System**: Features a normalized API response, optimistic UI updates for voting, and streamlined creation, with data stored in a JSONB column.
+-   **Creator Profile System**: Stores professional details (roles, platforms, tools, experience, portfolio, social links) in the `quick_facts` JSONB column, enabling creators to showcase their skills. Features a "Find Talent" directory for searching public creator profiles with comprehensive filtering.
+-   **State Management**: Leverages TanStack Query for server state, React hooks for local UI state, and Context providers for global concerns like themes and notifications, with query invalidation for real-time updates.
 
 ## External Dependencies
 
-**Frontend**
+**Frontend Libraries**
 -   **React Ecosystem**: React 18, React DOM, Wouter.
--   **UI Framework**: Radix UI primitives, shadcn/ui.
--   **Styling**: Tailwind CSS, PostCSS.
+-   **UI**: Radix UI, shadcn/ui, Tailwind CSS, PostCSS.
 -   **Forms**: React Hook Form, Zod.
 -   **State Management**: TanStack Query.
 -   **Utilities**: `clsx`, `class-variance-authority`, `date-fns`, `lucide-react`, `nanoid`.
 
-**Backend**
+**Backend Libraries**
 -   **Server**: Express.js, `tsx`.
--   **Database ORM**: Drizzle ORM (configured for PostgreSQL).
+-   **Database ORM**: Drizzle ORM.
 -   **Validation**: Zod.
 
-**Database & Cloud Services**
--   **Database**: Neon serverless PostgreSQL.
+**Cloud Services**
+-   **Database**: Neon (PostgreSQL).
 -   **Authentication**: Supabase Auth.
--   **Storage**: Supabase Storage for avatar uploads.
--   **Session Management**: `connect-pg-simple` for PostgreSQL session store.
+-   **Storage**: Supabase Storage.
+-   **Session Management**: `connect-pg-simple`.
 
 **Development Tools**
--   **Build System**: Vite, ESBuild.
+-   **Build**: Vite, ESBuild.
 -   **Language**: TypeScript.
 -   **Linting**: ESLint.
--   **ORM Utilities**: `drizzle-kit` for migrations.
+-   **ORM Utilities**: `drizzle-kit`.
