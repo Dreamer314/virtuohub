@@ -20,6 +20,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { supabase } from "@/lib/supabaseClient";
 import { useDisplayIdentity } from "@/hooks/useDisplayIdentity";
+import { useV2Avatar } from "@/hooks/useV2Avatar";
 import { WelcomeModal } from "@/components/welcome/WelcomeModal";
 
 interface HeaderProps {
@@ -36,6 +37,7 @@ export function Header({ onCreatePost }: HeaderProps) {
   );
   const { user, loading, showWelcome, setShowWelcome } = useAuth();
   const { displayName, isTemporary } = useDisplayIdentity();
+  const avatarUrl = useV2Avatar();
   const [welcomeModalOpen, setWelcomeModalOpen] = useState(false);
 
   // Admin flag
@@ -209,7 +211,16 @@ export function Header({ onCreatePost }: HeaderProps) {
                   <div className="flex items-center space-x-2">
                     <Link href="/settings/profile">
                       <div className="hidden lg:flex items-center space-x-2 px-3 py-1 rounded-lg bg-muted/50 hover:bg-muted cursor-pointer transition-colors">
-                        <User className="w-4 h-4" />
+                        {avatarUrl ? (
+                          <img 
+                            src={avatarUrl} 
+                            alt={displayName}
+                            className="w-6 h-6 rounded-full object-cover"
+                            data-testid="user-avatar"
+                          />
+                        ) : (
+                          <User className="w-4 h-4" />
+                        )}
                         <span
                           className="text-sm font-medium"
                           data-testid="user-display-name"
@@ -371,7 +382,16 @@ export function Header({ onCreatePost }: HeaderProps) {
                             className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-muted/50 hover:bg-muted cursor-pointer transition-colors"
                             onClick={() => setIsMobileMenuOpen(false)}
                           >
-                            <User className="w-4 h-4" />
+                            {avatarUrl ? (
+                              <img 
+                                src={avatarUrl} 
+                                alt={displayName}
+                                className="w-6 h-6 rounded-full object-cover"
+                                data-testid="mobile-user-avatar"
+                              />
+                            ) : (
+                              <User className="w-4 h-4" />
+                            )}
                             <span
                               className="text-sm font-medium"
                               data-testid="mobile-user-display-name"

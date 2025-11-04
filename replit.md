@@ -42,6 +42,30 @@ Preferred communication style: Simple, everyday language.
 -   **Poll System**: Normalized API response structure for poll data, client-side defensive reading for backward compatibility, optimistic UI updates for voting, and streamlined poll creation UI. Poll data stored in `subtype_data` JSONB column.
 -   **Image Display**: Reddit-style image display with shrink-to-fit for feed images (`object-contain`), and optimized for lightboxes.
 -   **State Management Strategy**: TanStack Query for API data, React hooks for local UI state, Context providers for theme/notifications, query invalidation for real-time updates.
+-   **Profiles v2 Avatar Upload**: Real image uploads to Supabase Storage with file validation, auto-save on upload, and avatar display in header and public profiles.
+
+## Profiles v2 Avatar Upload
+
+**Storage Bucket**: `avatars` bucket in Supabase Storage
+-   **Configuration**: Public read access, 5MB file size limit
+-   **Allowed formats**: PNG, JPEG, GIF, WEBP
+-   **Created by**: `server/storageSetup.ts` on server startup
+
+**Upload Flow**:
+1. User clicks "Upload Photo" in `/settings/profile`
+2. File is validated (type, size) client-side
+3. Uploaded to `avatars/{user_id}/{timestamp-random}.{ext}` path
+4. Public URL is retrieved and saved to `profiles_v2.profile_photo_url`
+5. Profile cache is invalidated for immediate UI update
+
+**URL Generation**: Supabase Storage public URLs via `getPublicUrl()` API
+
+**Updated Components**:
+-   `client/src/pages/profile-settings.tsx`: File upload UI replacing text input
+-   `client/src/pages/public-profile.tsx`: Displays avatar from `profile_photo_url`
+-   `client/src/components/layout/header.tsx`: Shows v2 avatar in desktop and mobile headers
+-   `client/src/hooks/useAvatarUpload.ts`: Upload logic with validation
+-   `client/src/hooks/useV2Avatar.ts`: Fetches active profile avatar for header
 
 ## External Dependencies
 
@@ -51,7 +75,7 @@ Preferred communication style: Simple, everyday language.
 -   **Styling**: Tailwind CSS, PostCSS.
 -   **Forms**: React Hook Form, Zod.
 -   **State Management**: TanStack Query.
--   **Utilities**: `clsx`, `class-variance-authority`, `date-fns`, `lucide-react`.
+-   **Utilities**: `clsx`, `class-variance-authority`, `date-fns`, `lucide-react`, `nanoid`.
 
 **Backend**
 -   **Server**: Express.js, `tsx`.
@@ -61,6 +85,7 @@ Preferred communication style: Simple, everyday language.
 **Database & Cloud Services**
 -   **Database**: Neon serverless PostgreSQL.
 -   **Authentication**: Supabase Auth.
+-   **Storage**: Supabase Storage for avatar uploads.
 -   **Session Management**: `connect-pg-simple` for PostgreSQL session store.
 
 **Development Tools**
