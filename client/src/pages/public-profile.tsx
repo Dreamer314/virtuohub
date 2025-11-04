@@ -10,10 +10,7 @@ interface ProfileV2 {
   handle: string;
   display_name: string;
   profile_photo_url: string | null;
-  quick_facts: {
-    bio?: string;
-    [key: string]: any;
-  } | null;
+  about: string | null;
   visibility: string;
   created_at: string;
 }
@@ -28,7 +25,7 @@ export default function PublicProfile() {
 
       const { data, error } = await supabase
         .from('profiles_v2')
-        .select('profile_id, user_id, handle, display_name, profile_photo_url, quick_facts, visibility, created_at')
+        .select('profile_id, user_id, handle, display_name, profile_photo_url, about, visibility, created_at')
         .eq('handle', handle.toLowerCase())
         .single();
 
@@ -70,7 +67,7 @@ export default function PublicProfile() {
   }
 
   const displayName = profile.display_name || profile.handle;
-  const bio = profile.quick_facts?.bio || "This creator has not added a bio yet.";
+  const bio = profile.about || "This creator has not added a bio yet.";
   const avatarUrl = profile.profile_photo_url;
 
   return (

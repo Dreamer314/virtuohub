@@ -18,10 +18,7 @@ interface ProfileV2 {
   handle: string;
   display_name: string;
   profile_photo_url: string | null;
-  quick_facts: {
-    bio?: string;
-    [key: string]: any;
-  } | null;
+  about: string | null;
   kind: string;
   visibility: string;
 }
@@ -172,7 +169,7 @@ export default function ProfileSettings() {
           handle: attemptHandle,
           display_name: defaultDisplayName,
           visibility: 'PUBLIC',
-          quick_facts: { bio: '' }
+          about: ''
         })
         .select()
         .single();
@@ -212,7 +209,7 @@ export default function ProfileSettings() {
     if (profile) {
       setDisplayName(profile.display_name || '');
       setAvatarUrl(profile.profile_photo_url || '');
-      setBio(profile.quick_facts?.bio || '');
+      setBio(profile.about || '');
     }
   }, [profile]);
 
@@ -256,9 +253,10 @@ export default function ProfileSettings() {
       // Update local state
       setAvatarUrl(url);
       
-      // Refresh profile data
+      // Refresh profile data and header avatar
       queryClient.invalidateQueries({ queryKey: ['my-profile-v2'] });
       queryClient.invalidateQueries({ queryKey: ['profile-v2', profile.handle] });
+      queryClient.invalidateQueries({ queryKey: ['v2-avatar', user.id ?? 'none'] });
       
       toast({
         title: "Avatar updated",
@@ -277,17 +275,11 @@ export default function ProfileSettings() {
     mutationFn: async () => {
       if (!profile || !user?.id) throw new Error('No profile to update');
 
-      // Merge new bio into existing quick_facts
-      const updatedQuickFacts = {
-        ...(profile.quick_facts || {}),
-        bio: bio.trim()
-      };
-
       const { error } = await supabase
         .from('profiles_v2')
         .update({
           display_name: displayName.trim(),
-          quick_facts: updatedQuickFacts
+          about: bio.trim()
         })
         .eq('profile_id', profile.profile_id)
         .eq('user_id', user.id); // RLS safety
@@ -365,7 +357,7 @@ export default function ProfileSettings() {
 
   const hasChanges = 
     displayName !== (profile.display_name || '') ||
-    bio !== (profile.quick_facts?.bio || '');
+    bio !== (profile?.about || '');
 
   return (
     <div className="min-h-screen bg-background">
