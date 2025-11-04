@@ -114,7 +114,8 @@ export default function Talent() {
         .select('profile_id, user_id, handle, display_name, headline, profile_photo_url, about, is_open_to_work, is_hiring, availability_note, quick_facts')
         .eq('visibility', 'PUBLIC')
         .not('handle', 'is', null)
-        .not('display_name', 'is', null);
+        .not('display_name', 'is', null)
+        .or('is_open_to_work.eq.true,is_hiring.eq.true');
 
       // Apply text search filter (search across display_name, handle, about)
       if (filters.search) {
@@ -454,7 +455,7 @@ export default function Talent() {
                     )}
 
                     {/* View Profile Button */}
-                    <Link href={`/u/${profile.handle}`}>
+                    <Link href={`/u/${profile.handle}?from=talent`}>
                       <Button className="w-full" variant="default" data-testid={`button-view-profile-${profile.handle}`}>
                         View profile
                       </Button>
