@@ -1,14 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabaseClient";
 import { queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useAvatarUpload } from "@/hooks/useAvatarUpload";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { User, Save, Loader2 } from "lucide-react";
+import { User, Save, Loader2, Upload, Camera } from "lucide-react";
 import { useAuth } from "@/providers/AuthProvider";
 
 interface ProfileV2 {
@@ -33,12 +34,15 @@ interface AccountPrefs {
 export default function ProfileSettings() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { uploadAvatar, uploading } = useAvatarUpload();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   console.log('[PROFILE SETTINGS] Component render - user:', user?.id, 'email:', user?.email);
   
   const [displayName, setDisplayName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [bio, setBio] = useState("");
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   // Fetch or create profile
   const { data: profile, isLoading: profileLoading, error: profileError, refetch: refetchProfile } = useQuery<ProfileV2 | null>({
@@ -212,7 +216,63 @@ export default function ProfileSettings() {
     }
   }, [profile]);
 
-  // Save mutation
+  // Handle avatar file upload
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user?.id || !profile) return;
+
+    setUploadError(null);
+
+    const { url, error } = await uploadAvatar(file, user.id);
+
+    if (error) {
+      setUploadError(error);
+      toast({
+        title: "Upload failed",
+        description: error,
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (url) {
+      // Update profile with new avatar URL
+      const { error: updateError } = await supabase
+        .from('profiles_v2')
+        .update({ profile_photo_url: url })
+        .eq('profile_id', profile.profile_id)
+        .eq('user_id', user.id);
+
+      if (updateError) {
+        setUploadError('Failed to update profile');
+        toast({
+          title: "Update failed",
+          description: "Avatar uploaded but failed to update profile",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Update local state
+      setAvatarUrl(url);
+      
+      // Refresh profile data
+      queryClient.invalidateQueries({ queryKey: ['my-profile-v2'] });
+      queryClient.invalidateQueries({ queryKey: ['profile-v2', profile.handle] });
+      
+      toast({
+        title: "Avatar updated",
+        description: "Your profile picture has been updated successfully."
+      });
+    }
+
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Save mutation (for display name and bio)
   const saveMutation = useMutation({
     mutationFn: async () => {
       if (!profile || !user?.id) throw new Error('No profile to update');
@@ -227,7 +287,6 @@ export default function ProfileSettings() {
         .from('profiles_v2')
         .update({
           display_name: displayName.trim(),
-          profile_photo_url: avatarUrl.trim() || null,
           quick_facts: updatedQuickFacts
         })
         .eq('profile_id', profile.profile_id)
@@ -306,7 +365,6 @@ export default function ProfileSettings() {
 
   const hasChanges = 
     displayName !== (profile.display_name || '') ||
-    avatarUrl !== (profile.profile_photo_url || '') ||
     bio !== (profile.quick_facts?.bio || '');
 
   return (
@@ -374,19 +432,44 @@ export default function ProfileSettings() {
               </p>
             </div>
 
-            {/* Avatar URL */}
+            {/* Avatar Upload */}
             <div className="space-y-2">
-              <Label htmlFor="avatar-url">Avatar URL</Label>
-              <Input
-                id="avatar-url"
-                type="url"
-                value={avatarUrl}
-                onChange={(e) => setAvatarUrl(e.target.value)}
-                placeholder="https://example.com/avatar.jpg"
-                data-testid="input-avatar-url"
-              />
+              <Label htmlFor="avatar-upload">Profile Picture</Label>
+              <div className="flex items-center gap-4">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  id="avatar-upload"
+                  accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
+                  onChange={handleAvatarUpload}
+                  className="hidden"
+                  data-testid="input-avatar-file"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="flex items-center gap-2"
+                  data-testid="button-upload-avatar"
+                >
+                  {uploading ? (
+                    <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</>
+                  ) : (
+                    <><Camera className="w-4 h-4" /> Upload Photo</>
+                  )}
+                </Button>
+                {avatarUrl && (
+                  <span className="text-sm text-muted-foreground">
+                    ✓ Photo uploaded
+                  </span>
+                )}
+              </div>
+              {uploadError && (
+                <p className="text-xs text-destructive">{uploadError}</p>
+              )}
               <p className="text-xs text-muted-foreground">
-                Enter a URL to your profile picture
+                PNG, JPEG, GIF, or WEBP. Max 5MB.
               </p>
             </div>
 
