@@ -1,0 +1,83 @@
+Post + comment likes are now partially working:
+
+Comment likes work correctly – they persist, survive refresh, and I can see rows in public.comment_likes.
+
+Post likes still don’t work from the thread page – clicking like on the main post does nothing (or reverts after refresh), but there are no obvious UI errors.
+
+In Supabase, I have:
+
+-- posts.id is UUID
+-- comments.id is UUID
+
+\d public.post_likes
+-- id          uuid
+-- post_id     uuid (FK → posts.id)
+-- user_id     uuid
+-- created_at  timestamptz
+-- UNIQUE (post_id, user_id)
+
+\d public.comment_likes
+-- id          uuid
+-- comment_id  uuid (FK → comments.id)
+-- user_id     uuid
+-- created_at  timestamptz
+-- UNIQUE (comment_id, user_id)
+
+
+What I need you to do:
+
+Fix likePost in server/supabaseStorage.ts to mirror the working likeComment logic, but using the post_likes table:
+
+Input: (postId: string, userId: string)
+
+Behaviour:
+
+Check if a row exists in post_likes where post_id = postId and user_id = userId.
+
+If it exists → delete it (unlike) and set hasLiked = false.
+
+If it does not exist → insert it and set hasLiked = true.
+
+After the toggle, compute the total likes via:
+
+select count(*) from post_likes where post_id = postId (using Supabase’s count: 'exact', head: true pattern).
+
+Do not rely on any likes or like_count column on posts – it may not exist. Just return the computed count.
+
+Return { likes: <count>, hasLiked } from likePost.
+
+Verify there are no remaining updates to a likes / like_count column on the posts table anywhere in supabaseStorage.ts (create/update/mapping functions). We should only:
+
+Read/write likes for posts via post_likes.
+
+Read/write likes for comments via comment_likes (which already works).
+
+Confirm the API route for liking a post is wired to the updated likePost method:
+
+Find the HTTP handler that the thread page calls when I click like on the main post.
+
+Ensure it passes the current user’s ID into likePost(postId, userId).
+
+Ensure the handler forwards { likes, hasLiked } back to the frontend.
+
+Update the thread post UI (PostCard or the thread header component) if needed so it:
+
+Uses likes from the response to update the count.
+
+Uses the hasLiked boolean to set the filled / unfilled state of the like icon.
+
+Doesn’t try to read a likes field directly from the post object unless it’s coming from the API response.
+
+After changes, please manually test in the running app:
+
+Like a thread post once → icon fills, count increments.
+
+Refresh the page → state and count remain correct.
+
+Click like again → it unlikes, count decrements.
+
+Confirm public.post_likes shows/clears a row with the current post_id and user_id as you toggle.
+
+If any error occurs when clicking like on a post, check the browser Network tab and server logs and fix whatever is causing the failure (wrong table name, wrong column type, missing userId, etc.).
+
+Please keep the existing comment-like behaviour exactly as it is — only adjust the post like path to use post_likes properly.

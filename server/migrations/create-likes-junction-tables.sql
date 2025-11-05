@@ -10,6 +10,10 @@
 --
 -- These tables enable proper toggle-based likes with one-like-per-user enforcement.
 
+-- Drop existing tables if they exist (to recreate with correct schema)
+DROP TABLE IF EXISTS public.post_likes CASCADE;
+DROP TABLE IF EXISTS public.comment_likes CASCADE;
+
 -- Create post_likes junction table
 CREATE TABLE IF NOT EXISTS public.post_likes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -409,7 +409,7 @@ export class SupabaseStorage implements IStorage {
       .single();
 
     if (existingLike) {
-      // Unlike: delete the row and decrement like_count
+      // Unlike: delete the row from junction table
       console.log('[likePost] Unliking post');
       
       const { error: deleteError } = await supabaseAdmin
@@ -423,34 +423,22 @@ export class SupabaseStorage implements IStorage {
         throw new Error(`Failed to unlike post: ${deleteError.message}`);
       }
 
-      // Decrement like_count (never below 0)
-      const { data: post, error: updateError } = await supabaseAdmin
-        .from('posts')
-        .select('like_count')
-        .eq('id', postId)
-        .single();
+      // Compute total likes from junction table
+      const { count, error: countError } = await supabaseAdmin
+        .from('post_likes')
+        .select('*', { count: 'exact', head: true })
+        .eq('post_id', postId);
 
-      if (updateError) {
-        console.error('[likePost] Error fetching post:', updateError);
-        throw new Error(`Failed to fetch post: ${updateError.message}`);
+      if (countError) {
+        console.error('[likePost] Count error:', countError);
+        throw new Error(`Failed to count likes: ${countError.message}`);
       }
 
-      const newCount = Math.max(0, (post?.like_count || 0) - 1);
-      
-      const { error: decrementError } = await supabaseAdmin
-        .from('posts')
-        .update({ like_count: newCount })
-        .eq('id', postId);
-
-      if (decrementError) {
-        console.error('[likePost] Decrement error:', decrementError);
-        throw new Error(`Failed to decrement like count: ${decrementError.message}`);
-      }
-
-      console.log('[likePost] Post unliked successfully, new count:', newCount);
-      return { likes: newCount, hasLiked: false };
+      const totalLikes = count || 0;
+      console.log('[likePost] Post unliked successfully, new count:', totalLikes);
+      return { likes: totalLikes, hasLiked: false };
     } else {
-      // Like: insert row and increment like_count
+      // Like: insert row into junction table
       console.log('[likePost] Liking post');
       
       const { error: insertError } = await supabaseAdmin
@@ -465,32 +453,20 @@ export class SupabaseStorage implements IStorage {
         throw new Error(`Failed to like post: ${insertError.message}`);
       }
 
-      // Increment like_count
-      const { data: post, error: fetchError } = await supabaseAdmin
-        .from('posts')
-        .select('like_count')
-        .eq('id', postId)
-        .single();
+      // Compute total likes from junction table
+      const { count, error: countError } = await supabaseAdmin
+        .from('post_likes')
+        .select('*', { count: 'exact', head: true })
+        .eq('post_id', postId);
 
-      if (fetchError) {
-        console.error('[likePost] Error fetching post:', fetchError);
-        throw new Error(`Failed to fetch post: ${fetchError.message}`);
+      if (countError) {
+        console.error('[likePost] Count error:', countError);
+        throw new Error(`Failed to count likes: ${countError.message}`);
       }
 
-      const newCount = (post?.like_count || 0) + 1;
-      
-      const { error: incrementError } = await supabaseAdmin
-        .from('posts')
-        .update({ like_count: newCount })
-        .eq('id', postId);
-
-      if (incrementError) {
-        console.error('[likePost] Increment error:', incrementError);
-        throw new Error(`Failed to increment like count: ${incrementError.message}`);
-      }
-
-      console.log('[likePost] Post liked successfully, new count:', newCount);
-      return { likes: newCount, hasLiked: true };
+      const totalLikes = count || 0;
+      console.log('[likePost] Post liked successfully, new count:', totalLikes);
+      return { likes: totalLikes, hasLiked: true };
     }
   }
 
