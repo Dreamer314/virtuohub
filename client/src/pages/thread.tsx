@@ -22,11 +22,11 @@ import { useToast } from "@/hooks/use-toast";
 import { AuthModal } from "@/components/auth/AuthModal";
 
 // Component to render a single thread comment with profiles_v2 data
-function ThreadCommentItem({ comment }: { comment: any }) {
+function ThreadCommentItem({ comment, currentUserId }: { comment: any, currentUserId: string }) {
   // Fetch profile from profiles_v2 using authorId
   const { data: profile } = useUserProfile(comment.authorId || comment.author_id || '');
   
-  // Local state for optimistic like count updates
+  // Local state for toggle-able like functionality
   const [localLikeCount, setLocalLikeCount] = useState(comment.likes || 0);
   const [hasLiked, setHasLiked] = useState(false);
   
@@ -35,20 +35,20 @@ function ThreadCommentItem({ comment }: { comment: any }) {
   const avatarUrl = getAvatarUrl(profile, getAvatarUrl(comment?.author));
   const initial = displayName.charAt(0).toUpperCase();
 
-  // Like comment mutation
+  // Like/unlike comment mutation with toggle logic
   const likeMutation = useMutation({
     mutationFn: async () => {
-      return apiRequest('POST', `/api/comments/${comment.id}/like`);
+      return apiRequest('POST', `/api/comments/${comment.id}/like`, { userId: currentUserId });
     },
-    onSuccess: () => {
-      // Optimistically update local state
-      setLocalLikeCount((prev: number) => prev + 1);
-      setHasLiked(true);
+    onSuccess: (data: { likes: number, hasLiked: boolean }) => {
+      // Update local state from server response
+      setLocalLikeCount(data.likes);
+      setHasLiked(data.hasLiked);
     },
   });
 
   const handleLike = () => {
-    if (hasLiked || likeMutation.isPending) return;
+    if (likeMutation.isPending) return;
     likeMutation.mutate();
   };
 
@@ -86,12 +86,12 @@ function ThreadCommentItem({ comment }: { comment: any }) {
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
               <button 
                 onClick={handleLike}
-                disabled={hasLiked || likeMutation.isPending}
+                disabled={likeMutation.isPending}
                 className={`flex items-center gap-1 transition-colors ${
                   hasLiked 
-                    ? 'text-red-500 cursor-not-allowed' 
-                    : 'hover:text-foreground cursor-pointer'
-                }`}
+                    ? 'text-red-500' 
+                    : 'hover:text-foreground'
+                } cursor-pointer`}
                 data-testid={`like-comment-${comment.id}`}
               >
                 <Heart className={`w-3 h-3 ${hasLiked ? 'fill-red-500' : ''}`} />
@@ -428,7 +428,11 @@ export default function ThreadPage() {
               {Array.isArray(comments) && comments.length > 0 ? (
                 <div className="space-y-4">
                   {comments.map((comment: any) => (
-                    <ThreadCommentItem key={comment.id} comment={comment} />
+                    <ThreadCommentItem 
+                      key={comment.id} 
+                      comment={comment} 
+                      currentUserId={user?.id || 'user1'} 
+                    />
                   ))}
                 </div>
               ) : (
