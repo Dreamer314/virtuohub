@@ -116,6 +116,8 @@ interface Job {
   platform: string;
   job_type: string;
   budget: string | null;
+  payment_type: string | null;
+  currency: string | null;
   is_remote: boolean;
   location: string | null;
   description: string;
@@ -761,19 +763,13 @@ export default function Talent() {
                       <Badge variant="outline" data-testid={`job-type-${job.id}`}>
                         {job.job_type}
                       </Badge>
-                      {job.is_remote && (
-                        <Badge variant="secondary" className="flex items-center gap-1" data-testid={`job-remote-${job.id}`}>
-                          <MapPin className="w-3 h-3" />
-                          Remote
-                        </Badge>
-                      )}
                     </div>
 
                     {/* Budget */}
-                    {job.budget && (
+                    {(job.budget || job.payment_type || job.currency) && (
                       <p className="text-sm font-medium mb-3 flex items-center gap-1" data-testid={`job-budget-${job.id}`}>
                         <DollarSign className="w-4 h-4" />
-                        Budget: {job.budget}
+                        Budget: {job.budget}{job.currency ? ` ${job.currency}` : ''}{job.payment_type ? `, ${job.payment_type}` : ''}
                       </p>
                     )}
 

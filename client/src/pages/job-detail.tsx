@@ -18,6 +18,8 @@ interface Job {
   platform: string;
   job_type: string;
   budget: string | null;
+  payment_type: string | null;
+  currency: string | null;
   is_remote: boolean;
   location: string | null;
   description: string;
@@ -137,25 +139,13 @@ export default function JobDetail() {
                 <Badge variant="outline" className="text-sm" data-testid="job-detail-type">
                   {job.job_type}
                 </Badge>
-                {job.is_remote && (
-                  <Badge variant="secondary" className="text-sm flex items-center gap-1" data-testid="job-detail-remote">
-                    <MapPin className="w-3 h-3" />
-                    Remote
-                  </Badge>
-                )}
-                {!job.is_remote && job.location && (
-                  <Badge variant="secondary" className="text-sm flex items-center gap-1" data-testid="job-detail-location">
-                    <MapPin className="w-3 h-3" />
-                    {job.location}
-                  </Badge>
-                )}
               </div>
 
               {/* Budget */}
-              {job.budget && (
+              {(job.budget || job.payment_type || job.currency) && (
                 <div className="flex items-center gap-2 text-lg font-medium mb-4" data-testid="job-detail-budget">
                   <DollarSign className="w-5 h-5 text-muted-foreground" />
-                  <span>Budget: {job.budget}</span>
+                  <span>Budget: {job.budget}{job.currency ? ` ${job.currency}` : ''}{job.payment_type ? `, ${job.payment_type}` : ''}</span>
                 </div>
               )}
 
