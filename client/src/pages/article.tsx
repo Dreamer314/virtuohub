@@ -9,7 +9,84 @@ import { Link } from 'wouter';
 import { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { getDisplayName, getAvatarUrl } from '@/lib/utils';
+import { useUserProfile } from '@/hooks/useUserProfile';
 import type { ArticleWithPost, CommentWithAuthor } from '@shared/schema';
+
+// Component to render comment/reply with profiles_v2 data
+function ArticleCommentItem({ 
+  comment, 
+  onLike, 
+  isLikePending, 
+  isReply = false 
+}: { 
+  comment: CommentWithAuthor; 
+  onLike: (id: string) => void; 
+  isLikePending: boolean;
+  isReply?: boolean;
+}) {
+  // Fetch profile from profiles_v2 using authorId
+  const { data: profile } = useUserProfile(comment.authorId);
+  
+  // Use profiles_v2 data, fallback to legacy author data if profiles_v2 not available
+  const displayName = getDisplayName(profile, getDisplayName(comment.author));
+  const avatarUrl = getAvatarUrl(profile, getAvatarUrl(comment.author));
+  
+  const size = isReply ? 'w-8 h-8' : 'w-10 h-10';
+  const textSize = isReply ? 'text-sm' : 'text-base';
+  
+  return (
+    <div className="flex items-start gap-4" data-testid={isReply ? `reply-${comment.id}` : `comment-${comment.id}`}>
+      <img
+        src={avatarUrl}
+        alt={displayName}
+        className={`${size} rounded-full object-cover`}
+        data-testid={`${isReply ? 'reply' : 'comment'}-avatar-${comment.id}`}
+      />
+      <div className="flex-1">
+        <div className="flex items-center gap-2 mb-2">
+          <span 
+            className={`font-medium ${isReply ? 'text-sm' : ''}`}
+            data-testid={`${isReply ? 'reply' : 'comment'}-author-${comment.id}`}
+          >
+            {displayName}
+          </span>
+          <span className={`text-muted-foreground ${isReply ? 'text-xs' : 'text-sm'}`}>
+            {comment.createdAt ? formatDistanceToNow(new Date(comment.createdAt)) + ' ago' : 'Recently'}
+          </span>
+        </div>
+        <p className={`text-muted-foreground mb-3 ${textSize}`}>{comment.content}</p>
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onLike(comment.id)}
+            disabled={isLikePending}
+            className="text-muted-foreground"
+            data-testid={`button-like-${isReply ? 'reply' : 'comment'}-${comment.id}`}
+          >
+            <Heart className={`${isReply ? 'w-3 h-3' : 'w-4 h-4'} mr-1`} />
+            {comment.likes}
+          </Button>
+        </div>
+
+        {/* Replies */}
+        {!isReply && comment.replies && comment.replies.length > 0 && (
+          <div className="mt-4 space-y-4">
+            {comment.replies.map((reply) => (
+              <ArticleCommentItem
+                key={reply.id}
+                comment={reply}
+                onLike={onLike}
+                isLikePending={isLikePending}
+                isReply={true}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export default function ArticlePage() {
   const [match, params] = useRoute('/article/:slug');
@@ -346,70 +423,12 @@ export default function ArticlePage() {
               {/* Comments List */}
               <div className="space-y-6">
                 {comments.map((comment) => (
-                  <div key={comment.id} className="border-l-2 border-accent/20 pl-4" data-testid={`comment-${comment.id}`}>
-                    <div className="flex items-start gap-4">
-                      <img
-                        src={getAvatarUrl(comment.author)}
-                        alt={getDisplayName(comment?.author)}
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="font-medium">{getDisplayName(comment?.author)}</span>
-                          <span className="text-sm text-muted-foreground">
-                            {comment.createdAt ? formatDistanceToNow(new Date(comment.createdAt)) + ' ago' : 'Recently'}
-                          </span>
-                        </div>
-                        <p className="text-muted-foreground mb-3">{comment.content}</p>
-                        <div className="flex items-center gap-4">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => likeCommentMutation.mutate(comment.id)}
-                            disabled={likeCommentMutation.isPending}
-                            className="text-muted-foreground"
-                            data-testid={`button-like-comment-${comment.id}`}
-                          >
-                            <Heart className="w-4 h-4 mr-1" />
-                            {comment.likes}
-                          </Button>
-                        </div>
-
-                        {/* Replies */}
-                        {comment.replies && comment.replies.length > 0 && (
-                          <div className="mt-4 space-y-4">
-                            {comment.replies.map((reply) => (
-                              <div key={reply.id} className="flex items-start gap-4" data-testid={`reply-${reply.id}`}>
-                                <img
-                                  src={getAvatarUrl(reply.author, 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face')}
-                                  alt={getDisplayName(reply?.author)}
-                                  className="w-8 h-8 rounded-full object-cover"
-                                />
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-2 mb-1">
-                                    <span className="font-medium text-sm">{getDisplayName(reply?.author)}</span>
-                                    <span className="text-xs text-muted-foreground">
-                                      {reply.createdAt ? formatDistanceToNow(new Date(reply.createdAt)) + ' ago' : 'Recently'}
-                                    </span>
-                                  </div>
-                                  <p className="text-sm text-muted-foreground mb-2">{reply.content}</p>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => likeCommentMutation.mutate(reply.id)}
-                                    disabled={likeCommentMutation.isPending}
-                                    className="text-muted-foreground text-xs h-6"
-                                  >
-                                    <Heart className="w-3 h-3 mr-1" />
-                                    {reply.likes}
-                                  </Button>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                  <div key={comment.id} className="border-l-2 border-accent/20 pl-4">
+                    <ArticleCommentItem
+                      comment={comment}
+                      onLike={(id) => likeCommentMutation.mutate(id)}
+                      isLikePending={likeCommentMutation.isPending}
+                    />
                   </div>
                 ))}
               </div>
