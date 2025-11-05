@@ -1,0 +1,131 @@
+The likes system is almost correct, but there’s one remaining bug:
+
+On the thread page:
+
+The main post heart does not stay filled after I like it (it briefly fills, then goes back to outline).
+
+The comment heart works perfectly – it stays filled and the count is right, even after refresh.
+
+Like counts for both posts and comments are correct and persist in Supabase.
+
+We’re using junction tables post_likes and comment_likes. I’ve already reset all like_count columns in posts and comments to 0, and I want the junction tables to be the only source of truth.
+
+I want the post heart to behave exactly like the comment heart:
+
+Heart should stay filled white when I’ve liked it (even after refresh).
+
+Heart should be a neutral grey when I haven’t liked it.
+
+Toggling like/unlike should update both the count and the filled state correctly.
+
+This should work on:
+
+the thread detail page
+
+the community feed (where posts are listed).
+
+Please do not add any more SQL migrations or change table structures. The data is already correct in:
+
+posts
+
+comments
+
+post_likes
+
+comment_likes
+
+Backend fixes
+
+In server/routes.ts, make sure we have a helper (similar to the one already used for comments) that attaches both:
+
+likes (number of likes from post_likes)
+
+hasLiked (true/false for the current user, based on post_likes)
+to every post returned from:
+
+GET /api/posts
+
+GET /api/posts/:id
+
+hasLiked must be computed using:
+
+userId from the session (req.user?.id) or
+
+userId from a ?userId=... query parameter (to support the user1 fallback for unauthenticated users).
+
+Make sure attachLikesDataToPosts is actually called in both routes above, just like whatever helper we use for comments.
+
+Frontend fixes – PostCard
+
+In client/src/components/cards/PostCard.tsx:
+
+Ensure the component receives post.likes and post.hasLiked from the API.
+
+Initialize local state from those props:
+
+const [likes, setLikes] = useState(post.likes ?? 0);
+const [hasLiked, setHasLiked] = useState(post.hasLiked ?? false);
+
+
+Add a useEffect that keeps local state in sync if the query refetches:
+
+useEffect(() => {
+  setLikes(post.likes ?? 0);
+  setHasLiked(post.hasLiked ?? false);
+}, [post.likes, post.hasLiked]);
+
+
+Make sure the Heart icon styling uses the local hasLiked state, not the raw post.hasLiked prop. For example:
+
+import { Heart } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+<Heart
+  className={cn(
+    "w-4 h-4 transition",
+    hasLiked ? "text-white fill-white" : "text-neutral-500"
+  )}
+/>
+
+
+The click handler for the like button should:
+
+call the existing like/unlike mutation
+
+optimistically update likes and hasLiked (like it already does for comments).
+
+Make sure both the feed and thread page use this same PostCard logic (the isDetailView prop can change layout, but not the like behavior).
+
+Frontend fixes – thread page fetch
+
+In client/src/pages/thread.tsx, where the single post is fetched for the thread detail:
+
+Make sure the query that calls /api/posts/:id includes the userId query parameter, similar to how we already do it for the feed:
+
+const userId = user?.id ?? "user1";
+useQuery(["/api/posts", `${id}?userId=${userId}`], ...)
+
+
+This is required so the backend can compute hasLiked correctly for the current viewer.
+
+Visual consistency
+
+Use the same Heart icon and color scheme everywhere:
+
+Posts and comments should both use:
+
+liked: text-white fill-white
+
+unliked: text-neutral-500
+
+Remove any leftover pink/red classes (text-pink-400, fill-red-500, etc.).
+
+After these changes, please:
+
+Like/unlike a post on the thread page and on the community feed.
+
+Refresh the page each time and confirm:
+
+counts are correct
+
+hearts stay filled white when the current user has liked the item.

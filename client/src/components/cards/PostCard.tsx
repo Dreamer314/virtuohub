@@ -481,7 +481,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                   className="vh-button flex items-center space-x-2 px-2 py-1"
                   data-testid={`like-button-${post.id}`}
                 >
-                  <Heart size={16} className={cn("transition", hasLiked ? "fill-pink-400 text-pink-400" : "text-muted-foreground")} />
+                  <Heart size={16} className={cn("transition", hasLiked ? "text-white fill-white" : "text-neutral-500")} />
                   <span className="vh-body-small">{likes}</span>
                 </Button>
                 <Button
