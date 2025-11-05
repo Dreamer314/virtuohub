@@ -8,10 +8,11 @@ import { useToast } from "@/hooks/use-toast";
 import { type PostWithAuthor } from "@shared/schema";
 import { ThumbsUp, MessageCircle, Share, Heart, Zap, Lightbulb, Clock } from "lucide-react";
 import { Link } from "wouter";
-import { cn, getPlatformColor, getCategoryColor, formatTimeAgo } from "@/lib/utils";
+import { cn, getPlatformColor, getCategoryColor, formatTimeAgo, getDisplayName, getAvatarUrl } from "@/lib/utils";
 import { getCategoryLabel, normalizeCategoryToSlug } from "@/constants/postCategories";
 import { ImageViewerModal } from "@/components/modals/ImageViewerModal";
 import { OptimizedImage } from "@/components/ui/optimized-image";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 interface PostCardProps {
   post: PostWithAuthor;
@@ -24,6 +25,14 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
   const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  
+  // Fetch author profile from profiles_v2
+  const { data: authorProfile } = useUserProfile(post.authorId);
+  
+  // Use profiles_v2 data if available, otherwise fall back to post.author
+  const displayName = getDisplayName(authorProfile, getDisplayName(post.author) || 'User');
+  const avatarUrl = getAvatarUrl(authorProfile, getAvatarUrl(post.author));
+  const authorRole = authorProfile?.role || post.author?.role;
 
   // Poll voting state from server - defensive reading
   const options = (post as any).poll?.options ?? (post as any).poll_options ?? [];
@@ -206,20 +215,29 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
         <div className="flex space-x-4">
           {/* Avatar */}
           <div className="flex-shrink-0">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-vh-accent1 text-white font-medium text-lg">
-              {(post.author.handle || post.author.displayName || 'U').charAt(0)}
-            </span>
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={displayName}
+                className="h-12 w-12 rounded-full object-cover"
+                data-testid={`post-avatar-${post.id}`}
+              />
+            ) : (
+              <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-vh-accent1 text-white font-medium text-lg">
+                {displayName.charAt(0).toUpperCase()}
+              </span>
+            )}
           </div>
           
           <div className="flex-1 min-w-0">
             {/* Header */}
             <div className="flex items-center space-x-2 mb-1">
               <span className="vh-body font-medium" data-testid={`author-${post.id}`}>
-                {post.author.handle ? `@${post.author.handle}` : post.author.displayName || (post.authorId ? `user_${post.authorId.slice(-5)}` : '')}
+                {displayName}
               </span>
-              {post.author.role && (
+              {authorRole && (
                 <Badge variant="secondary" className="text-xs">
-                  {post.author.role}
+                  {authorRole}
                 </Badge>
               )}
               <span className="text-xs text-vh-text-subtle">•</span>
