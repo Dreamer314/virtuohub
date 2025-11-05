@@ -400,25 +400,17 @@ export class SupabaseStorage implements IStorage {
   async likePost(postId: string): Promise<void> {
     console.log('[likePost] Liking post:', postId);
     
-    // Fetch current like count from Supabase
-    const { data: post } = await supabaseAdmin
-      .from('posts')
-      .select('like_count')
-      .eq('id', postId)
-      .single();
-    
-    // Increment and update the like_count column
-    const { error } = await supabaseAdmin
-      .from('posts')
-      .update({ like_count: (post?.like_count || 0) + 1 })
-      .eq('id', postId);
+    // Use atomic increment via PostgreSQL to prevent race conditions
+    const { error } = await supabaseAdmin.rpc('increment_post_likes', {
+      post_id: postId
+    });
 
     if (error) {
       console.error('[likePost] Error:', error);
       throw new Error(`Failed to like post: ${error.message}`);
     }
     
-    console.log('[likePost] Post liked successfully');
+    console.log('[likePost] Post liked successfully (atomic increment)');
   }
 
   async addComment(postId: string): Promise<void> {
@@ -573,25 +565,17 @@ export class SupabaseStorage implements IStorage {
   async likeComment(commentId: string): Promise<void> {
     console.log('[likeComment] Liking comment:', commentId);
     
-    // Fetch current like_count from Supabase
-    const { data: comment } = await supabaseAdmin
-      .from('comments')
-      .select('like_count')
-      .eq('id', commentId)
-      .single();
-    
-    // Increment and update the like_count column in Supabase
-    const { error } = await supabaseAdmin
-      .from('comments')
-      .update({ like_count: (comment?.like_count || 0) + 1 })
-      .eq('id', commentId);
+    // Use atomic increment via PostgreSQL to prevent race conditions
+    const { error } = await supabaseAdmin.rpc('increment_comment_likes', {
+      comment_id: commentId
+    });
 
     if (error) {
       console.error('[likeComment] Error:', error);
       throw new Error(`Failed to like comment: ${error.message}`);
     }
     
-    console.log('[likeComment] Comment liked successfully, new count:', (comment?.like_count || 0) + 1);
+    console.log('[likeComment] Comment liked successfully (atomic increment)');
   }
 
   async voteOnPoll(postId: string, optionIndex: number): Promise<PostWithAuthor | null> {
