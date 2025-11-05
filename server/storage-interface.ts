@@ -25,7 +25,7 @@ export interface IStorage {
   isPostSaved(userId: string, postId: string): Promise<boolean>;
 
   // Engagement methods
-  likePost(postId: string): Promise<void>;
+  likePost(postId: string, userId: string): Promise<{ likes: number, hasLiked: boolean }>;
   addComment(postId: string): Promise<void>;
   sharePost(postId: string): Promise<void>;
 
@@ -39,7 +39,7 @@ export interface IStorage {
   createComment(comment: InsertComment): Promise<Comment>;
   getComments(articleId: string): Promise<CommentWithAuthor[]>;
   getPostComments(postId: string): Promise<CommentWithAuthor[]>;
-  likeComment(commentId: string): Promise<void>;
+  likeComment(commentId: string, userId: string): Promise<{ likes: number, hasLiked: boolean }>;
 
   // Poll vote methods
   voteOnPostPoll(postId: string, voterId: string, optionIndex: number): Promise<{ ok: boolean; error?: string }>;

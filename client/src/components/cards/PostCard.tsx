@@ -44,9 +44,12 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
   const tallies = Array.isArray(talliesRaw) ? talliesRaw : new Array(options.length).fill(0);
   const hasVoted = myVote !== null;
 
-  const likeMutation = useMutation({
-    mutationFn: () => apiRequest('POST', `/api/posts/${post.id}/like`, { userId: currentUserId }),
-    onSuccess: (data: { likes: number, hasLiked: boolean }) => {
+  const likeMutation = useMutation<{ likes: number, hasLiked: boolean }>({
+    mutationFn: async () => {
+      const response = await apiRequest('POST', `/api/posts/${post.id}/like`, { userId: currentUserId });
+      return response.json();
+    },
+    onSuccess: (data) => {
       setLikes(data.likes);
       setHasLiked(data.hasLiked);
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });

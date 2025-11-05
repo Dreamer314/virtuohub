@@ -36,11 +36,12 @@ function ThreadCommentItem({ comment, currentUserId }: { comment: any, currentUs
   const initial = displayName.charAt(0).toUpperCase();
 
   // Like/unlike comment mutation with toggle logic
-  const likeMutation = useMutation({
+  const likeMutation = useMutation<{ likes: number, hasLiked: boolean }>({
     mutationFn: async () => {
-      return apiRequest('POST', `/api/comments/${comment.id}/like`, { userId: currentUserId });
+      const response = await apiRequest('POST', `/api/comments/${comment.id}/like`, { userId: currentUserId });
+      return response.json();
     },
-    onSuccess: (data: { likes: number, hasLiked: boolean }) => {
+    onSuccess: (data) => {
       // Update local state from server response
       setLocalLikeCount(data.likes);
       setHasLiked(data.hasLiked);
