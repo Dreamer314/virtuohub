@@ -26,10 +26,31 @@ function ThreadCommentItem({ comment }: { comment: any }) {
   // Fetch profile from profiles_v2 using authorId
   const { data: profile } = useUserProfile(comment.authorId || comment.author_id || '');
   
+  // Local state for optimistic like count updates
+  const [localLikeCount, setLocalLikeCount] = useState(comment.likes || 0);
+  const [hasLiked, setHasLiked] = useState(false);
+  
   // Use profiles_v2 data, fallback to legacy author data if profiles_v2 not available
   const displayName = getDisplayName(profile, getDisplayName(comment?.author) || 'User');
   const avatarUrl = getAvatarUrl(profile, getAvatarUrl(comment?.author));
   const initial = displayName.charAt(0).toUpperCase();
+
+  // Like comment mutation
+  const likeMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest('POST', `/api/comments/${comment.id}/like`);
+    },
+    onSuccess: () => {
+      // Optimistically update local state
+      setLocalLikeCount(prev => prev + 1);
+      setHasLiked(true);
+    },
+  });
+
+  const handleLike = () => {
+    if (hasLiked || likeMutation.isPending) return;
+    likeMutation.mutate();
+  };
 
   return (
     <Card className="glass-card" data-testid={`comment-${comment.id}`}>
@@ -63,12 +84,18 @@ function ThreadCommentItem({ comment }: { comment: any }) {
               {comment.content}
             </p>
             <div className="flex items-center gap-4 text-xs text-muted-foreground">
-              <button className="flex items-center gap-1 hover:text-foreground transition-colors">
-                <Heart className="w-3 h-3" />
-                {comment.likes || 0}
-              </button>
-              <button className="hover:text-foreground transition-colors">
-                Reply
+              <button 
+                onClick={handleLike}
+                disabled={hasLiked || likeMutation.isPending}
+                className={`flex items-center gap-1 transition-colors ${
+                  hasLiked 
+                    ? 'text-red-500 cursor-not-allowed' 
+                    : 'hover:text-foreground cursor-pointer'
+                }`}
+                data-testid={`like-comment-${comment.id}`}
+              >
+                <Heart className={`w-3 h-3 ${hasLiked ? 'fill-red-500' : ''}`} />
+                {localLikeCount}
               </button>
             </div>
           </div>
