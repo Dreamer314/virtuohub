@@ -398,7 +398,27 @@ export class SupabaseStorage implements IStorage {
   }
 
   async likePost(postId: string): Promise<void> {
-    return this.memStorage.likePost(postId);
+    console.log('[likePost] Liking post:', postId);
+    
+    // Fetch current like count
+    const { data: post } = await supabaseAdmin
+      .from('posts')
+      .select('like_count')
+      .eq('id', postId)
+      .single();
+    
+    // Increment and update
+    const { error } = await supabaseAdmin
+      .from('posts')
+      .update({ like_count: (post?.like_count || 0) + 1 })
+      .eq('id', postId);
+
+    if (error) {
+      console.error('[likePost] Error:', error);
+      throw new Error(`Failed to like post: ${error.message}`);
+    }
+    
+    console.log('[likePost] Post liked successfully');
   }
 
   async addComment(postId: string): Promise<void> {
@@ -429,15 +449,14 @@ export class SupabaseStorage implements IStorage {
     console.log('[createComment] Creating comment:', commentData);
     
     // Insert into Supabase
-    const { data, error } = await supabaseAdmin
+    const { data, error} = await supabaseAdmin
       .from('comments')
       .insert({
         post_id: (commentData as any).postId || null,
-        article_id: commentData.articleId || null,
         author_id: commentData.authorId,
         content: commentData.content,
-        parent_id: commentData.parentId || null,
-        likes: 0,
+        parent_comment_id: commentData.parentId || null,
+        like_count: 0,
       })
       .select()
       .single();
@@ -453,12 +472,12 @@ export class SupabaseStorage implements IStorage {
     return {
       id: data.id,
       postId: data.post_id,
-      articleId: data.article_id,
+      articleId: null,
       authorId: data.author_id,
-      authoredByProfileId: data.authored_by_profile_id,
+      authoredByProfileId: null,
       content: data.content,
-      parentId: data.parent_id,
-      likes: data.likes || 0,
+      parentId: data.parent_comment_id,
+      likes: data.like_count || 0,
       createdAt: data.created_at ? new Date(data.created_at) : new Date(),
     };
   }
@@ -466,82 +485,8 @@ export class SupabaseStorage implements IStorage {
   async getComments(articleId: string): Promise<CommentWithAuthor[]> {
     console.log('[getComments] Fetching comments for article:', articleId);
     
-    const { data, error } = await supabaseAdmin
-      .from('comments')
-      .select('*')
-      .eq('article_id', articleId)
-      .is('parent_id', null)
-      .order('created_at', { ascending: true });
-
-    if (error) {
-      console.error('[getComments] Error:', error);
-      return [];
-    }
-
-    const comments = await Promise.all(
-      (data || []).map(async (comment) => {
-        const author = await this.getProfile(comment.author_id);
-        
-        // Get replies
-        const { data: repliesData } = await supabaseAdmin
-          .from('comments')
-          .select('*')
-          .eq('parent_id', comment.id)
-          .order('created_at', { ascending: true });
-
-        const replies = await Promise.all(
-          (repliesData || []).map(async (reply) => {
-            const replyAuthor = await this.getProfile(reply.author_id);
-            return {
-              id: reply.id,
-              postId: reply.post_id,
-              articleId: reply.article_id,
-              authorId: reply.author_id,
-              authoredByProfileId: reply.authored_by_profile_id,
-              content: reply.content,
-              parentId: reply.parent_id,
-              likes: reply.likes || 0,
-              createdAt: reply.created_at ? new Date(reply.created_at) : new Date(),
-              author: replyAuthor || {
-                id: reply.author_id,
-                handle: 'Unknown',
-                displayName: 'Unknown User',
-                avatarUrl: null,
-                role: null,
-                onboardingComplete: false,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-              },
-            };
-          })
-        );
-
-        return {
-          id: comment.id,
-          postId: comment.post_id,
-          articleId: comment.article_id,
-          authorId: comment.author_id,
-          authoredByProfileId: comment.authored_by_profile_id,
-          content: comment.content,
-          parentId: comment.parent_id,
-          likes: comment.likes || 0,
-          createdAt: comment.created_at ? new Date(comment.created_at) : new Date(),
-          author: author || {
-            id: comment.author_id,
-            handle: 'Unknown',
-            displayName: 'Unknown User',
-            avatarUrl: null,
-            role: null,
-            onboardingComplete: false,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-          replies,
-        };
-      })
-    );
-
-    return comments;
+    // Note: Articles are not stored in the comments table yet, return empty for now
+    return [];
   }
 
   async getPostComments(postId: string): Promise<CommentWithAuthor[]> {
@@ -551,7 +496,7 @@ export class SupabaseStorage implements IStorage {
       .from('comments')
       .select('*')
       .eq('post_id', postId)
-      .is('parent_id', null)
+      .is('parent_comment_id', null)
       .order('created_at', { ascending: true });
 
     if (error) {
@@ -567,7 +512,7 @@ export class SupabaseStorage implements IStorage {
         const { data: repliesData } = await supabaseAdmin
           .from('comments')
           .select('*')
-          .eq('parent_id', comment.id)
+          .eq('parent_comment_id', comment.id)
           .order('created_at', { ascending: true });
 
         const replies = await Promise.all(
@@ -576,12 +521,12 @@ export class SupabaseStorage implements IStorage {
             return {
               id: reply.id,
               postId: reply.post_id,
-              articleId: reply.article_id,
+              articleId: null,
               authorId: reply.author_id,
-              authoredByProfileId: reply.authored_by_profile_id,
+              authoredByProfileId: null,
               content: reply.content,
-              parentId: reply.parent_id,
-              likes: reply.likes || 0,
+              parentId: reply.parent_comment_id,
+              likes: reply.like_count || 0,
               createdAt: reply.created_at ? new Date(reply.created_at) : new Date(),
               author: replyAuthor || {
                 id: reply.author_id,
@@ -600,12 +545,12 @@ export class SupabaseStorage implements IStorage {
         return {
           id: comment.id,
           postId: comment.post_id,
-          articleId: comment.article_id,
+          articleId: null,
           authorId: comment.author_id,
-          authoredByProfileId: comment.authored_by_profile_id,
+          authoredByProfileId: null,
           content: comment.content,
-          parentId: comment.parent_id,
-          likes: comment.likes || 0,
+          parentId: comment.parent_comment_id,
+          likes: comment.like_count || 0,
           createdAt: comment.created_at ? new Date(comment.created_at) : new Date(),
           author: author || {
             id: comment.author_id,
@@ -631,14 +576,14 @@ export class SupabaseStorage implements IStorage {
     // Fetch current likes count
     const { data: comment } = await supabaseAdmin
       .from('comments')
-      .select('likes')
+      .select('like_count')
       .eq('id', commentId)
       .single();
     
     // Increment and update
     const { error } = await supabaseAdmin
       .from('comments')
-      .update({ likes: (comment?.likes || 0) + 1 })
+      .update({ like_count: (comment?.like_count || 0) + 1 })
       .eq('id', commentId);
 
     if (error) {

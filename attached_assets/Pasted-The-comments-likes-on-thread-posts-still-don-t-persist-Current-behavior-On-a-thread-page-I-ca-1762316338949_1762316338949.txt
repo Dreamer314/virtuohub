@@ -1,0 +1,143 @@
+The comments & likes on thread posts still don’t persist.
+
+Current behavior:
+
+On a thread page, I can type a comment, click Post Comment, and the UI looks like it worked, but:
+
+On refresh, the comment disappears.
+
+No rows appear in the public.comments table in Supabase.
+
+When I click Like on a thread post or comment:
+
+The UI shows “Post liked” or the heart fills.
+
+On refresh, the like is gone and counts don’t change.
+
+I have already created a public.comments table in Supabase with this schema:
+
+create table if not exists public.comments (
+  id uuid primary key default gen_random_uuid(),
+  post_id uuid not null,
+  author_id uuid not null,
+  content text not null,
+  like_count integer not null default 0,
+  parent_comment_id uuid references public.comments(id),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz
+);
+
+create index if not exists idx_comments_post_id
+  on public.comments (post_id);
+
+create index if not exists idx_comments_author_id
+  on public.comments (author_id);
+
+
+Do not change this table definition. Do not create new tables or rename columns.
+
+I know from your previous work that:
+
+There is a SupabaseStorage class in server/supabaseStorage.ts.
+
+It was delegating comment methods to an in-memory memStorage, which is why nothing persists.
+
+There are thread APIs implemented in server/routes.ts (or similar) that call storage methods like getPostComments, createComment, likeComment, etc.
+
+What I want you to do
+
+Ensure the server is using SupabaseStorage, not the in-memory storage, for the community/thread APIs.
+
+If there is a storage wiring file (e.g. server/storage.ts or similar) make sure the exported storage instance used by routes is a SupabaseStorage.
+
+In server/supabaseStorage.ts, implement real Supabase logic for all comment-related methods, using the existing public.comments table:
+
+At minimum, fix/implement:
+
+createComment
+
+getPostComments (comments for a given thread / post)
+
+getComments if used for article-style pages
+
+likeComment
+
+Requirements:
+
+createComment
+
+Insert into public.comments:
+
+post_id
+
+author_id
+
+content
+
+parent_comment_id (nullable, only for replies)
+
+Return the inserted row mapped to whatever comment DTO the API expects (camelCase fields etc.).
+
+getPostComments(postId)
+
+Select rows from public.comments where post_id = postId, ordered by created_at.
+
+Return them mapped to the comment DTO the frontend expects.
+
+likeComment(commentId)
+
+Update the row in public.comments with id = commentId and increment like_count by 1.
+
+Return the updated like_count (or the updated comment) as expected by existing code.
+
+Do not delegate to any in-memory store for comments anymore.
+
+Fix post likes persistence as well:
+
+Find where post likes are handled in the storage layer (likePost, togglePostLike, savePost, or similar) and ensure those methods also use Supabase, not in-memory storage.
+
+Use the existing schema:
+
+If there is a post_likes table, use that.
+
+If likes are stored directly on posts.like_count, then update that column.
+
+The key point: after liking a post and refreshing, the like count should reflect the persisted value.
+
+Do not change anything unrelated to storage for comments/likes.
+
+Please do NOT:
+
+Change any table or column names in Supabase.
+
+Modify profile or onboarding logic (profiles, profiles_v2, WelcomeModal, header, talent pages, jobs, etc.).
+
+Touch the jobs, profiles_v2, or talent implementation.
+
+Add or change any RLS policies. (RLS is currently off for comments; that’s fine for now.)
+
+When you’re done
+
+Run the dev server.
+
+As a logged-in user:
+
+Go to a thread page.
+
+Post a comment → confirm:
+
+It appears immediately.
+
+After a page refresh, it is still there.
+
+A new row exists in public.comments for that comment.
+
+Like the post and like a comment → confirm:
+
+Like counts update.
+
+After refresh, the counts are still updated.
+
+Briefly summarize which functions you changed and how they now talk to Supabase.
+
+The main goal: thread comments and likes must persist via Supabase using the existing public.comments table and the existing posts schema, with no regressions to other parts of the app.
