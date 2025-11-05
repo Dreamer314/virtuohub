@@ -50,15 +50,6 @@ interface TalentFilters {
   search: string;
 }
 
-// Job board types
-const JOB_TYPES = [
-  "Full-time",
-  "Part-time",
-  "Contract",
-  "One-off project",
-  "Internship"
-];
-
 interface Job {
   id: string;
   user_id: string;
