@@ -15,6 +15,7 @@ import { User, Save, Loader2, Upload, Camera, ArrowLeft } from "lucide-react";
 import { useAuth } from "@/providers/AuthProvider";
 import { MultiSelectChips } from "@/components/multi-select-chips";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { PRIMARY_ROLES, PLATFORMS, TOOLS, EXPERIENCE_LEVELS } from "@/config/creatorOptions";
 
 interface QuickFacts {
   primary_role?: string;
@@ -53,60 +54,6 @@ interface AccountPrefs {
   user_id: string;
   last_active_profile_id: string | null;
 }
-
-// Predefined options for Creator Profile
-const PRIMARY_ROLE_OPTIONS = [
-  "3D Modeler",
-  "World Builder",
-  "Environment Artist",
-  "Character Artist",
-  "Rigger",
-  "Animator",
-  "Scripter / Programmer",
-  "Technical Artist",
-  "UI / UX Designer",
-  "Sound Designer",
-  "Video Editor",
-  "Community Manager",
-  "Store owner / Brand owner",
-  "Founder / Entrepreneur",
-  "Community / Event host",
-  "Educator / Mentor",
-  "New / Learning (just getting started)",
-];
-
-const PLATFORM_OPTIONS = [
-  "Roblox",
-  "VRChat",
-  "Second Life",
-  "IMVU",
-  "Meta Horizon Worlds",
-  "GTA / FiveM",
-  "The Sims (CC)",
-  "Unity",
-  "Unreal Engine",
-];
-
-const TOOL_OPTIONS = [
-  "Blender",
-  "Maya",
-  "ZBrush",
-  "Substance Painter",
-  "Photoshop",
-  "Marvelous Designer",
-  "Unity",
-  "Unreal Engine",
-  "Notepad++",
-  "VS Code",
-  "Udon / UdonSharp",
-];
-
-const EXPERIENCE_LEVELS = [
-  "New / < 1 year",
-  "1–3 years",
-  "3–5 years",
-  "5+ years",
-];
 
 export default function ProfileSettings() {
   const { user } = useAuth();
@@ -780,9 +727,9 @@ export default function ProfileSettings() {
                 </p>
               </div>
 
-              {/* Primary Skill / Role */}
+              {/* Primary Role */}
               <div className="space-y-2">
-                <Label htmlFor="primary-role">Primary Skill<span className="text-red-500 ml-1">*</span></Label>
+                <Label htmlFor="primary-role">Primary role<span className="text-red-500 ml-1">*</span></Label>
                 <Select
                   value={primaryRole}
                   onValueChange={(value) => {
@@ -796,15 +743,14 @@ export default function ProfileSettings() {
                   }}
                 >
                   <SelectTrigger data-testid="select-primary-role">
-                    <SelectValue placeholder="Select your primary skill..." />
+                    <SelectValue placeholder="Select your primary role..." />
                   </SelectTrigger>
                   <SelectContent>
-                    {PRIMARY_ROLE_OPTIONS.map((role) => (
+                    {PRIMARY_ROLES.map((role) => (
                       <SelectItem key={role} value={role}>
                         {role}
                       </SelectItem>
                     ))}
-                    <SelectItem value="Other">Other...</SelectItem>
                   </SelectContent>
                 </Select>
                 
@@ -845,7 +791,7 @@ export default function ProfileSettings() {
                   </div>
                 )}
                 <p className="text-xs text-muted-foreground">
-                  What you're best known for
+                  What you are best known for in virtual worlds
                 </p>
               </div>
 
@@ -853,7 +799,7 @@ export default function ProfileSettings() {
               <div className="space-y-2">
                 <Label>Other Skills</Label>
                 <MultiSelectChips
-                  options={PRIMARY_ROLE_OPTIONS.filter(r => r !== primaryRole)}
+                  options={PRIMARY_ROLES.filter(r => r !== primaryRole)}
                   selected={secondaryRoles}
                   onChange={setSecondaryRoles}
                   allowCustom
@@ -869,7 +815,7 @@ export default function ProfileSettings() {
               <div className="space-y-2">
                 <Label>Platforms you work on</Label>
                 <MultiSelectChips
-                  options={PLATFORM_OPTIONS}
+                  options={PLATFORMS}
                   selected={platforms}
                   onChange={setPlatforms}
                   allowCustom
@@ -885,7 +831,7 @@ export default function ProfileSettings() {
               <div className="space-y-2">
                 <Label>Tools you use</Label>
                 <MultiSelectChips
-                  options={TOOL_OPTIONS}
+                  options={TOOLS}
                   selected={tools}
                   onChange={setTools}
                   allowCustom
