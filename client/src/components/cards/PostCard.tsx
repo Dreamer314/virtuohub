@@ -32,7 +32,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
   // Use profiles_v2 data if available, otherwise fall back to post.author
   const displayName = getDisplayName(authorProfile, getDisplayName(post.author) || 'User');
   const avatarUrl = getAvatarUrl(authorProfile, getAvatarUrl(post.author));
-  const authorRole = authorProfile?.role || post.author?.role;
+  const authorRole = post.author?.role; // Role comes from legacy author data
 
   // Poll voting state from server - defensive reading
   const options = (post as any).poll?.options ?? (post as any).poll_options ?? [];
