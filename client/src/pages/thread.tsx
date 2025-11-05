@@ -10,7 +10,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft, MessageCircle, Heart, Share2, Send, ImageIcon, Smile, Paperclip, Copy, Check } from "lucide-react";
 import { Link } from "wouter";
 import { formatDistanceToNow } from "date-fns";
-import { getDisplayName } from "@/lib/utils";
+import { getDisplayName, getAvatarUrl } from "@/lib/utils";
+import { useUserProfile } from "@/hooks/useUserProfile";
 import type { PostWithAuthor } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { ObjectUploader } from "@/components/ObjectUploader";
@@ -19,6 +20,63 @@ import { useAuth } from "@/providers/AuthProvider";
 import { useIntentContext, registerReplayHandlers } from "@/contexts/IntentContext";
 import { useToast } from "@/hooks/use-toast";
 import { AuthModal } from "@/components/auth/AuthModal";
+
+// Component to render a single thread comment with profiles_v2 data
+function ThreadCommentItem({ comment }: { comment: any }) {
+  // Fetch profile from profiles_v2 using authorId
+  const { data: profile } = useUserProfile(comment.authorId || comment.author_id || '');
+  
+  // Use profiles_v2 data, fallback to legacy author data if profiles_v2 not available
+  const displayName = getDisplayName(profile, getDisplayName(comment?.author) || 'User');
+  const avatarUrl = getAvatarUrl(profile, getAvatarUrl(comment?.author));
+  const initial = displayName.charAt(0).toUpperCase();
+
+  return (
+    <Card className="glass-card" data-testid={`comment-${comment.id}`}>
+      <CardContent className="p-6">
+        <div className="flex space-x-4">
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt={displayName}
+              className="w-10 h-10 rounded-full object-cover"
+              data-testid={`comment-avatar-${comment.id}`}
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-semibold text-sm">
+              {initial}
+            </div>
+          )}
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-2">
+              <span 
+                className="font-semibold text-sm"
+                data-testid={`comment-author-${comment.id}`}
+              >
+                {displayName}
+              </span>
+              <span className="text-xs text-muted-foreground">
+                {formatDistanceToNow(new Date(comment.createdAt))} ago
+              </span>
+            </div>
+            <p className="text-sm text-foreground mb-3">
+              {comment.content}
+            </p>
+            <div className="flex items-center gap-4 text-xs text-muted-foreground">
+              <button className="flex items-center gap-1 hover:text-foreground transition-colors">
+                <Heart className="w-3 h-3" />
+                {comment.likes || 0}
+              </button>
+              <button className="hover:text-foreground transition-colors">
+                Reply
+              </button>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 export default function ThreadPage() {
   const { postId } = useParams<{ postId: string }>();
@@ -343,35 +401,7 @@ export default function ThreadPage() {
               {Array.isArray(comments) && comments.length > 0 ? (
                 <div className="space-y-4">
                   {comments.map((comment: any) => (
-                    <Card key={comment.id} className="glass-card">
-                      <CardContent className="p-6">
-                        <div className="flex space-x-4">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-semibold text-sm">
-                            {getDisplayName(comment?.author)?.[0] || 'U'}
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="font-semibold text-sm">{getDisplayName(comment?.author)}</span>
-                              <span className="text-xs text-muted-foreground">
-                                {formatDistanceToNow(new Date(comment.createdAt))} ago
-                              </span>
-                            </div>
-                            <p className="text-sm text-foreground mb-3">
-                              {comment.content}
-                            </p>
-                            <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                              <button className="flex items-center gap-1 hover:text-foreground transition-colors">
-                                <Heart className="w-3 h-3" />
-                                {comment.likes || 0}
-                              </button>
-                              <button className="hover:text-foreground transition-colors">
-                                Reply
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <ThreadCommentItem key={comment.id} comment={comment} />
                   ))}
                 </div>
               ) : (
