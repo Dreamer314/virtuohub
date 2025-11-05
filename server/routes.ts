@@ -212,6 +212,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Attach poll metadata with vote data
       posts = await attachPollMetaForPosts(posts, userId);
       
+      // Temporary logging to debug hasLiked
+      console.log('POST PAYLOAD', { id: posts[0].id, likes: posts[0].likes, hasLiked: posts[0].hasLiked, userId });
+      
       res.json(posts[0]);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch post" });
@@ -501,6 +504,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Use authenticated user ID or fallback to query param (for unauthenticated users)
       const userId = (req as any).user?.id || (req.query.userId as string);
       comments = await attachLikesDataToComments(comments, userId);
+      
+      // Temporary logging to debug hasLiked
+      if (comments.length > 0) {
+        console.log('COMMENT PAYLOAD', { id: comments[0].id, likes: comments[0].likes, hasLiked: comments[0].hasLiked, userId });
+      }
       
       res.json(comments);
     } catch (error) {

@@ -126,16 +126,19 @@ export default function ThreadPage() {
   const { user } = useAuth();
   const { setIntent, registerAuthModalController } = useIntentContext();
   const { toast } = useToast();
+  
+  // Get userId for API requests (authenticated user or fallback)
+  const currentUserId = user?.id || 'user1';
 
-  // Fetch the specific post
+  // Fetch the specific post (include userId for hasLiked computation)
   const { data: post, isLoading: postLoading } = useQuery<PostWithAuthor>({
-    queryKey: ['/api/posts', postId],
+    queryKey: [`/api/posts/${postId}?userId=${currentUserId}`],
     enabled: !!postId,
   });
 
-  // Fetch comments for this post (placeholder - would need backend implementation)
+  // Fetch comments for this post (include userId for hasLiked computation)
   const { data: comments = [] } = useQuery({
-    queryKey: ['/api/posts', postId, 'comments'],
+    queryKey: [`/api/posts/${postId}/comments?userId=${currentUserId}`],
     enabled: !!postId,
   });
 
