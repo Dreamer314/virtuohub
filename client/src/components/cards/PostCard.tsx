@@ -23,6 +23,8 @@ interface PostCardProps {
 export const PostCard = React.memo(function PostCard({ post, currentUserId = 'user1', isDetailView = false }: PostCardProps) {
   const [isSaved, setIsSaved] = useState(post.isSaved || false);
   const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
+  const [likes, setLikes] = useState(post.likes || 0);
+  const [hasLiked, setHasLiked] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
@@ -43,11 +45,13 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
   const hasVoted = myVote !== null;
 
   const likeMutation = useMutation({
-    mutationFn: () => apiRequest('POST', `/api/posts/${post.id}/like`),
-    onSuccess: () => {
+    mutationFn: () => apiRequest('POST', `/api/posts/${post.id}/like`, { userId: currentUserId }),
+    onSuccess: (data: { likes: number, hasLiked: boolean }) => {
+      setLikes(data.likes);
+      setHasLiked(data.hasLiked);
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
       queryClient.invalidateQueries({ queryKey: ['/api/posts', post.id] });
-      toast({ title: "Post liked!" });
+      toast({ title: data.hasLiked ? "Post liked!" : "Post unliked!" });
     }
   });
 
@@ -452,11 +456,12 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                   variant="ghost"
                   size="sm"
                   onClick={handleLike}
+                  disabled={likeMutation.isPending}
                   className="vh-button flex items-center space-x-2 px-2 py-1"
                   data-testid={`like-button-${post.id}`}
                 >
-                  <ThumbsUp size={16} />
-                  <span className="vh-body-small">{post.likes}</span>
+                  <ThumbsUp size={16} className={hasLiked ? "fill-current text-vh-primary" : ""} />
+                  <span className="vh-body-small">{likes}</span>
                 </Button>
                 <Button
                   variant="ghost"
