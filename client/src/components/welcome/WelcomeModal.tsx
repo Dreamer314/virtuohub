@@ -190,14 +190,20 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
 
       if (existingProfile) {
         // Update existing profile
+        // Only update profile_photo_url if a new avatar was uploaded
+        const updatePayload: any = {
+          handle: handle,
+          display_name: handle,
+          visibility: 'PUBLIC'
+        };
+        
+        if (avatarUrl) {
+          updatePayload.profile_photo_url = avatarUrl;
+        }
+
         const { error: updateError } = await supabase
           .from('profiles_v2')
-          .update({
-            handle: handle,
-            display_name: handle,
-            profile_photo_url: avatarUrl,
-            visibility: 'PUBLIC'
-          })
+          .update(updatePayload)
           .eq('user_id', user.id);
 
         if (updateError) {
