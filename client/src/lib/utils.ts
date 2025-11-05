@@ -32,27 +32,35 @@ export const PLATFORM_COLORS: Record<string, string> = {
 
 /**
  * Get a display name for a user profile with safe fallbacks
- * The backend already handles email fallback in profile creation, so missing displayName is rare
+ * Updated to use profiles_v2 field names: display_name, handle
  */
-export function getDisplayName(profile?: { id?: string; displayName?: string | null } | null, fallbackName = 'User'): string {
+export function getDisplayName(profile?: { id?: string; display_name?: string | null; displayName?: string | null; handle?: string | null } | null, fallbackName = 'User'): string {
   if (!profile) {
     return fallbackName;
   }
   
-  if (profile.displayName?.trim()) {
-    return profile.displayName.trim();
+  // Support both profiles_v2 (display_name) and legacy (displayName) for backward compatibility
+  const displayName = profile.display_name ?? profile.displayName;
+  
+  if (displayName?.trim()) {
+    return displayName.trim();
   }
   
-  // Backend should have set displayName to email during profile creation,
-  // but if somehow it's missing, return fallback
+  // Fall back to handle if display_name is missing
+  if (profile.handle?.trim()) {
+    return `@${profile.handle.trim()}`;
+  }
+  
   return fallbackName;
 }
 
 /**
  * Get avatar URL with fallback
+ * Updated to use profiles_v2 field name: profile_photo_url
  */
-export function getAvatarUrl(profile?: { avatarUrl?: string | null } | null, defaultUrl = '/images/vr-creator.png'): string {
-  return profile?.avatarUrl || defaultUrl;
+export function getAvatarUrl(profile?: { profile_photo_url?: string | null; avatarUrl?: string | null } | null, defaultUrl = '/images/vr-creator.png'): string {
+  // Support both profiles_v2 (profile_photo_url) and legacy (avatarUrl) for backward compatibility
+  return profile?.profile_photo_url ?? profile?.avatarUrl ?? defaultUrl;
 }
 
 // Category color constants - using VirtuoHub brand colors for consistency

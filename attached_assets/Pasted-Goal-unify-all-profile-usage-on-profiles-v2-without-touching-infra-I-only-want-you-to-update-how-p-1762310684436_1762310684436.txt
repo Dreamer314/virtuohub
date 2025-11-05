@@ -1,0 +1,114 @@
+Goal: unify all profile usage on profiles_v2 without touching infra
+
+I only want you to update how profile data is read and written in the frontend app, nothing else.
+
+Scope (what you can touch)
+
+You may read and modify only these kinds of files:
+
+client/src/pages/**
+
+client/src/components/**
+
+Any hooks or utilities directly related to:
+
+header user menu/avatar
+
+comments / replies
+
+post/spotlight author blocks
+
+the “Welcome to VirtuoHub” onboarding modal
+
+public profile / profile settings / talent directory
+
+Out of scope (do NOT touch)
+
+No SQL files, migrations, RLS policies, or DB schemas
+(e.g. supabase_*.sql, drizzle/migrations, etc.)
+
+No environment variables, config, auth setup, or routing guards
+
+No deletion or renaming of tables or columns
+
+No “cleanups” or refactors outside the files needed for this task
+
+What I want
+
+Everywhere we show a user (frontend):
+
+Comments (including spotlight / community feed)
+
+Post/spotlight author blocks
+
+Header avatar + name
+
+Any other obvious “author” UI
+
+should read from profiles_v2 using:
+
+profiles_v2.user_id (joined to Supabase auth user id)
+
+display_name
+
+handle
+
+profile_photo_url
+
+If no profiles_v2 row exists for a user:
+
+fall back to a generic avatar and a simple name (e.g. handle or email prefix),
+
+but do not write anything to the database in that case.
+
+Onboarding modal (“Welcome to VirtuoHub”):
+
+On submit, upsert into profiles_v2 (not any legacy profile table) with:
+
+user_id
+
+handle (from username field)
+
+display_name (can default to the same as handle)
+
+profile_photo_url (if they upload a photo)
+
+visibility = 'PUBLIC' by default
+
+After saving, the header avatar/name should reflect this data.
+
+Do not create or modify any other tables.
+
+Legacy usage:
+
+Find any remaining uses of:
+
+legacy profiles table
+
+profile data coming directly from auth.users metadata
+
+Replace them with profiles_v2 reads only in the UI layer.
+
+Do not remove the legacy table or its code paths if they are clearly for analytics/auditing; just stop using them for rendering avatars/names.
+
+Verification
+
+After your changes, please verify (and describe briefly in your summary):
+
+Changing avatar in Profile Settings updates:
+
+header avatar
+
+comments authored by that user
+
+spotlight / community author blocks
+
+New signup completes the onboarding modal and then:
+
+header shows the new avatar + handle
+
+their comments/posts use the same avatar + name
+
+No database schemas, RLS policies, or env vars were modified.
+
+Please keep changes minimal and tightly scoped to this behavior only.

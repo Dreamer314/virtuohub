@@ -181,31 +181,30 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
         }
       }
 
-      // Update profile
-      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      // Upsert into profiles_v2 (unified profile table)
+      const { error: upsertError } = await supabase
+        .from('profiles_v2')
+        .upsert({
+          user_id: user.id,
+          handle: handle,
+          display_name: handle, // Default display_name to handle
+          profile_photo_url: avatarUrl,
+          visibility: 'PUBLIC'
+        }, {
+          onConflict: 'user_id'
+        });
 
-      const response = await fetch('/api/profile/update', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          handle,
-          avatarUrl,
-          onboardingComplete: true
-        })
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to update profile');
+      if (upsertError) {
+        console.error('Profile upsert error:', upsertError);
+        throw new Error(upsertError.message || 'Failed to update profile');
       }
 
       // Mark as welcomed
       localStorage.setItem(`welcomed_${user.id}`, 'true');
 
       // Invalidate queries to refresh header and feed immediately
+      queryClient.invalidateQueries({ queryKey: ['my-v2-profile'] });
+      queryClient.invalidateQueries({ queryKey: ['user-profile-v2'] });
       queryClient.invalidateQueries({ queryKey: ['/api/profile'] });
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
 
