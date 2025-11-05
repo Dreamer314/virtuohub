@@ -15,7 +15,9 @@ CREATE TABLE IF NOT EXISTS public.jobs (
   primary_skill text NOT NULL,  -- Same vocabulary as profile primary skills
   platform text NOT NULL,        -- Single platform: Roblox, VRChat, Second Life, etc.
   job_type text NOT NULL,        -- Full-time, Part-time, Contract, One-off project, Internship
-  budget text,                   -- Free-text range like "$1,000–$1,500"
+  budget text,                   -- Numeric amount or range (e.g. "50" or "25/hr")
+  payment_type text,             -- Per project, Per hour, Per asset, Revenue share, Other
+  currency text,                 -- USD, Linden Dollar (L$), Robux, Other
   is_remote boolean NOT NULL DEFAULT true,
   location text,                 -- Optional city/region
   description text NOT NULL,     -- Full job description
@@ -84,7 +86,21 @@ WHERE tablename = 'jobs'
 ORDER BY cmd, policyname;
 
 -- ========================================
--- 6. Test query (same as frontend will use)
+-- 6. Add new columns to existing table (if upgrading)
+-- ========================================
+-- Run these if you already have a jobs table and need to add the new columns
+ALTER TABLE public.jobs
+ADD COLUMN IF NOT EXISTS payment_type text,
+ADD COLUMN IF NOT EXISTS currency text;
+
+-- Set defaults for existing rows
+UPDATE public.jobs
+SET payment_type = COALESCE(payment_type, 'Per project'),
+    currency     = COALESCE(currency, 'USD')
+WHERE payment_type IS NULL OR currency IS NULL;
+
+-- ========================================
+-- 7. Test query (same as frontend will use)
 -- ========================================
 -- This should return all public jobs, ordered by newest first
 SELECT 
@@ -95,6 +111,8 @@ SELECT
   platform,
   job_type,
   budget,
+  payment_type,
+  currency,
   is_remote,
   location,
   visibility,
@@ -110,8 +128,8 @@ LIMIT 20;
 -- Uncomment and modify the user_id to match your test user if you want sample data
 
 /*
-INSERT INTO public.jobs (user_id, title, company_name, primary_skill, platform, job_type, budget, is_remote, description, visibility) VALUES
-  ('your-user-id-here', '3D Modeler Needed for Fantasy Store', 'FantasyStore Co.', '3D Modeler', 'Second Life', 'Contract', '$1,000–$1,500', true, 'We need an experienced 3D modeler to create fantasy-themed items for our Second Life store. Must have experience with Blender and SL mesh upload.', 'PUBLIC'),
-  ('your-user-id-here', 'Animator for VRChat Avatar Project', 'VirtuoHub Studios', 'Animator', 'VRChat', 'One-off project', '$500–$800', true, 'Looking for a skilled animator to create custom animations for VRChat avatars. Experience with Unity and humanoid rigs required.', 'PUBLIC'),
-  ('your-user-id-here', 'Full-time World Builder', 'MetaWorld Inc', 'World Builder', 'Roblox', 'Full-time', '$60k–$80k/year', false, 'Join our team as a full-time world builder creating immersive experiences in Roblox. Must be comfortable with Lua scripting. Based in San Francisco.', 'PUBLIC');
+INSERT INTO public.jobs (user_id, title, company_name, primary_skill, platform, job_type, budget, payment_type, currency, is_remote, description, visibility) VALUES
+  ('your-user-id-here', '3D Modeler Needed for Fantasy Store', 'FantasyStore Co.', '3D Modeler', 'Second Life', 'Contract', '1000–1500', 'Per project', 'USD', true, 'We need an experienced 3D modeler to create fantasy-themed items for our Second Life store. Must have experience with Blender and SL mesh upload.', 'PUBLIC'),
+  ('your-user-id-here', 'Animator for VRChat Avatar Project', 'VirtuoHub Studios', 'Animator', 'VRChat', 'One-off project', '500–800', 'Per project', 'USD', true, 'Looking for a skilled animator to create custom animations for VRChat avatars. Experience with Unity and humanoid rigs required.', 'PUBLIC'),
+  ('your-user-id-here', 'Full-time World Builder', 'MetaWorld Inc', 'World Builder', 'Roblox', 'Full-time', '60000–80000', 'Per project', 'USD', false, 'Join our team as a full-time world builder creating immersive experiences in Roblox. Must be comfortable with Lua scripting. Based in San Francisco.', 'PUBLIC');
 */

@@ -1,0 +1,174 @@
+I want to refine the Post a Job flow and the jobs data model to better match the immersive creator economy.
+
+Please make the following changes. Work only in the jobs / talent area – don’t touch unrelated pages.
+
+1) Remove “Remote friendly” from the UI (but keep the column)
+
+Goal: All VirtuoHub jobs are effectively remote by default, so the checkbox is noise.
+
+In the Post Job page (client/src/pages/jobs/new.tsx or equivalent):
+
+Remove the “Remote friendly” checkbox from the form.
+
+Remove any form state / validation for isRemote / is_remote.
+
+In the Find Work job cards (client/src/pages/talent.tsx or wherever the cards are rendered):
+
+Remove the “Remote” pill / badge from the card UI.
+
+In the Job Detail page (client/src/pages/job-detail.tsx):
+
+Remove any “Remote” pill / text.
+
+Important:
+
+Do NOT drop the is_remote column from the public.jobs table.
+
+It can remain in the database and TypeScript types, just unused in the UI for now.
+
+2) Make Budget / Rate structured (payment type + currency + amount)
+
+Right now the job form has a single “Budget / Rate” text field. Replace it with a structured group of three fields.
+
+2a) Database schema
+
+Update the public.jobs table (in Supabase) to add two new columns:
+
+ALTER TABLE public.jobs
+ADD COLUMN IF NOT EXISTS payment_type text,
+ADD COLUMN IF NOT EXISTS currency text;
+
+
+Set reasonable defaults for existing rows (optional but ideal):
+
+UPDATE public.jobs
+SET payment_type = COALESCE(payment_type, 'Per project'),
+    currency     = COALESCE(currency, 'USD');
+
+
+Do not remove the existing budget/budget_text column — we will continue to use it for the numeric amount.
+
+Also update the TypeScript / Drizzle schema for the jobs table so it includes:
+
+payment_type: string | null
+
+currency: string | null
+
+(Use the same naming as in the DB: payment_type, currency.)
+
+2b) Post Job form UI
+
+On the Post Job page, replace the current single “Budget / Rate” field with:
+
+Payment type (dropdown)
+
+Label: Payment type *
+
+Options (exact text):
+
+Per project
+
+Per hour
+
+Per asset
+
+Revenue share
+
+Other
+
+Currency (dropdown)
+
+Label: Currency *
+
+Options:
+
+USD
+
+Linden Dollar (L$)
+
+Robux
+
+Other
+
+Amount (text input)
+
+Label: Budget / rate *
+
+Placeholder:
+e.g. 50 or 25/hr
+(Use a low-to-mid example like this; do not use 1500.)
+
+Helper text under the field:
+Rough ranges are fine (e.g. 50, 25/hr). This just helps creators see if it’s a fit.
+
+Wire these three fields into the form state and submission so that:
+
+payment_type is saved to the new payment_type column.
+
+currency is saved to the new currency column.
+
+The numeric / free-text amount goes into the existing budget field (whatever it’s currently named in the jobs table and schema).
+
+Validation:
+
+All three should be required for now.
+
+2c) Display on Find Work cards
+
+On the Find Work tab job cards:
+
+Replace the current budget display with something like:
+
+Budget: 50 USD, Per project
+
+That is:
+
+Show budget amount
+
+Followed by currency
+
+Followed by payment_type (comma-separated)
+
+Handle missing data gracefully (e.g. if currency is null, just show the amount).
+
+2d) Display on Job Detail page
+
+On /jobs/:id:
+
+In the main info section, show a clear Budget row:
+
+Label: Budget
+
+Value: 50 USD, Per project (same formatting as cards)
+
+If any of the three fields are missing, degrade gracefully instead of crashing.
+
+3) Keep everything else as-is
+
+Do not change any routing or RLS logic.
+
+Do not change how jobs are filtered on the Find Work tab.
+
+Keep the “Contact / Apply” button disabled / “Coming soon” as it is now.
+
+When you’re done:
+
+Create a test job with:
+
+Payment type: Per project
+
+Currency: USD
+
+Budget: 50
+
+Confirm:
+
+The Post Job form submits successfully.
+
+The job card on Find Work shows “Budget: 50 USD, Per project”.
+
+The Job detail page shows the same budget info.
+
+The “Remote” checkbox and pill are gone everywhere.
+
+Use this exact spec; please don’t invent additional fields or flows.
