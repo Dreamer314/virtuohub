@@ -7,6 +7,7 @@ export interface UserProfile {
   handle: string | null;
   profile_photo_url: string | null;
   visibility: string | null;
+  kind: string | null;
 }
 
 /**
@@ -24,7 +25,7 @@ export function useUserProfile(userId: string | null | undefined) {
       // Query profiles_v2 directly by user_id
       const { data: profile, error } = await supabase
         .from('profiles_v2')
-        .select('user_id, display_name, handle, profile_photo_url, visibility')
+        .select('user_id, display_name, handle, profile_photo_url, visibility, kind')
         .eq('user_id', userId)
         .maybeSingle();
 

@@ -64,8 +64,16 @@ export default function AdminPage() {
       const { data: { session } } = await supabase.auth.getSession();
       const uid = session?.user?.id || null;
       if (!uid) { if (!off) setIsAdmin(false); return; }
-      const { data, error } = await supabase.rpc("is_admin", { uid });
-      if (!off) setIsAdmin(Boolean(data) && !error);
+      
+      // Check if user has an ADMIN profile
+      const { data: profiles, error } = await supabase
+        .from('profiles_v2')
+        .select('kind')
+        .eq('user_id', uid)
+        .limit(1);
+      
+      const isAdminProfile = !!(profiles && profiles.length > 0 && profiles[0].kind === 'ADMIN');
+      if (!off) setIsAdmin(isAdminProfile);
     })();
     return () => { off = true; };
   }, []);

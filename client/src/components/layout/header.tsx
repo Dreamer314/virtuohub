@@ -53,15 +53,21 @@ export function Header({ onCreatePost }: HeaderProps) {
   const userHandle = v2Profile?.handle;
   const canViewProfile = v2Profile?.hasValidProfile || false;
 
-  // Admin flag
+  // Admin flag - check if user has ADMIN profile
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
       if (user?.id) {
-        const { data, error } = await supabase.rpc("is_admin", { uid: user.id });
-        if (!cancelled) setIsAdmin(Boolean(data) && !error);
+        const { data: profiles } = await supabase
+          .from('profiles_v2')
+          .select('kind')
+          .eq('user_id', user.id)
+          .limit(1);
+        
+        const isAdminProfile = !!(profiles && profiles.length > 0 && profiles[0].kind === 'ADMIN');
+        if (!cancelled) setIsAdmin(isAdminProfile);
       } else {
         if (!cancelled) setIsAdmin(false);
       }

@@ -41,7 +41,8 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
   // Use profiles_v2 data if available, otherwise fall back to post.author
   const displayName = getDisplayName(authorProfile, getDisplayName(post.author) || 'User');
   const avatarUrl = getAvatarUrl(authorProfile, getAvatarUrl(post.author));
-  const authorRole = post.author?.role; // Role comes from legacy author data
+  // Role/badge from profiles_v2.kind, or fallback to legacy role
+  const authorRole = authorProfile?.kind?.toLowerCase() || post.author?.role;
 
   // Poll voting state from server - defensive reading
   const options = (post as any).poll?.options ?? (post as any).poll_options ?? [];
