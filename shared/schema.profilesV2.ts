@@ -4,7 +4,7 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Enums for profile system
-export const profileKindEnum = pgEnum("profile_kind_v2", ["CREATOR", "STUDIO"]);
+export const profileKindEnum = pgEnum("profile_kind_v2", ["CREATOR", "STUDIO", "ADMIN"]);
 export const visibilityLevelEnum = pgEnum("visibility_level_v2", ["PUBLIC", "MEMBERS", "PRIVATE"]);
 export const accessStatusEnum = pgEnum("access_status_v2", ["PENDING", "APPROVED", "DENIED", "EXPIRED"]);
 
@@ -134,7 +134,7 @@ export type InsertAccessRequest = z.infer<typeof insertAccessRequestSchema>;
 export type HandleHistory = typeof handleHistory.$inferSelect;
 
 // Helper types
-export type ProfileKind = "CREATOR" | "STUDIO";
+export type ProfileKind = "CREATOR" | "STUDIO" | "ADMIN";
 export type VisibilityLevel = "PUBLIC" | "MEMBERS" | "PRIVATE";
 export type AccessStatus = "PENDING" | "APPROVED" | "DENIED" | "EXPIRED";
 

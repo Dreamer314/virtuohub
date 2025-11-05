@@ -1,0 +1,50 @@
+Fix admin role using profiles_v2.kind
+
+My Supabase profiles_v2 table has an enum column kind (type profile_kind_v2) with values CREATOR, STUDIO, and ADMIN.
+The row with handle Virtuohub_Founder has kind = 'ADMIN'.
+
+But in the app:
+
+The badge next to my name still shows user instead of admin.
+
+Going to /admin shows “Admin only – You must be an administrator to view this page.”
+
+There is no “Admin” link in the top navigation bar.
+
+Please do the following steps and keep them strictly scoped to admin detection (don’t touch creator options, talent, or job config):
+
+Find how admin is currently checked
+
+Search for the text Admin only and You must be an administrator to view this page. and identify the condition used (e.g. user.role === 'admin' or reading a role column from user_profiles).
+
+Switch admin detection to profiles_v2.kind
+
+Wherever the app decides whether a user is an admin (for /admin, for showing the Admin nav item, and for rendering the admin badge), change the logic so it uses the current user’s profiles_v2.kind.
+
+isAdmin should be true when profiles_v2.kind === 'ADMIN'.
+
+It’s OK to keep a fallback like || userProfiles.role === 'admin', but profiles_v2.kind === 'ADMIN' must work by itself.
+
+Update the TypeScript schema
+
+In shared/schema.ts (or wherever the Drizzle schema lives), make sure the enum for profile_kind_v2 includes "ADMIN" and that profiles_v2.kind uses that enum.
+
+Wire this into nav + badges
+
+Top nav: show the Admin link only when isAdmin is true (from profiles_v2.kind).
+
+Post / thread cards: where the small user / admin badge is rendered next to the handle, use the same isAdmin check so Virtuohub_Founder shows admin.
+
+Test with my real account
+
+Run the app, log in as @Virtuohub_Founder.
+
+Confirm:
+
+Admin link appears in the top nav.
+
+/admin no longer shows the “Admin only” message.
+
+Posts by Virtuohub_Founder show the admin badge instead of user.
+
+Finally, summarize exactly which files you changed and what condition is now used to determine isAdmin.
