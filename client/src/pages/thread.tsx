@@ -96,12 +96,12 @@ function ThreadCommentItem({ comment, currentUserId }: { comment: any, currentUs
                 disabled={likeMutation.isPending}
                 className={`flex items-center gap-1 transition-colors ${
                   hasLiked 
-                    ? 'text-red-500' 
+                    ? 'text-pink-400' 
                     : 'hover:text-foreground'
                 } cursor-pointer`}
                 data-testid={`like-comment-${comment.id}`}
               >
-                <Heart className={`w-3 h-3 ${hasLiked ? 'fill-red-500' : ''}`} />
+                <Heart className={`w-3 h-3 transition ${hasLiked ? 'fill-pink-400 text-pink-400' : 'text-muted-foreground'}`} />
                 {localLikeCount}
               </button>
             </div>
