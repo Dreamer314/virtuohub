@@ -294,7 +294,7 @@ export default function ThreadPage() {
 
             {/* Main Post */}
             <div className="mb-8">
-              <PostCard post={post} isDetailView={true} />
+              <PostCard post={post} currentUserId={currentUserId} isDetailView={true} />
               
               {/* Share Button */}
               <div className="mt-4 flex justify-end">
