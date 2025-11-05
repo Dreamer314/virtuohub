@@ -44,14 +44,17 @@ const CommunityPage: React.FC = () => {
   const { user } = useAuth();
   const { setIntent, registerAuthModalController } = useIntentContext();
   const { toast } = useToast();
+  
+  // Get userId for API requests (authenticated user or fallback)
+  const currentUserId = user?.id || 'user1';
 
-  // Posts
+  // Posts (include userId for hasLiked computation)
   const { data: posts = [], isLoading } = useQuery<PostWithAuthor[]>({
-    queryKey: ['/api/posts'],
+    queryKey: [`/api/posts?userId=${currentUserId}`],
   });
 
   const { data: savedPosts = [], isLoading: savedLoading } = useQuery<PostWithAuthor[]>({
-    queryKey: ['/api/users/user1/saved-posts'],
+    queryKey: [`/api/users/${currentUserId}/saved-posts`],
   });
 
   // Composer routing + filters

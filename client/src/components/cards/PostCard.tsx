@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -28,6 +28,12 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
   const [hasLiked, setHasLiked] = useState((post as any).hasLiked || false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  
+  // Sync local state when post props change (e.g., after query refetch)
+  useEffect(() => {
+    setLikes(post.likes || 0);
+    setHasLiked((post as any).hasLiked || false);
+  }, [post.likes, (post as any).hasLiked]);
   
   // Fetch author profile from profiles_v2
   const { data: authorProfile } = useUserProfile(post.authorId);

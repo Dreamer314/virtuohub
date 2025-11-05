@@ -166,7 +166,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Get all posts with optional filtering
   app.get("/api/posts", optionalAuth, async (req, res) => {
     try {
-      const { category, platforms, authorId } = req.query;
+      const { category, platforms, authorId, userId: queryUserId } = req.query;
       
       const filters: any = {};
       if (category && category !== 'All') {
@@ -183,7 +183,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let posts = await storage.getPosts(filters);
       
       // Attach likes data from junction table (single source of truth)
-      const userId = (req as any).user?.id;
+      // Use authenticated user ID or fallback to query param (for unauthenticated users)
+      const userId = (req as any).user?.id || (queryUserId as string);
       posts = await attachLikesDataToPosts(posts, userId);
       
       // Attach poll metadata with vote data
@@ -204,7 +205,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Attach likes data from junction table (single source of truth)
-      const userId = (req as any).user?.id;
+      // Use authenticated user ID or fallback to query param (for unauthenticated users)
+      const userId = (req as any).user?.id || (req.query.userId as string);
       let posts = await attachLikesDataToPosts([post], userId);
       
       // Attach poll metadata with vote data
@@ -496,7 +498,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       let comments = await storage.getPostComments(req.params.postId);
       
       // Attach likes data from junction table (single source of truth)
-      const userId = (req as any).user?.id;
+      // Use authenticated user ID or fallback to query param (for unauthenticated users)
+      const userId = (req as any).user?.id || (req.query.userId as string);
       comments = await attachLikesDataToComments(comments, userId);
       
       res.json(comments);

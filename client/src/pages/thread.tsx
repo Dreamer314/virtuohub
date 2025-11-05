@@ -30,6 +30,12 @@ function ThreadCommentItem({ comment, currentUserId }: { comment: any, currentUs
   const [localLikeCount, setLocalLikeCount] = useState(comment.likes || 0);
   const [hasLiked, setHasLiked] = useState(comment.hasLiked || false);
   
+  // Sync local state when comment props change (e.g., after query refetch)
+  useEffect(() => {
+    setLocalLikeCount(comment.likes || 0);
+    setHasLiked(comment.hasLiked || false);
+  }, [comment.likes, comment.hasLiked]);
+  
   // Use profiles_v2 data, fallback to legacy author data if profiles_v2 not available
   const displayName = getDisplayName(profile, getDisplayName(comment?.author) || 'User');
   const avatarUrl = getAvatarUrl(profile, getAvatarUrl(comment?.author));
