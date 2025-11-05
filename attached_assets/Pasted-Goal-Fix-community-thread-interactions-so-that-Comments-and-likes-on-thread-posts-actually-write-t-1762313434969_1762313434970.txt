@@ -1,0 +1,134 @@
+Goal
+Fix community thread interactions so that:
+
+Comments and likes on thread posts actually write to the database and show up in the UI.
+
+Thread posts and their comments display author name + avatar using the unified profiles_v2 system (the same as spotlight comments).
+
+No unrelated schemas or logic are changed.
+
+Part 1 – Investigate why thread comments & likes don’t work
+
+Find the page/component for individual community threads (the route that looks like /thread/:id), and the components that render:
+
+the comment form at the bottom
+
+the comments list
+
+the like / reaction button
+(Search for "Comments (0)" or "Be the first to share your thoughts" and for the poll post “Which is better?” if needed.)
+
+Run the app, open a thread, try to:
+
+post a comment
+
+toggle a like / reaction
+Watch browser console and network tab for any errors or failed Supabase / API calls.
+
+From the code, determine which Supabase tables these actions are supposed to use (e.g. thread_comments, comments, post_reactions, etc.).
+
+Verify in Supabase that those tables actually exist and that:
+
+Inserts/selects are allowed by RLS for authenticated users.
+
+The connection is using the correct database (the same Supabase project we use for profiles_v2 and jobs).
+
+Important constraints
+
+Do not introduce any new database (Neon, etc.). Use the existing Supabase DB only.
+
+Do not drop tables or columns.
+
+Only add or adjust RLS policies on the specific comments / reactions tables that are needed for this feature.
+
+Part 2 – Fix writes for comments and likes
+
+For the comments table you identify:
+
+Ensure there is a user_id column that stores the Supabase auth.uid().
+
+If RLS is blocking inserts/selects, add minimal policies so:
+
+Anyone can SELECT comments on public threads.
+
+Authenticated users can INSERT comments with their own user_id.
+
+Authenticated users can UPDATE/DELETE only their own comments (if that’s already supported in the UI).
+
+For likes/reactions:
+
+Ensure the insert/upsert logic writes a row linking thread_id + user_id.
+
+Fix any RLS issues similarly so authenticated users can like/unlike.
+
+After fixing, re-test:
+
+Comment appears immediately in the list after posting.
+
+Page refresh still shows the new comment.
+
+Like count updates and persists after refresh.
+
+Please keep changes scoped:
+
+Don’t refactor the entire community system.
+
+Don’t modify job board or spotlight logic.
+
+Part 3 – Use profiles_v2 for thread authors and comment authors
+
+We already have a unified profile hook and helpers:
+
+useUserProfile(userId) (or similar) added in the previous “profiles_v2 unification” work.
+
+getDisplayName() and getAvatarUrl() helpers that understand both legacy and profiles_v2 fields.
+
+Find those utilities and reuse them.
+
+In the components that render:
+
+The author block for a thread post in the community feed cards.
+
+The author block on the thread detail page.
+
+Each comment’s author row.
+
+Make them all use this pattern:
+
+Given an author_user_id (or equivalent field from the thread/comment row), call the unified hook to fetch the profile from profiles_v2.
+
+Use getDisplayName(profile) for the label (handle or name).
+
+Use getAvatarUrl(profile) for the avatar image.
+
+Make sure:
+
+If a profiles_v2 record doesn’t exist yet, it gracefully falls back to the legacy author data (whatever you were showing before).
+
+We do not duplicate profile fields into the comments/threads tables; we should always treat author_user_id as the source of truth and look up the profile.
+
+Part 4 – Sanity checks
+
+Test as the Virtuohub_Founder account:
+
+New comments on a thread show the correct avatar + handle from profiles_v2.
+
+Older comments still render, either with the new profile or with a sensible fallback.
+
+Test with a second user:
+
+Their thread posts and comments show their avatar + handle.
+
+Confirm:
+
+Spotlight comments remain working and unchanged.
+
+Jobs, talent marketplace, and profile pages are unaffected.
+
+When you’re done, summarize:
+
+Which files you changed.
+
+Which tables and RLS policies you touched.
+
+Exactly how author display is now resolved for thread posts and comments.
