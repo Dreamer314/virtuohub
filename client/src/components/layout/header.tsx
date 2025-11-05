@@ -149,6 +149,15 @@ export function Header({ onCreatePost }: HeaderProps) {
             >
               Community
             </Link>
+            <Link
+              href="/talent"
+              className={`vh-nav-item px-3 py-2 rounded-lg font-medium text-base ${
+                location === "/talent" || location.startsWith("/jobs/") ? "active" : ""
+              }`}
+              data-testid="nav-talent"
+            >
+              Talent
+            </Link>
 
             {/* Admin link for real admins */}
             {isAdmin && (
@@ -352,13 +361,16 @@ export function Header({ onCreatePost }: HeaderProps) {
         {isMobileMenuOpen && (
           <div className="lg:hidden border-t border-border bg-background/95 backdrop-blur-sm">
             <nav className="flex flex-col space-y-1 py-4">
-              <a
-                href="#"
-                className="vh-nav-item px-4 py-3 font-medium rounded-lg mx-2"
+              <Link
+                href="/home"
+                className={`vh-nav-item px-4 py-3 font-medium rounded-lg mx-2 ${
+                  location === "/home" ? "active" : ""
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
                 data-testid="mobile-nav-home"
               >
                 Home
-              </a>
+              </Link>
               <a
                 href="#"
                 className="vh-nav-item px-4 py-3 font-medium rounded-lg mx-2"
@@ -380,13 +392,26 @@ export function Header({ onCreatePost }: HeaderProps) {
               >
                 Connect
               </a>
-              <a
-                href="#"
-                className="vh-nav-item active px-4 py-3 font-medium rounded-lg mx-2"
+              <Link
+                href="/"
+                className={`vh-nav-item px-4 py-3 font-medium rounded-lg mx-2 ${
+                  location === "/" ? "active" : ""
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
                 data-testid="mobile-nav-community"
               >
                 Community
-              </a>
+              </Link>
+              <Link
+                href="/talent"
+                className={`vh-nav-item px-4 py-3 font-medium rounded-lg mx-2 ${
+                  location === "/talent" || location.startsWith("/jobs/") ? "active" : ""
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+                data-testid="mobile-nav-talent"
+              >
+                Talent
+              </Link>
 
               {/* Admin (mobile) */}
               {isAdmin && (
