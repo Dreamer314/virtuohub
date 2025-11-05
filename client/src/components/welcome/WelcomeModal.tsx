@@ -181,22 +181,45 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
         }
       }
 
-      // Upsert into profiles_v2 (unified profile table)
-      const { error: upsertError } = await supabase
+      // Check if profile already exists for this user_id
+      const { data: existingProfile } = await supabase
         .from('profiles_v2')
-        .upsert({
-          user_id: user.id,
-          handle: handle,
-          display_name: handle, // Default display_name to handle
-          profile_photo_url: avatarUrl,
-          visibility: 'PUBLIC'
-        }, {
-          onConflict: 'user_id'
-        });
+        .select('profile_id')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-      if (upsertError) {
-        console.error('Profile upsert error:', upsertError);
-        throw new Error(upsertError.message || 'Failed to update profile');
+      if (existingProfile) {
+        // Update existing profile
+        const { error: updateError } = await supabase
+          .from('profiles_v2')
+          .update({
+            handle: handle,
+            display_name: handle,
+            profile_photo_url: avatarUrl,
+            visibility: 'PUBLIC'
+          })
+          .eq('user_id', user.id);
+
+        if (updateError) {
+          console.error('Profile update error:', updateError);
+          throw new Error(updateError.message || 'Failed to update profile');
+        }
+      } else {
+        // Insert new profile
+        const { error: insertError } = await supabase
+          .from('profiles_v2')
+          .insert({
+            user_id: user.id,
+            handle: handle,
+            display_name: handle,
+            profile_photo_url: avatarUrl,
+            visibility: 'PUBLIC'
+          });
+
+        if (insertError) {
+          console.error('Profile insert error:', insertError);
+          throw new Error(insertError.message || 'Failed to create profile');
+        }
       }
 
       // Mark as welcomed
