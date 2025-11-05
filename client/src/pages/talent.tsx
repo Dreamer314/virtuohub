@@ -10,55 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/lib/supabaseClient";
-
-// Primary roles matching profile settings
-const PRIMARY_ROLES = [
-  "3D Modeler",
-  "World Builder",
-  "Environment Artist",
-  "Character Artist",
-  "Rigger",
-  "Animator",
-  "Scripter / Programmer",
-  "Technical Artist",
-  "UI / UX Designer",
-  "Sound Designer",
-  "Video Editor",
-  "Community Manager",
-  "Store Owner",
-  "Educator",
-  "Publisher / Producer",
-  "Investor",
-  "Other (Business / Education)"
-];
-
-// Platforms matching profile settings
-const PLATFORMS = [
-  "Roblox",
-  "VRChat",
-  "Second Life",
-  "IMVU",
-  "Meta Horizon Worlds",
-  "GTA / FiveM",
-  "The Sims (CC)",
-  "Unity",
-  "Unreal Engine"
-];
-
-// Tools matching profile settings
-const TOOLS = [
-  "Blender",
-  "Maya",
-  "ZBrush",
-  "Substance Painter",
-  "Photoshop",
-  "Marvelous Designer",
-  "Unity",
-  "Unreal Engine",
-  "Notepad++",
-  "VS Code",
-  "Udon / UdonSharp"
-];
+import { PRIMARY_ROLES, PLATFORMS, TOOLS, JOB_TYPES } from "@/config/creatorOptions";
 
 interface QuickFacts {
   primary_role?: string;

@@ -12,62 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { Link } from "wouter";
 import { useToast } from "@/hooks/use-toast";
-
-// Reuse constants from talent.tsx
-const PRIMARY_ROLES = [
-  "3D Modeler",
-  "World Builder",
-  "Environment Artist",
-  "Character Artist",
-  "Rigger",
-  "Animator",
-  "Scripter / Programmer",
-  "Technical Artist",
-  "UI / UX Designer",
-  "Sound Designer",
-  "Video Editor",
-  "Community Manager",
-  "Store Owner",
-  "Educator",
-  "Publisher / Producer",
-  "Investor",
-  "Other (Business / Education)"
-];
-
-const PLATFORMS = [
-  "Roblox",
-  "VRChat",
-  "Second Life",
-  "IMVU",
-  "Meta Horizon Worlds",
-  "GTA / FiveM",
-  "The Sims (CC)",
-  "Unity",
-  "Unreal Engine"
-];
-
-const JOB_TYPES = [
-  "Full-time",
-  "Part-time",
-  "Contract",
-  "One-off project",
-  "Internship"
-];
-
-const PAYMENT_TYPES = [
-  "Per project",
-  "Per hour",
-  "Per asset",
-  "Revenue share",
-  "Other"
-];
-
-const CURRENCIES = [
-  "USD",
-  "Linden Dollar (L$)",
-  "Robux",
-  "Other"
-];
+import { PRIMARY_ROLES, PLATFORMS, JOB_TYPES, PAYMENT_TYPES, CURRENCIES } from "@/config/creatorOptions";
 
 interface JobFormData {
   title: string;
