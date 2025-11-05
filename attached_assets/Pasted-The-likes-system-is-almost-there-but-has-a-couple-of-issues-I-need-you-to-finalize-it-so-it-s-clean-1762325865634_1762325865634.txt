@@ -1,0 +1,248 @@
+The likes system is almost there but has a couple of issues. I need you to finalize it so it’s clean, consistent, and fully backed by the junction tables.
+
+High-level requirements
+
+Single source of truth for likes
+
+For posts → use post_likes table only.
+
+For comments → use comment_likes table only.
+
+The old posts.likes column should NOT be used anywhere in the code anymore.
+
+Stable counts across refresh
+
+The like counts for posts and comments must always come from COUNT(*) on the junction tables.
+
+No more “4 likes on first load, then 0/1 after clicking, then 4 again after refresh”.
+
+Persisted “I liked this” state
+
+When a logged-in user has liked a post or comment, the UI should show the icon as active (filled / colored) even after a full page refresh.
+
+That means the API responses for GET posts and GET comments must include both:
+
+likes: number – total count for that post/comment
+
+hasLiked: boolean – whether the current user has liked it
+
+Toggle behavior
+
+Clicking like on a post or comment should:
+
+Insert into post_likes / comment_likes if there is no like by this user yet.
+
+Delete that row if it already exists (toggle off).
+
+Counts must never go below 0.
+
+One row per (post_id, user_id) or (comment_id, user_id) is enforced by UNIQUE constraint (already set up).
+
+Consistent icon
+
+Use heart icons for both posts and comments (no mix of thumbs + hearts).
+
+When hasLiked === true, the heart should render in its “active” style (e.g. filled / colored).
+
+When hasLiked === false, show the “inactive” style.
+
+Concrete changes to make
+1. Backend: stop using posts.likes and read from junction tables instead
+
+Files to focus on (adjust if names differ):
+
+server/supabaseStorage.ts
+
+server/routes.ts (or wherever post + comment GET routes are defined)
+
+Tasks:
+
+Remove all reads/writes of posts.likes.
+
+Anywhere you see data.likes or posts.likes coming from Supabase, stop using that.
+
+Instead, the likes count should come from post_likes / comment_likes.
+
+For posts:
+
+When fetching a single post or a list of posts, join or subquery post_likes:
+
+Return likes as COUNT(*) of post_likes for that post.
+
+Also compute hasLiked for the current user (see below).
+
+Example logic (pseudo-SQL; adapt to Supabase JS):
+
+SELECT
+  p.*,
+  COALESCE(pl.likes, 0) AS likes,
+  EXISTS(
+    SELECT 1
+    FROM post_likes l
+    WHERE l.post_id = p.id
+      AND l.user_id = :currentUserId
+  ) AS has_liked
+FROM posts p
+LEFT JOIN (
+  SELECT post_id, COUNT(*) AS likes
+  FROM post_likes
+  GROUP BY post_id
+) pl ON pl.post_id = p.id
+WHERE p.id = :postId;
+
+
+In the TS mapping, expose this as:
+
+likes: data.likes ?? 0,
+hasLiked: data.has_liked ?? false,
+
+
+For comments:
+
+Do the same thing using comment_likes:
+
+SELECT
+  c.*,
+  COALESCE(cl.likes, 0) AS likes,
+  EXISTS(
+    SELECT 1
+    FROM comment_likes l
+    WHERE l.comment_id = c.id
+      AND l.user_id = :currentUserId
+  ) AS has_liked
+FROM comments c
+LEFT JOIN (
+  SELECT comment_id, COUNT(*) AS likes
+  FROM comment_likes
+  GROUP BY comment_id
+) cl ON cl.comment_id = c.id
+WHERE c.post_id = :postId;
+
+
+Same mapping: likes and hasLiked.
+
+Ensure toggle endpoints already use junction tables
+
+likePost(postId, userId) should:
+
+Check if row exists in post_likes for (postId, userId).
+
+If exists → delete it (unlike); if not → insert (like).
+
+Then return { likes, hasLiked } based on fresh counts from post_likes.
+
+likeComment(commentId, userId) should do the same with comment_likes.
+
+User ID handling
+
+For logged-in users: use their real user.id as user_id in the junction tables.
+
+For anonymous users: it’s acceptable if hasLiked is always false and likes don’t persist. Don’t rely on the “user1” fallback for DB checks if that complicates things – logged-in behavior is the priority for now.
+
+2. Backend: optional SQL cleanup for posts.likes
+
+Create a small SQL file (e.g. supabase_posts_likes_cleanup.sql) with:
+
+-- Optional cleanup: zero out legacy likes column
+UPDATE public.posts SET likes = 0;
+-- (Later we can DROP COLUMN likes once we’re fully confident.)
+
+
+Put a comment in the file telling me to run it in the Supabase SQL editor. Do not call it automatically from the app.
+
+3. Frontend: use likes + hasLiked from API for initial state
+
+Files likely involved:
+
+client/src/components/cards/PostCard.tsx (or similar)
+
+client/src/pages/thread.tsx (for the main thread view + ThreadCommentItem)
+
+Any place that renders a post/comment with a like button
+
+Tasks:
+
+Posts (PostCard):
+
+Make sure the post object includes likes: number and hasLiked: boolean from the backend.
+
+Initialize local state like:
+
+const [likes, setLikes] = useState(post.likes ?? 0);
+const [hasLiked, setHasLiked] = useState(post.hasLiked ?? false);
+
+
+In the like handler, after calling the API, update from the response:
+
+const { likes: newLikes, hasLiked: newHasLiked } = data;
+setLikes(newLikes);
+setHasLiked(newHasLiked);
+
+
+Comments (ThreadCommentItem or equivalent):
+
+Do the same: state is initialized from comment.likes and comment.hasLiked.
+
+After toggle, update from the API response.
+
+Icon styling:
+
+Use a heart icon for both posts and comments (e.g. from Lucide or your existing icon set).
+
+Style logic:
+
+const isActive = hasLiked;
+
+<Heart
+  className={cn(
+    "h-4 w-4 transition",
+    isActive ? "text-pink-400 fill-pink-400" : "text-muted-foreground"
+  )}
+/>
+
+
+Make sure this applies in both the feed cards and the detailed thread view so it stays consistent.
+
+Counts and refresh:
+
+After your changes, behavior should be:
+
+Like/unlike updates the count immediately.
+
+Refreshing the page shows:
+
+The correct total count (from junction table).
+
+The heart in “active” state for items I’ve liked.
+
+Acceptance criteria
+
+Please verify the following scenarios before marking as done:
+
+Existing thread post with old likes
+
+On initial load, the likes count comes from post_likes (likely 0 if no rows), NOT from posts.likes.
+
+Clicking like increments to 1, clicking again decrements to 0.
+
+After refresh, the count reflects the true number from post_likes.
+
+Comment likes
+
+Comment hearts increment/decrement correctly.
+
+After refresh, the comment heart stays active for the comments I’ve liked.
+
+Icon consistency
+
+Posts and comments both use hearts, with the same active/inactive visual language.
+
+No new references to posts.likes in the codebase
+
+A project-wide search for .likes should only show:
+
+Type fields returned from the backend (likes number).
+
+UI uses of likes, not raw DB columns.
+
+Please implement all of the above and leave short code comments in key spots (backend + PostCard + comment component) explaining that likes are now fully backed by post_likes/comment_likes and hasLiked comes from the junction tables.

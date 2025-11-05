@@ -71,6 +71,96 @@ async function attachPollMetaForPosts(rows: any[], userId?: string) {
   });
 }
 
+// Helper to attach likes data from post_likes junction table
+// Computes likes count and hasLiked status from junction table (single source of truth)
+async function attachLikesDataToPosts(posts: any[], userId?: string) {
+  if (posts.length === 0) return posts;
+
+  const postIds = posts.map(p => p.id);
+
+  // Fetch like counts for all posts using COUNT queries on junction table
+  const { data: likeCounts } = await supabaseAdmin
+    .from('post_likes')
+    .select('post_id')
+    .in('post_id', postIds);
+
+  // Count likes per post
+  const likeCountMap: Record<string, number> = {};
+  if (likeCounts) {
+    likeCounts.forEach(like => {
+      likeCountMap[like.post_id] = (likeCountMap[like.post_id] || 0) + 1;
+    });
+  }
+
+  // Check which posts the current user has liked
+  const hasLikedMap: Record<string, boolean> = {};
+  if (userId) {
+    const { data: userLikes } = await supabaseAdmin
+      .from('post_likes')
+      .select('post_id')
+      .in('post_id', postIds)
+      .eq('user_id', userId);
+
+    if (userLikes) {
+      userLikes.forEach(like => {
+        hasLikedMap[like.post_id] = true;
+      });
+    }
+  }
+
+  // Attach likes and hasLiked to each post
+  return posts.map(post => ({
+    ...post,
+    likes: likeCountMap[post.id] || 0,
+    hasLiked: hasLikedMap[post.id] || false,
+  }));
+}
+
+// Helper to attach likes data from comment_likes junction table
+// Computes likes count and hasLiked status from junction table (single source of truth)
+async function attachLikesDataToComments(comments: any[], userId?: string) {
+  if (comments.length === 0) return comments;
+
+  const commentIds = comments.map(c => c.id);
+
+  // Fetch like counts for all comments using COUNT queries on junction table
+  const { data: likeCounts } = await supabaseAdmin
+    .from('comment_likes')
+    .select('comment_id')
+    .in('comment_id', commentIds);
+
+  // Count likes per comment
+  const likeCountMap: Record<string, number> = {};
+  if (likeCounts) {
+    likeCounts.forEach(like => {
+      likeCountMap[like.comment_id] = (likeCountMap[like.comment_id] || 0) + 1;
+    });
+  }
+
+  // Check which comments the current user has liked
+  const hasLikedMap: Record<string, boolean> = {};
+  if (userId) {
+    const { data: userLikes } = await supabaseAdmin
+      .from('comment_likes')
+      .select('comment_id')
+      .in('comment_id', commentIds)
+      .eq('user_id', userId);
+
+    if (userLikes) {
+      userLikes.forEach(like => {
+        hasLikedMap[like.comment_id] = true;
+      });
+    }
+  }
+
+  // Attach likes and hasLiked to each comment
+  return comments.map(comment => ({
+    ...comment,
+    likes: likeCountMap[comment.id] || 0,
+    hasLiked: hasLikedMap[comment.id] || false,
+  }));
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   
   // Get all posts with optional filtering
@@ -92,8 +182,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       let posts = await storage.getPosts(filters);
       
-      // Attach poll metadata with vote data
+      // Attach likes data from junction table (single source of truth)
       const userId = (req as any).user?.id;
+      posts = await attachLikesDataToPosts(posts, userId);
+      
+      // Attach poll metadata with vote data
       posts = await attachPollMetaForPosts(posts, userId);
       
       res.json(posts);
@@ -110,9 +203,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Post not found" });
       }
       
-      // Attach poll metadata with vote data
+      // Attach likes data from junction table (single source of truth)
       const userId = (req as any).user?.id;
-      const posts = await attachPollMetaForPosts([post], userId);
+      let posts = await attachLikesDataToPosts([post], userId);
+      
+      // Attach poll metadata with vote data
+      posts = await attachPollMetaForPosts(posts, userId);
       
       res.json(posts[0]);
     } catch (error) {
@@ -395,9 +491,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Get comments for a post
-  app.get("/api/posts/:postId/comments", async (req, res) => {
+  app.get("/api/posts/:postId/comments", optionalAuth, async (req, res) => {
     try {
-      const comments = await storage.getPostComments(req.params.postId);
+      let comments = await storage.getPostComments(req.params.postId);
+      
+      // Attach likes data from junction table (single source of truth)
+      const userId = (req as any).user?.id;
+      comments = await attachLikesDataToComments(comments, userId);
+      
       res.json(comments);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch post comments" });

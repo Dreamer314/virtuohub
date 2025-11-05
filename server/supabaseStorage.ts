@@ -140,6 +140,7 @@ export class SupabaseStorage implements IStorage {
     return {
       id: data.id,
       authorId: data.author_id,
+      authoredByProfileId: null,
       title: data.title,
       summary: null,
       body: data.content,
@@ -287,6 +288,7 @@ export class SupabaseStorage implements IStorage {
     let post: any = {
       id: data.id,
       authorId: data.author_id,
+      authoredByProfileId: null,
       title: data.title,
       summary: null,
       body: data.content,
@@ -334,6 +336,7 @@ export class SupabaseStorage implements IStorage {
     return {
       id: data.id,
       authorId: data.author_id,
+      authoredByProfileId: null,
       title: data.title,
       summary: null,
       body: data.content,

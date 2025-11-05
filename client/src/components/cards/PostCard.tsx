@@ -23,8 +23,9 @@ interface PostCardProps {
 export const PostCard = React.memo(function PostCard({ post, currentUserId = 'user1', isDetailView = false }: PostCardProps) {
   const [isSaved, setIsSaved] = useState(post.isSaved || false);
   const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
+  // Likes state initialized from API data (junction table is single source of truth)
   const [likes, setLikes] = useState(post.likes || 0);
-  const [hasLiked, setHasLiked] = useState(false);
+  const [hasLiked, setHasLiked] = useState((post as any).hasLiked || false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   
@@ -463,7 +464,7 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                   className="vh-button flex items-center space-x-2 px-2 py-1"
                   data-testid={`like-button-${post.id}`}
                 >
-                  <ThumbsUp size={16} className={hasLiked ? "fill-current text-vh-primary" : ""} />
+                  <Heart size={16} className={cn("transition", hasLiked ? "fill-pink-400 text-pink-400" : "text-muted-foreground")} />
                   <span className="vh-body-small">{likes}</span>
                 </Button>
                 <Button

@@ -26,9 +26,9 @@ function ThreadCommentItem({ comment, currentUserId }: { comment: any, currentUs
   // Fetch profile from profiles_v2 using authorId
   const { data: profile } = useUserProfile(comment.authorId || comment.author_id || '');
   
-  // Local state for toggle-able like functionality
+  // Local state for toggle-able like functionality (initialized from junction table data)
   const [localLikeCount, setLocalLikeCount] = useState(comment.likes || 0);
-  const [hasLiked, setHasLiked] = useState(false);
+  const [hasLiked, setHasLiked] = useState(comment.hasLiked || false);
   
   // Use profiles_v2 data, fallback to legacy author data if profiles_v2 not available
   const displayName = getDisplayName(profile, getDisplayName(comment?.author) || 'User');
