@@ -1,0 +1,122 @@
+I am updating the VirtuoHub profile settings page to use a new, more accurate vocabulary for immersive creators.
+
+You already have a “My Profile” page with sections for:
+• Display Name, Headline, Handle, Profile Picture, Bio
+• Availability (I’m open to paid opportunities / I’m looking to hire creators, plus a textarea)
+• “Creator Profile” with fields for Primary Skill, Other Skills, Platforms you work on, Tools you use, Experience level, and social links.
+
+I want to keep the current layout, styling, and “Other” behavior exactly as they are, and only update:
+
+the label and helper text for Primary Skill
+
+the options used for primary skill, platforms, tools, and experience level
+
+reuse these same option lists anywhere else they are used (filters, forms, etc) instead of duplicating them.
+
+Please follow these steps carefully:
+
+1. Find the existing creator profile options and centralize them
+• Search the codebase for the string "Primary Skill" and "3D Modeler" to locate where the current options are defined.
+• If the options are hard coded directly in the profile component, extract them into a shared config module, for example src/config/creatorOptions.ts or similar.
+• If a shared options file already exists, update that file instead of creating a new one.
+
+2. Rename "Primary Skill" field and keep the existing dropdown behavior
+• In the Creator Profile section on the profile settings page:
+• Change the field label from Primary Skill to Primary role.
+• Update the helper text under it to:
+• What you are best known for in virtual worlds.
+• Keep this field as a single select dropdown, just like it is now. Do not change its component type or validation logic.
+• The “Other” behavior should work the same way it does today: when the user selects “Other,” show the existing custom input field for entering a custom role. Do not change that logic, only make sure “Other” is one of the options in the roles array.
+
+3. Replace the options with the following arrays
+Create or update exported constants for the creator options like this (TypeScript, but match the project’s existing style). Use these exact string values:
+
+export const PRIMARY_ROLES = [
+  "Avatar clothing creator",
+  "Accessory or jewelry creator",
+  "Hair creator",
+  "World or sim builder",
+  "Environment and prop artist",
+  "Character artist",
+  "Rigger (bodies or clothing)",
+  "Animator and pose creator",
+  "Scripter or systems developer",
+  "HUD and tool creator",
+  "Vendor or packager systems",
+  "Product photographer and ad shooter",
+  "Video and machinima creator",
+  "Brand and logo designer",
+  "UI or HUD designer",
+  "Community or event host",
+  "Community manager",
+  "Store owner or brand owner",
+  "Store or studio manager",
+  "Blogger or creator manager",
+  "Educator or mentor",
+  "New creator / learning",
+  "Other"
+];
+
+export const PLATFORMS = [
+  "Roblox",
+  "VRChat",
+  "Second Life",
+  "IMVU",
+  "Horizon Worlds",
+  "GTA / FiveM",
+  "The Sims 4 (CC)",
+  "Minecraft",
+  "Spatial",
+  "Unity",
+  "Unreal Engine",
+  "Other"
+];
+
+export const TOOLS = [
+  "Blender",
+  "Maya",
+  "ZBrush",
+  "Substance Painter",
+  "Photoshop",
+  "Marvelous Designer",
+  "Unity",
+  "Unreal Engine",
+  "Roblox Studio",
+  "Sims 4 Studio",
+  "Notepad++",
+  "VS Code",
+  "Udon / UdonSharp",
+  "Other"
+];
+
+export const EXPERIENCE_LEVELS = [
+  "New creator (under 1 year)",
+  "1–2 years",
+  "3–5 years",
+  "5+ years",
+  "Studio lead or veteran"
+];
+
+
+4. Wire these constants into the profile form
+• In the Creator Profile section:
+• Primary role dropdown should use PRIMARY_ROLES as its options.
+• Other skills multi select should also use PRIMARY_ROLES (same array), but allow multiple selections. The “Other” option can be included here as well if it already works that way.
+• “Platforms you work on” should use PLATFORMS.
+• “Tools you use” should use TOOLS.
+• “Experience level” should use EXPERIENCE_LEVELS.
+• Do not alter validation or field names in the submitted profile data; only change the option labels and lists that the user sees. If any backend enums or types depend on the old values, update those types to use these new strings in a consistent way.
+
+5. Keep the existing "Other" behavior for platforms and tools
+• Wherever the platform and tools fields currently show a text input when “Other” is selected, preserve that behavior exactly. The only change should be that “Other” comes from the new PLATFORMS and TOOLS arrays.
+• Do not introduce new “Other” logic in places where it does not already exist. Just reuse the current pattern.
+
+6. Reuse these constants anywhere the same options appear
+• If the same sets of options are used in any “Find Work” or “Find Talent” filters, or in any job posting forms, refactor those components to import PRIMARY_ROLES, PLATFORMS, TOOLS, and EXPERIENCE_LEVELS from the shared config instead of duplicating arrays inline.
+• The goal is that the vocabulary is consistent across profile, filters, and forms. Do not change any routes or component names, just replace the underlying option sources.
+
+7. Do not change styling or layout
+• Do not adjust Tailwind classes, card layout, spacing, or typography on the My Profile page.
+• This task is content and config only: labels, helper texts, and option lists.
+
+After you make these changes, show me the updated JSX/TSX for the Creator Profile section component so I can verify that the field labels and options match the new arrays and that the “Other” behavior still works.
