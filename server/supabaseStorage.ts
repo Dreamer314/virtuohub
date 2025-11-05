@@ -153,7 +153,7 @@ export class SupabaseStorage implements IStorage {
       status: 'published',
       subtype: data.subtype || 'thread',
       subtypeData: data.subtype_data || null,
-      likes: data.likes || 0,
+      likes: data.like_count || 0,
       comments: data.comments || 0,
       shares: data.shares || 0,
       views: 0,
@@ -300,7 +300,7 @@ export class SupabaseStorage implements IStorage {
       status: 'published',
       subtype: data.subtype || 'thread',
       subtypeData: data.subtype_data || null,
-      likes: data.likes || 0,
+      likes: data.like_count || 0,
       comments: data.comments || 0,
       shares: data.shares || 0,
       views: 0,
@@ -347,7 +347,7 @@ export class SupabaseStorage implements IStorage {
       status: 'published',
       subtype: data.subtype || 'thread',
       subtypeData: null,
-      likes: data.likes || 0,
+      likes: data.like_count || 0,
       comments: data.comments || 0,
       shares: data.shares || 0,
       views: 0,
@@ -400,17 +400,17 @@ export class SupabaseStorage implements IStorage {
   async likePost(postId: string): Promise<void> {
     console.log('[likePost] Liking post:', postId);
     
-    // Fetch current like count
+    // Fetch current like count from Supabase
     const { data: post } = await supabaseAdmin
       .from('posts')
-      .select('likes')
+      .select('like_count')
       .eq('id', postId)
       .single();
     
-    // Increment and update
+    // Increment and update the like_count column
     const { error } = await supabaseAdmin
       .from('posts')
-      .update({ likes: (post?.likes || 0) + 1 })
+      .update({ like_count: (post?.like_count || 0) + 1 })
       .eq('id', postId);
 
     if (error) {
@@ -448,7 +448,7 @@ export class SupabaseStorage implements IStorage {
   async createComment(commentData: InsertComment & { postId?: string }): Promise<Comment> {
     console.log('[createComment] Creating comment:', commentData);
     
-    // Insert into Supabase
+    // Insert into Supabase - use like_count column
     const { data, error} = await supabaseAdmin
       .from('comments')
       .insert({
@@ -456,7 +456,7 @@ export class SupabaseStorage implements IStorage {
         author_id: commentData.authorId,
         content: commentData.content,
         parent_comment_id: commentData.parentId || null,
-        likes: 0,
+        like_count: 0,
       })
       .select()
       .single();
@@ -468,7 +468,7 @@ export class SupabaseStorage implements IStorage {
 
     console.log('[createComment] Comment created:', data);
     
-    // Map snake_case to camelCase
+    // Map snake_case DB (like_count) to camelCase API (likes)
     return {
       id: data.id,
       postId: data.post_id,
@@ -477,7 +477,7 @@ export class SupabaseStorage implements IStorage {
       authoredByProfileId: null,
       content: data.content,
       parentId: data.parent_comment_id,
-      likes: data.likes || 0,
+      likes: data.like_count || 0,
       createdAt: data.created_at ? new Date(data.created_at) : new Date(),
     };
   }
@@ -526,7 +526,7 @@ export class SupabaseStorage implements IStorage {
               authoredByProfileId: null,
               content: reply.content,
               parentId: reply.parent_comment_id,
-              likes: reply.likes || 0,
+              likes: reply.like_count || 0,
               createdAt: reply.created_at ? new Date(reply.created_at) : new Date(),
               author: replyAuthor || {
                 id: reply.author_id,
@@ -550,7 +550,7 @@ export class SupabaseStorage implements IStorage {
           authoredByProfileId: null,
           content: comment.content,
           parentId: comment.parent_comment_id,
-          likes: comment.likes || 0,
+          likes: comment.like_count || 0,
           createdAt: comment.created_at ? new Date(comment.created_at) : new Date(),
           author: author || {
             id: comment.author_id,
@@ -573,23 +573,25 @@ export class SupabaseStorage implements IStorage {
   async likeComment(commentId: string): Promise<void> {
     console.log('[likeComment] Liking comment:', commentId);
     
-    // Fetch current likes count
+    // Fetch current like_count from Supabase
     const { data: comment } = await supabaseAdmin
       .from('comments')
-      .select('likes')
+      .select('like_count')
       .eq('id', commentId)
       .single();
     
-    // Increment and update
+    // Increment and update the like_count column in Supabase
     const { error } = await supabaseAdmin
       .from('comments')
-      .update({ likes: (comment?.likes || 0) + 1 })
+      .update({ like_count: (comment?.like_count || 0) + 1 })
       .eq('id', commentId);
 
     if (error) {
       console.error('[likeComment] Error:', error);
       throw new Error(`Failed to like comment: ${error.message}`);
     }
+    
+    console.log('[likeComment] Comment liked successfully, new count:', (comment?.like_count || 0) + 1);
   }
 
   async voteOnPoll(postId: string, optionIndex: number): Promise<PostWithAuthor | null> {
