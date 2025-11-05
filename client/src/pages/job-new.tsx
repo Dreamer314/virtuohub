@@ -54,6 +54,21 @@ const JOB_TYPES = [
   "Internship"
 ];
 
+const PAYMENT_TYPES = [
+  "Per project",
+  "Per hour",
+  "Per asset",
+  "Revenue share",
+  "Other"
+];
+
+const CURRENCIES = [
+  "USD",
+  "Linden Dollar (L$)",
+  "Robux",
+  "Other"
+];
+
 interface JobFormData {
   title: string;
   companyName: string;
@@ -61,7 +76,8 @@ interface JobFormData {
   platform: string;
   jobType: string;
   budget: string;
-  isRemote: boolean;
+  paymentType: string;
+  currency: string;
   location: string;
   description: string;
 }
@@ -77,7 +93,8 @@ export default function JobNew() {
     platform: "",
     jobType: "",
     budget: "",
-    isRemote: true,
+    paymentType: "",
+    currency: "",
     location: "",
     description: ""
   });
@@ -98,6 +115,15 @@ export default function JobNew() {
     }
     if (!formData.jobType) {
       newErrors.jobType = "Job type is required";
+    }
+    if (!formData.paymentType) {
+      newErrors.paymentType = "Payment type is required";
+    }
+    if (!formData.currency) {
+      newErrors.currency = "Currency is required";
+    }
+    if (!formData.budget.trim()) {
+      newErrors.budget = "Budget / rate is required";
     }
     if (!formData.description.trim()) {
       newErrors.description = "Description is required";
@@ -145,8 +171,10 @@ export default function JobNew() {
           primary_skill: formData.primarySkill,
           platform: formData.platform,
           job_type: formData.jobType,
-          budget: formData.budget || null,
-          is_remote: formData.isRemote,
+          budget: formData.budget,
+          payment_type: formData.paymentType,
+          currency: formData.currency,
+          is_remote: true,
           location: formData.location || null,
           description: formData.description,
           visibility: 'PUBLIC'
@@ -315,49 +343,75 @@ export default function JobNew() {
                 )}
               </div>
 
-              {/* Budget */}
+              {/* Payment Type */}
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  Budget / Rate
+                  Payment type <span className="text-destructive">*</span>
+                </label>
+                <Select
+                  value={formData.paymentType}
+                  onValueChange={(value) => setFormData({ ...formData, paymentType: value })}
+                >
+                  <SelectTrigger data-testid="select-payment-type" className={errors.paymentType ? "border-destructive" : ""}>
+                    <SelectValue placeholder="Select payment type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PAYMENT_TYPES.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.paymentType && (
+                  <p className="text-sm text-destructive mt-1">{errors.paymentType}</p>
+                )}
+              </div>
+
+              {/* Currency */}
+              <div>
+                <label className="text-sm font-medium mb-2 block">
+                  Currency <span className="text-destructive">*</span>
+                </label>
+                <Select
+                  value={formData.currency}
+                  onValueChange={(value) => setFormData({ ...formData, currency: value })}
+                >
+                  <SelectTrigger data-testid="select-currency" className={errors.currency ? "border-destructive" : ""}>
+                    <SelectValue placeholder="Select currency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CURRENCIES.map((currency) => (
+                      <SelectItem key={currency} value={currency}>
+                        {currency}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {errors.currency && (
+                  <p className="text-sm text-destructive mt-1">{errors.currency}</p>
+                )}
+              </div>
+
+              {/* Budget / Rate */}
+              <div>
+                <label className="text-sm font-medium mb-2 block">
+                  Budget / rate <span className="text-destructive">*</span>
                 </label>
                 <Input
-                  placeholder="e.g. $1,000–$1,500 or $50/hr"
+                  placeholder="e.g. 50 or 25/hr"
                   value={formData.budget}
                   onChange={(e) => setFormData({ ...formData, budget: e.target.value })}
                   data-testid="input-budget"
+                  className={errors.budget ? "border-destructive" : ""}
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Rough ranges are fine (e.g. 50, 25/hr). This just helps creators see if it's a fit.
+                </p>
+                {errors.budget && (
+                  <p className="text-sm text-destructive mt-1">{errors.budget}</p>
+                )}
               </div>
-
-              {/* Remote Friendly */}
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="is-remote"
-                  checked={formData.isRemote}
-                  onCheckedChange={(checked) => setFormData({ ...formData, isRemote: checked as boolean })}
-                  data-testid="checkbox-is-remote"
-                />
-                <label
-                  htmlFor="is-remote"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Remote friendly
-                </label>
-              </div>
-
-              {/* Location */}
-              {!formData.isRemote && (
-                <div>
-                  <label className="text-sm font-medium mb-2 block">
-                    Location
-                  </label>
-                  <Input
-                    placeholder="e.g. San Francisco, CA"
-                    value={formData.location}
-                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                    data-testid="input-location"
-                  />
-                </div>
-              )}
 
               {/* Description */}
               <div>
