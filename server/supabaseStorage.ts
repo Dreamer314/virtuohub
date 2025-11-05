@@ -153,7 +153,7 @@ export class SupabaseStorage implements IStorage {
       status: 'published',
       subtype: data.subtype || 'thread',
       subtypeData: data.subtype_data || null,
-      likes: data.like_count || 0,
+      likes: data.likes || 0,
       comments: data.comments || 0,
       shares: data.shares || 0,
       views: 0,
@@ -300,7 +300,7 @@ export class SupabaseStorage implements IStorage {
       status: 'published',
       subtype: data.subtype || 'thread',
       subtypeData: data.subtype_data || null,
-      likes: data.like_count || 0,
+      likes: data.likes || 0,
       comments: data.comments || 0,
       shares: data.shares || 0,
       views: 0,
@@ -347,7 +347,7 @@ export class SupabaseStorage implements IStorage {
       status: 'published',
       subtype: data.subtype || 'thread',
       subtypeData: null,
-      likes: data.like_count || 0,
+      likes: data.likes || 0,
       comments: data.comments || 0,
       shares: data.shares || 0,
       views: 0,
@@ -403,14 +403,14 @@ export class SupabaseStorage implements IStorage {
     // Fetch current like count
     const { data: post } = await supabaseAdmin
       .from('posts')
-      .select('like_count')
+      .select('likes')
       .eq('id', postId)
       .single();
     
     // Increment and update
     const { error } = await supabaseAdmin
       .from('posts')
-      .update({ like_count: (post?.like_count || 0) + 1 })
+      .update({ likes: (post?.likes || 0) + 1 })
       .eq('id', postId);
 
     if (error) {
@@ -456,7 +456,7 @@ export class SupabaseStorage implements IStorage {
         author_id: commentData.authorId,
         content: commentData.content,
         parent_comment_id: commentData.parentId || null,
-        like_count: 0,
+        likes: 0,
       })
       .select()
       .single();
@@ -477,7 +477,7 @@ export class SupabaseStorage implements IStorage {
       authoredByProfileId: null,
       content: data.content,
       parentId: data.parent_comment_id,
-      likes: data.like_count || 0,
+      likes: data.likes || 0,
       createdAt: data.created_at ? new Date(data.created_at) : new Date(),
     };
   }
@@ -526,7 +526,7 @@ export class SupabaseStorage implements IStorage {
               authoredByProfileId: null,
               content: reply.content,
               parentId: reply.parent_comment_id,
-              likes: reply.like_count || 0,
+              likes: reply.likes || 0,
               createdAt: reply.created_at ? new Date(reply.created_at) : new Date(),
               author: replyAuthor || {
                 id: reply.author_id,
@@ -550,7 +550,7 @@ export class SupabaseStorage implements IStorage {
           authoredByProfileId: null,
           content: comment.content,
           parentId: comment.parent_comment_id,
-          likes: comment.like_count || 0,
+          likes: comment.likes || 0,
           createdAt: comment.created_at ? new Date(comment.created_at) : new Date(),
           author: author || {
             id: comment.author_id,
@@ -576,14 +576,14 @@ export class SupabaseStorage implements IStorage {
     // Fetch current likes count
     const { data: comment } = await supabaseAdmin
       .from('comments')
-      .select('like_count')
+      .select('likes')
       .eq('id', commentId)
       .single();
     
     // Increment and update
     const { error } = await supabaseAdmin
       .from('comments')
-      .update({ like_count: (comment?.like_count || 0) + 1 })
+      .update({ likes: (comment?.likes || 0) + 1 })
       .eq('id', commentId);
 
     if (error) {

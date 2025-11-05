@@ -42,7 +42,7 @@ function ThreadCommentItem({ comment }: { comment: any }) {
     },
     onSuccess: () => {
       // Optimistically update local state
-      setLocalLikeCount(prev => prev + 1);
+      setLocalLikeCount((prev: number) => prev + 1);
       setHasLiked(true);
     },
   });
