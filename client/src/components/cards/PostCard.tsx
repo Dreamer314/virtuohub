@@ -59,8 +59,13 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
     onSuccess: (data) => {
       setLikes(data.likes);
       setHasLiked(data.hasLiked);
-      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/posts', post.id] });
+      // Invalidate all queries that include /api/posts in the key
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          const key = query.queryKey[0];
+          return typeof key === 'string' && key.includes('/api/posts');
+        }
+      });
       toast({ title: data.hasLiked ? "Post liked!" : "Post unliked!" });
     }
   });
@@ -73,7 +78,13 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
     },
     onSuccess: () => {
       setIsSaved(!isSaved);
-      queryClient.invalidateQueries({ queryKey: ['/api/users', currentUserId, 'saved-posts'] });
+      // Invalidate queries matching the saved posts endpoint
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          const key = query.queryKey[0];
+          return typeof key === 'string' && key.includes('/saved-posts');
+        }
+      });
       toast({ title: isSaved ? "Post unsaved" : "Post saved!" });
     }
   });

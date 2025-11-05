@@ -25,6 +25,7 @@ import { AuthModal } from "@/components/auth/AuthModal";
 function ThreadCommentItem({ comment, currentUserId }: { comment: any, currentUserId: string }) {
   // Fetch profile from profiles_v2 using authorId
   const { data: profile } = useUserProfile(comment.authorId || comment.author_id || '');
+  const queryClient = useQueryClient();
   
   // Local state for toggle-able like functionality (initialized from junction table data)
   const [localLikeCount, setLocalLikeCount] = useState(comment.likes || 0);
@@ -51,6 +52,13 @@ function ThreadCommentItem({ comment, currentUserId }: { comment: any, currentUs
       // Update local state from server response
       setLocalLikeCount(data.likes);
       setHasLiked(data.hasLiked);
+      // Invalidate all queries that include /api/posts to refetch with updated likes
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          const key = query.queryKey[0];
+          return typeof key === 'string' && key.includes('/api/posts');
+        }
+      });
     },
   });
 
@@ -151,9 +159,13 @@ export default function ThreadPage() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/posts', postId, 'comments'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/posts', postId] });
-      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
+      // Invalidate all queries that include /api/posts in the key
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          const key = query.queryKey[0];
+          return typeof key === 'string' && key.includes('/api/posts');
+        }
+      });
       setCommentText("");
       setUploadedImages([]);
       setShowEmojiPicker(false);
