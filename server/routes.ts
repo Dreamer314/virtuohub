@@ -246,13 +246,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Like a post
+  // Like/unlike a post (toggle)
   app.post("/api/posts/:postId/like", async (req, res) => {
     try {
-      await storage.likePost(req.params.postId);
-      res.status(200).json({ message: "Post liked successfully" });
+      const { userId } = req.body;
+      if (!userId) {
+        return res.status(400).json({ message: "userId is required" });
+      }
+      
+      const result = await storage.likePost(req.params.postId, userId);
+      res.status(200).json(result);
     } catch (error) {
-      res.status(500).json({ message: "Failed to like post" });
+      console.error('[POST /api/posts/:postId/like] Error:', error);
+      res.status(500).json({ message: "Failed to toggle post like" });
     }
   });
 
@@ -447,13 +453,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Like a comment
+  // Like/unlike a comment (toggle)
   app.post("/api/comments/:commentId/like", async (req, res) => {
     try {
-      await storage.likeComment(req.params.commentId);
-      res.status(200).json({ message: "Comment liked successfully" });
+      const { userId } = req.body;
+      if (!userId) {
+        return res.status(400).json({ message: "userId is required" });
+      }
+      
+      const result = await storage.likeComment(req.params.commentId, userId);
+      res.status(200).json(result);
     } catch (error) {
-      res.status(500).json({ message: "Failed to like comment" });
+      console.error('[POST /api/comments/:commentId/like] Error:', error);
+      res.status(500).json({ message: "Failed to toggle comment like" });
     }
   });
 
