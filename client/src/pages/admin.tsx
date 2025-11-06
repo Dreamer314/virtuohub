@@ -1,4 +1,3 @@
-/* FULL UPDATED FILE CONTENT — admin.tsx */
 import React, { useEffect, useState } from "react";
 import { Header } from "@/components/layout/header";
 import { LeftSidebar } from "@/components/layout/left-sidebar";
@@ -6,6 +5,8 @@ import { RightSidebar } from "@/components/layout/right-sidebar";
 import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabaseClient";
+import { useAuth } from "@/providers/AuthProvider";
+import { useMyV2Profile } from "@/hooks/useMyV2Profile";
 import {
   Repeat2, Pencil, PieChart, X, RotateCcw, Copy, Download, Trash2, Star, EyeOff,
   FilePlus2, Check, Archive, Eye, Key
@@ -55,7 +56,37 @@ function dollars(cents: number | null | undefined) {
 /* =============================== Page ==================================== */
 
 export default function AdminPage() {
+  const { user } = useAuth();
+  const { data: v2Profile } = useMyV2Profile();
   const [pollRefresh, setPollRefresh] = useState(0);
+
+  const isLoggedIn = !!user;
+  const isAdmin = isLoggedIn && v2Profile?.isAdmin === true;
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        <Header onCreatePost={() => {}} />
+        <div className="community-grid">
+          <div className="grid-left hidden xl:block border-r border-border sticky top-[var(--header-height)] h-[calc(100vh-var(--header-height))] overflow-y-auto">
+            <div className="p-4"><LeftSidebar currentTab="all" onTabChange={() => {}} /></div>
+          </div>
+          <div className="grid-main">
+            <div className="mx-auto mt-10 max-w-xl text-center">
+              <h1 className="text-2xl font-semibold mb-2">Admin access only</h1>
+              <p className="text-sm text-muted-foreground">
+                You do not have permission to view this page.
+              </p>
+            </div>
+          </div>
+          <div className="grid-right hidden lg:block border-l border-border sticky top-[var(--header-height)] h-[calc(100vh-var(--header-height))] overflow-y-auto">
+            <div className="p-4"><RightSidebar /></div>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">

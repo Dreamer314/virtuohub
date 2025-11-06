@@ -16,15 +16,10 @@ export interface MyV2Profile {
 export function useMyV2Profile() {
   const { user } = useAuth();
   
-  console.log('[useMyV2Profile HOOK CALLED] user:', user?.id);
-
   return useQuery({
     queryKey: ['my-v2-profile', user?.id ?? 'none'],
     queryFn: async (): Promise<MyV2Profile> => {
-      console.log('[useMyV2Profile] Starting query for user:', user?.id);
-      
       if (!user?.id) {
-        console.log('[useMyV2Profile] No user ID, returning empty profile');
         return {
           handle: null,
           displayName: null,
@@ -37,19 +32,16 @@ export function useMyV2Profile() {
       }
 
       // Get active profile from account_prefs
-      const { data: prefs, error: prefsError } = await supabase
+      const { data: prefs } = await supabase
         .from('account_prefs')
         .select('last_active_profile_id')
         .eq('user_id', user.id)
         .maybeSingle();
 
-      console.log('[useMyV2Profile] account_prefs result:', { prefs, prefsError });
-
       let profileId = prefs?.last_active_profile_id;
 
       // If no active profile set, find the first profile for this user
       if (!profileId) {
-        console.log('[useMyV2Profile] No active profile ID, looking for any profile...');
         const { data: firstProfile } = await supabase
           .from('profiles_v2')
           .select('profile_id')
@@ -58,11 +50,9 @@ export function useMyV2Profile() {
           .maybeSingle();
         
         profileId = firstProfile?.profile_id;
-        console.log('[useMyV2Profile] Found profile ID:', profileId);
       }
 
       if (!profileId) {
-        console.log('[useMyV2Profile] No profile exists for user');
         return {
           handle: null,
           displayName: null,
@@ -75,16 +65,13 @@ export function useMyV2Profile() {
       }
 
       // Fetch the active profile
-      const { data: profile, error: profileError } = await supabase
+      const { data: profile } = await supabase
         .from('profiles_v2')
         .select('handle, display_name, profile_photo_url, visibility, kind')
         .eq('profile_id', profileId)
         .maybeSingle();
 
-      console.log('[useMyV2Profile result]', profile, profileError);
-
       if (!profile) {
-        console.log('[useMyV2Profile] Profile not found');
         return {
           handle: null,
           displayName: null,
@@ -102,23 +89,12 @@ export function useMyV2Profile() {
         .select('kind')
         .eq('user_id', user.id);
 
-      console.log('[useMyV2Profile] All profiles for user:', allProfiles);
-
       // Check if ANY profile has kind = 'ADMIN'
       const hasAdminProfile = Array.isArray(allProfiles)
         ? allProfiles.some((p) => p.kind === 'ADMIN')
         : false;
 
       const hasValidProfile = !!(profile.handle && profile.handle.trim() !== '');
-      
-      console.log('[useMyV2Profile] Returning profile:', {
-        handle: profile.handle,
-        displayName: profile.display_name,
-        hasPhoto: !!profile.profile_photo_url,
-        visibility: profile.visibility,
-        hasValidProfile,
-        isAdmin: hasAdminProfile,
-      });
 
       const result = {
         handle: profile.handle || null,
@@ -130,7 +106,11 @@ export function useMyV2Profile() {
         isAdmin: hasAdminProfile,
       };
       
-      console.log('[useMyV2Profile] Final result with kind and isAdmin:', result.kind, result.isAdmin);
+      console.log('[useMyV2Profile] Final result', {
+        kind: result.kind,
+        isAdmin: result.isAdmin,
+      });
+      
       return result;
     },
     enabled: !!user?.id,
