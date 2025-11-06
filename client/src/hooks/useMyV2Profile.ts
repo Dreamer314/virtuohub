@@ -10,6 +10,7 @@ export interface MyV2Profile {
   visibility: string | null;
   kind: ProfileKind | null;
   hasValidProfile: boolean;
+  isAdmin?: boolean;
 }
 
 export function useMyV2Profile() {
@@ -31,6 +32,7 @@ export function useMyV2Profile() {
           visibility: null,
           kind: null,
           hasValidProfile: false,
+          isAdmin: false,
         };
       }
 
@@ -68,10 +70,11 @@ export function useMyV2Profile() {
           visibility: null,
           kind: null,
           hasValidProfile: false,
+          isAdmin: false,
         };
       }
 
-      // Fetch the complete profile
+      // Fetch the active profile
       const { data: profile, error: profileError } = await supabase
         .from('profiles_v2')
         .select('handle, display_name, profile_photo_url, visibility, kind')
@@ -89,8 +92,22 @@ export function useMyV2Profile() {
           visibility: null,
           kind: null,
           hasValidProfile: false,
+          isAdmin: false,
         };
       }
+
+      // Fetch ALL profiles for this user to check admin status
+      const { data: allProfiles } = await supabase
+        .from('profiles_v2')
+        .select('kind')
+        .eq('user_id', user.id);
+
+      console.log('[useMyV2Profile] All profiles for user:', allProfiles);
+
+      // Check if ANY profile has kind = 'ADMIN'
+      const hasAdminProfile = Array.isArray(allProfiles)
+        ? allProfiles.some((p) => p.kind === 'ADMIN')
+        : false;
 
       const hasValidProfile = !!(profile.handle && profile.handle.trim() !== '');
       
@@ -100,6 +117,7 @@ export function useMyV2Profile() {
         hasPhoto: !!profile.profile_photo_url,
         visibility: profile.visibility,
         hasValidProfile,
+        isAdmin: hasAdminProfile,
       });
 
       const result = {
@@ -109,9 +127,10 @@ export function useMyV2Profile() {
         visibility: profile.visibility || null,
         kind: profile.kind || null,
         hasValidProfile,
+        isAdmin: hasAdminProfile,
       };
       
-      console.log('[useMyV2Profile] Final result with kind:', result.kind);
+      console.log('[useMyV2Profile] Final result with kind and isAdmin:', result.kind, result.isAdmin);
       return result;
     },
     enabled: !!user?.id,

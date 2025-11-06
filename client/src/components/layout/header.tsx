@@ -52,10 +52,10 @@ export function Header({ onCreatePost }: HeaderProps) {
   const avatarUrl = v2Profile?.profilePhotoUrl;
   const userHandle = v2Profile?.handle;
   const canViewProfile = v2Profile?.hasValidProfile || false;
-  const isAdmin = v2Profile?.kind === "ADMIN";
+  const isAdmin = v2Profile?.isAdmin === true;
   
   // Debug log for admin verification
-  console.log("[HEADER v2Profile kind]", v2Profile?.kind);
+  console.log("[HEADER v2Profile kind]", v2Profile?.kind, "isAdmin:", isAdmin);
 
   const toggleTheme = () => {
     // Single-theme mode: charcoal only

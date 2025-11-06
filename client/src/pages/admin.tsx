@@ -6,6 +6,7 @@ import { RightSidebar } from "@/components/layout/right-sidebar";
 import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabaseClient";
+import { useMyV2Profile } from "@/hooks/useMyV2Profile";
 import {
   Repeat2, Pencil, PieChart, X, RotateCcw, Copy, Download, Trash2, Star, EyeOff,
   FilePlus2, Check, Archive, Eye, Key
@@ -55,28 +56,9 @@ function dollars(cents: number | null | undefined) {
 /* =============================== Page ==================================== */
 
 export default function AdminPage() {
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { data: v2Profile } = useMyV2Profile();
+  const isAdmin = v2Profile?.isAdmin === true;
   const [pollRefresh, setPollRefresh] = useState(0); // <-- define before use
-
-  useEffect(() => {
-    let off = false;
-    (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      const uid = session?.user?.id || null;
-      if (!uid) { if (!off) setIsAdmin(false); return; }
-      
-      // Check if user has an ADMIN profile
-      const { data: profiles, error } = await supabase
-        .from('profiles_v2')
-        .select('kind')
-        .eq('user_id', uid)
-        .limit(1);
-      
-      const isAdminProfile = !!(profiles && profiles.length > 0 && profiles[0].kind === 'ADMIN');
-      if (!off) setIsAdmin(isAdminProfile);
-    })();
-    return () => { off = true; };
-  }, []);
 
   if (!isAdmin) {
     return (
