@@ -7,6 +7,7 @@ export interface MyV2Profile {
   displayName: string | null;
   profilePhotoUrl: string | null;
   visibility: string | null;
+  kind: string | null;
   hasValidProfile: boolean;
 }
 
@@ -25,6 +26,7 @@ export function useMyV2Profile() {
           displayName: null,
           profilePhotoUrl: null,
           visibility: null,
+          kind: null,
           hasValidProfile: false,
         };
       }
@@ -61,6 +63,7 @@ export function useMyV2Profile() {
           displayName: null,
           profilePhotoUrl: null,
           visibility: null,
+          kind: null,
           hasValidProfile: false,
         };
       }
@@ -68,7 +71,7 @@ export function useMyV2Profile() {
       // Fetch the complete profile
       const { data: profile, error: profileError } = await supabase
         .from('profiles_v2')
-        .select('handle, display_name, profile_photo_url, visibility')
+        .select('handle, display_name, profile_photo_url, visibility, kind')
         .eq('profile_id', profileId)
         .maybeSingle();
 
@@ -81,6 +84,7 @@ export function useMyV2Profile() {
           displayName: null,
           profilePhotoUrl: null,
           visibility: null,
+          kind: null,
           hasValidProfile: false,
         };
       }
@@ -100,6 +104,7 @@ export function useMyV2Profile() {
         displayName: profile.display_name || null,
         profilePhotoUrl: profile.profile_photo_url || null,
         visibility: profile.visibility || null,
+        kind: (profile as any).kind || null,
         hasValidProfile,
       };
     },
