@@ -56,7 +56,7 @@ export default function PublicProfile() {
       const { data, error } = await supabase
         .from('profiles_v2')
         .select('profile_id, user_id, handle, display_name, headline, profile_photo_url, about, visibility, kind, created_at, is_open_to_work, is_hiring, availability_note, quick_facts')
-        .eq('handle', handle.toLowerCase())
+        .ilike('handle', handle)
         .single();
 
       if (error) {
