@@ -89,6 +89,12 @@ export function useMyV2Profile() {
         .select('kind')
         .eq('user_id', user.id);
 
+      console.log('[useMyV2Profile] All user profiles:', {
+        userId: user.id,
+        profileCount: allProfiles?.length,
+        kinds: allProfiles?.map(p => p.kind),
+      });
+
       // Check if ANY profile has kind = 'ADMIN'
       const hasAdminProfile = Array.isArray(allProfiles)
         ? allProfiles.some((p) => p.kind === 'ADMIN')
