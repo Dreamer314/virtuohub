@@ -8,12 +8,15 @@ import { ChartsHero } from '@/components/charts/ChartsHero';
 import FeaturedLists from '@/components/lists/FeaturedLists';
 import { Button } from '@/components/ui/button';
 import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/providers/AuthProvider';
 import type { PostWithAuthor } from '@shared/schema';
 import { useURLFilters } from '@/hooks/useURLFilters';
 import { useFilterStore } from '@/lib/stores/filter-store';
 import { List, BarChart3 } from 'lucide-react';
 
 const ListsPage: React.FC = () => {
+  const { user } = useAuth();
+  const currentUserId = user?.id || 'user1';
   const { actions } = useURLFilters();
   const filterStore = useFilterStore();
 
@@ -157,6 +160,7 @@ const ListsPage: React.FC = () => {
                     <PostCard
                       key={post.id}
                       post={post}
+                      currentUserId={currentUserId}
                     />
                   ))
                 )}

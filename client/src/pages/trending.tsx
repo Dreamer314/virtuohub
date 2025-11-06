@@ -7,9 +7,13 @@ import { RightSidebar } from '@/components/layout/right-sidebar';
 import { PostCard } from '@/components/cards/PostCard';
 import { Footer } from '@/components/layout/footer';
 import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/providers/AuthProvider';
 import type { PostWithAuthor } from '@shared/schema';
 
 const TrendingPage: React.FC = () => {
+  const { user } = useAuth();
+  const currentUserId = user?.id || 'user1';
+
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -184,7 +188,7 @@ const TrendingPage: React.FC = () => {
                               </div>
                             </div>
                           )}
-                          <PostCard post={post} />
+                          <PostCard post={post} currentUserId={currentUserId} />
                         </div>
                       ))
                     ) : (

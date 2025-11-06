@@ -415,7 +415,7 @@ const CommunityPage: React.FC = () => {
                         </div>
                       ) : currentTab === 'saved' ? (
                         savedPosts.length > 0 ? (
-                          savedPosts.map((item: any) => <PostCard key={item.id} post={item} />)
+                          savedPosts.map((item: any) => <PostCard key={item.id} post={item} currentUserId={currentUserId} />)
                         ) : (
                           <div className="glass-card rounded-xl p-12 text-center" data-testid="empty-state">
                             <div className="text-6xl mb-4">🌟</div>
@@ -424,7 +424,7 @@ const CommunityPage: React.FC = () => {
                           </div>
                         )
                       ) : filteredFeedItems.length > 0 ? (
-                        filteredFeedItems.map((post) => <PostCard key={post.id} post={post} />)
+                        filteredFeedItems.map((post) => <PostCard key={post.id} post={post} currentUserId={currentUserId} />)
                       ) : (
                         <div className="glass-card rounded-xl p-12 text-center" data-testid="empty-state">
                           <div className="text-6xl mb-4">🌟</div>

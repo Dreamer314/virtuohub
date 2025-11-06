@@ -60,13 +60,43 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
     onSuccess: (data) => {
       setLikes(data.likes);
       setHasLiked(data.hasLiked);
-      // Invalidate all queries that include /api/posts in the key
-      queryClient.invalidateQueries({ 
-        predicate: (query) => {
-          const key = query.queryKey[0];
-          return typeof key === 'string' && key.includes('/api/posts');
+      
+      // Update all post queries in cache directly to avoid stale data
+      queryClient.setQueriesData(
+        { 
+          predicate: (query) => {
+            const key = query.queryKey[0];
+            return typeof key === 'string' && key.includes('/api/posts');
+          }
+        },
+        (oldData: any) => {
+          if (!oldData) return oldData;
+          
+          // Handle array of posts (feed queries)
+          if (Array.isArray(oldData)) {
+            return oldData.map((p: any) => {
+              if (p.id !== post.id) return p;
+              return {
+                ...p,
+                likes: data.likes,
+                hasLiked: data.hasLiked,
+              };
+            });
+          }
+          
+          // Handle single post object (detail queries)
+          if (oldData.id === post.id) {
+            return {
+              ...oldData,
+              likes: data.likes,
+              hasLiked: data.hasLiked,
+            };
+          }
+          
+          return oldData;
         }
-      });
+      );
+      
       toast({ title: data.hasLiked ? "Post liked!" : "Post unliked!" });
     }
   });
@@ -139,12 +169,32 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
   const [shareSuccess, setShareSuccess] = useState(false);
 
   const handleLike = () => {
+    // Check if user is authenticated (not using fallback 'user1')
+    if (currentUserId === 'user1') {
+      toast({ 
+        title: "Sign in required", 
+        description: "You need to sign in to like posts.",
+        variant: "destructive" 
+      });
+      return;
+    }
+    
     if (!likeMutation.isPending) {
       likeMutation.mutate();
     }
   };
 
   const handleSave = () => {
+    // Check if user is authenticated (not using fallback 'user1')
+    if (currentUserId === 'user1') {
+      toast({ 
+        title: "Sign in required", 
+        description: "You need to sign in to save posts.",
+        variant: "destructive" 
+      });
+      return;
+    }
+    
     if (!saveMutation.isPending) {
       saveMutation.mutate();
     }
