@@ -1,0 +1,64 @@
+{
+  "totalProfiles": 14,
+  "migratedProfiles": 0,
+  "skippedProfiles": 14,
+  "handleCollisions": [],
+  "errors": [
+    {
+      "userId": "047d3bb2-a023-4465-83f2-97559fc9054b",
+      "error": "Profile insert failed: Could not find the table 'public.profiles_v2' in the schema cache"
+    },
+    {
+      "userId": "3788367e-cd91-49d2-85a9-cca49116589c",
+      "error": "Profile insert failed: Could not find the table 'public.profiles_v2' in the schema cache"
+    },
+    {
+      "userId": "ce944a2a-223a-488d-a0e8-a8e60f365463",
+      "error": "Profile insert failed: Could not find the table 'public.profiles_v2' in the schema cache"
+    },
+    {
+      "userId": "aedcd893-9ee6-4178-b772-4a430ed0da9f",
+      "error": "Profile insert failed: Could not find the table 'public.profiles_v2' in the schema cache"
+    },
+    {
+      "userId": "f5f69d0e-0860-4ced-a063-550b154a96f3",
+      "error": "Profile insert failed: Could not find the table 'public.profiles_v2' in the schema cache"
+    },
+    {
+      "userId": "025b466f-56ae-461e-9ff5-f7924310a437",
+      "error": "Profile insert failed: Could not find the table 'public.profiles_v2' in the schema cache"
+    },
+    {
+      "userId": "d9673085-a025-4d3a-9962-b08312cd03b6",
+      "error": "Profile insert failed: Could not find the table 'public.profiles_v2' in the schema cache"
+    },
+    {
+      "userId": "88d12dd4-b8ee-41d8-8b7f-087e3afba1ea",
+      "error": "Profile insert failed: Could not find the table 'public.profiles_v2' in the schema cache"
+    },
+    {
+      "userId": "39025954-65d1-44a8-829b-a855e65048c8",
+      "error": "Profile insert failed: Could not find the table 'public.profiles_v2' in the schema cache"
+    },
+    {
+      "userId": "dabb94ec-a8b8-46c4-a0f8-775e03e21375",
+      "error": "Profile insert failed: Could not find the table 'public.profiles_v2' in the schema cache"
+    },
+    {
+      "userId": "4ffac28e-e559-47a2-b5be-f78e930b937b",
+      "error": "Profile insert failed: Could not find the table 'public.profiles_v2' in the schema cache"
+    },
+    {
+      "userId": "809aa310-7913-4c67-ab5a-64dd1c56b2cc",
+      "error": "Profile insert failed: Could not find the table 'public.profiles_v2' in the schema cache"
+    },
+    {
+      "userId": "a700ead8-a8b6-4ed0-b11e-1578d26f025b",
+      "error": "Profile insert failed: Could not find the table 'public.profiles_v2' in the schema cache"
+    },
+    {
+      "userId": "325b5e62-9e51-4e45-ab5d-8ae685f785f9",
+      "error": "Profile insert failed: Could not find the table 'public.profiles_v2' in the schema cache"
+    }
+  ]
+}

@@ -1,0 +1,187 @@
+You are auditing the current username and authorship system in this repo. Do NOT modify any app code or schema. Only read files and write one new Markdown file.
+
+Goal
+Create a single report that explains exactly how usernames, display names, handles, and authorship work today, across code, database, and UI. This is a pure audit to inform a future Profile v1.
+
+Deliverable
+Create docs/username_system_report.md and paste its full contents into chat when done.
+
+Scope
+The codebase in this Replit project only. Include Vite or Next config, Supabase client code, React components, server functions, and any SQL migrations. No feature changes. No schema changes beyond reading migrations. Do not run data mutations.
+
+Questions to answer
+1) Canonical storage
+   - Where is the single source of truth for a user’s public name today
+   - Exact table and column that stores it
+   - How and when that value is created
+   - Any uniqueness, case, or length rules
+   - Whether a distinct public handle exists or if username doubles as handle
+
+2) OAuth flow
+   - Which providers are enabled now
+   - Libraries used and init locations
+   - First login behavior: do we prompt for a username or auto create one
+   - Re-login behavior
+
+3) Where usernames render
+   - Community feed
+   - Post detail
+   - Comments list
+   - Spotlight articles
+   - Pulse polls
+   - Any shared author chip or user badge
+   For each: include file path, component name, and the exact fields read for author display (avatar, display name, username, handle).
+
+4) Data model for authoring
+   - Tables that record authorship for posts and comments and polls
+   - Column names for user id vs any profile id
+   - Joins used to fetch author display data
+   - Any RLS or auth rules that mention author columns or profiles
+
+5) Editing rules
+   - Can a user change their username or handle now
+   - Where is that logic handled
+   - What happens to existing content
+
+6) Validation and normalization
+   - Allowed characters and case handling
+   - Reserved words or blocked handles
+   - Slug or handle generation rules if any
+
+7) Known gaps or debt
+   - Duplicate logic across components
+   - Missing loading or null states
+   - TODOs or commented code related to usernames or handles
+
+Extra checks to include
+A) Single source of truth check
+   - If both profiles.display_name and profiles.username or auth.users.user_metadata exist, list where each is used and which wins in each surface.
+
+B) Join health
+   - Provide SQL snippets to find orphaned content where posts.author_id or comments.user_id has no matching profile. Include counts and the exact queries.
+
+C) Cross provider behavior
+   - Describe what happens if a person logs in with Google then Discord. Is there account linking or do we end up with two accounts. Point to code that determines this.
+
+D) Public vs private fields
+   - Which profile fields are publicly readable under RLS. Call out any potential PII exposure.
+
+E) Counts for polls
+   - Confirm how polls attribute votes to users. Table names and columns. Any anonymity rules.
+
+Steps to perform
+
+A. Static search pass
+Search for these terms and list all hits with file paths. Include only the most relevant code snippets in the report.
+- username
+- handle
+- displayName and display_name
+- author and authored_by and created_by and user_id
+- Supabase.auth and createClient
+- profiles and users
+- posts and comments and polls
+- RLS and policy and enable row level security
+- migrations and .sql
+
+B. Database mappings
+- If there is a migrations directory, list the migrations that create or alter tables related to profiles, users, posts, comments, polls. Copy the SQL blocks that define username, handle, display_name, author id columns, and any constraints or policies.
+- If there is a central DB types file such as types/supabase.ts or database.types.ts, extract type definitions for profiles, users, posts, comments, polls.
+
+C. Runtime wiring
+- Find where the Supabase client is created and where auth state changes are handled.
+- Identify any first-login flow that prompts for profile creation or username reservation.
+- Identify API routes or server functions that read or write profile or author fields.
+- Note where OAuth providers are configured and which are enabled.
+
+D. Rendering audit
+For each surface below, name the component and paste a minimal snippet that renders the author block, including exactly which fields it uses.
+- Community feed list
+- Post detail
+- Comments list
+- Spotlight list and spotlight detail
+- Pulse polls
+- Any shared AuthorChip or UserBadge component
+
+E. Report production
+Create docs/username_system_report.md with this exact structure:
+
+# Username and Authorship Audit
+
+## Summary
+One paragraph that states the current model and single source of truth.
+
+## Canonical storage
+- Table
+- Column
+- Creation flow
+- Constraints
+
+## OAuth flow
+- Providers enabled
+- Init location
+- First login behavior
+- Re-login behavior
+
+## Where usernames render
+- Community feed: file, component, fields
+- Post detail: file, component, fields
+- Comments: file, component, fields
+- Spotlights: file, component, fields
+- Polls: file, component, fields
+- Shared chips: file, component, fields
+
+## Data model for authoring
+- Posts: author columns
+- Comments: author columns
+- Polls: author columns
+- Display joins: files and snippets
+
+## Editing rules
+- Can change username or handle
+- Where and how
+- Impact on existing content
+
+## Validation and normalization
+- Allowed characters
+- Case policy
+- Reserved handles
+- Slug rules
+
+## SQL references
+- Migrations that define or touch usernames, handles, display names
+- Relevant table and index definitions
+
+## RLS and policies
+- Policies referencing profiles or author columns
+- Read and write access summary
+
+## Single source of truth check
+- Where each name field is used and which wins
+
+## Join health
+- Orphan counts with SQL snippets
+
+## Cross provider behavior
+- Account linking or duplication rules with code references
+
+## Public vs private fields
+- Which profile fields are publicly readable under RLS
+
+## Gaps and risks
+- Issues, duplicates, TODOs, edge cases
+
+## Appendix: Code excerpts
+- Short, relevant code blocks with file paths for quick reference
+
+## Appendix: Mermaid diagram
+```mermaid
+flowchart LR
+  A[auth.users id] --> B[public.profiles user_id]
+  B --> C[content tables: posts.author_id, comments.user_id, polls.user_id]
+Constraints
+
+Do not modify code or schema. Only add docs/username_system_report.md.
+
+If something is unclear, note the ambiguity and point to the files to inspect.
+
+Keep snippets tight. Do not paste entire files.

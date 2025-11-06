@@ -1,0 +1,57 @@
+Goal
+Secure all Profiles v2 tables with proper RLS and add a feature flag so v2 stays disabled by default. Do not change any UI. Keep v1 in use.
+
+Tasks
+
+A) Add feature flag
+- Create client/src/lib/featureFlags.ts:
+  export const FEATURES = {
+    PROFILES_V2_ENABLED: import.meta.env.VITE_PROFILES_V2_ENABLED === 'true'
+  };
+- In any place that might touch v2 later, read FEATURES.PROFILES_V2_ENABLED. Do not wire v2 reads yet. Just add the helper file.
+- Add VITE_PROFILES_V2_ENABLED=false to the env file used by this project.
+
+B) Add RLS to all v2 tables with idempotent SQL
+- Generate a single SQL file sql/secure_profiles_v2.sql that:
+  1) Enables RLS on each table if not already enabled.
+  2) Creates policies only if missing.
+  3) Uses simple, safe semantics:
+     profiles_v2:
+       SELECT: visibility = 'PUBLIC' OR user_id = auth.uid()
+       INSERT: user_id = auth.uid()
+       UPDATE: user_id = auth.uid()
+       DELETE: user_id = auth.uid()
+     profile_bta:
+       SELECT: profile belongs to auth.uid()
+       INSERT, UPDATE, DELETE: profile belongs to auth.uid()
+     account_prefs:
+       SELECT, INSERT, UPDATE, DELETE: user_id = auth.uid()
+     profile_access_requests:
+       SELECT: requester_user_id = auth.uid() OR profile belongs to auth.uid()
+       INSERT: requester_user_id = auth.uid()
+       UPDATE, DELETE: only the profile owner can approve or deny
+     handle_history:
+       SELECT: profile belongs to auth.uid()
+       INSERT: profile belongs to auth.uid()
+  4) Adds foreign keys if missing:
+     profiles_v2.user_id -> auth.users(id)
+     account_prefs.user_id -> auth.users(id)
+     account_prefs.last_active_profile_id -> profiles_v2.profile_id
+     profile_bta.profile_id -> profiles_v2.profile_id
+     profile_access_requests.profile_id -> profiles_v2.profile_id
+     profile_access_requests.requester_user_id -> auth.users(id)
+     handle_history.profile_id -> profiles_v2.profile_id
+- Execute the SQL via Supabase SQL (not from app code). Paste the final SQL in chat.
+
+C) Verification script
+- Add scripts/verify_profiles_v2_security.sql that:
+  - Lists pg_policies for the five v2 tables
+  - SELECT * from pg_tables to confirm relrowsecurity = true
+  - SELECT count(*) from each v2 table
+- Run it and paste results in chat.
+
+Constraints
+- Do not wire any runtime code to v2.
+- Do not change posts or comments behavior.
+- No UI changes.
+- Keep edits minimal and reversible.

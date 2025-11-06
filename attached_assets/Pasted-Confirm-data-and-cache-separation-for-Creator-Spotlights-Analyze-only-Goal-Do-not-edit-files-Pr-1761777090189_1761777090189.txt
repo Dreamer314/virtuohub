@@ -1,0 +1,68 @@
+Confirm data and cache separation for Creator Spotlights. Analyze only.
+
+Goal: Do not edit files. Produce a short report that confirms whether the Spotlights page is coupled to Community via cache, schema, and filters. List exact files, lines, and props involved.
+
+Questions to answer with file paths and line refs:
+
+Query key reuse
+
+Where is useQuery with key ['/api/posts'] defined on the Spotlights page.
+
+Where else is the same key used in Community. Confirm that React Query would share the cache between the two pages.
+
+Data fetcher
+
+Show the function that services '/api/posts'. Confirm it hits supabase.from('posts') and returns all posts without server-side subtype='spotlight' filtering.
+
+If there is any select or contains on tags, list it.
+
+Client-side filtering
+
+Point to the lines that filter post.subtype === 'spotlight'. Note any additional filters applied from useFilterStore.
+
+Filter store coupling
+
+Identify where useFilterStore and useURLFilters are imported on the Spotlights page. List which filter keys are read or written. Confirm whether those keys are the same as Community’s.
+
+State whether opening Community and changing filters can change the Spotlights results.
+
+Card component
+
+Confirm the exact import and usage of PostCard on the Spotlights page. Show file and lines.
+
+Verify whether a SpotlightCard or equivalent exists. If not, note that.
+
+Routes
+
+List the exact route paths for Community detail and Spotlight detail pages from the router config. Confirm there is no collision.
+
+Confirm that “View Full Spotlight” buttons point to the Spotlight detail route.
+
+Tagline placement
+
+Locate the markup that prints “Showing X spotlights | Clear filters.”
+
+Confirm there is also a static tagline element “Profiles of creators, studios, and brands shaping the space.” If it exists, note its position in the tree. If it does not, note absence.
+
+Deliverable:
+A concise report with:
+
+Confirmation of cache reuse and its impact.
+
+Confirmation of schema coupling and whether editors can publish subtype:'spotlight' from Community.
+
+Exact lines to remove or replace later: the PostCard map, the count header, and the filter store usage.
+
+A minimal “future fix plan,” no code edits, describing:
+
+use dedicated query key ['spotlights'] and server-side subtype='spotlight' filter or a spotlights table,
+
+swap PostCard for a Spotlight-specific card,
+
+remove the feed count header and keep the static tagline under the page title,
+
+decouple from useFilterStore or create a namespaced useSpotlightFilters.
+
+Constraints:
+
+Analysis only. No file writes. No refactors. Cite files and line numbers.

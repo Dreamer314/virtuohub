@@ -16,7 +16,8 @@ export const users = pgTable("users", {
 
 export const posts = pgTable("posts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  authorId: varchar("author_id").notNull(),
+  authorId: varchar("author_id").notNull(), // Legacy: FK to auth.users.id (kept for audit/RLS)
+  authoredByProfileId: varchar("authored_by_profile_id"), // V2: FK to profiles_v2.profile_id (nullable for migration)
   subtype: text("subtype").notNull().default('thread'), // thread, poll, spotlight, interview, tip, news, trending, event, report, list
   title: text("title").notNull(),
   summary: text("summary"), // brief description/excerpt
@@ -116,7 +117,8 @@ export const comments = pgTable("comments", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   postId: varchar("post_id"), // for post comments
   articleId: varchar("article_id"), // for article comments
-  authorId: varchar("author_id").notNull(),
+  authorId: varchar("author_id").notNull(), // Legacy: FK to auth.users.id (kept for audit/RLS)
+  authoredByProfileId: varchar("authored_by_profile_id"), // V2: FK to profiles_v2.profile_id (nullable for migration)
   content: text("content").notNull(),
   parentId: varchar("parent_id"), // for nested comments
   likes: integer("likes").default(0),
@@ -397,3 +399,6 @@ export const POST_TYPES = [
 export type Category = typeof CATEGORIES[number];
 export type Platform = typeof PLATFORMS[number];
 export type PostType = typeof POST_TYPES[number];
+
+// Export Profiles V2 schema and types
+export * from './schema.profilesV2';

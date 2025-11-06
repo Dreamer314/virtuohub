@@ -1,0 +1,164 @@
+(apply all changes, keep style exactly as-is):
+
+Goal: Make Creator Spotlights real and consistent. Keep the current Replit mock style and layout. No Community components on these pages.
+
+Do this exactly:
+
+Create canonical Spotlight components without visual changes. Put them at client/src/components/spotlights/:
+
+SpotlightHero.tsx (badge, title, subtitle, hero image if present)
+
+SpotlightMeta.tsx (small line with location and any stats)
+
+SpotlightPortfolioList.tsx (three highlight items)
+
+SpotlightAchievements.tsx
+
+SpotlightConnect.tsx (social links)
+
+SpotlightCard.tsx (the mini list cards). This must match the current mini cards visually. No Community like/save/comment UI. You can keep the existing EngagementSection if it is already used in the mock, driven by local state.
+
+Types
+Add client/src/types/spotlight.ts:
+
+export type Spotlight = {
+  id: string
+  slug: string
+  type: 'creator' | 'studio' | 'tool'
+  name: string
+  role: string
+  about?: string
+  stats?: { visits?: number; followers?: number; years?: number; location?: string }
+  hero_image?: string | null
+  tags?: string[] | null
+  portfolio?: Array<{ title: string; category?: string; description?: string; statLabel?: string }>
+  achievements?: string[]
+  social?: { vrchat?: string; twitter?: string; discord?: string; website?: string }
+  gallery?: string[]
+  quick_facts?: Array<{ label: string; value: string }>
+  published?: boolean
+}
+
+
+List page
+In client/src/pages/spotlights.tsx:
+
+Keep the page title and the static tagline line: “Profiles of creators, studios, and brands shaping the space.”
+
+Render the Featured block and the two mini cards using the new Spotlight components.
+
+Remove any leftover Community imports, PostCard, global feed filters, and the “Showing X spotlights | Clear filters” block.
+
+Data: use Supabase if rows exist, else fall back to a local seed array that contains the three current items (Emma, PixelCraft, VirtualForge).
+
+const { data: spotlights = [] } = useQuery({
+  queryKey: ['spotlights:list'],
+  queryFn: async () => {
+    const { data, error } = await supabase
+      .from('spotlights')
+      .select('id, slug, name, role, hero_image, tags, stats, type')
+      .eq('published', true)
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data ?? [];
+  }
+});
+// If empty, use local seed that mirrors the current mock content.
+
+
+Detail page
+Ensure route /spotlight/:slug exists. Create or update the page to compose the components in this exact order:
+Hero → Meta → Portfolio → Achievements → Connect.
+Fetch one row by slug with React Query:
+
+const { data: spotlight } = useQuery({
+  queryKey: ['spotlights:detail', slug],
+  queryFn: async () => {
+    const { data, error } = await supabase.from('spotlights').select('*').eq('slug', slug).single();
+    if (error) throw error;
+    return data;
+  }
+});
+
+
+Map fields directly to the components. Keep the same visual style you already have.
+
+Ban Community bleed
+Do not import any Community feed components or the global feed filter store on these pages. Confirm there is no PostCard on /spotlights or /spotlight/:slug.
+
+Deliverables
+
+A diff summary of files changed.
+
+A short “How to add a new Spotlight” note (one row in Supabase + matching slug link).
+
+Print the SQL below in your output. Do not run it from code. I will run it in Supabase manually.
+
+Print this SQL for me to run in Supabase:
+
+create type if not exists spotlight_type as enum ('creator','studio','tool');
+create table if not exists public.spotlights (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  slug text unique not null,
+  type spotlight_type not null default 'creator',
+  name text not null,
+  role text not null,
+  about text,
+  stats jsonb,
+  hero_image text,
+  tags text[],
+  portfolio jsonb,
+  achievements text[],
+  social jsonb,
+  gallery text[],
+  quick_facts jsonb,
+  published boolean not null default true
+);
+alter table public.spotlights enable row level security;
+create policy if not exists "public read published"
+on public.spotlights for select using (published = true);
+
+-- Seed three rows that match the current mock content (edit URLs as needed)
+insert into public.spotlights (slug,type,name,role,about,stats,hero_image,tags,portfolio,achievements,social,published)
+values
+('emma-thompson-vr-artist','creator','Emma Thompson','VR Environment Artist & World Builder',
+ 'Emma is a pioneering VR environment artist known for creating atmospheric virtual worlds...',
+ '{"visits":2000000,"followers":15000,"years":3,"location":"San Francisco, CA"}',
+ 'https://example.com/emma-hero.jpg',
+ '{VRChat,Unity,Blender,"Environment Design"}',
+ '[{"title":"Neon Dreams","category":"Cyberpunk City World","description":"A sprawling cyberpunk metropolis...","statLabel":"500K+ visits"},
+   {"title":"Mystic Forest Temple","category":"Fantasy Environment","description":"An enchanted forest sanctuary...","statLabel":"800K+ visits"},
+   {"title":"Underground Club Scene","category":"Social Hub","description":"An underground venue for events...","statLabel":"400K+ visits"}]',
+ '{"VRChat Creator of the Year 2023","Unity Showcase Featured Artist","Speaker at VR Developer Conference 2024","Mentor in VRChat Creator Program"}',
+ '{"vrchat":"@EmmaThompsonVR","twitter":"@VR_Emma_Art","discord":"Emma#1337"}',
+ true),
+('pixelcraft-studios','studio','PixelCraft Studios','Independent Game Studio',
+ 'Independent game studio creating immersive Roblox experiences...',
+ '{"location":"—"}',
+ 'https://example.com/pixelcraft-hero.jpg',
+ '{Roblox,"Game Design"}',
+ '[]',
+ '{}',
+ '{}',
+ true),
+('virtualforge-ai-tool','tool','VirtualForge','AI-Powered World Generation Tool',
+ 'AI-powered world generation tool helping creators build immersive environments faster.',
+ '{"location":"—"}',
+ 'https://example.com/virtualforge-hero.jpg',
+ '{"AI Tools",Unity}',
+ '[]',
+ '{}',
+ '{}',
+ true);
+
+
+Acceptance:
+
+/spotlights shows only the featured block, the tagline, and the mini cards in the exact current style.
+
+Clicking a card opens /spotlight/:slug with the same layout every time.
+
+No “Showing X spotlights” header. No Community like/save/comment bar.
+
+List and detail pages read from Supabase when rows exist, else use the local seed so it still looks the same.

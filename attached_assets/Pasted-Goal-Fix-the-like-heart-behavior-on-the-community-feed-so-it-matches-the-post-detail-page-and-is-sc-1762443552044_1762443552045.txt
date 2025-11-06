@@ -1,0 +1,76 @@
+Goal
+Fix the like/heart behavior on the community feed so it matches the post detail page and is scoped to the current user.
+
+Current symptoms
+- Logged out: clicking heart in the feed leaves it filled.
+- Logged in: clicking heart in the feed fills for a moment then un fills.
+- Some feed cards show a filled heart even when the current user never liked them.
+- On the post detail page, liking works and stays filled.
+
+Constraints
+- Do NOT change database schema.
+- Do NOT touch unrelated features.
+- Only modify:
+  - the like logic used by the community feed cards (probably PostCard or similar)
+  - any shared like hook or helper that they should use
+- Keep RLS policies as they are unless you find a clear mis match.
+
+Tasks
+
+1) Find the like implementation for the feed
+- Search for the PostCard component that renders community posts (look for the card that shows title, body, tags, heart icon).
+- Identify:
+  - the handler used on click of the heart
+  - the props or state that decide whether the heart is filled
+  - the query or mutation that talks to the likes table (likely post_likes).
+
+2) Compare to the post detail page
+- Find the page or component that renders a single post thread (the one where liking works correctly).
+- Compare:
+  - how it computes `hasLiked` for the current user
+  - which API or Supabase call it uses to insert or delete likes.
+
+3) Unify the logic into a single source of truth
+- Create or reuse a hook or helper (for example usePostLike(postId)) that:
+  - Given a post id and the current user, returns:
+      - `liked` (boolean, whether THIS user liked it)
+      - `likesCount` (total likes)
+      - `toggleLike()` to like or unlike
+  - Uses `auth.uid()` or the current user id to filter likes.
+  - Uses the `post_likes` table (or the correct table) with:
+      - insert like: user_id = current user id, post_id = given id
+      - remove like: delete where user_id = current user id and post_id = given id
+- Make both:
+  - the feed PostCard
+  - the post detail page
+  use this same hook/helper so they behave identically.
+
+4) Enforce auth on the UI side
+- In the hook or in the components, ensure:
+  - If `!user`, clicking the heart does NOT send a like mutation.
+    - Either do nothing, or open the login flow, whichever matches the rest of the app.
+- The filled state must be:
+    `liked` from the hook,
+  not “likesCount > 0”.
+
+5) Fix the “flash then un fill” behavior
+- Make sure the toggle flow is:
+  - optimistic update to `liked` and `likesCount`, then
+  - revert only if the Supabase mutation fails.
+- Log any Supabase error in the console so it is visible during testing.
+
+6) Testing
+- With a logged out session:
+  - Heart in feed should either do nothing or redirect to login.
+- With a logged in non admin user:
+  - Heart in feed should fill and stay filled.
+  - Refresh page, heart should still be filled for posts you liked and empty for others.
+  - Going into the post detail page for a liked post should also show the heart filled.
+- With a different logged in user:
+  - Their hearts should be independent from the first user.
+
+7) Summary
+- In your final summary, list:
+  - Files changed (especially PostCard, post detail page, and any new hook).
+  - The exact condition now used to decide whether the heart is filled.
+  - How the code now prevents likes from anonymous users.

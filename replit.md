@@ -1,201 +1,64 @@
 # VirtuoHub Community Platform
 
 ## Overview
-
-VirtuoHub is a modern community platform designed for virtual world creators, featuring a three-column layout similar to Reddit/Twitter. The platform enables users to share content, engage with posts, and connect within various virtual world ecosystems including Second Life, Roblox, VRChat, and others. The application includes specialized content types like "VHub Data Pulse" polls and "Interview" Q&As, along with comprehensive filtering and categorization systems.
-
-**Key Features Implemented:**
-- **Complete Authentication System** with Supabase Auth integration
-- **Two-Step Onboarding Flow** with handle validation and avatar upload  
-- **Route Protection** via OnboardingGuard component with automatic redirects
-- **Profile Management** with secure API endpoints and RLS protection
-
-## Recent Changes
-
-**October 2, 2025 - Poll System Normalization with Backward Compatibility**
-- **Normalized Poll API Response Structure**: Implemented comprehensive poll data normalization across all endpoints
-  - All poll endpoints now return both normalized structure AND legacy mirror fields for backward compatibility
-  - Normalized block: `poll: { question, options, tallies, total, my_vote }`
-  - Legacy mirrors: `poll_question, poll_options, results, my_vote` (maintains API contract)
-  - Created `extractPollMeta` helper in supabaseStorage.ts that defensively extracts poll data from subtypeData
-  - Added `attachPollMetaForPosts` batch function in routes.ts for efficient tallies/my_vote fetching
-  - Updated GET /api/posts and GET /api/posts/:id to use batch attachment (simplified from ~40 lines to 3 lines each)
-  - POST /api/posts/:postId/polls/vote returns complete normalized response with both formats
-- **Client-Side Defensive Reading**: PostCard.tsx now reads poll data with fallback chains
-  - Options: `poll?.options ?? poll_options ?? []`
-  - Tallies: `poll?.tallies ?? results ?? []`
-  - My Vote: `poll?.my_vote ?? my_vote ?? null`
-  - Ensures compatibility with any field name variation from cached or fresh data
-- **Optimistic UI Updates**: Vote mutation onSuccess merges server's normalized response into cache
-  - No query invalidation needed - server response directly updates cached posts
-  - Immediate UI flip to results view after voting
-  - Consistent data shape across list view and detail view
-- **Array Sizing Fix**: attachPollMetaForPosts ensures tallies arrays match poll options length
-  - Creates zero-filled array based on subtypeData.poll.options.length
-  - Maps aggregated vote counts onto properly sized array
-  - Prevents index out-of-bounds errors in UI rendering
-- **No Schema Changes**: Pure compatibility shim at API layer, database structure unchanged
-
-**October 2, 2025 - CRITICAL FIX: Poll Creation Database Schema**
-- **Database Schema Fix**: Fixed poll creation to use correct `subtype_data` JSONB column
-  - Previous bug: Code attempted to insert into non-existent `poll_options` column
-  - Root cause: Posts table uses `subtype_data` (JSONB) for poll storage, not separate column
-  - Fix implemented in `supabaseStorage.ts` createPost method:
-    - Transforms poll_options array → subtype_data JSON: `{ question, choices: [{ text, votes, id }] }`
-    - Properly inserts into posts.subtype_data column
-  - Poll reading fixed in mapToPostWithAuthor:
-    - Extracts poll_options from subtype_data.choices for vote validation
-    - Returns poll_options array to maintain API contract
-  - Data flow now complete: client poll_options → server subtype_data → database JSONB → read back as poll_options
-  - Legacy polls with null subtype_data remain in database from pre-fix attempts
-  - Verified by architect: implementation correct, end-to-end flow preserved
-
-**October 2, 2025 - Poll Voting System with Database Persistence & Batch Tallies**
-- **Poll Voting System**: Implemented complete poll voting functionality with Supabase persistence
-  - Database: `post_poll_votes` table with unique constraint (post_id, voter_id) ensures one vote per user
-  - Storage Layer: Added `getPostPollTallies(postIds[], voterId?)` for efficient batch vote fetching
-    - Aggregates vote counts for multiple posts in single database query
-    - Returns both vote tallies and user's votes (my_vote) in one operation
-    - Used by GET /api/posts for efficient feed augmentation
-  - Vote Endpoint: POST /api/posts/:postId/polls/vote returns fresh tallies immediately
-    - Response format: `{ ok: true, results: number[], my_vote: number | null }`
-    - Vote buttons use individual onClick handlers with proper disabled states
-  - UI Updates: PostCard component uses optimistic cache updates with server response
-    - Immediately updates local React Query cache with server-returned tallies
-    - No query invalidation needed - instant UI flip to results view
-    - Votes persist across page refreshes with my_vote and results from server
-  - Data Flow: Raw poll_options field included in post objects for vote validation
-    - Server routes check poll_options length before accepting vote
-    - Prevents out-of-bounds option index errors
-- **Streamlined Poll Creation UI**: CreatePostModal hides unused fields for polls
-  - Hidden for polls: Title, Price, Platforms, Links, Images sections
-  - Visible for polls: Poll Description (body), Poll Question, Poll Options (2-10), Duration, Category
-  - Added contextual helper text for each poll field to guide users
-  - Fixed validation schema: title optional for polls, required only for threads
-  - Poll creation flow now streamlined and intuitive
-
-**October 2, 2025 - Reddit-Style Images & Poll Fix**
-- **Reddit-Style Image Display**: Changed feed images from cropping to shrink-to-fit
-  - Feed images: `max-h-[28rem]` (448px) with `object-contain` and `bg-black` background
-  - Lightbox images: `max-h-[80vh]` with `object-contain` for viewport-friendly display
-  - Preserved thumbnail optimization with Supabase render endpoint (640×360) and retina 2x srcSet
-  - Full images now visible with proportional scaling, no cropping
-- **CRITICAL FIX**: Poll options now persist when creating polls
-  - Fixed server routes.ts to extract `poll_options` from request body
-  - Server now properly forwards poll_options to storage layer
-  - Storage layer maps poll_options → subtypeData with question and choices
-  - Polls display correctly in feed with all options visible
-- **TypeScript Fixes**: Added type annotations to PostCard.tsx for poll rendering
-  - Fixed `post.content` → `post.body` reference
-  - Added type annotations to map/reduce callbacks for poll vote calculations
-
-**September 30, 2025 - Profile Persistence Bug Fix**
-- **CRITICAL FIX**: Resolved profile data not persisting across page refreshes
-- Modified POST /api/profile-upsert to prevent overwriting existing profile data
-  - Endpoint now checks if profile exists before upserting
-  - Returns existing profile without modification if found
-  - Only creates new profiles when they don't exist
-- Fixed default role value from null to 'user' to satisfy database NOT NULL constraint
-- Issue: AuthProvider was calling profile-upsert after onboarding, overwriting handle with null
-- Solution: Made profile-upsert truly idempotent and data-preserving
-- Verified: Handle and onboarding status now persist correctly after page refresh
-
-**September 2024 - Post Creation Hotfixes**
-- Made platform selection optional for post creation (label, validation, button)
-- Fixed apiRequest signature: changed from object syntax to positional params
-- Fixed feed queryKey bug: removed feedRefresh state that was causing /api/posts/0
-- Updated storage layer: getPost/getPosts now use getProfile instead of getUser
-- Changed PostWithAuthor type: author field now uses Profile instead of User
-- Posts successfully created with or without platform selection
-- Feed correctly fetches and displays posts with author data
-
-**December 2024 - Onboarding System Implementation**
-- Implemented comprehensive two-step onboarding flow using Supabase Auth
-- Added OnboardingGuard component for client-side route protection  
-- Created secure profile API endpoints with authentication middleware
-- Built onboarding page with live handle validation and avatar upload
-- Fixed cache consistency issues in profile data fetching
-- Enhanced database schema with handle, onboarding_complete, and role fields
+VirtuoHub is a community platform for virtual world creators, designed with a three-column layout to facilitate content sharing, engagement, and connection across virtual ecosystems like Second Life, Roblox, and VRChat. The platform supports specialized content types such as polls ("VHub Data Pulse") and Q&A ("Interview"), along with extensive filtering. It features a complete authentication system via Supabase, a two-step onboarding process including handle validation and avatar upload, robust route protection, and comprehensive profile management with secure API endpoints and Row Level Security (RLS). The overarching vision is to establish a central hub that fosters creation and collaboration within virtual world communities.
 
 ## User Preferences
-
 Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
-**Frontend Architecture**
-- React 18 with TypeScript using Vite as the build tool
-- Component-based architecture with shadcn/ui design system
-- Three-column responsive layout (left sidebar, main feed, right sidebar)
-- Client-side routing with Wouter
-- State management via TanStack Query for server state and React hooks for local state
-- Theme support with light/dark mode toggle
+**Frontend**
+-   Built with React 18, TypeScript, and Vite, utilizing a component-based architecture with shadcn/ui.
+-   Features a three-column responsive layout, client-side routing with Wouter, and state management via TanStack Query for server state and React hooks for local state.
+-   Supports theme switching with light/dark modes.
 
-**Backend Architecture**
-- Express.js REST API server with TypeScript
-- In-memory storage implementation (MemStorage class) for development
-- RESTful endpoints for posts, users, and saved content
-- Middleware for logging, JSON parsing, and error handling
-- Development-only Vite integration for HMR
+**Backend**
+-   An Express.js REST API server developed with TypeScript, using in-memory storage for development.
+-   Provides RESTful endpoints for posts, users, and saved content, incorporating middleware for logging, JSON parsing, and error handling.
+
+**UI/UX Design**
+-   Employs a modern glass-morphism design with subtle shadows, transparency, and a consistent aesthetic.
+-   Utilizes Inter/Poppins fonts, a purple accent color (`#7C3AED`), and a card-based layout with hover effects and smooth animations.
+-   Fully mobile-responsive.
 
 **Data Models**
-- Users: ID, username, password, display name, avatar, bio, role, timestamps
-- Posts: ID, author, title, content, images, category, platforms, pricing, type (regular/pulse/insight), poll data, engagement metrics
-- Saved Posts: User-post relationships with timestamps
-- Categories: General, Assets for Sale, Jobs & Gigs, Collaboration & WIP, Industry News, Events & Meetups, Tips & Tutorials
-- Platforms: Core Virtual Worlds (Roblox, VRChat, Second Life, IMVU, Meta Horizon Worlds), Game Development (Unity, Unreal Engine, Core, Dreams), Gaming Platforms (Fortnite Creative, Minecraft, GTA FiveM, The Sims, inZOI), Game Communities (Elder Scrolls Online, Fallout, Counter-Strike, Team Fortress 2), and Other Platform
+-   Key entities include `Users`, `Posts` (with specialized types like polls and Q&A), `Saved Posts`, `Categories`, and `Platforms`.
+-   `Profiles v2` schema includes `display_name`, `headline`, `handle`, `about`, `profile_photo_url`, `visibility`, `is_open_to_work`, `is_hiring`, `availability_note`, and a `quick_facts` JSONB for Creator Profile data.
+-   `Jobs` schema includes `id`, `user_id`, `title`, `company_name`, `primary_skill`, `platform`, `job_type`, `budget`, `is_remote`, `location`, `description`, `visibility`, and `created_at` for job postings.
 
-**UI/UX Design Philosophy**
-- Modern glass-morphism design with subtle shadows and transparency
-- Consistent spacing and typography using Inter/Poppins fonts
-- Purple accent color (#7C3AED) for primary actions and highlights
-- Card-based layout with hover effects and smooth animations
-- Mobile-responsive design with collapsible sidebars
-
-**Component Architecture**
-- Shared UI components in `/components/ui/` following shadcn/ui patterns
-- Layout components for header, sidebars, and main content areas
-- Specialized post components for different content types
-- Form components with react-hook-form and Zod validation
-- Modal dialogs for post creation and interactions
-
-**State Management Strategy**
-- TanStack Query for API data fetching, caching, and synchronization
-- React hooks for local UI state (theme, modal visibility, form state)
-- Context providers for theme and toast notifications
-- Query invalidation patterns for real-time data updates
+**Technical Implementations & Features**
+-   **Authentication & Onboarding**: Implemented with Supabase Auth, including a two-step onboarding process with handle validation and avatar upload, secured by an `OnboardingGuard`.
+-   **Profile Management**: Secure API endpoints with RLS on `profiles_v2` and related tables; supports real image uploads to Supabase Storage with client-side validation and preview-before-save functionality.
+-   **Poll System**: Features a normalized API response, optimistic UI updates for voting, and streamlined creation, with data stored in a JSONB column.
+-   **Production-Grade Likes System**: Toggle-based likes for posts and comments with one-like-per-user enforcement. Uses junction tables (`post_likes`, `comment_likes`) with unique constraints to prevent duplicate likes. Backend provides toggle semantics (like/unlike), frontend displays optimistic updates with visual feedback (filled icons). API returns `{ likes: number, hasLiked: boolean }` for state synchronization.
+-   **Creator Profile System**: Stores professional details (roles, platforms, tools, experience, portfolio, social links) in the `quick_facts` JSONB column, enabling creators to showcase their skills. Features a "Find Talent" directory for searching public creator profiles with comprehensive filtering. Uses virtual world/immersive creator terminology (e.g., "Avatar clothing creator", "World or sim builder", "Rigger (bodies or clothing)") reflecting the platform's specialized audience.
+-   **Centralized Creator Options**: All creator profile options (PRIMARY_ROLES, PLATFORMS, TOOLS, EXPERIENCE_LEVELS, JOB_TYPES, PAYMENT_TYPES, CURRENCIES) are defined in `client/src/config/creatorOptions.ts` and imported across profile settings, talent directory filters, and job posting forms to ensure consistency. Profile settings now use "Primary role" label with helper text "What you are best known for in virtual worlds" instead of generic "Primary Skill".
+-   **Job Board**: Integrated tab-based interface on `/talent` with "Find Talent" and "Find Work" tabs. Job listings include comprehensive filtering (skill required, platform, job type, search), formatted budget display, and remote-friendly indicators. Job posting form at `/jobs/new` with validation for title, skill, platform, type, budget, location, and description. Job detail pages at `/jobs/:id` display full job information with back navigation support via query parameters. Jobs are stored in a Supabase `jobs` table with RLS policies for public read and user-owned write access.
+-   **State Management**: Leverages TanStack Query for server state, React hooks for local UI state, and Context providers for global concerns like themes and notifications, with query invalidation for real-time updates.
 
 ## External Dependencies
 
-**Frontend Dependencies**
-- React ecosystem: React 18, React DOM, React Router (Wouter)
-- UI Framework: Radix UI primitives with shadcn/ui component library
-- Styling: Tailwind CSS with custom design tokens and PostCSS
-- Forms: React Hook Form with Zod validation and resolvers
-- State Management: TanStack Query for server state management
-- Utilities: clsx, class-variance-authority, date-fns, lucide-react icons
+**Frontend Libraries**
+-   **React Ecosystem**: React 18, React DOM, Wouter.
+-   **UI**: Radix UI, shadcn/ui, Tailwind CSS, PostCSS.
+-   **Forms**: React Hook Form, Zod.
+-   **State Management**: TanStack Query.
+-   **Utilities**: `clsx`, `class-variance-authority`, `date-fns`, `lucide-react`, `nanoid`.
 
-**Backend Dependencies**
-- Server: Express.js with TypeScript support via tsx
-- Database ORM: Drizzle ORM configured for PostgreSQL (currently using in-memory storage)
-- Session Management: connect-pg-simple for PostgreSQL session store
-- Validation: Zod schemas shared between frontend and backend
-- Development: ESBuild for production builds, Vite for development
+**Backend Libraries**
+-   **Server**: Express.js, `tsx`.
+-   **Database ORM**: Drizzle ORM.
+-   **Validation**: Zod.
 
-**Database Configuration**
-- Drizzle ORM with PostgreSQL dialect configured
-- Neon Database serverless driver for cloud PostgreSQL
-- Schema definitions in shared module for type safety
-- Migration system with drizzle-kit for schema changes
+**Cloud Services**
+-   **Database**: Neon (PostgreSQL).
+-   **Authentication**: Supabase Auth.
+-   **Storage**: Supabase Storage.
+-   **Session Management**: `connect-pg-simple`.
 
 **Development Tools**
-- Build System: Vite with React plugin and custom Replit integrations
-- TypeScript: Strict configuration with path mapping for clean imports
-- Linting: ESLint configuration (implied by project structure)
-- Development Server: Hot module replacement with error overlay
-
-**Third-Party Integrations**
-- Font Loading: Google Fonts for Inter, Poppins, and other typefaces
-- Cloud Database: Neon serverless PostgreSQL for production data storage
-- Replit Platform: Custom Vite plugins for Replit development environment
-- Session Storage: PostgreSQL-based session management for user authentication
+-   **Build**: Vite, ESBuild.
+-   **Language**: TypeScript.
+-   **Linting**: ESLint.
+-   **ORM Utilities**: `drizzle-kit`.

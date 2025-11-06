@@ -1,0 +1,65 @@
+The /settings/profile page is STILL showing this UI in my browser:
+
+"Error loading profile
+Unable to load or create your profile. Please try again."
+
+You already replaced .single() with .maybeSingle(), but that did not fix the problem. Please do NOT wait for me to check logs. I need you to fully debug this yourself inside the running app.
+
+Constraints:
+- Do NOT change database schema, RLS policies, or migrations.
+- Use existing tables: profiles_v2 and account_prefs.
+- Do NOT touch v1 behavior (feed, spotlights, comments).
+- Fix ONLY the client-side profile settings and public profile code.
+
+What I want you to do now:
+
+1) Reproduce the bug yourself
+   - Start the dev server / app as you normally do.
+   - In the Replit preview browser, log in with any existing user.
+   - Navigate to /settings/profile and confirm you see the same "Error loading profile" card.
+   - Open the browser devtools console in that preview and read the logs you previously added
+     (they should start with "[PROFILE SETTINGS]").
+
+2) Identify the EXACT failure
+   - For each Supabase call in profile-settings.tsx, check:
+     - auth.getUser (or equivalent) result and error
+     - account_prefs query result and error
+     - profiles_v2 query result and error
+     - any insert/update into profiles_v2 or account_prefs
+   - Tell me which call is failing and what error Supabase returns
+     (for example: null user, RLS violation, wrong column in payload, bad JSON shape, etc.).
+   - Do NOT guess. Base this on the real console error objects you see.
+
+3) Implement the minimal code fix
+   Common possibilities (please check and fix whichever is actually happening):
+   - auth user is null → fix how you get the user id so it works in the browser session that is logged in.
+   - account_prefs query assumes there is always a row → handle null correctly and then create prefs.
+   - profiles_v2 query uses the wrong id (e.g. mixing profile_id and user_id) → fix WHERE condition.
+   - insert/update payload does not match columns (extra fields, wrong JSON type for quick_facts) → fix payload shape.
+   - error handling sets `profile` to null even when data is present → fix that logic.
+
+   IMPORTANT:
+   - Do NOT bypass RLS with a service role.
+   - Do NOT rename tables/columns.
+   - Only adjust how the React code calls Supabase and how it handles missing rows and nulls.
+
+4) Verify in the browser
+   - Still in the Replit preview, log in and go to /settings/profile again.
+   - Keep iterating until:
+     - The page shows a real profile form (display name, avatar URL, bio, etc.),
+       NOT the “Error loading profile” message.
+     - Saving changes works without errors.
+   - Also verify /u/:handle loads that same profile.
+
+5) Clean up logging
+   - Remove or minimize the temporary console.log statements you added earlier,
+     keeping at most a couple of helpful debug logs if you think they’re necessary.
+
+6) Final summary for me
+   - Explain:
+     - Which Supabase call was actually failing and why.
+     - What exact code changes you made to fix it (file + key snippets).
+   - Confirm:
+     - /settings/profile loads successfully for a logged-in user.
+     - /u/:handle shows the public profile.
+     - Community feed, spotlights, and comments still work as before.

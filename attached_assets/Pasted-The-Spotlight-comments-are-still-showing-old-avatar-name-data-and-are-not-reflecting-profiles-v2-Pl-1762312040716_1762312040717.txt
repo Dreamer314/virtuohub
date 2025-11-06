@@ -1,0 +1,87 @@
+The Spotlight comments are still showing old avatar/name data and are not reflecting profiles_v2. Please fix ONLY the comment/author rendering on the frontend.
+
+Scope
+
+You may read/modify only:
+
+client/src/pages/**
+
+client/src/components/**
+
+especially anything related to:
+
+Spotlight detail page and its comments
+
+Community/feed post comments (if they use the same components)
+
+Any shared Comment / CommentList / PostAuthor components
+
+Do NOT:
+
+Modify SQL files, migrations, RLS policies, or database schemas
+
+Touch env vars, auth config, or any backend routes
+
+Add/remove columns or tables
+
+Change how comments are stored in the database
+
+What I want
+
+Comments should use profiles_v2 for identity
+
+For each comment or reply:
+
+Use the user_id on the comment (whatever field represents the author’s auth user id).
+
+Call the existing useUserProfile(userId) hook you created for profiles_v2.
+
+Render:
+
+display_name (fall back to handle if needed)
+
+handle
+
+profile_photo_url for the avatar
+
+Ignore or stop using any legacy fields like author_name, author_avatar, or other baked-in author data on the comment object. Those can stay on the type, just don’t use them for display.
+
+If useUserProfile returns null:
+
+Show a generic avatar
+
+Show a simple fallback name (e.g. the legacy author_name or email prefix)
+
+But do not write or change anything in the database.
+
+Apply the same logic to post/spotlight author blocks
+
+On the Spotlight detail page and any community/feed post detail:
+
+If there is a user_id for the author, resolve it via useUserProfile(userId) and render avatar/name from profiles_v2.
+
+Only fall back to legacy fields if there is no matching profiles_v2 profile.
+
+Do not change the onboarding or profile settings logic
+
+Leave WelcomeModal and profile settings as they are now (they already write to profiles_v2).
+
+This task is ONLY about how comments and author blocks read and display identity.
+
+Verification
+
+After your changes, please verify and describe in your summary that:
+
+Changing my avatar/name in Profile Settings updates:
+
+Header avatar + name
+
+My comments under a Spotlight
+
+Any new comments I add
+
+Old comments authored by me also show the current avatar/name from profiles_v2 (because they resolve via user_id).
+
+No database schemas or RLS policies were modified.
+
+If something is ambiguous, prefer to leave it unchanged rather than refactor it.

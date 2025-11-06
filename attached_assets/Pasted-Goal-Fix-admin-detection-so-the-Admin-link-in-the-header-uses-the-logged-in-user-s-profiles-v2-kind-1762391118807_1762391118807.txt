@@ -1,0 +1,57 @@
+Goal: Fix admin detection so the Admin link in the header uses the logged in user's profiles_v2.kind value, without breaking any other parts of the site.
+
+Context:
+- Admin status is stored in the table profiles_v2 as kind = 'ADMIN'.
+- The app already has a hook useMyV2Profile that loads the current user's profile.
+- Right now the header has extra logic that runs a separate Supabase query to check admin status, and it is fragile. I want admin status to come only from useMyV2Profile and profiles_v2.kind.
+
+Please do the following very carefully and only touch the minimum necessary code.
+
+1. Verify kind is loaded in useMyV2Profile
+   - Open client/src/hooks/useMyV2Profile.ts (or the file where that hook lives).
+   - Confirm that the Supabase select for profiles_v2 includes the column kind in the field list.
+     Example shape:
+       .from("profiles_v2")
+       .select("user_id, handle, displayName, profilePhotoUrl, hasValidProfile, kind")
+   - Confirm the returned TypeScript type or interface for this profile object also includes kind: "CREATOR" | "STUDIO" | "ADMIN" (or whatever union you defined).
+   - If kind is already included and typed, do not change anything here besides adding kind if it is missing.
+
+2. Simplify the admin check in the header to use v2Profile.kind only
+   - Open client/src/components/layout/header.tsx.
+   - At the top of the component there should already be:
+       const { data: v2Profile, isLoading: profileLoading } = useMyV2Profile();
+   - Right after the existing lines that extract displayName, avatarUrl, userHandle, and canViewProfile from v2Profile, add a single derived boolean:
+       const isAdmin = v2Profile?.kind === "ADMIN";
+   - Remove any state or effects that exist only to track admin status, for example:
+       - useState for isAdmin or isAdminProfile.
+       - useEffect that runs a Supabase query like supabase.from("profiles_v2") to check kind.
+     The header component should no longer run its own Supabase query to profiles_v2. Admin status must come only from v2Profile.kind.
+
+3. Use isAdmin for the Admin navigation link and any badges in the header
+   - Find where the Admin navigation link is rendered in header.tsx.
+   - Make sure it simply checks the new isAdmin boolean:
+       {isAdmin && (
+         <Link href="/admin" ...>
+           Admin
+         </Link>
+       )}
+   - If the header shows any small admin badge based on a previous admin state, switch that condition to use isAdmin as well.
+   - Do not change any other navigation items.
+
+4. Do not modify unrelated parts of the site
+   - Do not change any database schemas, migrations, or RLS policies.
+   - Do not touch other pages or components except:
+       - client/src/hooks/useMyV2Profile.ts (only to ensure kind is selected and typed)
+       - client/src/components/layout/header.tsx (to simplify admin logic and use isAdmin).
+   - Do not alter profile creation logic or onboarding flows in profile-settings.tsx in this task.
+
+5. Quick sanity checks
+   - After making the edits, add a temporary console.log in header.tsx:
+       console.log("[HEADER v2Profile kind]", v2Profile?.kind);
+     so I can see the value when I log in.
+   - Run the app, log in as my admin user, and confirm that:
+       - The console log shows kind = "ADMIN" for the admin account.
+       - The Admin link appears in the header when kind is "ADMIN".
+   - Leave that console.log in place for now. I will remove it myself after I verify.
+
+Before saving, briefly summarize exactly what you changed and in which files so I can review. Please avoid refactoring anything outside the specific admin check and kind wiring described above.

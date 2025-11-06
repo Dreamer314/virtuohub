@@ -6,9 +6,13 @@ import { RightSidebar } from '@/components/layout/right-sidebar';
 import { PostCard } from '@/components/cards/PostCard';
 import { Footer } from '@/components/layout/footer';
 import { useQuery } from '@tanstack/react-query';
+import { useAuth } from '@/providers/AuthProvider';
 import type { PostWithAuthor } from '@shared/schema';
 
 const GuidesPage: React.FC = () => {
+  const { user } = useAuth();
+  const currentUserId = user?.id || 'user1';
+
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -91,7 +95,7 @@ const GuidesPage: React.FC = () => {
                       </div>
                     ) : guidesPosts.length > 0 ? (
                       guidesPosts.map((post) => (
-                        <PostCard key={post.id} post={post} />
+                        <PostCard key={post.id} post={post} currentUserId={currentUserId} />
                       ))
                     ) : (
                       <div className="enhanced-card hover-lift rounded-xl p-12 text-center">

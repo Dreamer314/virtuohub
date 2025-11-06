@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -8,10 +8,11 @@ import { useToast } from "@/hooks/use-toast";
 import { type PostWithAuthor } from "@shared/schema";
 import { ThumbsUp, MessageCircle, Share, Heart, Zap, Lightbulb, Clock } from "lucide-react";
 import { Link } from "wouter";
-import { cn, getPlatformColor, getCategoryColor, formatTimeAgo } from "@/lib/utils";
+import { cn, getPlatformColor, getCategoryColor, formatTimeAgo, getDisplayName, getAvatarUrl } from "@/lib/utils";
 import { getCategoryLabel, normalizeCategoryToSlug } from "@/constants/postCategories";
 import { ImageViewerModal } from "@/components/modals/ImageViewerModal";
 import { OptimizedImage } from "@/components/ui/optimized-image";
+import { useUserProfile } from "@/hooks/useUserProfile";
 
 interface PostCardProps {
   post: PostWithAuthor;
@@ -22,8 +23,26 @@ interface PostCardProps {
 export const PostCard = React.memo(function PostCard({ post, currentUserId = 'user1', isDetailView = false }: PostCardProps) {
   const [isSaved, setIsSaved] = useState(post.isSaved || false);
   const [isImageViewerOpen, setIsImageViewerOpen] = useState(false);
+  // Likes state initialized from API data (junction table is single source of truth)
+  const [likes, setLikes] = useState(post.likes || 0);
+  const [hasLiked, setHasLiked] = useState((post as any).hasLiked || false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  
+  // Sync local state when post props change (e.g., after query refetch)
+  useEffect(() => {
+    setLikes(post.likes || 0);
+    setHasLiked((post as any).hasLiked || false);
+  }, [post.likes, (post as any).hasLiked]);
+  
+  // Fetch author profile from profiles_v2
+  const { data: authorProfile } = useUserProfile(post.authorId);
+  
+  // Use profiles_v2 data if available, otherwise fall back to post.author
+  const displayName = getDisplayName(authorProfile, getDisplayName(post.author) || 'User');
+  const avatarUrl = getAvatarUrl(authorProfile, getAvatarUrl(post.author));
+  // Role/badge from profiles_v2.kind, or fallback to legacy role
+  const authorRole = authorProfile?.kind?.toLowerCase() || post.author?.role;
 
   // Poll voting state from server - defensive reading
   const options = (post as any).poll?.options ?? (post as any).poll_options ?? [];
@@ -33,12 +52,52 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
   const tallies = Array.isArray(talliesRaw) ? talliesRaw : new Array(options.length).fill(0);
   const hasVoted = myVote !== null;
 
-  const likeMutation = useMutation({
-    mutationFn: () => apiRequest('POST', `/api/posts/${post.id}/like`),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
-      queryClient.invalidateQueries({ queryKey: ['/api/posts', post.id] });
-      toast({ title: "Post liked!" });
+  const likeMutation = useMutation<{ likes: number, hasLiked: boolean }>({
+    mutationFn: async () => {
+      const response = await apiRequest('POST', `/api/posts/${post.id}/like`, { userId: currentUserId });
+      return response.json();
+    },
+    onSuccess: (data) => {
+      setLikes(data.likes);
+      setHasLiked(data.hasLiked);
+      
+      // Update all post queries in cache directly to avoid stale data
+      queryClient.setQueriesData(
+        { 
+          predicate: (query) => {
+            const key = query.queryKey[0];
+            return typeof key === 'string' && key.includes('/api/posts');
+          }
+        },
+        (oldData: any) => {
+          if (!oldData) return oldData;
+          
+          // Handle array of posts (feed queries)
+          if (Array.isArray(oldData)) {
+            return oldData.map((p: any) => {
+              if (p.id !== post.id) return p;
+              return {
+                ...p,
+                likes: data.likes,
+                hasLiked: data.hasLiked,
+              };
+            });
+          }
+          
+          // Handle single post object (detail queries)
+          if (oldData.id === post.id) {
+            return {
+              ...oldData,
+              likes: data.likes,
+              hasLiked: data.hasLiked,
+            };
+          }
+          
+          return oldData;
+        }
+      );
+      
+      toast({ title: data.hasLiked ? "Post liked!" : "Post unliked!" });
     }
   });
 
@@ -50,7 +109,13 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
     },
     onSuccess: () => {
       setIsSaved(!isSaved);
-      queryClient.invalidateQueries({ queryKey: ['/api/users', currentUserId, 'saved-posts'] });
+      // Invalidate queries matching the saved posts endpoint
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          const key = query.queryKey[0];
+          return typeof key === 'string' && key.includes('/saved-posts');
+        }
+      });
       toast({ title: isSaved ? "Post unsaved" : "Post saved!" });
     }
   });
@@ -104,12 +169,32 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
   const [shareSuccess, setShareSuccess] = useState(false);
 
   const handleLike = () => {
+    // Check if user is authenticated (not using fallback 'user1')
+    if (currentUserId === 'user1') {
+      toast({ 
+        title: "Sign in required", 
+        description: "You need to sign in to like posts.",
+        variant: "destructive" 
+      });
+      return;
+    }
+    
     if (!likeMutation.isPending) {
       likeMutation.mutate();
     }
   };
 
   const handleSave = () => {
+    // Check if user is authenticated (not using fallback 'user1')
+    if (currentUserId === 'user1') {
+      toast({ 
+        title: "Sign in required", 
+        description: "You need to sign in to save posts.",
+        variant: "destructive" 
+      });
+      return;
+    }
+    
     if (!saveMutation.isPending) {
       saveMutation.mutate();
     }
@@ -206,20 +291,29 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
         <div className="flex space-x-4">
           {/* Avatar */}
           <div className="flex-shrink-0">
-            <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-vh-accent1 text-white font-medium text-lg">
-              {(post.author.handle || post.author.displayName || 'U').charAt(0)}
-            </span>
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={displayName}
+                className="h-12 w-12 rounded-full object-cover"
+                data-testid={`post-avatar-${post.id}`}
+              />
+            ) : (
+              <span className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-vh-accent1 text-white font-medium text-lg">
+                {displayName.charAt(0).toUpperCase()}
+              </span>
+            )}
           </div>
           
           <div className="flex-1 min-w-0">
             {/* Header */}
             <div className="flex items-center space-x-2 mb-1">
               <span className="vh-body font-medium" data-testid={`author-${post.id}`}>
-                {post.author.handle ? `@${post.author.handle}` : post.author.displayName || (post.authorId ? `user_${post.authorId.slice(-5)}` : '')}
+                {displayName}
               </span>
-              {post.author.role && (
+              {authorRole && (
                 <Badge variant="secondary" className="text-xs">
-                  {post.author.role}
+                  {authorRole}
                 </Badge>
               )}
               <span className="text-xs text-vh-text-subtle">•</span>
@@ -434,11 +528,12 @@ export const PostCard = React.memo(function PostCard({ post, currentUserId = 'us
                   variant="ghost"
                   size="sm"
                   onClick={handleLike}
+                  disabled={likeMutation.isPending}
                   className="vh-button flex items-center space-x-2 px-2 py-1"
                   data-testid={`like-button-${post.id}`}
                 >
-                  <ThumbsUp size={16} />
-                  <span className="vh-body-small">{post.likes}</span>
+                  <Heart size={16} className={cn("transition", hasLiked ? "text-white fill-white" : "text-neutral-500")} />
+                  <span className="vh-body-small">{likes}</span>
                 </Button>
                 <Button
                   variant="ghost"

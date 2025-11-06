@@ -1,0 +1,146 @@
+Quick recap of current behavior on a thread page:
+
+On full refresh:
+
+The post shows 0 likes (or later 1), but the heart is not filled.
+
+The comment shows 0 likes.
+
+When I click like on the post:
+
+Count goes 0 → 1.
+
+Heart flashes pink for a moment, then goes back to transparent.
+
+If I refresh, the count stays at 1, but the heart is still transparent.
+
+Clicking again correctly toggles 1 ↔ 0, but the heart is never “sticky” on reload.
+
+When I click like on the comment:
+
+Count goes up (e.g. 0 → 1).
+
+Heart turns red and stays red across refresh.
+
+After a refresh in this state:
+
+Post: likes = 1, heart not filled.
+
+Comment: likes = 1, heart filled red.
+
+So:
+
+Counts are persisting correctly for both post and comment, but hasLiked is wrong for posts on initial load, and the post icon is not using the same logic as the comment icon.
+
+I need you to fix this fully and cleanly:
+
+1. Verify API data for a liked post vs comment
+
+On the backend, in the GET endpoints used by the thread page:
+
+GET /api/posts/:id
+
+GET /api/posts/:id/comments
+
+Add temporary logging so we can see the actual payload for the post and its first comment for the current user:
+
+console.log('POST PAYLOAD', { id: post.id, likes: post.likes, hasLiked: post.hasLiked });
+console.log('COMMENT PAYLOAD', { id: comment.id, likes: comment.likes, hasLiked: comment.hasLiked });
+
+
+With a post and comment that I have liked:
+
+Confirm that the comment comes back with hasLiked: true.
+
+Confirm that the post currently comes back with hasLiked: false (this is the bug).
+
+Fix the backend so that:
+
+hasLiked for posts is computed the same way as for comments, from the junction table:
+
+posts → post_likes(post_id, user_id)
+
+comments → comment_likes(comment_id, user_id)
+
+No code anywhere should be deriving hasLiked from the legacy posts.likes column.
+
+If necessary, factor this into a shared helper so posts and comments literally share the same “compute likes + hasLiked” logic.
+
+2. Make the frontend actually use hasLiked for posts
+
+In client/src/components/cards/PostCard.tsx:
+
+Ensure the post prop includes both:
+
+likes: number;
+hasLiked: boolean;
+
+
+Local state should be initialized from props:
+
+const [likes, setLikes] = useState(post.likes ?? 0);
+const [hasLiked, setHasLiked] = useState(post.hasLiked ?? false);
+
+
+After the like/unlike mutation, use the API response:
+
+const { likes: newLikes, hasLiked: newHasLiked } = data;
+setLikes(newLikes);
+setHasLiked(newHasLiked);
+
+
+Keep / add a useEffect so when React Query refetches and post.likes or post.hasLiked changes, the card syncs back to the latest values:
+
+useEffect(() => {
+  setLikes(post.likes ?? 0);
+  setHasLiked(post.hasLiked ?? false);
+}, [post.likes, post.hasLiked]);
+
+
+The heart icon for posts should use exactly the same styling rule as the comment heart:
+
+<Heart
+  className={clsx(
+    'h-4 w-4 transition',
+    hasLiked ? 'text-pink-400 fill-pink-400' : 'text-muted-foreground'
+  )}
+/>
+
+
+Do not derive the active state from likes > 0; it must be based on hasLiked.
+
+3. Keep comment logic consistent
+
+In ThreadCommentItem inside client/src/pages/thread.tsx:
+
+It already behaves mostly correctly. Just confirm it follows the same pattern as PostCard:
+
+likes and hasLiked from props
+
+useState + useEffect syncing to props
+
+Heart styling based purely on hasLiked
+
+After mutation, use { likes, hasLiked } from the API response.
+
+4. Acceptance criteria (please verify yourself)
+
+On a thread page, while logged in:
+
+Like the post, like the comment.
+
+Immediately after clicking:
+
+Both hearts are filled.
+
+Counts have incremented.
+
+After a full browser refresh:
+
+Both hearts are still filled.
+
+Counts match the database.
+
+Toggling like/unlike continues to work and hearts always match the current hasLiked value.
+
+If any of these fail, continue debugging until they all pass. Please don’t change any unrelated UI or features.

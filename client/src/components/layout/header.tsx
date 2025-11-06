@@ -1,4 +1,11 @@
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useTheme } from "@/components/theme-provider";
 import {
   Moon,
@@ -12,14 +19,16 @@ import {
   LogOut,
   User,
   Shield,
-  UserCircle
+  UserCircle,
+  Settings as SettingsIcon,
+  ChevronDown,
 } from "lucide-react";
 import { useLocation, Link } from "wouter";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@/providers/AuthProvider";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { supabase } from "@/lib/supabaseClient";
-import { useDisplayIdentity } from "@/hooks/useDisplayIdentity";
+import { useMyV2Profile } from "@/hooks/useMyV2Profile";
 import { WelcomeModal } from "@/components/welcome/WelcomeModal";
 
 interface HeaderProps {
@@ -35,26 +44,24 @@ export function Header({ onCreatePost }: HeaderProps) {
     "signin"
   );
   const { user, loading, showWelcome, setShowWelcome } = useAuth();
-  const { displayName, isTemporary } = useDisplayIdentity();
+  const { data: v2Profile, isLoading: profileLoading } = useMyV2Profile();
   const [welcomeModalOpen, setWelcomeModalOpen] = useState(false);
 
-  // Admin flag
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      if (user?.id) {
-        const { data, error } = await supabase.rpc("is_admin", { uid: user.id });
-        if (!cancelled) setIsAdmin(Boolean(data) && !error);
-      } else {
-        if (!cancelled) setIsAdmin(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [user?.id]);
+  // Extract profile data with fallbacks
+  const displayName = v2Profile?.displayName || (v2Profile?.handle ? `@${v2Profile.handle}` : (user?.email?.split('@')[0] || 'User'));
+  const avatarUrl = v2Profile?.profilePhotoUrl;
+  const userHandle = v2Profile?.handle;
+  const canViewProfile = v2Profile?.hasValidProfile || false;
+  
+  // Admin access control
+  const isLoggedIn = !!user;
+  const isAdmin = isLoggedIn && v2Profile?.isAdmin === true;
+  
+  console.log("[HEADER admin check]", {
+    email: user?.email,
+    kind: v2Profile?.kind,
+    isAdmin,
+  });
 
   const toggleTheme = () => {
     // Single-theme mode: charcoal only
@@ -134,8 +141,17 @@ export function Header({ onCreatePost }: HeaderProps) {
             >
               Community
             </Link>
+            <Link
+              href="/talent"
+              className={`vh-nav-item px-3 py-2 rounded-lg font-medium text-base ${
+                location === "/talent" || location.startsWith("/jobs/") ? "active" : ""
+              }`}
+              data-testid="nav-talent"
+            >
+              Talent
+            </Link>
 
-            {/* Admin link for real admins */}
+            {/* Admin link */}
             {isAdmin && (
               <Link
                 href="/admin"
@@ -207,37 +223,66 @@ export function Header({ onCreatePost }: HeaderProps) {
               <>
                 {user ? (
                   <div className="flex items-center space-x-2">
-                    <div className="hidden lg:flex items-center space-x-2 px-3 py-1 rounded-lg bg-muted/50">
-                      <User className="w-4 h-4" />
-                      <span
-                        className="text-sm font-medium"
-                        data-testid="user-display-name"
-                      >
-                        {displayName}
-                      </span>
-                    </div>
-                    {isTemporary && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setWelcomeModalOpen(true)}
-                        className="text-sm font-medium px-3 hidden lg:inline-flex"
-                        data-testid="complete-profile-button"
-                      >
-                        <UserCircle className="w-4 h-4 mr-1" />
-                        Complete your profile
-                      </Button>
-                    )}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleSignOut}
-                      className="text-sm font-medium px-3 hidden lg:inline-flex"
-                      data-testid="logout-button"
-                    >
-                      <LogOut className="w-4 h-4 mr-1" />
-                      Log Out
-                    </Button>
+                    {/* User Menu Dropdown */}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button 
+                          className="flex items-center space-x-2 px-3 py-1.5 rounded-lg bg-muted/50 hover:bg-muted transition-colors cursor-pointer outline-none focus:ring-2 focus:ring-primary"
+                          data-testid="user-menu-trigger"
+                        >
+                          {avatarUrl ? (
+                            <img 
+                              src={avatarUrl} 
+                              alt={displayName}
+                              className="w-6 h-6 rounded-full object-cover"
+                              data-testid="user-avatar"
+                            />
+                          ) : (
+                            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                              <User className="w-3 h-3 text-primary" />
+                            </div>
+                          )}
+                          <span
+                            className="text-sm font-medium max-w-[120px] truncate"
+                            data-testid="user-display-name"
+                          >
+                            {userHandle ? `@${userHandle}` : displayName}
+                          </span>
+                          <ChevronDown className="w-3 h-3 text-muted-foreground" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem 
+                          asChild={canViewProfile}
+                          disabled={!canViewProfile}
+                          className={canViewProfile ? "cursor-pointer" : "cursor-not-allowed opacity-50"}
+                          data-testid="menu-view-profile"
+                        >
+                          {canViewProfile && userHandle ? (
+                            <Link href={`/u/${userHandle}`}>
+                              <User className="w-4 h-4 mr-2" />
+                              View public profile
+                            </Link>
+                          ) : (
+                            <div className="flex items-center">
+                              <User className="w-4 h-4 mr-2" />
+                              View public profile
+                            </div>
+                          )}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild data-testid="menu-profile-settings">
+                          <Link href="/settings/profile" className="cursor-pointer">
+                            <SettingsIcon className="w-4 h-4 mr-2" />
+                            Profile settings
+                          </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer" data-testid="menu-logout">
+                          <LogOut className="w-4 h-4 mr-2" />
+                          Log out
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 ) : (
                   <>
@@ -308,13 +353,16 @@ export function Header({ onCreatePost }: HeaderProps) {
         {isMobileMenuOpen && (
           <div className="lg:hidden border-t border-border bg-background/95 backdrop-blur-sm">
             <nav className="flex flex-col space-y-1 py-4">
-              <a
-                href="#"
-                className="vh-nav-item px-4 py-3 font-medium rounded-lg mx-2"
+              <Link
+                href="/home"
+                className={`vh-nav-item px-4 py-3 font-medium rounded-lg mx-2 ${
+                  location === "/home" ? "active" : ""
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
                 data-testid="mobile-nav-home"
               >
                 Home
-              </a>
+              </Link>
               <a
                 href="#"
                 className="vh-nav-item px-4 py-3 font-medium rounded-lg mx-2"
@@ -336,13 +384,26 @@ export function Header({ onCreatePost }: HeaderProps) {
               >
                 Connect
               </a>
-              <a
-                href="#"
-                className="vh-nav-item active px-4 py-3 font-medium rounded-lg mx-2"
+              <Link
+                href="/"
+                className={`vh-nav-item px-4 py-3 font-medium rounded-lg mx-2 ${
+                  location === "/" ? "active" : ""
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
                 data-testid="mobile-nav-community"
               >
                 Community
-              </a>
+              </Link>
+              <Link
+                href="/talent"
+                className={`vh-nav-item px-4 py-3 font-medium rounded-lg mx-2 ${
+                  location === "/talent" || location.startsWith("/jobs/") ? "active" : ""
+                }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+                data-testid="mobile-nav-talent"
+              >
+                Talent
+              </Link>
 
               {/* Admin (mobile) */}
               {isAdmin && (
@@ -364,37 +425,65 @@ export function Header({ onCreatePost }: HeaderProps) {
                   <>
                     {user ? (
                       <div className="space-y-2">
+                        {/* User info header */}
                         <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-muted/50">
-                          <User className="w-4 h-4" />
-                          <span
-                            className="text-sm font-medium"
+                          {avatarUrl ? (
+                            <img 
+                              src={avatarUrl} 
+                              alt={displayName}
+                              className="w-6 h-6 rounded-full object-cover"
+                              data-testid="mobile-user-avatar"
+                            />
+                          ) : (
+                            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                              <User className="w-3 h-3 text-primary" />
+                            </div>
+                          )}
+                          <span 
+                            className="text-sm font-medium" 
                             data-testid="mobile-user-display-name"
                           >
-                            {displayName}
+                            {userHandle ? `@${userHandle}` : displayName}
                           </span>
                         </div>
-                        {isTemporary && (
-                          <Button
-                            variant="ghost"
-                            className="justify-start"
-                            onClick={() => {
-                              setWelcomeModalOpen(true);
-                              setIsMobileMenuOpen(false);
-                            }}
-                            data-testid="mobile-complete-profile-button"
-                          >
-                            <UserCircle className="w-4 h-4 mr-2" />
-                            Complete your profile
-                          </Button>
-                        )}
+                        
+                        {/* Menu items */}
                         <Button
                           variant="ghost"
-                          className="justify-start"
+                          className="justify-start w-full"
+                          asChild={canViewProfile}
+                          disabled={!canViewProfile}
+                        >
+                          {canViewProfile && userHandle ? (
+                            <Link href={`/u/${userHandle}`} onClick={() => setIsMobileMenuOpen(false)}>
+                              <User className="w-4 h-4 mr-2" />
+                              View public profile
+                            </Link>
+                          ) : (
+                            <div className="flex items-center opacity-50 px-3 py-2">
+                              <User className="w-4 h-4 mr-2" />
+                              View public profile
+                            </div>
+                          )}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          className="justify-start w-full"
+                          asChild
+                        >
+                          <Link href="/settings/profile" onClick={() => setIsMobileMenuOpen(false)}>
+                            <SettingsIcon className="w-4 h-4 mr-2" />
+                            Profile settings
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          className="justify-start w-full"
                           onClick={handleSignOut}
                           data-testid="mobile-logout-button"
                         >
                           <LogOut className="w-4 h-4 mr-2" />
-                          Log Out
+                          Log out
                         </Button>
                       </div>
                     ) : (

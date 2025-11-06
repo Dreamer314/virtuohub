@@ -140,6 +140,7 @@ export class SupabaseStorage implements IStorage {
     return {
       id: data.id,
       authorId: data.author_id,
+      authoredByProfileId: null,
       title: data.title,
       summary: null,
       body: data.content,
@@ -153,7 +154,7 @@ export class SupabaseStorage implements IStorage {
       status: 'published',
       subtype: data.subtype || 'thread',
       subtypeData: data.subtype_data || null,
-      likes: data.likes || 0,
+      likes: data.like_count || 0,
       comments: data.comments || 0,
       shares: data.shares || 0,
       views: 0,
@@ -287,6 +288,7 @@ export class SupabaseStorage implements IStorage {
     let post: any = {
       id: data.id,
       authorId: data.author_id,
+      authoredByProfileId: null,
       title: data.title,
       summary: null,
       body: data.content,
@@ -300,7 +302,7 @@ export class SupabaseStorage implements IStorage {
       status: 'published',
       subtype: data.subtype || 'thread',
       subtypeData: data.subtype_data || null,
-      likes: data.likes || 0,
+      likes: data.like_count || 0,
       comments: data.comments || 0,
       shares: data.shares || 0,
       views: 0,
@@ -334,6 +336,7 @@ export class SupabaseStorage implements IStorage {
     return {
       id: data.id,
       authorId: data.author_id,
+      authoredByProfileId: null,
       title: data.title,
       summary: null,
       body: data.content,
@@ -347,7 +350,7 @@ export class SupabaseStorage implements IStorage {
       status: 'published',
       subtype: data.subtype || 'thread',
       subtypeData: null,
-      likes: data.likes || 0,
+      likes: data.like_count || 0,
       comments: data.comments || 0,
       shares: data.shares || 0,
       views: 0,
@@ -397,8 +400,77 @@ export class SupabaseStorage implements IStorage {
     return this.memStorage.isPostSaved(userId, postId);
   }
 
-  async likePost(postId: string): Promise<void> {
-    return this.memStorage.likePost(postId);
+  async likePost(postId: string, userId: string): Promise<{ likes: number, hasLiked: boolean }> {
+    console.log('[likePost] Toggle like for post:', postId, 'user:', userId);
+    
+    // Check if user has already liked this post
+    const { data: existingLike } = await supabaseAdmin
+      .from('post_likes')
+      .select('id')
+      .eq('post_id', postId)
+      .eq('user_id', userId)
+      .single();
+
+    if (existingLike) {
+      // Unlike: delete the row from junction table
+      console.log('[likePost] Unliking post');
+      
+      const { error: deleteError } = await supabaseAdmin
+        .from('post_likes')
+        .delete()
+        .eq('post_id', postId)
+        .eq('user_id', userId);
+
+      if (deleteError) {
+        console.error('[likePost] Delete error:', deleteError);
+        throw new Error(`Failed to unlike post: ${deleteError.message}`);
+      }
+
+      // Compute total likes from junction table
+      const { count, error: countError } = await supabaseAdmin
+        .from('post_likes')
+        .select('*', { count: 'exact', head: true })
+        .eq('post_id', postId);
+
+      if (countError) {
+        console.error('[likePost] Count error:', countError);
+        throw new Error(`Failed to count likes: ${countError.message}`);
+      }
+
+      const totalLikes = count || 0;
+      console.log('[likePost] Post unliked successfully, new count:', totalLikes);
+      return { likes: totalLikes, hasLiked: false };
+    } else {
+      // Like: insert row into junction table
+      console.log('[likePost] Liking post');
+      
+      const { error: insertError } = await supabaseAdmin
+        .from('post_likes')
+        .insert({
+          post_id: postId,
+          user_id: userId,
+        });
+
+      if (insertError) {
+        console.error('[likePost] Insert error:', insertError);
+        throw new Error(`Failed to like post: ${insertError.message}`);
+      }
+
+      // Compute total likes from junction table
+      const { count, error: countError } = await supabaseAdmin
+        .from('post_likes')
+        .select('*', { count: 'exact', head: true })
+        .eq('post_id', postId);
+
+      if (countError) {
+        console.error('[likePost] Count error:', countError);
+        throw new Error(`Failed to count likes: ${countError.message}`);
+      }
+
+      const totalLikes = count || 0;
+      console.log('[likePost] Post liked successfully, new count:', totalLikes);
+      return { likes: totalLikes, hasLiked: true };
+    }
   }
 
   async addComment(postId: string): Promise<void> {
@@ -425,20 +497,248 @@ export class SupabaseStorage implements IStorage {
     return this.memStorage.updateArticle(id, updates);
   }
 
-  async createComment(comment: InsertComment): Promise<Comment> {
-    return this.memStorage.createComment(comment);
+  async createComment(commentData: InsertComment & { postId?: string }): Promise<Comment> {
+    console.log('[createComment] Creating comment:', commentData);
+    
+    // Insert into Supabase - use like_count column
+    const { data, error} = await supabaseAdmin
+      .from('comments')
+      .insert({
+        post_id: (commentData as any).postId || null,
+        author_id: commentData.authorId,
+        content: commentData.content,
+        parent_comment_id: commentData.parentId || null,
+        like_count: 0,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('[createComment] Error:', error);
+      throw new Error(`Failed to create comment: ${error.message}`);
+    }
+
+    console.log('[createComment] Comment created:', data);
+    
+    // Map snake_case DB (like_count) to camelCase API (likes)
+    return {
+      id: data.id,
+      postId: data.post_id,
+      articleId: null,
+      authorId: data.author_id,
+      authoredByProfileId: null,
+      content: data.content,
+      parentId: data.parent_comment_id,
+      likes: data.like_count || 0,
+      createdAt: data.created_at ? new Date(data.created_at) : new Date(),
+    };
   }
 
   async getComments(articleId: string): Promise<CommentWithAuthor[]> {
-    return this.memStorage.getComments(articleId);
+    console.log('[getComments] Fetching comments for article:', articleId);
+    
+    // Note: Articles are not stored in the comments table yet, return empty for now
+    return [];
   }
 
   async getPostComments(postId: string): Promise<CommentWithAuthor[]> {
-    return this.memStorage.getPostComments(postId);
+    console.log('[getPostComments] Fetching comments for post:', postId);
+    
+    const { data, error } = await supabaseAdmin
+      .from('comments')
+      .select('*')
+      .eq('post_id', postId)
+      .is('parent_comment_id', null)
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('[getPostComments] Error:', error);
+      return [];
+    }
+
+    const comments = await Promise.all(
+      (data || []).map(async (comment) => {
+        const author = await this.getProfile(comment.author_id);
+        
+        // Get replies
+        const { data: repliesData } = await supabaseAdmin
+          .from('comments')
+          .select('*')
+          .eq('parent_comment_id', comment.id)
+          .order('created_at', { ascending: true });
+
+        const replies = await Promise.all(
+          (repliesData || []).map(async (reply) => {
+            const replyAuthor = await this.getProfile(reply.author_id);
+            return {
+              id: reply.id,
+              postId: reply.post_id,
+              articleId: null,
+              authorId: reply.author_id,
+              authoredByProfileId: null,
+              content: reply.content,
+              parentId: reply.parent_comment_id,
+              likes: reply.like_count || 0,
+              createdAt: reply.created_at ? new Date(reply.created_at) : new Date(),
+              author: replyAuthor || {
+                id: reply.author_id,
+                handle: 'Unknown',
+                displayName: 'Unknown User',
+                avatarUrl: null,
+                role: null,
+                onboardingComplete: false,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              },
+            };
+          })
+        );
+
+        return {
+          id: comment.id,
+          postId: comment.post_id,
+          articleId: null,
+          authorId: comment.author_id,
+          authoredByProfileId: null,
+          content: comment.content,
+          parentId: comment.parent_comment_id,
+          likes: comment.like_count || 0,
+          createdAt: comment.created_at ? new Date(comment.created_at) : new Date(),
+          author: author || {
+            id: comment.author_id,
+            handle: 'Unknown',
+            displayName: 'Unknown User',
+            avatarUrl: null,
+            role: null,
+            onboardingComplete: false,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+          replies,
+        };
+      })
+    );
+
+    return comments;
   }
 
-  async likeComment(commentId: string): Promise<void> {
-    return this.memStorage.likeComment(commentId);
+  async likeComment(commentId: string, userId: string): Promise<{ likes: number, hasLiked: boolean }> {
+    console.log('[likeComment] Toggle like for comment:', commentId, 'user:', userId);
+    
+    // Check if user has already liked this comment
+    const { data: existingLike } = await supabaseAdmin
+      .from('comment_likes')
+      .select('id')
+      .eq('comment_id', commentId)
+      .eq('user_id', userId)
+      .single();
+
+    if (existingLike) {
+      // Unlike: delete the row and decrement like_count
+      console.log('[likeComment] Unliking comment');
+      
+      const { error: deleteError } = await supabaseAdmin
+        .from('comment_likes')
+        .delete()
+        .eq('comment_id', commentId)
+        .eq('user_id', userId);
+
+      if (deleteError) {
+        console.error('[likeComment] Delete error:', deleteError);
+        throw new Error(`Failed to unlike comment: ${deleteError.message}`);
+      }
+
+      // Decrement like_count (never below 0)
+      const { data: comment, error: updateError } = await supabaseAdmin
+        .from('comments')
+        .select('like_count')
+        .eq('id', commentId)
+        .single();
+
+      if (updateError) {
+        console.error('[likeComment] Error fetching comment:', updateError);
+        throw new Error(`Failed to fetch comment: ${updateError.message}`);
+      }
+
+      const newCount = Math.max(0, (comment?.like_count || 0) - 1);
+      
+      const { error: decrementError } = await supabaseAdmin
+        .from('comments')
+        .update({ like_count: newCount })
+        .eq('id', commentId);
+
+      if (decrementError) {
+        console.error('[likeComment] Decrement error:', decrementError);
+        throw new Error(`Failed to decrement like count: ${decrementError.message}`);
+      }
+
+      console.log('[likeComment] Comment unliked successfully, new count:', newCount);
+      return { likes: newCount, hasLiked: false };
+    } else {
+      // Like: insert row and increment like_count
+      console.log('[likeComment] Liking comment');
+      
+      const { error: insertError } = await supabaseAdmin
+        .from('comment_likes')
+        .insert({
+          comment_id: commentId,
+          user_id: userId,
+        });
+
+      if (insertError) {
+        console.error('[likeComment] Insert error:', insertError);
+        throw new Error(`Failed to like comment: ${insertError.message}`);
+      }
+
+      // Increment like_count
+      const { data: comment, error: fetchError } = await supabaseAdmin
+        .from('comments')
+        .select('like_count')
+        .eq('id', commentId)
+        .single();
+
+      if (fetchError) {
+        console.error('[likeComment] Error fetching comment:', fetchError);
+        throw new Error(`Failed to fetch comment: ${fetchError.message}`);
+      }
+
+      const newCount = (comment?.like_count || 0) + 1;
+      
+      const { error: incrementError } = await supabaseAdmin
+        .from('comments')
+        .update({ like_count: newCount })
+        .eq('id', commentId);
+
+      if (incrementError) {
+        console.error('[likeComment] Increment error:', incrementError);
+        throw new Error(`Failed to increment like count: ${incrementError.message}`);
+      }
+
+      console.log('[likeComment] Comment liked successfully, new count:', newCount);
+      return { likes: newCount, hasLiked: true };
+    }
+  }
+
+  async hasUserLikedPost(postId: string, userId: string): Promise<boolean> {
+    const { data } = await supabaseAdmin
+      .from('post_likes')
+      .select('id')
+      .eq('post_id', postId)
+      .eq('user_id', userId)
+      .single();
+
+    return !!data;
+  }
+
+  async hasUserLikedComment(commentId: string, userId: string): Promise<boolean> {
+    const { data } = await supabaseAdmin
+      .from('comment_likes')
+      .select('id')
+      .eq('comment_id', commentId)
+      .eq('user_id', userId)
+      .single();
+
+    return !!data;
   }
 
   async voteOnPoll(postId: string, optionIndex: number): Promise<PostWithAuthor | null> {

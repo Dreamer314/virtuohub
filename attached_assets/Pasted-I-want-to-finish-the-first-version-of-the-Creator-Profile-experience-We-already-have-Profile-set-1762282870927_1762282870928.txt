@@ -1,0 +1,183 @@
+I want to finish the first version of the Creator Profile experience.
+
+We already have:
+
+Profile settings page with Availability + Creator Profile fields and pills.
+
+Public profile page (/u/:handle) showing:
+
+Avatar, name, handle, headline
+
+About card
+
+Opportunities card (using availability fields)
+
+Open-to-work / Hiring badge under the name
+
+Now I need two things:
+
+1) Small tweaks to the settings UI
+
+a. Availability details helper text
+
+On the profile settings page, under the “Availability details” textarea:
+
+Update the helper text to something like:
+
+“Example: Open to collabs and paid projects on weekends, available for consulting on creator tools, or open to speaking opportunities.”
+
+Goal: make it clear this is a general “how people can work with me” blurb, not only for talent marketplace gigs.
+
+b. Primary skill options
+
+In the “Primary Skill” select (and wherever the same options are reused in “Other Skills”):
+
+Make sure we include options that work for non-production roles and new creators. Please add:
+
+“Store owner / Brand owner”
+
+“Founder / Entrepreneur”
+
+“Community / Event host”
+
+“Educator / Mentor”
+
+“New / Learning (just getting started)”
+
+Keep all existing options; just extend the list.
+
+c. Primfeed field in Portfolio & Socials
+
+In the “Portfolio & Socials” section of the profile settings page:
+
+Add a new input field labeled Primfeed below or alongside the other links.
+
+Placeholder: https://primfeed.com/username
+
+Persist this along with the other portfolio/social URLs (reuse the existing data structure, e.g. the same JSON field you’re using for portfolio, website, Twitter, Instagram, ArtStation, Discord – don’t add a new top-level DB column if you already have a JSON blob for this).
+
+2) Show the Creator Profile on the public profile page
+
+I want /u/:handle to display a “Creator profile” card under the existing “Opportunities” card, powered by the data from the Creator Profile section in settings.
+
+a. Extend the data query
+
+In client/src/pages/public-profile.tsx, update the Supabase query so it also fetches the creator-profile data you store from the settings page (skills, platforms, tools, experience, links, including Primfeed).
+
+Do not change how the basic profile fields (name, handle, headline, about, availability, etc.) are fetched.
+
+Use the existing storage shape (likely a JSON field like quick_facts or similar); don’t introduce a new table unless absolutely necessary.
+
+Make sure the TypeScript type includes at least:
+
+primarySkill: string | null
+
+otherSkills?: string[]
+
+platforms?: string[]
+
+tools?: string[]
+
+experienceLevel?: string | null
+
+links / socials object with:
+
+portfolio, website, twitter, instagram, artstation, discord, primfeed (all optional strings)
+
+b. Add the “Creator profile” card
+
+Under the existing “Opportunities” card on the public profile page, add a new card with the same visual style as the other cards.
+
+Card title: Creator profile
+
+Show this card only if there is at least a primarySkill or any non-empty creator-profile field (skills, platforms, tools, experience, or any link). If everything is empty, don’t render the card at all.
+
+c. Card layout
+
+Inside the card, render sections like this (only show sections that have data):
+
+Primary skill
+
+Label: “Primary skill”
+
+Show the value as a single pill (same pill style used in settings).
+
+Other skills
+
+Label: “Other skills”
+
+Show each skill as a pill. Wrap onto multiple lines as needed.
+
+Platforms
+
+Label: “Platforms”
+
+Show each platform as a pill. This should include our full list (Roblox, VRChat, Second Life, IMVU, Meta Horizon Worlds, Unity, Unreal Engine, GTA / FiveM, The Sims (CC), etc.) plus any custom “Other” values the user entered.
+
+Tools
+
+Label: “Tools”
+
+Show each tool as a pill (Blender, Maya, ZBrush, Substance Painter, Photoshop, Marvelous Designer, Udon/UdonSharp, Notepad++, VS Code, etc., plus custom tools).
+
+Experience
+
+Label: “Experience”
+
+Show the selected experience level string (e.g. “1–2 years”, “3–5 years”, “5+ years”).
+
+Portfolio & socials
+
+Only render this block if at least one link is present.
+
+For each non-empty link, show a labeled row, for example:
+
+“Portfolio: <link>”
+
+“Website: <link>”
+
+“Twitter/X: <link>”
+
+“Instagram: <link>”
+
+“ArtStation: <link>”
+
+“Discord: <value>”
+
+“Primfeed: <link>”
+
+Links should be clickable; no icons are required for now.
+
+d. Data safety / fallbacks
+
+Use optional chaining / null checks everywhere you access the creator profile object.
+
+Treat empty strings or whitespace-only values as “missing” and don’t render that row/section.
+
+e. Sanity checks
+
+With my current profile (Virtuohub_Founder) filled out:
+
+The profile settings page reflects the updated helper text and new primary skill options.
+
+The Primfeed field appears in Portfolio & Socials and saves correctly.
+
+On /u/virtuohub_found, I see:
+
+About card
+
+Opportunities card (with my availability text)
+
+A new Creator profile card showing:
+
+My primary skill pill
+
+My other skills, platforms, and tools as pills
+
+My experience level
+
+My portfolio/social links, including Primfeed if filled.
+
+If I clear all Creator Profile fields and links in settings, the Creator profile card should disappear from the public page.
+
+Please keep everything visually consistent with the existing card and pill styling. And if you need to log in to check anything on the site, create and use your own tester email to do so. 

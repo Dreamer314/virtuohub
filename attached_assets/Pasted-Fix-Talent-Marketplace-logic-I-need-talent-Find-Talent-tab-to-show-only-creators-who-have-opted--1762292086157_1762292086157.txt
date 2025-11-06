@@ -1,0 +1,100 @@
+Fix Talent Marketplace logic
+
+I need /talent (Find Talent tab) to show only creators who have opted into the Talent Marketplace, not every profile and not just the currently logged-in user.
+
+I already have these fields on profiles_v2:
+
+visibility (PUBLIC / PRIVATE)
+
+is_open_to_work (boolean)
+
+is_hiring (boolean)
+
+handle, display_name
+
+creator profile fields (primary_skill, platforms, tools, experience, etc.)
+
+Requirements
+
+Change the data query for /talent
+
+Load all profiles that satisfy:
+
+visibility = 'PUBLIC'
+
+handle IS NOT NULL
+
+is_open_to_work = true OR is_hiring = true
+
+Do not filter by user_id / current auth user in the frontend.
+
+Row Level Security for public directory
+
+Update Supabase RLS on public.profiles_v2 so that:
+
+Anyone (anon or authenticated) can SELECT rows where:
+
+visibility = 'PUBLIC'
+
+is_open_to_work = true OR is_hiring = true
+
+Users can still only INSERT, UPDATE, or DELETE their own profile.
+
+Example policy logic (adjust to match existing policies):
+
+create policy "Public talent profiles are viewable"
+on public.profiles_v2
+for select
+using (
+  visibility = 'PUBLIC'
+  and (is_open_to_work = true or is_hiring = true)
+);
+
+
+Keep the existing filters working
+
+Primary Skill, Platform, Tools, and text Search must all work on this filtered set of “talent marketplace” profiles.
+
+Default state (no filters applied) = show all profiles that match the availability rules above.
+
+Testing
+
+Create at least 3 test users:
+
+User A: PUBLIC, is_open_to_work = true, filled creator profile.
+
+User B: PUBLIC, is_hiring = true, filled creator profile.
+
+User C: PUBLIC, is_open_to_work = false and is_hiring = false (regular community user).
+
+Confirm behavior:
+
+Logged out → /talent shows A and B only, never C.
+
+Logged in as A → /talent still shows A and B, not just A.
+
+Logged in as B → same result (A and B).
+
+Toggling off both availability flags for A should make A disappear from /talent after refresh.
+
+Breadcrumb from profile
+
+When clicking “View profile” from /talent, link to /u/{handle}?from=talent.
+
+In public-profile.tsx:
+
+If from=talent is in the query string:
+
+Show breadcrumb text: “← Back to Talent”
+
+Link to /talent
+
+Otherwise, keep current behavior: “← Back to VirtuoHub” → /.
+
+Please implement these changes and then send me a short summary of:
+
+The final query used on /talent
+
+Any RLS policies you added/changed
+
+Screenshots or notes from testing with A/B/C.

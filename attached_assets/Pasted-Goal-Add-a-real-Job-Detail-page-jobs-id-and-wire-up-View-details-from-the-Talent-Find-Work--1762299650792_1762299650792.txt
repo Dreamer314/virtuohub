@@ -1,0 +1,171 @@
+Goal: Add a real Job Detail page (/jobs/:id) and wire up “View details” from the Talent → Find Work tab.
+
+Right now:
+
+/talent exists with tabs Find Talent and Find Work.
+
+The Find Work tab shows job cards from the jobs table, including a “View details” button that currently doesn’t navigate anywhere.
+
+The jobs table already exists in Supabase with columns like:
+
+id (uuid, PK)
+
+user_id
+
+title
+
+company_name
+
+primary_skill
+
+platform
+
+job_type
+
+budget_text
+
+is_remote
+
+location
+
+description
+
+visibility (PUBLIC / DRAFT, etc.)
+
+created_at
+
+RLS is already configured so public jobs (visibility = 'PUBLIC') should be viewable.
+
+Please implement the following:
+
+1. Create Job Detail route: /jobs/:id
+
+Add a new page component, e.g. client/src/pages/job-detail.tsx (or whatever naming matches the existing pattern).
+
+Register a new route in client/src/App.tsx (or the central router file):
+
+Path: /jobs/:id
+
+Component: Job detail page
+
+The job detail page should:
+
+Use the global layout:
+
+VirtuoHub header at the top
+
+Footer at the bottom
+
+main content in the middle with max-w-4xl mx-auto px-4 py-10 (similar to the public profile page).
+
+Read the id param from the URL.
+
+Fetch the job from Supabase:
+
+Table: jobs
+
+Filter:
+
+id = :id
+
+visibility = 'PUBLIC'
+
+No user_id filter (this page must be publicly viewable).
+
+Handle states:
+
+Loading: show a centered loading state.
+
+Not found / unauthorized: show a friendly “Job not found or no longer available” message.
+
+Render a single card-style job layout with:
+
+Job title (big, at top)
+
+Company / Studio name
+
+Pill row: Skill Required, Platform, Job Type, Remote (if is_remote true), Location (if present)
+
+Budget line (e.g. “Budget: $50” or whatever budget_text is)
+
+Posted date (“Posted on …”) from created_at
+
+Full description (multi-line, uses the description field)
+
+Add a primary CTA button:
+
+Label: “Contact / Apply”
+
+For v1, you can use a simple mailto: if an email field already exists on the job or the posting user, OR just make it a disabled button with a tooltip “Coming soon” if no obvious field exists yet.
+
+Do not build a full application workflow yet.
+
+2. Wire up “View details” buttons from /talent?tab=work
+
+In client/src/pages/talent.tsx (or wherever the Find Work tab lives):
+
+Update the View details button on each job card so that it:
+
+Navigates to /jobs/:id?from=talent_work (use the job’s id).
+
+Use the existing navigation helper (e.g. useNavigate() from React Router).
+
+Keep all existing job filters and card UI intact.
+
+3. Back navigation behavior
+
+On the job detail page:
+
+At the top of the content (just under the header), add a breadcrumb-style link:
+
+Text: ← Back to Find Work
+
+Behavior:
+
+If the URL has from=talent_work, clicking it should navigate back to /talent?tab=work.
+
+If from is missing, still fall back to /talent?tab=work (so direct visits have a sensible back target).
+
+Use the same visual style as the “Back to VirtuoHub” link on the public profile page, but with the updated text.
+
+4. Visibility & security
+
+Ensure the job detail Supabase query:
+
+Does not filter by user_id at all.
+
+Filters by:
+
+id = :id
+
+visibility = 'PUBLIC'
+
+Assume RLS is already set to allow public SELECT of jobs with visibility = 'PUBLIC'. Do not add any new user-specific filtering here.
+
+5. Sanity checks
+
+Please verify the following scenarios:
+
+Anonymous user (logged out)
+
+Navigate to /talent?tab=work:
+
+See the list of public jobs.
+
+Click “View details” on a job → land on /jobs/:id?from=talent_work.
+
+See full job detail.
+
+Click ← Back to Find Work → returns to /talent?tab=work with filters reset to default.
+
+Logged-in user (job poster or not)
+
+Same as above: they should see all public jobs, not just their own.
+
+Detail page and back link behave exactly the same.
+
+Non-public job
+
+If a job has visibility != 'PUBLIC', direct navigation to /jobs/:id should show the “Job not found or no longer available” state, regardless of login state (v1 behavior is fine).
+
+Please keep all existing Talent directory behavior (profiles, filters, etc.) unchanged; we’re only adding the job detail route and wiring up the existing “View details” button.

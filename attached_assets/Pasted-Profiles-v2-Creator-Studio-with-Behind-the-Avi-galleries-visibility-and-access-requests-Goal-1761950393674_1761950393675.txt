@@ -1,0 +1,298 @@
+Profiles v2 — Creator + Studio with Behind the Avi, galleries, visibility, and access requests
+
+Goal
+Introduce a true multi-profile system with two profile types (Creator and Studio), add a BTA section to Creator, support galleries, visibility controls, and “Request access.” Keep existing posts, comments, polls working during the transition.
+
+Stack assumptions
+Vite + React + TypeScript, Supabase, Drizzle ORM, Wouter or React Router, TanStack Query.
+
+0) Preflight
+
+Create git branch feat/profiles-v2.
+
+Do not drop existing tables. Add v2 tables and backfill.
+
+Print all diffs and a migration log at the end.
+
+1) Database: new v2 schema (Drizzle)
+
+Create new tables. Keep old public.profiles intact for now.
+
+// shared/schema.profilesV2.ts
+import { pgTable, varchar, text, timestamp, jsonb, pgEnum, boolean, smallint } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+
+export const profileKind = pgEnum("profile_kind_v2", ["CREATOR","STUDIO"]);
+export const visibilityLevel = pgEnum("visibility_level_v2", ["PUBLIC","MEMBERS","PRIVATE"]);
+export const accessStatus = pgEnum("access_status_v2", ["PENDING","APPROVED","DENIED","EXPIRED"]);
+
+export const profilesV2 = pgTable("profiles_v2", {
+  profileId: varchar("profile_id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),                  // FK to auth.users.id (logical)
+  kind: profileKind("kind").notNull(),                  // CREATOR | STUDIO
+  handle: text("handle").notNull().unique(),            // lowercase unique
+  displayName: text("display_name").notNull(),          // avatar name or real name
+  about: text("about"),
+  platforms: text("platforms").array().default(sql`'{}'`),
+  skills: text("skills").array().default(sql`'{}'`),
+  links: jsonb("links").default(sql`'[]'::jsonb`),      // [{label,url}]
+  profilePhotoUrl: text("profile_photo_url"),
+  headerImageUrl: text("header_image_url"),
+  gallery: jsonb("gallery").default(sql`'[]'::jsonb`),  // [{url,caption,alt,order}] cap=5 in app
+  visibility: visibilityLevel("visibility").notNull().default("PUBLIC"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Optional private section for Creator
+export const profileBTA = pgTable("profile_bta", {
+  profileId: varchar("profile_id").primaryKey(),        // FK → profiles_v2.profile_id (logical)
+  realName: text("real_name"),
+  city: text("city"),
+  timezone: text("timezone"),
+  headshotUrl: text("headshot_url"),
+  highlights: jsonb("highlights").default(sql`'[]'::jsonb`), // [{title,url}]
+  sectionVisibility: visibilityLevel("section_visibility").notNull().default("PRIVATE"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const accountPrefs = pgTable("account_prefs", {
+  userId: varchar("user_id").primaryKey(),              // FK → auth.users.id (logical)
+  lastActiveProfileId: varchar("last_active_profile_id"), // → profiles_v2.profile_id
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const profileAccessRequests = pgTable("profile_access_requests", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  targetProfileId: varchar("target_profile_id").notNull(), // → profiles_v2.profile_id
+  requesterUserId: varchar("requester_user_id").notNull(), // → auth.users.id
+  status: accessStatus("status").notNull().default("PENDING"),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Audit of handle changes (optional but helpful)
+export const handleHistory = pgTable("handle_history", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  profileId: varchar("profile_id").notNull(),
+  userId: varchar("user_id").notNull(),
+  newHandle: text("new_handle").notNull(),
+  changedAt: timestamp("changed_at").defaultNow(),
+});
+
+
+Notes
+
+Enforce lowercase in app when saving handle.
+
+Keep gallery cap at 5 in app logic.
+
+2) Backfill: create one Creator profile per existing user
+
+Source of truth today is public.profiles with id = auth.users.id.
+
+Create one profiles_v2 row per existing user:
+
+userId: old profiles.id
+
+handle: old profiles.handle lowercased. If null, generate user_${last5}
+
+displayName: old profiles.display_name or fallback to handle
+
+profilePhotoUrl: old avatar_url if present
+
+kind: CREATOR
+
+visibility: PUBLIC by default
+
+Also insert account_prefs with lastActiveProfileId = new.profile_id.
+
+Print a CSV of any handle lowercasing collisions you had to fix by suffixing with a number.
+
+3) Content authorship: add authored_by_profile_id, keep created_by_user_id
+
+For each table that displays an author name or avatar:
+
+Add authored_by_profile_id (uuid string) and backfill by joining user → new Creator profile.
+
+Keep existing created_by_user_id for audit and RLS checks.
+
+Example for posts and comments:
+
+alter table public.posts add column authored_by_profile_id varchar;
+update public.posts p
+set authored_by_profile_id = v.profile_id
+from profiles_v2 v
+where v.user_id = p.author_id; -- author_id was old user PK
+
+alter table public.posts alter column authored_by_profile_id set not null;
+
+alter table public.comments add column authored_by_profile_id varchar;
+update public.comments c
+set authored_by_profile_id = v.profile_id
+from profiles_v2 v
+where v.user_id = c.author_id;
+
+alter table public.comments alter column authored_by_profile_id set not null;
+
+
+Add indexes on these new columns.
+
+Poll votes stay as-is; votes are not publicly attributed.
+
+4) Routing
+
+New public profile route: /u/:handle returns profiles_v2 by handle.
+
+All author chips link to /u/${handle} for displays.
+
+5) API endpoints
+
+Create a small set only:
+
+GET /api/profile/by-handle/:handle → profiles_v2 public fields, plus BTA if allowed
+
+GET /api/my/profiles → list all profiles for current user
+
+POST /api/profiles → create new profile of kind CREATOR or STUDIO
+
+PATCH /api/profiles/:profileId → update fields, including gallery reorder
+
+PATCH /api/profiles/:profileId/visibility → change visibility
+
+PUT /api/bta/:profileId → upsert BTA section for a Creator
+
+POST /api/access-requests → create request { targetProfileId }
+
+PATCH /api/access-requests/:id → owner approves or denies
+
+Validation
+
+Lowercase handle on write. Regex ^[a-z0-9_]{3,20}$. Basic reserved list.
+
+Gallery length <= 5.
+
+6) RLS policies
+
+Enable RLS for all new tables.
+
+profiles_v2
+
+Public select where visibility = 'PUBLIC'
+
+Authenticated select where visibility in ('PUBLIC','MEMBERS')
+
+Owner all access where user_id = auth.uid()
+
+profile_bta
+
+Owner all access
+
+Viewers can select if there exists an approved request not expired for that profile_id, or if section_visibility = 'MEMBERS' and viewer is authenticated
+
+account_prefs
+
+Owner only
+
+profile_access_requests
+
+Insert: requester must be auth.uid()
+
+Select: requester can see own requests; owner of target_profile_id can see incoming requests
+
+Update: only owner of target_profile_id can change status
+
+7) Frontend: onboarding and editor
+
+Onboarding: “Create your profile”
+
+Choose type: Creator or Studio
+
+Fields common to both:
+
+Username (handle) input, lowercased, unique check
+
+Display name input
+
+About, Platforms chips, Skills chips, Links list
+
+Photos: profile photo input, header image input, Gallery up to 5
+
+Visibility: Public, Members, Private
+
+Creator shows Behind the Avi (optional) module:
+
+Real name, City, Timezone, Headshot, Highlights
+
+Section visibility: Members or Private
+
+If Private, render as blurred card on public page with a single Request access button
+
+Save Draft or Publish
+
+Dashboard: Profiles carousel
+
+Show all profiles for the user as swipeable cards with quick actions: Edit, Visibility, Set Active
+
+“Add Creator” and “Add Studio” buttons
+
+On select: write account_prefs.last_active_profile_id
+
+Public profile page
+
+Header: avatar, handle, display name, follow/contact
+
+Gallery grid
+
+Featured projects (optional)
+
+About
+
+BTA card:
+
+Visible: show chosen fields
+
+Members: gated by sign-in
+
+Private: blurred card with Request access
+
+Badges (placeholder for future verification)
+
+Edit anytime
+All fields and photos are editable at any time. Handle can have a cooldown if you want. Use handle_history to log changes.
+
+8) UI copy
+
+Creator helper: “Use your avatar name or your real name.”
+
+BTA helper: “Optional real-life details linked to this Creator profile.”
+
+Private BTA label: just the section title and a Request access button. No extra teaser text.
+
+9) Acceptance tests
+
+Creating a Creator profile sets profiles_v2.kind = 'CREATOR', lowercase unique handle, gallery max 5.
+
+Creating a Studio profile sets kind = 'STUDIO'.
+
+Editing any field updates and reflects on public page.
+
+BTA section respects Members and Private visibility.
+
+Request access inserts a row; owner can approve; approved viewer can see BTA.
+
+Posts and comments render author from authored_by_profile_id and link to /u/:handle.
+
+Backfill created one Creator profile per existing user and populated account_prefs.last_active_profile_id.
+
+10) Migration notes and compatibility
+
+Keep old public.profiles in place for now.
+
+Add a lightweight compatibility resolver in server code: wherever author display is needed, prefer authored_by_profile_id → profiles_v2, fall back to old join if null.
+
+Once all surfaces use v2, remove the fallback. Later you can drop or archive the old table.
+
+End of brief.

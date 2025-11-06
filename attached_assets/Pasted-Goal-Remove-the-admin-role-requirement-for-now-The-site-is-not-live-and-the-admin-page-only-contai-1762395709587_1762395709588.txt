@@ -1,0 +1,62 @@
+Goal
+Remove the admin role requirement for now. The site is not live and the admin page only contains mock data. I want any logged in user to see the "Admin" link in the header and be able to open /admin, without checking profiles_v2.kind or any admin flags.
+
+Constraints
+- Do NOT change database schema or migrations.
+- Do NOT touch any Supabase insert/update logic.
+- Do NOT edit useMyV2Profile or any profile hooks.
+- Only modify:
+  - client/src/components/layout/header.tsx
+  - client/src/pages/admin.tsx
+- Keep everything else (badges, profile cards, etc) exactly as it is.
+
+Tasks
+
+1) Always show Admin link for logged in users
+- Open client/src/components/layout/header.tsx.
+- Find the existing code that computes an isAdmin boolean. It currently uses v2Profile.kind or v2Profile.isAdmin.
+- Replace that logic with a simple "logged in" check:
+  - Use whatever auth hook or context the header is already using to know if the user is signed in. There is already some variable that decides whether to show the avatar / user menu.
+  - Derive:
+      const isLoggedIn = !!user;   // or the equivalent boolean in this file
+      const showAdmin = isLoggedIn;
+  - Remove any admin specific booleans (isAdmin, isAdminProfile, etc) from this file.
+- Update the Admin navigation link so it uses showAdmin instead of isAdmin, for both desktop and mobile nav sections:
+      {showAdmin && (
+        <Link href="/admin" ...>
+          Admin
+        </Link>
+      )}
+- Keep the temporary console.log if you want, but if you keep it, make it reflect the new logic:
+      console.log("[HEADER admin visibility]", { isLoggedIn, showAdmin });
+
+2) Remove the admin gate from /admin page
+- Open client/src/pages/admin.tsx.
+- Find any logic that checks whether the user is an admin before rendering the page. For example:
+      if (!isAdmin) {
+        return <div>You must be an administrator</div>;
+      }
+  or any condition based on profiles_v2.kind.
+- Remove the admin specific requirement. Replace it with at most a simple login requirement:
+      - If there is already a user variable from the auth hook, you can do:
+            if (!user) {
+              return <div>Please sign in to view this page.</div>;
+            }
+        Otherwise, you can remove the guard entirely so /admin always renders.
+- Do not add any new database queries here.
+
+3) Sanity checks
+- Run the app.
+- Log out: confirm the Admin link is hidden if you decided to tie it to "logged in".
+- Log in with my founder account (thevirtuohub@gmail.com) and with any non admin test account:
+    - Confirm the Admin link appears in the header for logged in users.
+    - Confirm that visiting /admin shows the admin page content for these users without any "You must be an administrator" message.
+- Make sure no TypeScript or LSP errors remain.
+
+4) Report
+- In your summary back to me, list the exact changes you made in:
+    - client/src/components/layout/header.tsx
+    - client/src/pages/admin.tsx
+- Confirm:
+    - There is no more role or kind based admin check.
+    - Admin link visibility is tied only to "user is logged in" (or always visible if no login check was available).

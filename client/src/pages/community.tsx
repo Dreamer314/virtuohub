@@ -44,14 +44,17 @@ const CommunityPage: React.FC = () => {
   const { user } = useAuth();
   const { setIntent, registerAuthModalController } = useIntentContext();
   const { toast } = useToast();
+  
+  // Get userId for API requests (authenticated user or fallback)
+  const currentUserId = user?.id || 'user1';
 
-  // Posts
+  // Posts (include userId for hasLiked computation)
   const { data: posts = [], isLoading } = useQuery<PostWithAuthor[]>({
-    queryKey: ['/api/posts'],
+    queryKey: [`/api/posts?userId=${currentUserId}`],
   });
 
   const { data: savedPosts = [], isLoading: savedLoading } = useQuery<PostWithAuthor[]>({
-    queryKey: ['/api/users/user1/saved-posts'],
+    queryKey: [`/api/users/${currentUserId}/saved-posts`],
   });
 
   // Composer routing + filters
@@ -412,7 +415,7 @@ const CommunityPage: React.FC = () => {
                         </div>
                       ) : currentTab === 'saved' ? (
                         savedPosts.length > 0 ? (
-                          savedPosts.map((item: any) => <PostCard key={item.id} post={item} />)
+                          savedPosts.map((item: any) => <PostCard key={item.id} post={item} currentUserId={currentUserId} />)
                         ) : (
                           <div className="glass-card rounded-xl p-12 text-center" data-testid="empty-state">
                             <div className="text-6xl mb-4">🌟</div>
@@ -421,7 +424,7 @@ const CommunityPage: React.FC = () => {
                           </div>
                         )
                       ) : filteredFeedItems.length > 0 ? (
-                        filteredFeedItems.map((post) => <PostCard key={post.id} post={post} />)
+                        filteredFeedItems.map((post) => <PostCard key={post.id} post={post} currentUserId={currentUserId} />)
                       ) : (
                         <div className="glass-card rounded-xl p-12 text-center" data-testid="empty-state">
                           <div className="text-6xl mb-4">🌟</div>

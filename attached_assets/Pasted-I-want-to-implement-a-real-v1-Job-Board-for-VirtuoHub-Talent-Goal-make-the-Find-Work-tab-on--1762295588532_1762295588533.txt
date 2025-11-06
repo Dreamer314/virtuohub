@@ -1,0 +1,182 @@
+I want to implement a real v1 Job Board for VirtuoHub Talent.
+
+Goal: make the "Find Work" tab on /talent a working job board backed by a Supabase `jobs` table, plus a simple “Post a Job” flow.
+
+IMPORTANT CONSTRAINTS
+- Do NOT change the `/talent` query for profiles. It is finally correct and must continue to:
+  - not filter by user_id at all
+  - only show profiles where visibility = 'PUBLIC' AND (is_open_to_work OR is_hiring).
+- For jobs, assume I will run SQL in Supabase myself. You can create a SQL file with the DDL + RLS, but don’t rely on Neon/db:push as the source of truth for this table.
+
+-----------------------
+1) Database: jobs table in Supabase
+-----------------------
+
+Create a SQL file (e.g. `supabase_jobs_schema.sql`) that I can run in the Supabase SQL editor to create a `jobs` table and basic RLS policies.
+
+Schema:
+
+- Table name: `jobs`
+- Columns:
+  - `id` uuid PRIMARY KEY DEFAULT gen_random_uuid()
+  - `user_id` uuid NOT NULL  -- references auth.users.id (no formal FK needed if that’s painful, but document it)
+  - `title` text NOT NULL
+  - `company_name` text NULL  -- e.g. “VirtuoHub”, “FantasyStore Co.”
+  - `primary_skill` text NOT NULL  -- same vocabulary we use for profile primary skills
+  - `platform` text NOT NULL      -- single main platform for now (Second Life, Roblox, VRChat, etc.)
+  - `job_type` text NOT NULL      -- use values like: 'Full-time', 'Part-time', 'Contract', 'One-off project', 'Internship'
+  - `budget` text NULL            -- free-text range like "$1,000–$1,500" for now
+  - `is_remote` boolean NOT NULL DEFAULT true
+  - `location` text NULL          -- optional city/region
+  - `description` text NOT NULL   -- full job description
+  - `visibility` text NOT NULL DEFAULT 'PUBLIC'  -- later we can add 'DRAFT' etc.
+  - `created_at` timestamptz NOT NULL DEFAULT now()
+
+RLS policies (in that same SQL file):
+
+- Enable RLS on `jobs`.
+- Policy: anyone (anon or authenticated) can SELECT jobs where `visibility = 'PUBLIC'`.
+- Policy: authenticated users can INSERT jobs where `user_id = auth.uid()`.
+- Policy: authenticated users can UPDATE/DELETE ONLY their own jobs (`user_id = auth.uid()`), and only when `visibility` is still 'PUBLIC' or 'DRAFT'.
+- Include a small commented example `SELECT` at the bottom for testing, similar style to the previous RLS file you made.
+
+Do NOT execute this SQL from Node. Just create the file and add a note in replit.md telling me to run it in Supabase.
+
+-----------------------
+2) UI: Bring "Find Work" tab to life on /talent
+-----------------------
+
+File: `client/src/pages/talent.tsx`
+
+Current behavior:
+- “Find Talent” tab is active and working.
+- “Find Work” shows as “Coming soon”.
+
+I want:
+
+A. Tabs:
+- Keep the same tab bar, but:
+  - “Find Talent” remains the default tab.
+  - “Find Work” is now clickable and switches the content below.
+- You can keep this all on one route (`/talent`) with a local state tab switch (no separate URL needed for now).
+
+B. Job list section (Find Work tab):
+When the “Find Work” tab is active:
+
+- Show a filter bar similar to the talent filters, but simpler:
+
+  - [Skill Required] dropdown:
+    - Options should reuse the same primary skill list we use for profile primary skills (3D Modeler, Animator, Store Owner, etc.)
+    - Default: “Any skill”
+
+  - [Platform] dropdown:
+    - Options: Roblox, VRChat, Second Life, IMVU, Meta Horizon Worlds, The Sims (CC), GTA / FiveM, Unity, Unreal Engine, “All platforms” as default.
+
+  - [Job Type] dropdown:
+    - Options: Any type, Full-time, Part-time, Contract, One-off project, Internship
+
+  - [Search] input:
+    - Placeholder: “Title, company, or keywords…”
+    - Filters on title, company_name, and description (case-insensitive).
+
+- Fetch jobs from Supabase using the JS client, with server-side filters for visibility and basic ordering:
+
+  - Base conditions (always):
+    - `.from('jobs')`
+    - `.select('*')`
+    - `.eq('visibility', 'PUBLIC')`
+    - `.order('created_at', { ascending: false })`
+
+  - Optional server-side filters:
+    - If a specific skill is selected (not “Any skill”), add `.eq('primary_skill', selectedSkill)`.
+    - If a specific platform is selected, `.eq('platform', selectedPlatform)`.
+    - If a specific job type is selected, `.eq('job_type', selectedType)`.
+
+  - For search text, it’s OK to filter client-side in JS over the fetched results (title, company_name, description) for v1.
+
+- Render results in cards, grid layout similar to the talent cards (1 column on mobile, 2 on desktop).
+
+Job card contents:
+
+- Title (biggest text)
+- Company name (if present)
+- Tags row:
+  - [primary_skill] pill
+  - [platform] pill
+  - [job_type] pill
+  - [Remote] pill if is_remote is true
+- Budget line: e.g. “Budget: $1,000–$1,500” if present
+- Short teaser from description (truncate to ~160 chars, no HTML)
+- “View details” button (for now, it can link to `#` or we can plan `/jobs/:id` but don’t implement that route yet).
+
+Empty state:
+- If no jobs match filters, show a centered, friendly message:
+  - “No jobs match these filters yet.”
+  - If the user is logged in, show a small link/button: “Post a job” that takes them to the new job posting page (see next section).
+
+-----------------------
+3) Job Posting Page: /jobs/new
+-----------------------
+
+Create a new page `client/src/pages/job-new.tsx` and route.
+
+Routing:
+- Register a route in `client/src/App.tsx`:
+  - Path: `/jobs/new`
+  - Only accessible to logged-in users.
+  - If not logged in, redirect to the existing login flow (whatever is already used elsewhere).
+
+Access point:
+- On the “Find Work” tab, add a primary button in the header area (right-aligned) labeled “Post a job”.
+- Clicking it navigates to `/jobs/new`.
+
+Form layout:
+- Keep styling consistent with profile settings page (card with fields and a “Save / Post job” button at the bottom).
+
+Fields:
+
+- Job title (required, text input)
+- Company / Studio name (optional text)
+- Skill required (required, dropdown using same primary skill list as profiles)
+- Platform (required dropdown, same options as above: Roblox, VRChat, Second Life, etc.)
+- Job type (required dropdown: Full-time, Part-time, Contract, One-off project, Internship)
+- Budget / rate (optional text input, e.g. “$1,000–$1,500” or “$50/hr”)
+- Remote friendly? (checkbox, default checked)
+- Location (optional text, only meaningful if remote is unchecked)
+- Description (required textarea, multi-line)
+
+Button:
+- Primary button: “Post job”.
+- While submitting, show a loading state and disable the button.
+
+On submit:
+
+- Use Supabase JS client to insert into `jobs`:
+
+  - `user_id`: current user’s id
+  - All the form fields mapped to the columns defined above
+  - `visibility`: 'PUBLIC' by default
+
+- On success:
+  - Redirect the user back to `/talent` with the "Find Work" tab selected.
+  - Optionally show a small success toast or inline success message at the top of the page BEFORE redirect, if it’s easy.
+
+- On error:
+  - Show a readable error message (not just console.log).
+
+Validation:
+- Title, primary_skill, platform, job_type, and description must be non-empty before allowing submit.
+- Basic front-end validation is fine; no need for a heavy schema lib yet.
+
+-----------------------
+4) Integration and UX details
+-----------------------
+
+- When navigating back from `/jobs/new` or after posting, ensure we land on `/talent` with the “Find Work” tab active. A simple approach is `navigate('/talent?tab=work')` and have `/talent` read the query param to set the initial tab.
+- Do NOT touch the existing logic that drives the “Back to Talent” breadcrumb on public profile pages; that’s already correct.
+- Update `replit.md` to:
+  - Document the `jobs` table schema and columns.
+  - Show exactly how to run `supabase_jobs_schema.sql` in the Supabase dashboard.
+  - Note that the job board is now live on `/talent` under the “Find Work” tab and `/jobs/new` for posting.
+
+That’s it. Please implement all of the above, and don’t introduce any new user_id filters to the `/talent` profiles query.

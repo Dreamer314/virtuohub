@@ -691,12 +691,14 @@ As the lines between physical and digital continue to blur, virtual fashion stan
     );
   }
 
-  async likePost(postId: string): Promise<void> {
+  async likePost(postId: string, userId: string): Promise<{ likes: number, hasLiked: boolean }> {
     const post = this.posts.get(postId);
     if (post) {
       post.likes = (post.likes || 0) + 1;
       this.posts.set(postId, post);
+      return { likes: post.likes, hasLiked: true };
     }
+    return { likes: 0, hasLiked: false };
   }
 
   async addComment(postId: string): Promise<void> {
@@ -881,12 +883,14 @@ As the lines between physical and digital continue to blur, virtual fashion stan
     return commentsWithAuthor.filter(Boolean) as CommentWithAuthor[];
   }
 
-  async likeComment(commentId: string): Promise<void> {
+  async likeComment(commentId: string, userId: string): Promise<{ likes: number, hasLiked: boolean }> {
     const comment = this.comments.get(commentId);
     if (comment) {
       comment.likes = (comment.likes || 0) + 1;
       this.comments.set(commentId, comment);
+      return { likes: comment.likes, hasLiked: true };
     }
+    return { likes: 0, hasLiked: false };
   }
 
   // Poll vote methods (in-memory for dev/testing)

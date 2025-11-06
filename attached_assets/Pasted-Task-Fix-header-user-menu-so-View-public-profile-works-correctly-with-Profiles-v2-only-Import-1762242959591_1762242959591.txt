@@ -1,0 +1,71 @@
+Task: Fix header user menu so "View public profile" works correctly with Profiles v2 only.
+
+Important constraints
+- Do NOT change database schema, RLS, or server routes.
+- Use ONLY the existing profiles_v2 + account_prefs system as the source of truth.
+- Ignore any legacy v1 profile tables, quick_facts JSON, or old onboarding flags.
+- No more “PostgREST schema cache” explanations – the columns are already there.
+
+What I’m seeing now
+- I can visit /settings/profile and edit my v2 profile (display name, headline, bio, photo).
+- I can visit my public profile directly at /u/virtuohub_found and it works.
+- In the header on the community page, I see my avatar and @handle.
+- Clicking that opens a small dropdown with:
+  - “View public profile” (disabled / greyed out)
+  - “Profile settings” (works)
+  - “Log out” (works)
+- Even after saving my v2 profile successfully, “View public profile” stays disabled.
+
+What I want
+
+1) Single user menu behavior
+- Keep the small dropdown menu (no big LinkedIn-style panel yet).
+- The clickable area should be one combined region: avatar + handle + chevron.
+- On click:
+  - Toggle a dropdown positioned under the avatar.
+  - Menu items:
+    - View public profile
+    - Profile settings
+    - Log out
+
+2) Enable/disable logic for “View public profile”
+- Use Profiles v2 ONLY.
+- Implement or reuse a hook like useMyV2Profile() that:
+  - Finds the current user’s active profile via account_prefs.last_active_profile_id if present.
+  - If not set, falls back to the first profiles_v2 row for that user.
+  - Returns { handle, visibility, profile_photo_url, display_name } at minimum.
+- “View public profile” must be ENABLED and clickable when:
+  - There is a profiles_v2 row for the logged-in user AND
+  - that row has a non-null, non-empty handle AND
+  - visibility is 'PUBLIC' (or if you don’t have a visibility check handy, just assume PUBLIC for now).
+- When enabled, clicking it should navigate to `/u/${handle}` using the existing router.
+
+- “View public profile” may be DISABLED when:
+  - No profiles_v2 row exists yet for the user.
+  - Or handle is null/empty.
+- In that disabled state, style it as currently styled (muted) and do nothing on click.
+
+3) Remove dependency on legacy profile logic
+- If there is any code in the header/user menu that is:
+  - looking at old v1 profiles,
+  - checking quick_facts,
+  - or using some legacy “hasProfile” flag,
+  then remove that and replace it with the v2-based logic above.
+- Make sure the Avatar shown in the header also comes from the v2 profile (profile_photo_url) with the existing fallback initials behavior.
+
+4) UX polish
+- Add a small down-chevron icon next to the handle to make it obvious it’s a menu.
+- Keep hover/focus states so the whole area (avatar + handle + chevron) highlights together.
+
+5) Testing checklist (please actually run this)
+- Log in as my existing user.
+- Confirm header shows my avatar + @handle + chevron.
+- Click it → dropdown opens.
+- “Profile settings” navigates to /settings/profile.
+- From /settings/profile, confirm I have a v2 profile with a handle.
+- Go back to the community page and open the menu again:
+  - “View public profile” should now be active.
+  - Clicking it should navigate to /u/<my-handle>.
+- Confirm that logging out hides the menu and returns to the auth state.
+
+Please summarize exactly what files you changed (paths) and what logic you used to decide when to enable “View public profile”.

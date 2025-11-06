@@ -1,0 +1,55 @@
+Goal
+Fix the public profile page so that when I’m logged in as the founder and visit my profile (handle: Founder), it correctly loads my profile instead of “Profile not found”.
+
+Current facts
+- My auth user:
+  - email: thevirtuohub@gmail.com
+  - user_id: 047d3bb2-a023-4465-83f2-97559fc9054b
+- profiles_v2 row for this user:
+  - handle: 'Founder'
+  - kind: 'ADMIN'
+  - visibility: 'PUBLIC'
+- The error shown is: “The profile @Founder does not exist or you don’t have permission to view it.”
+
+Constraints
+- Do NOT change database schema or RLS.
+- Do NOT modify other features.
+- Only touch:
+  - the public profile page/component (likely public-profile.tsx or similar)
+  - any profile lookup hook it uses.
+
+Tasks
+
+1) Inspect the public profile loader
+- Find the page/component that shows the “Profile not found” card.
+- Identify:
+  - what route param it receives (handle or slug)
+  - which table it queries (`profiles_v2` or something else)
+  - all conditions used (handle, visibility, hasValidProfile, etc.).
+
+2) Make it use profiles_v2 correctly
+- Ensure the query is against `profiles_v2` by handle.
+- Ensure the handle comparison matches what’s in the DB:
+  - If it lowercases the slug, also lowercase the handle in the query (or use ILIKE).
+- Make sure the visibility / access check allows:
+  - visibility = 'PUBLIC'
+  - and, for the logged-in owner, always allow viewing their own profile even if some flag is false.
+
+3) Link from header / user menu
+- Ensure the “View profile” link for the logged-in user uses:
+  - the handle from `useMyV2Profile` (which reads from `profiles_v2`)
+  - not any legacy tables.
+- So for me it should point to whatever URL the public profile page expects for handle 'Founder'.
+
+4) Testing
+- Logged in as the founder:
+  - Click “View profile” in header / user menu.
+  - Confirm it navigates to my profile and shows my data, not “Profile not found.”
+- Logged in as another user:
+  - Visiting `/@Founder` should show my public profile (since visibility = 'PUBLIC'), not 404.
+
+5) Summary
+- In your final summary, tell me:
+  - Which file controls the public profile page.
+  - What query/conditions it now uses to load a profile.
+  - How it handles case sensitivity for handles and visibility.

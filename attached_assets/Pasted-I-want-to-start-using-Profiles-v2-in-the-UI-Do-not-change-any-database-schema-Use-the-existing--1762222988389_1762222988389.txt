@@ -1,0 +1,96 @@
+I want to start using Profiles v2 in the UI.
+
+Do not change any database schema. Use the existing v2 tables and RLS.  
+Do not remove or break any v1 behavior. The rest of the app must keep working.
+
+GOAL  
+Create a basic but real profile experience backed by profiles_v2:
+
+1) A public profile page that anyone can view  
+2) A "My profile" settings page that the logged in user can edit  
+3) Simple navigation so I can reach my profile from the top bar
+
+DATA TO USE  
+
+Profiles v2 table: public.profiles_v2  
+Important columns:
+- profile_id (primary key)
+- user_id (owner, matches auth user id)
+- handle (unique)
+- display_name
+- profile_photo_url
+- visibility
+- quick_facts (JSON, use a "bio" key inside this for now)
+
+Account prefs table: public.account_prefs
+- user_id
+- last_active_profile_id (points to profiles_v2.profile_id)
+
+Do not change these tables or their policies. Only read and update rows through Supabase.
+
+PART 1: Public profile page /u/:handle
+
+1) Add a route like /u/:handle using the existing router in this project.
+2) On that page:
+   - Look up the profile by handle in profiles_v2.
+   - Respect RLS. Only show profiles the current anon or user can read.
+   - Show:
+     - avatar from profile_photo_url (with a safe default if null)
+     - display_name (fallback to handle if missing)
+     - @handle
+     - bio text from quick_facts.bio if present, otherwise a short placeholder like:
+       "This creator has not added a bio yet."
+   - If no profile is found or RLS forbids it, show a friendly "Profile not found" state.
+3) Keep styling consistent with the rest of the app (same fonts, spacing, card style).
+
+PART 2: "My profile" settings page
+
+1) Add a "My profile" page, for example at /settings/profile or similar.
+   Reuse any existing settings layout if there is one.
+2) On this page:
+   - Identify the current auth user through the existing auth setup.
+   - Look up account_prefs for that user.
+     - If last_active_profile_id exists, load that profile from profiles_v2.
+     - If not, create a default profile for this user:
+       kind = CREATOR, visibility = PUBLIC,
+       handle and display_name based on current v1 profile or auth email,
+       then create an account_prefs row pointing to it.
+3) Render a simple editable form:
+   - Avatar URL field bound to profile_photo_url (for now just a text input, not file upload).
+   - Text field for display_name.
+   - Read only field for handle in this first version (we can make handle editable later).
+   - Multi line text area for bio, stored in profiles_v2.quick_facts under the "bio" key.
+4) Add a Save button that:
+   - Updates profiles_v2.display_name.
+   - Updates profiles_v2.profile_photo_url.
+   - Updates profiles_v2.quick_facts with the new bio:
+     read existing quick_facts JSON, change only the "bio" key, do not wipe other keys.
+   - Shows a success or error message in the UI.
+5) Handle loading and error states cleanly on this page.
+
+PART 3: Navigation
+
+1) In the existing top navigation, when a user is logged in:
+   - Make clicking their avatar open the "My profile" page you just created.
+   - If there is already a user menu, it is fine to add a "My profile" or "Profile" item that links to that page.
+2) Do not change routing for anonymous users.
+
+CONSTRAINTS
+
+- Use the existing Supabase client and auth handling for this project. Do not create a new client.
+- Do not touch v2 RLS policies or foreign keys.
+- Do not modify or remove any v1 profile behavior. Community feed, comments, and spotlights must continue to work as they are.
+- Typescript should compile without errors.
+
+ACCEPTANCE CRITERIA
+
+- Visiting /u/:handle for a valid v2 profile shows avatar, display name or handle, and bio (or the placeholder).
+- When logged in, visiting the "My profile" page shows my active v2 profile, creating one if needed.
+- I can change display_name, avatar URL, and bio on that page and see the changes reflected when I reload /u/:handle.
+- Clicking my avatar in the top nav takes me to my profile settings page.
+- No existing pages (community feed, spotlight pages, comments) are broken.
+
+At the end, please summarize:
+- Which routes you added
+- Which files you changed
+- How to test both pages as a logged in user and as a visitor.

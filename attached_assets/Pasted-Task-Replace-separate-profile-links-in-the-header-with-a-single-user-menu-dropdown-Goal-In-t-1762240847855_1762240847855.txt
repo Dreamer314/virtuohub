@@ -1,0 +1,87 @@
+Task: Replace separate profile links in the header with a single user menu dropdown.
+
+Goal
+
+In the main header, when a logged-in user clicks their avatar/name area on the right, open a dropdown menu with:
+
+- View public profile
+- Profile settings
+- Log out
+
+There should be ONE hover/click region that covers both the avatar and the username/handle. No separate behavior depending on whether the user clicks the avatar or the text.
+
+Stack / context
+
+- React + TypeScript
+- Supabase Auth
+- React Router (Link / useNavigate)
+- Existing hooks:
+  - useV2Avatar() → returns the current profile’s avatar URL
+  - useV2Handle() → returns the current profile handle string (e.g. "virtuohub_found")
+- Existing header component: client/src/components/layout/header.tsx
+- Existing logout behavior already exists somewhere in the header (a “Log Out” button or handler) – reuse that logic rather than inventing a new sign-out flow.
+
+What to implement
+
+1) Header user section → dropdown trigger
+
+- In client/src/components/layout/header.tsx, locate the user section on the right side that currently shows:
+  - avatar image (or fallback circle)
+  - @handle / display name
+- Wrap the avatar + text in a single clickable area that:
+  - visually highlights on hover/focus as one unit
+  - on click toggles a dropdown menu.
+- Remove the previous behavior where avatar click goes to public profile and username click goes to settings. Both should now just open the same dropdown.
+
+2) Dropdown menu (desktop)
+
+- Implement a simple accessible dropdown menu attached to that user area.
+  - It can be a small popover menu component placed under/right-aligned to the trigger.
+  - You can either create a minimal custom dropdown or use any existing menu / popover component already used in this project. Do NOT bring in a brand new heavy dependency just for this.
+- Menu items and behavior:
+  - “View public profile”
+    - When clicked, navigate to `/u/${handle}` where handle comes from useV2Handle().
+  - “Profile settings”
+    - When clicked, navigate to `/settings/profile`.
+  - “Log out”
+    - When clicked, call the existing logout logic. Prefer to reuse any existing `handleLogout` or supabase signOut call already used in the header.
+- Styling:
+  - Match the existing header / dropdown styling (border radius, colors, shadows) used elsewhere in the app.
+  - Ensure hover/active states for each menu item.
+  - Keep it compact; this is a simple account menu, not a big panel.
+
+3) Mobile behavior
+
+- In the mobile header / menu:
+  - Use the same dropdown logic OR render the same three actions in the existing mobile menu structure.
+  - The key requirement is that on mobile there is still a clear way to:
+    - View public profile
+    - Open profile settings
+    - Log out
+- It’s OK if the exact UI on mobile is slightly different as long as the three actions are present and consistent.
+
+4) Remove redundant “Log Out” button
+
+- If there is a standalone “Log Out” button/text in the header, remove it on desktop and rely on the dropdown menu instead.
+- On mobile, keep only one primary way to log out (either inside the dropdown or as a single menu item, but not duplicated).
+
+5) No backend or schema changes
+
+- Do NOT touch the database schema or any tables.
+- Do NOT change profiles_v2 columns.
+- This task is **UI only** in the client.
+
+Acceptance criteria
+
+- Hovering over the avatar/name shows a single consistent hover state for the whole area.
+- Clicking that area opens/closes a dropdown with exactly 3 items:
+  - View public profile
+  - Profile settings
+  - Log out
+- “View public profile” navigates to `/u/<current-handle>` and works for my existing profile (virtuohub_found).
+- “Profile settings” navigates to `/settings/profile`.
+- “Log out” signs the user out using existing logic and returns them to whatever the app currently uses as the post-logout screen.
+- No more direct-click navigation on the avatar/name; everything goes through the dropdown.
+- No schema or server changes.
+
+Please show me the final diff for client/src/components/layout/header.tsx (and any new small UI component you create for the dropdown) when you’re done.

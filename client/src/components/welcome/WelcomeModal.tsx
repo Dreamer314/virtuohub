@@ -181,31 +181,59 @@ export function WelcomeModal({ open, onOpenChange }: WelcomeModalProps) {
         }
       }
 
-      // Update profile
-      const token = (await supabase.auth.getSession()).data.session?.access_token;
+      // Check if profile already exists for this user_id
+      const { data: existingProfile } = await supabase
+        .from('profiles_v2')
+        .select('profile_id')
+        .eq('user_id', user.id)
+        .maybeSingle();
 
-      const response = await fetch('/api/profile/update', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          handle,
-          avatarUrl,
-          onboardingComplete: true
-        })
-      });
+      if (existingProfile) {
+        // Update existing profile
+        // Only update profile_photo_url if a new avatar was uploaded
+        const updatePayload: any = {
+          handle: handle,
+          display_name: handle,
+          visibility: 'PUBLIC'
+        };
+        
+        if (avatarUrl) {
+          updatePayload.profile_photo_url = avatarUrl;
+        }
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'Failed to update profile');
+        const { error: updateError } = await supabase
+          .from('profiles_v2')
+          .update(updatePayload)
+          .eq('user_id', user.id);
+
+        if (updateError) {
+          console.error('Profile update error:', updateError);
+          throw new Error(updateError.message || 'Failed to update profile');
+        }
+      } else {
+        // Insert new profile
+        const { error: insertError } = await supabase
+          .from('profiles_v2')
+          .insert({
+            user_id: user.id,
+            handle: handle,
+            display_name: handle,
+            profile_photo_url: avatarUrl,
+            visibility: 'PUBLIC'
+          });
+
+        if (insertError) {
+          console.error('Profile insert error:', insertError);
+          throw new Error(insertError.message || 'Failed to create profile');
+        }
       }
 
       // Mark as welcomed
       localStorage.setItem(`welcomed_${user.id}`, 'true');
 
       // Invalidate queries to refresh header and feed immediately
+      queryClient.invalidateQueries({ queryKey: ['my-v2-profile'] });
+      queryClient.invalidateQueries({ queryKey: ['user-profile-v2'] });
       queryClient.invalidateQueries({ queryKey: ['/api/profile'] });
       queryClient.invalidateQueries({ queryKey: ['/api/posts'] });
 

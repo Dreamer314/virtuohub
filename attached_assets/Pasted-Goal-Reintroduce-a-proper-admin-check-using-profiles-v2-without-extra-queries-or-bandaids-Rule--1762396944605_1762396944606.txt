@@ -1,0 +1,133 @@
+Goal
+Reintroduce a proper admin check using profiles_v2 without extra queries or bandaids.
+
+Rule:
+A user is admin if ANY of their profiles_v2 rows has kind = 'ADMIN'.
+
+Use this rule in:
+1) useMyV2Profile hook (compute an isAdmin flag)
+2) header.tsx (show Admin link only for admins)
+3) admin.tsx (block non-admins)
+
+Do not change database schema, migrations, or profile creation logic.
+
+Tasks
+
+1) Extend useMyV2Profile to compute isAdmin from all profiles
+- Open client/src/hooks/useMyV2Profile.ts.
+- This hook already:
+  - Gets the current user
+  - Queries profiles_v2
+  - Picks a single “active” profile (result)
+- Inside the hook, after you have the full profiles array from Supabase and before you return the final result object:
+
+  a) Identify the array variable that contains all profiles for the user
+     (you logged “Talent directory query returned 3 profiles : Array(3)” earlier,
+      use that same array).
+
+  b) Compute:
+
+     const hasAdminProfile = Array.isArray(profiles)
+       ? profiles.some((p) => p.kind === "ADMIN")
+       : false;
+
+  c) When building the final result, attach this flag:
+
+     const resultWithAdmin = result
+       ? { ...result, isAdmin: hasAdminProfile }
+       : null;
+
+     console.log("[useMyV2Profile] Final result", {
+       kind: resultWithAdmin?.kind,
+       isAdmin: resultWithAdmin?.isAdmin,
+     });
+
+     return resultWithAdmin;
+
+- Make sure the returned type/interface for the hook’s data includes:
+
+     isAdmin?: boolean;
+
+  and that kind is still typed as the ProfileKind union.
+
+- Keep this logic completely inside the hook. Do not add new Supabase queries.
+
+2) Update header.tsx to use v2Profile.isAdmin
+- Open client/src/components/layout/header.tsx.
+- It already calls useMyV2Profile and has access to the logged in user via the existing auth hook.
+
+- Replace the current Admin visibility logic with:
+
+  const { data: v2Profile } = useMyV2Profile();
+  const { user } = useAuth(); // or the existing auth hook used in this file
+
+  const isLoggedIn = !!user;
+  const isAdmin = isLoggedIn && v2Profile?.isAdmin === true;
+
+  console.log("[HEADER admin check]", {
+    email: user?.email,
+    kind: v2Profile?.kind,
+    isAdmin,
+  });
+
+- Make sure the Admin nav link (desktop and mobile) uses only this boolean:
+
+  {isAdmin && (
+    <Link href="/admin" ...>
+      Admin
+    </Link>
+  )}
+
+- Remove any leftover showAdmin or “always show for logged in” logic so only real admins see it.
+
+3) Re-add a guard to admin.tsx using the same flag
+- Open client/src/pages/admin.tsx.
+
+- Import the auth hook and useMyV2Profile if they are not already imported.
+
+- At the top of the component, add:
+
+  const { user } = useAuth();       // use the same hook as header
+  const { data: v2Profile } = useMyV2Profile();
+
+  const isLoggedIn = !!user;
+  const isAdmin = isLoggedIn && v2Profile?.isAdmin === true;
+
+- Before rendering the admin dashboard, add a guard:
+
+  if (!isAdmin) {
+    return (
+      <div className="mx-auto mt-10 max-w-xl text-center">
+        <h1 className="text-2xl font-semibold mb-2">Admin access only</h1>
+        <p className="text-sm text-muted-foreground">
+          You do not have permission to view this page.
+        </p>
+      </div>
+    );
+  }
+
+- Do not add any new Supabase queries here.
+
+4) Cleanup and sanity checks
+- Remove any old debug logs that are now redundant in useMyV2Profile, but keep the new concise ones added above.
+
+- Run the app and test:
+
+  a) Log in with my admin account (thevirtuohub@gmail.com):
+     - Console should show:
+       [useMyV2Profile] Final result { kind: "CREATOR", isAdmin: true }
+       [HEADER admin check] { email: "thevirtuohub@gmail.com", kind: "CREATOR", isAdmin: true }
+     - Admin link should appear in the header.
+     - /admin should load successfully.
+
+  b) Log in with a non-admin test user:
+     - Console should show isAdmin: false.
+     - Admin link should NOT appear.
+     - Directly visiting /admin should show the “Admin access only” message.
+
+5) Report
+- In your summary back to me, list exactly which lines you changed in:
+  - client/src/hooks/useMyV2Profile.ts
+  - client/src/components/layout/header.tsx
+  - client/src/pages/admin.tsx
+- Confirm that for the founder account hasAdminProfile is true, isAdmin is true, and the Admin link and page behave correctly.

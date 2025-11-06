@@ -1,0 +1,82 @@
+Goal
+Make admin detection work correctly when a user has multiple profiles in profiles_v2. If any profile for the current user has kind = 'ADMIN', the header (and admin page) should treat them as admin, even if the active profile is kind = 'CREATOR' or 'STUDIO'.
+
+Important constraints
+- Do NOT change database schema, migrations, or RLS.
+- Do NOT touch legacy tables (profiles, user_profiles).
+- Only modify:
+  - client/src/hooks/useMyV2Profile.ts
+  - client/src/components/layout/header.tsx
+  - client/src/pages/admin.tsx (only if needed for consistency).
+- Keep all existing behavior for creator/studio badges and active profile selection. We are only adding a separate admin flag.
+
+What the logs show now
+- For my admin account, useMyV2Profile logs:
+    [useMyV2Profile result] { handle: 'virtuohub_Founder', ..., kind: 'CREATOR' }
+    [useMyV2Profile] Final result with kind: CREATOR
+    [HEADER v2Profile kind] CREATOR
+- The database also contains an ADMIN profile row for this same user, so there are multiple profiles_v2 rows per user.
+
+Desired design
+- useMyV2Profile should:
+  - Still return a single “active” profile (whatever it currently chooses).
+  - ALSO compute an `isAdmin` boolean based on *all* profiles for that user:
+      isAdmin = profiles.some(p => p.kind === 'ADMIN')
+- The active profile’s `kind` should NOT be forced to 'ADMIN'. Creator/studio badges should continue to use the actual kind.
+- The header and admin page should rely on this `isAdmin` flag instead of checking v2Profile.kind directly.
+
+Implementation steps
+
+1) Extend the profile type returned by useMyV2Profile
+- Open client/src/hooks/useMyV2Profile.ts.
+- Find the interface or type that describes the profile returned from this hook (currently it has fields like handle, displayName, profilePhotoUrl, hasValidProfile, kind).
+- Add an optional field:
+    isAdmin?: boolean;
+- Inside the hook, after you fetch `profiles` (the array) and before you return the final `result`, compute:
+    const hasAdminProfile = Array.isArray(profiles)
+      ? profiles.some((p) => p.kind === 'ADMIN')
+      : false;
+- When you build the final `result` object to return, include this flag without changing any existing fields:
+    const resultWithAdmin = result ? { ...result, isAdmin: hasAdminProfile } : null;
+    console.log('[useMyV2Profile] Final result with kind and isAdmin:', resultWithAdmin?.kind, resultWithAdmin?.isAdmin);
+    return resultWithAdmin;
+- Keep the existing logging, just add the isAdmin info.
+
+2) Update header.tsx to use v2Profile.isAdmin
+- Open client/src/components/layout/header.tsx.
+- Currently it has something like:
+    const { data: v2Profile } = useMyV2Profile();
+    const isAdmin = v2Profile?.kind === 'ADMIN';
+- Change it to:
+    const isAdmin = v2Profile?.isAdmin === true;
+    console.log('[HEADER v2Profile kind]', v2Profile?.kind, 'isAdmin:', isAdmin);
+- Make sure the Admin nav link (both desktop and mobile) only uses this boolean:
+    {isAdmin && (
+      <Link href="/admin" ...>Admin</Link>
+    )}
+
+3) Align the /admin page guard (if needed)
+- Open client/src/pages/admin.tsx.
+- If this page currently checks `profile.kind === 'ADMIN'` or runs its own Supabase query against profiles_v2.kind, refactor it to use useMyV2Profile instead:
+    const { data: v2Profile } = useMyV2Profile();
+    const isAdmin = v2Profile?.isAdmin === true;
+- If isAdmin is false, show the “not allowed / must be admin” message.
+- Remove any redundant direct queries to profiles_v2 in this page.
+
+4) Sanity checks
+- Run the app and log in with my admin account.
+- Confirm browser console shows something like:
+    [useMyV2Profile] Final result with kind and isAdmin: CREATOR true
+    [HEADER v2Profile kind] CREATOR isAdmin: true
+- Confirm:
+  - Admin link appears in the header.
+  - I can enter /admin.
+- Log in with a non-admin user and confirm:
+  - isAdmin is false.
+  - No Admin link in header and /admin shows the “no permission” message.
+
+5) Report back
+- In your final summary, list exactly which files and lines you changed.
+- Tell me:
+  - What profiles array looked like for my admin user (how many rows and their kinds).
+  - That isAdmin is now true even when active profile kind is CREATOR, and the header/admin page behave accordingly.

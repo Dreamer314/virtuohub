@@ -1,0 +1,133 @@
+Upgrade Profiles v2 with real avatar upload (no schema changes)
+
+Goal
+Make the existing Profiles v2 experience feel like a real profile by adding an image upload flow instead of the “Avatar URL” text box. Use the existing profiles_v2.profile_photo_url field. Do NOT add multi-profile, Behind-the-Avi, or any new tables.
+
+What exists now
+
+Stack: React + TypeScript + Supabase client
+
+v2 tables: profiles_v2 and account_prefs with RLS already configured
+
+Settings page: client/src/pages/profile-settings.tsx
+
+Editable: display_name, avatar_url (string), bio (quick_facts.bio)
+
+Handle is read-only
+
+Public profile page: client/src/pages/public-profile.tsx
+
+Reads profile_photo_url and quick_facts.bio
+
+Header: client/src/components/layout/header.tsx
+
+Shows current user name and links to /settings/profile
+
+Requirements
+
+A. Storage bucket for avatars
+
+Check Supabase Storage for a bucket suitable for profile avatars.
+
+If a bucket named "avatars" (or similar) already exists, reuse it.
+
+If not, create a bucket named avatars with:
+
+public read access (or a simple signed-url flow – pick the simpler option that works with our current auth/RLS setup)
+
+Document in replit.md which bucket is used and how URLs are generated.
+
+B. Settings page: replace URL field with upload UI
+File: client/src/pages/profile-settings.tsx
+
+Replace the current “Avatar URL” text input with:
+
+An image preview showing the current avatar (from profile.profile_photo_url) with a fallback initial if empty.
+
+A file input or “Upload photo” button that lets the user choose an image file from their computer.
+
+When a file is selected:
+
+Upload it to Supabase Storage (avatars bucket) under a sensible path, e.g.:
+avatars/{user_id}/{timestamp-or-random}.{ext}
+
+On success, get the public URL (or signed URL) and update profile_photo_url for the current profile in profiles_v2.
+
+Update the local React Query cache / component state so the new avatar shows immediately in the form and preview.
+
+Keep the “Save Changes” button for display_name and bio as-is. The avatar upload can either:
+
+auto-save when the upload finishes, OR
+
+stage the new URL and save it together with display_name and bio when the user clicks Save.
+Choose the simpler option but keep the UX coherent.
+
+Remove or hide the raw avatar URL text field from the UI. We no longer want users pasting URLs.
+
+C. Public profile page: use new avatar
+File: client/src/pages/public-profile.tsx
+
+Ensure the public profile page uses profile.profile_photo_url for the avatar image.
+
+If profile_photo_url is empty, keep the current colored-circle-with-initial fallback.
+
+No behavioral changes beyond reading whatever the settings page writes.
+
+D. Header: show v2 avatar if available
+File: client/src/components/layout/header.tsx
+
+In the header, where we currently show the user name / icon, also try to show their v2 profile avatar:
+
+Use account_prefs.last_active_profile_id to look up the active profile’s profile_photo_url from profiles_v2 (you can add a small hook or query to fetch it).
+
+If profile_photo_url exists, render a small rounded avatar image there.
+
+If not, keep the existing icon/initial behavior.
+
+Keep the existing navigation behavior: clicking the user section still takes you to /settings/profile.
+
+E. Types, errors, and safety
+
+Keep TypeScript strict:
+
+Define any needed types for the upload response and profile shape.
+
+Handle errors gracefully:
+
+If the upload fails, show a small inline error near the avatar control and log the error to console.
+
+Do not break the rest of the page – display_name and bio editing should still work.
+
+F. No schema or RLS changes
+
+Do NOT change any database tables, columns, or RLS policies.
+
+Only use existing fields, especially:
+
+profiles_v2.profile_photo_url
+
+profiles_v2.quick_facts
+
+account_prefs.last_active_profile_id
+
+Deliverables
+
+Updated components:
+
+client/src/pages/profile-settings.tsx
+
+client/src/pages/public-profile.tsx
+
+client/src/components/layout/header.tsx
+
+Any small helper/hooks files you need to add.
+
+Brief summary in replit.md under a “Profiles v2 avatar upload” section describing:
+
+which bucket is used
+
+how URLs are generated
+
+which components were updated
+
+End of prompt.

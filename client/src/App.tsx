@@ -15,6 +15,7 @@ import ThreadPage from "@/pages/thread";
 import TrendingPage from "@/pages/trending";
 import SpotlightsPage from "@/pages/spotlights";
 import SpotlightDetailPage from "@/pages/spotlight-detail";
+import SpotlightDemoPage from "@/pages/spotlight-demo";
 import InterviewsPage from "@/pages/interviews";
 import InterviewDetailPage from "@/pages/interview-detail";
 import GuidesPage from "@/pages/guides";
@@ -31,6 +32,13 @@ import AdminPage from "@/pages/admin";
 /* Onboarding page (route stays public for this test) */
 import OnboardingPage from "@/pages/onboarding";
 
+/* Profiles v2 */
+import PublicProfile from "@/pages/public-profile";
+import ProfileSettings from "@/pages/profile-settings";
+import Talent from "@/pages/talent";
+import JobNew from "@/pages/job-new";
+import JobDetail from "@/pages/job-detail";
+
 function Router() {
   return (
     <Switch>
@@ -39,6 +47,7 @@ function Router() {
       <Route path="/home" component={HomePage} />
       <Route path="/community" component={Community} />
       <Route path="/spotlights" component={SpotlightsPage} />
+      <Route path="/spotlight/demo" component={SpotlightDemoPage} />
       <Route path="/spotlight/:id" component={SpotlightDetailPage} />
       <Route path="/interviews" component={InterviewsPage} />
       <Route path="/interview/:id" component={InterviewDetailPage} />
@@ -62,6 +71,17 @@ function Router() {
 
       {/* Onboarding (still routable) */}
       <Route path="/onboarding" component={OnboardingPage} />
+
+      {/* Talent Directory */}
+      <Route path="/talent" component={Talent} />
+      
+      {/* Job Board */}
+      <Route path="/jobs/new" component={JobNew} />
+      <Route path="/jobs/:id" component={JobDetail} />
+
+      {/* Profiles v2 */}
+      <Route path="/settings/profile" component={ProfileSettings} />
+      <Route path="/u/:handle" component={PublicProfile} />
 
       {/* 404 */}
       <Route component={NotFound} />
