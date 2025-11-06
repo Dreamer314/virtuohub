@@ -1,0 +1,91 @@
+Goal
+Fix admin detection so that when I log in with my admin account, the header reliably shows the “Admin” nav link, using `profiles_v2.kind === 'ADMIN'`. Do this without changing unrelated features or schema.
+
+Admin test account
+Email: thevirtuohub@gmail.com
+Password: Ondrande901!
+
+Ground rules
+- Do NOT change any database schema, migrations, or RLS.
+- Do NOT touch legacy `profiles` or `user_profiles` tables.
+- Only modify code that:
+  1) reads from `profiles_v2` for the current user, or
+  2) writes to `profiles_v2` (create/update profile), or
+  3) renders the Admin link in the header.
+- Avoid refactors; keep changes as small and local as possible.
+
+Current state (important)
+- `profiles_v2.kind` for my admin user is already `ADMIN`.
+- `useMyV2Profile` selects `kind` from `profiles_v2` and exposes it.
+- `header.tsx` now uses:
+    const { data: v2Profile } = useMyV2Profile();
+    const isAdmin = v2Profile?.kind === "ADMIN";
+  and shows the Admin nav link only when `isAdmin` is true.
+- Despite this, the Admin link does NOT appear.
+
+Your tasks
+
+1) Log what `useMyV2Profile` really returns for the admin user
+- Open `client/src/hooks/useMyV2Profile.ts`.
+- Add a temporary log right after the Supabase query resolves, ONLY in development:
+    console.log("[useMyV2Profile result]", data, error);
+- Open `client/src/components/layout/header.tsx`.
+- Ensure the existing log:
+    console.log("[HEADER v2Profile kind]", v2Profile?.kind);
+  is still there (or add it again).
+- Run the app, log in as the admin user, and check the browser console:
+  - Note exactly what `v2Profile` looks like and what `kind` value is.
+  - Summarize this in your final report to me.
+
+Expected outcomes here:
+- Either `kind` is `"ADMIN"` (data path is correct, bug is in header logic), OR
+- `kind` is `"CREATOR"` or `undefined` (data path or write logic is wrong).
+
+2) If `kind` is not "ADMIN": find and fix whatever is overwriting or misreading it
+- Search the repo for all writes to `profiles_v2`:
+    - Any `.insert(`, `.upsert(`, or `.update(` calls involving `profiles_v2`.
+- Especially review `client/src/pages/profile-settings.tsx` and any onboarding or “welcome / complete profile” flows.
+- For each write to `profiles_v2`:
+  a) Ensure that we only create a new profile row when one does NOT already exist.
+     - If the code currently “blindly inserts” with `kind: 'CREATOR'` on login or onboarding, change it so it:
+       - First queries for an existing profile for that `user_id`.
+       - If a row exists, reuse its existing `kind` value and DO NOT overwrite it.
+       - Only set `kind: 'CREATOR'` (or chosen value) when there is truly no existing row.
+  b) Ensure update paths do NOT force `kind` back to `'CREATOR'` unless the user is explicitly changing their type in the UI.
+     - For updates, either omit `kind` from the update payload, or pass through the current `kind` from the existing row.
+- Do NOT hardcode special behavior for my email; keep the logic generic (any profile with `kind = 'ADMIN'` should stay admin).
+
+3) If `kind` IS "ADMIN" in the logs but the Admin link still doesn’t render
+- Open `client/src/components/layout/header.tsx`.
+- Confirm there are no additional guards that could hide the Admin link, such as:
+    - `isAuthenticated` or `profileLoading` checks.
+    - Conditional returns that exit before the nav renders.
+- Make sure the Admin nav link uses ONLY the boolean `isAdmin = v2Profile?.kind === "ADMIN"` and is inside the part of the header that always renders for logged-in users.
+  For example:
+    {isAdmin && (
+      <Link href="/admin" ...>Admin</Link>
+    )}
+- Check both desktop and mobile nav sections; update both to use `isAdmin` consistently.
+
+4) Sanity-check behavior end to end
+- With the admin account:
+  - Log in.
+  - Confirm console shows:
+      [useMyV2Profile result] ... kind: "ADMIN"
+      [HEADER v2Profile kind] ADMIN
+  - Confirm the Admin link is visible in the header.
+  - Navigate to `/admin` from the link and ensure the page still works.
+- Log out, log back in again:
+  - Verify `kind` remains `"ADMIN"` and the Admin link still appears.
+- Optionally, test with a non-admin account to make sure they do NOT see the Admin link.
+
+5) Clean up
+- Leave the `[HEADER v2Profile kind]` log in place for now (I’ll remove it myself later).
+- You may remove the `[useMyV2Profile result]` log if it’s noisy, but include the final observed value of `kind` in your summary.
+
+In your final response to me:
+- List EXACTLY which files and lines you changed.
+- Tell me:
+  - What `kind` was reported for my admin user before your fix.
+  - Which piece of code was wrongly overwriting or misreading `kind`.
+  - How you changed it so admin status is now stable and derived only from `profiles_v2.kind`.

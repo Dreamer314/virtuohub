@@ -14,6 +14,8 @@ export interface MyV2Profile {
 
 export function useMyV2Profile() {
   const { user } = useAuth();
+  
+  console.log('[useMyV2Profile HOOK CALLED] user:', user?.id);
 
   return useQuery({
     queryKey: ['my-v2-profile', user?.id ?? 'none'],
@@ -76,7 +78,7 @@ export function useMyV2Profile() {
         .eq('profile_id', profileId)
         .maybeSingle();
 
-      console.log('[useMyV2Profile] Profile data:', { profile, profileError });
+      console.log('[useMyV2Profile result]', profile, profileError);
 
       if (!profile) {
         console.log('[useMyV2Profile] Profile not found');
@@ -100,14 +102,17 @@ export function useMyV2Profile() {
         hasValidProfile,
       });
 
-      return {
+      const result = {
         handle: profile.handle || null,
         displayName: profile.display_name || null,
         profilePhotoUrl: profile.profile_photo_url || null,
         visibility: profile.visibility || null,
-        kind: (profile as any).kind || null,
+        kind: profile.kind || null,
         hasValidProfile,
       };
+      
+      console.log('[useMyV2Profile] Final result with kind:', result.kind);
+      return result;
     },
     enabled: !!user?.id,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
