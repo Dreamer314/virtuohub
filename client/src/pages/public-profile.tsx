@@ -33,6 +33,7 @@ interface ProfileV2 {
   profile_photo_url: string | null;
   about: string | null;
   visibility: string;
+  kind: string | null;
   created_at: string;
   is_open_to_work: boolean;
   is_hiring: boolean;
@@ -54,7 +55,7 @@ export default function PublicProfile() {
 
       const { data, error } = await supabase
         .from('profiles_v2')
-        .select('profile_id, user_id, handle, display_name, headline, profile_photo_url, about, visibility, created_at, is_open_to_work, is_hiring, availability_note, quick_facts')
+        .select('profile_id, user_id, handle, display_name, headline, profile_photo_url, about, visibility, kind, created_at, is_open_to_work, is_hiring, availability_note, quick_facts')
         .eq('handle', handle.toLowerCase())
         .single();
 
@@ -152,7 +153,10 @@ export default function PublicProfile() {
             <div className="flex-1">
               {/* Creator Profile Label */}
               <div className="text-xs text-muted-foreground uppercase tracking-wide mb-2">
-                VirtuoHub Creator
+                {profile.kind === 'ADMIN' && 'VirtuoHub Admin'}
+                {profile.kind === 'STUDIO' && 'VirtuoHub Studio'}
+                {profile.kind === 'CREATOR' && 'VirtuoHub Creator'}
+                {!profile.kind && 'Creator on VirtuoHub'}
               </div>
 
               <h1 className="text-3xl font-bold mb-1" data-testid="profile-display-name">
