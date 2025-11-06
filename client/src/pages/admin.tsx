@@ -6,7 +6,6 @@ import { RightSidebar } from "@/components/layout/right-sidebar";
 import { Footer } from "@/components/layout/footer";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabaseClient";
-import { useMyV2Profile } from "@/hooks/useMyV2Profile";
 import {
   Repeat2, Pencil, PieChart, X, RotateCcw, Copy, Download, Trash2, Star, EyeOff,
   FilePlus2, Check, Archive, Eye, Key
@@ -56,32 +55,7 @@ function dollars(cents: number | null | undefined) {
 /* =============================== Page ==================================== */
 
 export default function AdminPage() {
-  const { data: v2Profile } = useMyV2Profile();
-  const isAdmin = v2Profile?.isAdmin === true;
-  const [pollRefresh, setPollRefresh] = useState(0); // <-- define before use
-
-  if (!isAdmin) {
-    return (
-      <div className="min-h-screen bg-background text-foreground">
-        <Header onCreatePost={() => {}} />
-        <div className="community-grid">
-          <div className="grid-left hidden xl:block border-r border-border sticky top-[var(--header-height)] h-[calc(100vh-var(--header-height))] overflow-y-auto">
-            <div className="p-4"><LeftSidebar currentTab="all" onTabChange={() => {}} /></div>
-          </div>
-          <div className="grid-main">
-            <div className="px-4 lg:px-8 py-16 max-w-3xl mx-auto text-center text-muted-foreground">
-              <h1 className="text-3xl font-bold mb-2">Admin only</h1>
-              <p>You must be an administrator to view this page.</p>
-            </div>
-          </div>
-          <div className="grid-right hidden lg:block border-l border-border sticky top-[var(--header-height)] h-[calc(100vh-var(--header-height))] overflow-y-auto">
-            <div className="p-4"><RightSidebar /></div>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+  const [pollRefresh, setPollRefresh] = useState(0);
 
   return (
     <div className="min-h-screen bg-background text-foreground">

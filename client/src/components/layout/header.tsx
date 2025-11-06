@@ -52,10 +52,13 @@ export function Header({ onCreatePost }: HeaderProps) {
   const avatarUrl = v2Profile?.profilePhotoUrl;
   const userHandle = v2Profile?.handle;
   const canViewProfile = v2Profile?.hasValidProfile || false;
-  const isAdmin = v2Profile?.isAdmin === true;
   
-  // Debug log for admin verification
-  console.log("[HEADER v2Profile kind]", v2Profile?.kind, "isAdmin:", isAdmin);
+  // Show admin link for all logged-in users (no role requirement)
+  const isLoggedIn = !!user;
+  const showAdmin = isLoggedIn;
+  
+  // Debug log
+  console.log("[HEADER admin visibility]", { isLoggedIn, showAdmin });
 
   const toggleTheme = () => {
     // Single-theme mode: charcoal only
@@ -145,8 +148,8 @@ export function Header({ onCreatePost }: HeaderProps) {
               Talent
             </Link>
 
-            {/* Admin link for real admins */}
-            {isAdmin && (
+            {/* Admin link for logged in users */}
+            {showAdmin && (
               <Link
                 href="/admin"
                 className={`vh-nav-item px-3 py-2 rounded-lg font-medium text-base ${
@@ -400,7 +403,7 @@ export function Header({ onCreatePost }: HeaderProps) {
               </Link>
 
               {/* Admin (mobile) */}
-              {isAdmin && (
+              {showAdmin && (
                 <Link
                   href="/admin"
                   className="vh-nav-item px-4 py-3 font-medium rounded-lg mx-2"
