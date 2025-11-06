@@ -60,24 +60,15 @@ export function Header({ onCreatePost }: HeaderProps) {
     let cancelled = false;
     (async () => {
       if (user?.id) {
-        console.log('[ADMIN CHECK] Checking admin status for user:', user.id);
-        const { data: profiles, error } = await supabase
+        const { data: profiles } = await supabase
           .from('profiles_v2')
           .select('kind')
           .eq('user_id', user.id)
           .limit(1);
         
-        console.log('[ADMIN CHECK] Query result:', { profiles, error });
-        if (profiles && profiles.length > 0) {
-          console.log('[ADMIN CHECK] Profile data:', profiles[0]);
-          console.log('[ADMIN CHECK] kind value:', profiles[0].kind);
-          console.log('[ADMIN CHECK] kind === "ADMIN":', profiles[0].kind === 'ADMIN');
-        }
         const isAdminProfile = !!(profiles && profiles.length > 0 && profiles[0].kind === 'ADMIN');
-        console.log('[ADMIN CHECK] isAdminProfile:', isAdminProfile);
         if (!cancelled) setIsAdmin(isAdminProfile);
       } else {
-        console.log('[ADMIN CHECK] No user ID, setting admin to false');
         if (!cancelled) setIsAdmin(false);
       }
     })();
