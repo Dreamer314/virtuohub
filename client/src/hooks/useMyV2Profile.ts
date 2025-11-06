@@ -1,13 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabaseClient';
 import { useAuth } from '@/providers/AuthProvider';
+import type { ProfileKind } from '@shared/schema.profilesV2';
 
 export interface MyV2Profile {
   handle: string | null;
   displayName: string | null;
   profilePhotoUrl: string | null;
   visibility: string | null;
-  kind: string | null;
+  kind: ProfileKind | null;
   hasValidProfile: boolean;
 }
 

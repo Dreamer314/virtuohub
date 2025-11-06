@@ -24,7 +24,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { useLocation, Link } from "wouter";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@/providers/AuthProvider";
 import { AuthModal } from "@/components/auth/AuthModal";
 import { supabase } from "@/lib/supabaseClient";
@@ -52,30 +52,10 @@ export function Header({ onCreatePost }: HeaderProps) {
   const avatarUrl = v2Profile?.profilePhotoUrl;
   const userHandle = v2Profile?.handle;
   const canViewProfile = v2Profile?.hasValidProfile || false;
-
-  // Admin flag - check if user has ADMIN profile
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      if (user?.id) {
-        const { data: profiles } = await supabase
-          .from('profiles_v2')
-          .select('kind')
-          .eq('user_id', user.id)
-          .limit(1);
-        
-        const isAdminProfile = !!(profiles && profiles.length > 0 && profiles[0].kind === 'ADMIN');
-        if (!cancelled) setIsAdmin(isAdminProfile);
-      } else {
-        if (!cancelled) setIsAdmin(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [user?.id]);
+  const isAdmin = v2Profile?.kind === "ADMIN";
+  
+  // Debug log for admin verification
+  console.log("[HEADER v2Profile kind]", v2Profile?.kind);
 
   const toggleTheme = () => {
     // Single-theme mode: charcoal only
